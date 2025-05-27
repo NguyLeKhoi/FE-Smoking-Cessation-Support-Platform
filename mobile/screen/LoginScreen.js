@@ -9,16 +9,25 @@ import {
   Platform,
   Alert,
 } from 'react-native';
+import { login } from '../service/authService';
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = () => {
-    // Here you would typically make an API call to authenticate
+  const handleLogin = async () => {
     if (email && password) {
-      // For demo purposes, we'll just navigate to the main app
-      navigation.replace('MainApp');
+      try {
+        const response = await login(email, password);
+        navigation.replace('MainApp');
+      } catch (error) {
+        console.log('Login error:', error);
+        let message = 'Login failed. Please check your credentials.';
+        if (error.response && error.response.data && error.response.data.message) {
+          message = error.response.data.message;
+        }
+        Alert.alert('Error', message);
+      }
     } else {
       Alert.alert('Error', 'Please fill in all fields');
     }
@@ -61,7 +70,7 @@ const LoginScreen = ({ navigation }) => {
 
         <View style={styles.registerContainer}>
           <Text style={styles.registerText}>Don't have an account? </Text>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.replace('SignUp')}>
             <Text style={styles.registerLink}>Register</Text>
           </TouchableOpacity>
         </View>

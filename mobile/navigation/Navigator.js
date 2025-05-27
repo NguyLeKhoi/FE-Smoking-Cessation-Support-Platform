@@ -7,6 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import HomeScreen from '../screen/HomeScreen';
 import ProfileScreen from '../screen/ProfileScreen';
 import LoginScreen from '../screen/LoginScreen';
+import SignUpScreen from '../screen/SignUpScreen';
 
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
@@ -27,8 +28,9 @@ const TabNavigator = () => {
 
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: '#2196F3',
-        tabBarInactiveTintColor: 'gray',
+        tabBarActiveTintColor: '#8e24aa',
+        tabBarInactiveTintColor: '#bdbdbd',
+        tabBarStyle: { backgroundColor: '#232336', borderTopWidth: 0, elevation: 0 },
         headerShown: false,
       })}
     >
@@ -44,14 +46,14 @@ const DrawerNavigator = () => {
       initialRouteName="TabNavigator"
       screenOptions={{
         headerStyle: {
-          backgroundColor: '#2196F3',
+          backgroundColor: '#181828',
         },
-        headerTintColor: '#fff',
+        headerTintColor: '#8e24aa',
         headerTitleStyle: {
           fontWeight: 'bold',
         },
         drawerStyle: {
-          backgroundColor: '#fff',
+          backgroundColor: '#232336',
           width: 240,
         },
       }}
@@ -78,6 +80,7 @@ const Navigator = () => {
         }}
       >
         <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="SignUp" component={SignUpScreen} />
         <Stack.Screen name="MainApp" component={DrawerNavigator} />
       </Stack.Navigator>
     </NavigationContainer>
