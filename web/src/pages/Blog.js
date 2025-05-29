@@ -14,6 +14,16 @@ import Banner4 from '../assets/banner4.png';
 import Banner5 from '../assets/banner5.jpg';
 
 const Blog = () => {
+    const articleTemplate = {
+        image: Banner3,
+        title: "Understanding Nicotine Addiction",
+        subtitle: "A comprehensive look at how nicotine affects the brain and why quitting can be challenging. Learn about the science behind addiction...",
+        date: "MAR 22",
+        author: "DR. SARAH"
+    };
+
+    const articles = Array(6).fill(articleTemplate);
+
     return (
         <Box sx={{ backgroundColor: '#FAF8F5', py: 8 }}>
             <Container maxWidth="lg">
@@ -43,34 +53,78 @@ const Blog = () => {
                 {/* Divider */}
                 <Divider sx={{ my: 4 }} />
 
-                {/* 3 Columns of Articles */}
-                <Grid container spacing={0} sx={{ justifyContent: 'center' }}>
-                    {[1, 2, 3].map((item, index) => (
-                        <React.Fragment key={item}>
-                            <Grid item xs={12} md={5} sx={{ px: 8 }}>
-                                <Card sx={{ borderRadius: 2, overflow: 'hidden', boxShadow: 1, height: '100%' }}>
-                                    <CardMedia
-                                        component="img"
-                                        height="240"
-                                        image={Banner3}
-                                        alt="Team Member"
-                                    />
-                                    <CardContent>
-                                        <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                                            Jacob Jones
-                                        </Typography>
-                                        <Typography variant="body2" sx={{ textTransform: 'uppercase', color: 'text.secondary' }}>
-                                            CEO
-                                        </Typography>
-                                    </CardContent>
-                                </Card>
-                            </Grid>
-                            {index < 2 && (
-                                <Grid item md={1} sx={{ display: { xs: 'none', md: 'block' } }}>
-                                    <Divider orientation="vertical" sx={{ height: '100%', mx: 'auto' }} />
-                                </Grid>
-                            )}
-                        </React.Fragment>
+                {/* Articles Section */}
+                <Grid container spacing={3} sx={{ justifyContent: 'center' }}>
+                    {articles.map((article, index) => (
+                        <Grid item xs={12} sm={6} md={4} key={index} sx={{
+                            width: { md: 'calc(33.333% - 16px)' },
+                            minWidth: { md: 'calc(33.333% - 16px)' },
+                            maxWidth: { md: 'calc(33.333% - 16px)' }
+                        }}>
+                            <Card sx={{
+                                borderRadius: 2,
+                                overflow: 'hidden',
+                                boxShadow: 1,
+                                height: '100%',
+                                display: 'flex',
+                                flexDirection: 'column'
+                            }}>
+                                <CardMedia
+                                    component="img"
+                                    height="200"
+                                    image={article.image}
+                                    alt={article.title}
+                                    sx={{ objectFit: 'cover' }}
+                                />
+                                <CardContent sx={{
+                                    flexGrow: 1,
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    height: '100%'
+                                }}>
+                                    <Typography
+                                        variant="h6"
+                                        sx={{
+                                            fontWeight: 600,
+                                            mb: 1,
+                                            display: '-webkit-box',
+                                            WebkitLineClamp: 2,
+                                            WebkitBoxOrient: 'vertical',
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            lineHeight: 1.3
+                                        }}
+                                    >
+                                        {article.title}
+                                    </Typography>
+                                    <Typography
+                                        variant="body2"
+                                        sx={{
+                                            color: 'text.secondary',
+                                            mb: 1,
+                                            display: '-webkit-box',
+                                            WebkitLineClamp: 2,
+                                            WebkitBoxOrient: 'vertical',
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            flexGrow: 1
+                                        }}
+                                    >
+                                        {article.subtitle}
+                                    </Typography>
+                                    <Typography
+                                        variant="caption"
+                                        sx={{
+                                            color: 'text.secondary',
+                                            textTransform: 'uppercase',
+                                            mt: 'auto'
+                                        }}
+                                    >
+                                        {article.date} • {article.author}
+                                    </Typography>
+                                </CardContent>
+                            </Card>
+                        </Grid>
                     ))}
                 </Grid>
             </Container>
