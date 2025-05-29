@@ -26,7 +26,7 @@ const Blog = () => {
     const articles = Array(6).fill(articleTemplate);
 
     return (
-        <Box sx={{ backgroundColor: '#FAF8F5', py: 8 }}>
+        <Box sx={{ backgroundColor: 'background.default', py: 8 }}>
             <Container maxWidth="lg">
                 {/* Section Title */}
                 <Typography
@@ -65,7 +65,8 @@ const Blog = () => {
                             <Card sx={{
                                 borderRadius: 0,
                                 boxShadow: 'none',
-                                border: '1px solid #000',
+                                border: '1px solid',
+                                borderColor: 'primary.main',
                                 height: '100%',
                                 display: 'flex',
                                 flexDirection: 'column',
@@ -91,7 +92,8 @@ const Blog = () => {
                                             fontWeight: 700,
                                             mb: 2,
                                             textTransform: 'uppercase',
-                                            lineHeight: 1.2
+                                            lineHeight: 1.2,
+                                            color: 'primary.main'
                                         }}
                                     >
                                         {article.title}
@@ -99,7 +101,6 @@ const Blog = () => {
                                     <Typography
                                         variant="body2"
                                         sx={{
-
                                             color: 'text.primary',
                                             mb: 2,
                                             lineHeight: 1.5,
@@ -111,9 +112,9 @@ const Blog = () => {
                                     <Typography
                                         variant="caption"
                                         sx={{
-                                            color: 'text.secondary',
+                                            color: 'secondary.main',
                                             textTransform: 'uppercase',
-                                            mt: 'auto' // Push to the bottom
+                                            mt: 'auto'
                                         }}
                                     >
                                         {`Text: ${article.author} • Duration: ${article.duration}`}
