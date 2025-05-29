@@ -19,7 +19,8 @@ const Blog = () => {
         title: "Understanding Nicotine Addiction",
         subtitle: "A comprehensive look at how nicotine affects the brain and why quitting can be challenging. Learn about the science behind addiction...",
         date: "MAR 22",
-        author: "DR. SARAH"
+        author: "DR. SARAH",
+        duration: "11min"
     };
 
     const articles = Array(6).fill(articleTemplate);
@@ -62,16 +63,17 @@ const Blog = () => {
                             maxWidth: { md: 'calc(33.333% - 16px)' }
                         }}>
                             <Card sx={{
-                                borderRadius: 2,
-                                overflow: 'hidden',
-                                boxShadow: 1,
+                                borderRadius: 0,
+                                boxShadow: 'none',
+                                border: '1px solid #000',
                                 height: '100%',
                                 display: 'flex',
-                                flexDirection: 'column'
+                                flexDirection: 'column',
+                                // backgroundColor: 'background.default'
                             }}>
                                 <CardMedia
                                     component="img"
-                                    height="200"
+                                    height="300"
                                     image={article.image}
                                     alt={article.title}
                                     sx={{ objectFit: 'cover' }}
@@ -80,19 +82,16 @@ const Blog = () => {
                                     flexGrow: 1,
                                     display: 'flex',
                                     flexDirection: 'column',
+                                    padding: 2,
                                     height: '100%'
                                 }}>
                                     <Typography
-                                        variant="h6"
+                                        variant="h5"
                                         sx={{
-                                            fontWeight: 600,
-                                            mb: 1,
-                                            display: '-webkit-box',
-                                            WebkitLineClamp: 2,
-                                            WebkitBoxOrient: 'vertical',
-                                            overflow: 'hidden',
-                                            textOverflow: 'ellipsis',
-                                            lineHeight: 1.3
+                                            fontWeight: 700,
+                                            mb: 2,
+                                            textTransform: 'uppercase',
+                                            lineHeight: 1.2
                                         }}
                                     >
                                         {article.title}
@@ -100,13 +99,10 @@ const Blog = () => {
                                     <Typography
                                         variant="body2"
                                         sx={{
-                                            color: 'text.secondary',
-                                            mb: 1,
-                                            display: '-webkit-box',
-                                            WebkitLineClamp: 2,
-                                            WebkitBoxOrient: 'vertical',
-                                            overflow: 'hidden',
-                                            textOverflow: 'ellipsis',
+
+                                            color: 'text.primary',
+                                            mb: 2,
+                                            lineHeight: 1.5,
                                             flexGrow: 1
                                         }}
                                     >
@@ -117,10 +113,10 @@ const Blog = () => {
                                         sx={{
                                             color: 'text.secondary',
                                             textTransform: 'uppercase',
-                                            mt: 'auto'
+                                            mt: 'auto' // Push to the bottom
                                         }}
                                     >
-                                        {article.date} • {article.author}
+                                        {`Text: ${article.author} • Duration: ${article.duration}`}
                                     </Typography>
                                 </CardContent>
                             </Card>
