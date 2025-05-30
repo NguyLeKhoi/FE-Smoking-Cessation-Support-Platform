@@ -1,10 +1,14 @@
 import { createBrowserRouter } from 'react-router-dom';
 import MainLayout from '../layout/MainLayout.js';
+import AuthLayout from '../layout/AuthLayout';
+import ProtectedRoute from '../components/ProtectedRoute';
 
 // Pages
 import Homepage from '../pages/Homepage';
 import Loginpage from '../pages/Loginpage';
 import Blog from '../pages/Blog';
+import Signuppage from '../pages/SignupPage';
+import ProfilePage from '../pages/ProfilePage';
 
 export const routes = createBrowserRouter([
   {
@@ -18,9 +22,17 @@ export const routes = createBrowserRouter([
   {
     path: '/login',
     element: (
-      <MainLayout showHeader={false} showFooter={false}>
+      <AuthLayout>
         <Loginpage />
-      </MainLayout>
+      </AuthLayout>
+    ),
+  },
+  {
+    path: '/signup',
+    element: (
+      <AuthLayout>
+        <Signuppage />
+      </AuthLayout>
     ),
   },
   {
@@ -29,6 +41,16 @@ export const routes = createBrowserRouter([
       <MainLayout>
         <Blog />
       </MainLayout>
+    ),
+  },
+  {
+    path: '/profile',
+    element: (
+      <ProtectedRoute>
+        <MainLayout>
+          <ProfilePage />
+        </MainLayout>
+      </ProtectedRoute>
     ),
   },
   {
