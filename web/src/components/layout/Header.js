@@ -1,7 +1,15 @@
+<<<<<<< HEAD
 import { AppBar, Toolbar, Typography, Button, Box, Tabs, Tab } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 import { useState } from 'react';
+=======
+import React from 'react';
+import { AppBar, Toolbar, Typography, Button, IconButton, Box, Link } from '@mui/material';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import MenuIcon from '@mui/icons-material/Menu';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+>>>>>>> 7169748a9dd019619328d42dbbd4668458178070
 
 const Header = () => {
   const navigate = useNavigate();
@@ -18,44 +26,44 @@ const Header = () => {
   };
 
   return (
-    <AppBar position="static" sx={{ 
+    <AppBar position="static" sx={{
       backgroundColor: 'white',
       boxShadow: 'none',
       borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
     }}>
       <Toolbar>
-        <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
-          <Typography 
-            variant="h6" 
-            sx={{ 
-              fontWeight: 600,
-              background: 'linear-gradient(45deg, black, #FF8E53)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              mr: 4
-            }}
-          >
-            SMOKE FREE
-          </Typography>
-          <Tabs 
-            value={value} 
-            onChange={handleChange}
-            sx={{ 
-              '& .MuiTab-root': {
-                color: 'black',
-                '&.Mui-selected': {
-                  color: '#FF8E53',
-                },
-              },
-            }}
-          >
-            <Tab label="Home" />
-            <Tab label="Blog" />
-          </Tabs>
-        </Box>
+        <IconButton
+          edge="start"
+          color="black"
+          aria-label="menu"
+          sx={{ mr: 2 }}
+        >
+          <MenuIcon />
+        </IconButton>
+        <Typography
+          variant="h6"
+          component={RouterLink}
+          to="/"
+          sx={{
+            flexGrow: 1,
+            fontWeight: 600,
+            background: 'linear-gradient(45deg, black, #FF8E53)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            textDecoration: 'none',
+            '&:hover': {
+              opacity: 0.8
+            }
+          }}
+        >
+          SMOKE FREE
+        </Typography>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Button 
-            color="black" 
+          <IconButton color="black">
+            <NotificationsIcon />
+          </IconButton>
+          <Button
+            color="black"
             onClick={() => navigate('/login')}
             sx={{
               backgroundColor: 'black',
