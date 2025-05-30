@@ -5,13 +5,12 @@ import {
     Typography,
     Grid,
     Card,
-    CardContent,
     CardMedia,
     Divider
 } from '@mui/material';
 import Banner3 from '../assets/banner3.jpg';
-import Banner4 from '../assets/banner4.png';
 import Banner5 from '../assets/banner5.jpg';
+import CustomCard from '../components/layout/CustomCard';
 
 const Blog = () => {
     const articleTemplate = {
@@ -62,65 +61,13 @@ const Blog = () => {
                             minWidth: { md: 'calc(33.333% - 16px)' },
                             maxWidth: { md: 'calc(33.333% - 16px)' }
                         }}>
-                            <Card sx={{
-                                borderRadius: 0,
-                                boxShadow: 'none',
-                                border: '1px solid',
-                                borderColor: 'primary.main',
-                                height: '100%',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                // backgroundColor: 'background.default'
-                            }}>
-                                <CardMedia
-                                    component="img"
-                                    height="300"
-                                    image={article.image}
-                                    alt={article.title}
-                                    sx={{ objectFit: 'cover' }}
-                                />
-                                <CardContent sx={{
-                                    flexGrow: 1,
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    padding: 2,
-                                    height: '100%'
-                                }}>
-                                    <Typography
-                                        variant="h5"
-                                        sx={{
-                                            fontWeight: 700,
-                                            mb: 2,
-                                            textTransform: 'uppercase',
-                                            lineHeight: 1.2,
-                                            color: 'primary.main'
-                                        }}
-                                    >
-                                        {article.title}
-                                    </Typography>
-                                    <Typography
-                                        variant="body2"
-                                        sx={{
-                                            color: 'text.primary',
-                                            mb: 2,
-                                            lineHeight: 1.5,
-                                            flexGrow: 1
-                                        }}
-                                    >
-                                        {article.subtitle}
-                                    </Typography>
-                                    <Typography
-                                        variant="caption"
-                                        sx={{
-                                            color: 'secondary.main',
-                                            textTransform: 'uppercase',
-                                            mt: 'auto'
-                                        }}
-                                    >
-                                        {`Text: ${article.author} • Duration: ${article.duration}`}
-                                    </Typography>
-                                </CardContent>
-                            </Card>
+                            <CustomCard
+                                image={article.image}
+                                title={article.title}
+                                subtitle={article.subtitle}
+                                author={article.author}
+                                duration={article.duration}
+                            />
                         </Grid>
                     ))}
                 </Grid>
