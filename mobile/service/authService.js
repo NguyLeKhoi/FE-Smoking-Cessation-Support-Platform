@@ -51,13 +51,57 @@ export const refreshToken = async () => {
 
 export const logout = async () => {
     try {
-        const token = await AsyncStorage.getItem('accessToken');
-        console.log('Access token before logout:', token);
-        await api.post('/auth/logout');
+        // Just clear the tokens without calling the API
         await AsyncStorage.multiRemove(['accessToken', 'refreshToken']);
         return true;
     } catch (error) {
-        console.error('Error logging out:', error.response?.data || error);
-        throw new Error(error.response?.data?.message || 'Failed to logout');
+        console.error('Error logging out:', error);
+        throw new Error('Failed to logout');
     }
+};
+
+export const forgotPassword = async (email) => {
+  try {
+    console.log('Requesting password reset link for email:', email);
+    const response = await api.post('/auth/forgot-password', { email });
+    console.log('Forgot password response:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Forgot password error:', error.response?.data || error.message);
+    throw new Error(error.response?.data?.message || 'Failed to request password reset link');
+  }
+};
+
+export const resetPassword = async (token, newPassword, confirmPassword) => {
+  try {
+    console.log('Resetting password with token:', token);
+    const response = await api.post('/auth/reset-password', { token, newPassword, confirmPassword });
+    console.log('Reset password response:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Reset password error:', error.response?.data || error.message);
+    throw new Error(error.response?.data?.message || 'Failed to reset password');
+  }
+};
+
+export const getGoogleLoginUrl = async () => {
+  try {
+    console.log("Attempting to get Google login URL from backend");
+    const response = await api.get('/auth/google');
+    console.log("Received response from Google login URL endpoint:", response.data);
+    return response.data.url || response.data;
+  } catch (error) {
+    console.error('Error fetching Google login URL:', error.response?.data || error.message);
+    throw new Error('Failed to get Google login URL');
+  }
+};
+
+export const isAuthenticated = async () => {
+  try {
+    const token = await AsyncStorage.getItem('accessToken');
+    return !!token;
+  } catch (error) {
+    console.error('Error checking authentication:', error);
+    return false;
+  }
 };

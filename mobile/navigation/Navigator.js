@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
@@ -8,6 +8,9 @@ import HomeScreen from '../screen/HomeScreen';
 import ProfileScreen from '../screen/ProfileScreen';
 import LoginScreen from '../screen/LoginScreen';
 import SignUpScreen from '../screen/SignUpScreen';
+import ForgotPasswordScreen from '../screen/ForgotPasswordScreen';
+import ResetPasswordScreen from '../screen/ResetPasswordScreen';
+import { isAuthenticated } from '../service/authService';
 
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
@@ -28,9 +31,9 @@ const TabNavigator = () => {
 
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: '#8e24aa',
-        tabBarInactiveTintColor: '#bdbdbd',
-        tabBarStyle: { backgroundColor: '#232336', borderTopWidth: 0, elevation: 0 },
+        tabBarActiveTintColor: '#CD5656',
+        tabBarInactiveTintColor: '#DA6C6C',
+        tabBarStyle: { backgroundColor: '#EAEBD0', borderTopWidth: 0, elevation: 0 },
         headerShown: false,
       })}
     >
@@ -46,14 +49,14 @@ const DrawerNavigator = () => {
       initialRouteName="TabNavigator"
       screenOptions={{
         headerStyle: {
-          backgroundColor: '#181828',
+          backgroundColor: '#EAEBD0',
         },
-        headerTintColor: '#8e24aa',
+        headerTintColor: '#CD5656',
         headerTitleStyle: {
           fontWeight: 'bold',
         },
         drawerStyle: {
-          backgroundColor: '#232336',
+          backgroundColor: '#EAEBD0',
           width: 240,
         },
       }}
@@ -62,7 +65,7 @@ const DrawerNavigator = () => {
         name="TabNavigator" 
         component={TabNavigator}
         options={{
-          title: 'Main Menu',
+          title: 'Smoking cessation',
           drawerLabel: 'Main Menu',
         }}
       />
@@ -71,16 +74,41 @@ const DrawerNavigator = () => {
 };
 
 const Navigator = () => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [isUserAuthenticated, setIsUserAuthenticated] = useState(false);
+
+  useEffect(() => {
+    checkAuthState();
+  }, []);
+
+  const checkAuthState = async () => {
+    try {
+      const authenticated = await isAuthenticated();
+      setIsUserAuthenticated(authenticated);
+    } catch (error) {
+      console.error('Error checking auth state:', error);
+      setIsUserAuthenticated(false);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (isLoading) {
+    return null; // Or a loading screen
+  }
+
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Login"
+        initialRouteName={isUserAuthenticated ? "MainApp" : "Login"}
         screenOptions={{
           headerShown: false,
         }}
       >
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="SignUp" component={SignUpScreen} />
+        <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+        <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
         <Stack.Screen name="MainApp" component={DrawerNavigator} />
       </Stack.Navigator>
     </NavigationContainer>

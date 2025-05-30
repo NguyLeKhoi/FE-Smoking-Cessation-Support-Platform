@@ -10,6 +10,8 @@ import {
   Alert,
 } from 'react-native';
 import { login } from '../service/authService';
+import { startAsync } from 'expo-auth-session';
+import { getGoogleLoginUrl } from '../service/authService';
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -60,12 +62,27 @@ const LoginScreen = ({ navigation }) => {
           />
         </View>
 
-        <TouchableOpacity style={styles.forgotPassword}>
+        <TouchableOpacity style={styles.forgotPassword} onPress={() => navigation.navigate('ForgotPassword')}>
           <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
           <Text style={styles.loginButtonText}>Login</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.googleButton} onPress={async () => {
+          try {
+            const url = await getGoogleLoginUrl();
+            const result = await startAsync({ authUrl: url });
+            if (result.type === 'success') {
+              Alert.alert('Google Login Success', 'You have logged in with Google!');
+              navigation.replace('MainApp');
+            }
+          } catch (error) {
+            Alert.alert('Google Login Failed', error.message);
+          }
+        }}>
+          <Text style={styles.googleButtonText}>Login with Google</Text>
         </TouchableOpacity>
 
         <View style={styles.registerContainer}>
@@ -82,7 +99,7 @@ const LoginScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#EAEBD0',
   },
   formContainer: {
     flex: 1,
@@ -92,13 +109,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#000000',
     marginBottom: 10,
     textAlign: 'center',
   },
   subtitle: {
     fontSize: 16,
-    color: '#666',
+    color: '#DA6C6C',
     marginBottom: 30,
     textAlign: 'center',
   },
@@ -106,31 +123,31 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   input: {
-    backgroundColor: '#fff',
+    backgroundColor: '#EAEBD0',
     padding: 15,
-    borderRadius: 10,
+    borderRadius: 15,
     marginBottom: 15,
     fontSize: 16,
     borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderColor: '#DA6C6C',
   },
   forgotPassword: {
     alignSelf: 'flex-end',
     marginBottom: 20,
   },
   forgotPasswordText: {
-    color: '#2196F3',
+    color: '#CD5656',
     fontSize: 14,
   },
   loginButton: {
-    backgroundColor: '#2196F3',
+    backgroundColor: '#CD5656',
     padding: 15,
-    borderRadius: 10,
+    borderRadius: 25,
     alignItems: 'center',
     marginBottom: 20,
   },
   loginButtonText: {
-    color: '#fff',
+    color: 'black',
     fontSize: 16,
     fontWeight: 'bold',
   },
@@ -139,12 +156,24 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   registerText: {
-    color: '#666',
+    color: '#DA6C6C',
     fontSize: 14,
   },
   registerLink: {
-    color: '#2196F3',
+    color: '#CD5656',
     fontSize: 14,
+    fontWeight: 'bold',
+  },
+  googleButton: {
+    backgroundColor: '#AF3E3E',
+    padding: 15,
+    borderRadius: 25,
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  googleButtonText: {
+    color: '#EAEBD0',
+    fontSize: 16,
     fontWeight: 'bold',
   },
 });
