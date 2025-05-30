@@ -1,33 +1,18 @@
 import React from 'react';
-import { Container, Box, Button, Typography, Grid } from '@mui/material';
+import { Container, Box, Typography, Grid } from '@mui/material';
 
 export default function HomePage() {
   return (
     <Box>
       {/* Hero Section */}
-      <Box sx={{ bgcolor: 'purple', py: { xs: 8, md: 12 }, px: 2 }}>
+      <Box sx={{ bgcolor: '#8e24aa', py: { xs: 8, md: 12 }, px: 2 }}>
         <Container maxWidth="lg">
           <Grid container alignItems="center" spacing={4}>
             <Grid item xs={12} md={6}>
               <Typography variant="h3" fontWeight={700} color="white" gutterBottom sx={{ lineHeight: 1.1 }}>
                 Quit smoking now.<br />Claiming your health.
               </Typography>
-              <Button
-                variant="contained"
-                sx={{
-                  background: '#111',
-                  color: '#fff',
-                  borderRadius: 2,
-                  px: 4,
-                  py: 1.5,
-                  fontWeight: 700,
-                  fontSize: 18,
-                  boxShadow: 'none',
-                  '&:hover': { background: '#222' },
-                }}
-              >
-                Take the quiz
-              </Button>
+          
             </Grid>
             <Grid item xs={12} md={6} sx={{ display: 'flex', justifyContent: 'center' }}>
               {/* Placeholder for mobile screens image */}
@@ -71,7 +56,7 @@ export default function HomePage() {
       </Container>
 
       {/* Achievements Section */}
-      <Box sx={{ bgcolor: '#6EC1FF', py: { xs: 8, md: 10 }, px: 2 }}>
+      <Box sx={{ bgcolor: '#8e24aa', py: { xs: 8, md: 10 }, px: 2 }}>
         <Container maxWidth="md">
           <Typography variant="h3" fontWeight={700} align="center" color="white" gutterBottom>
             Small achievements, big goals
