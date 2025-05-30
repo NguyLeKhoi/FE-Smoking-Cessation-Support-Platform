@@ -52,7 +52,7 @@ const Blog = () => {
                 </Typography>
 
                 {/* Divider */}
-                <Divider sx={{ my: 4 }} />
+                <Divider sx={{ my: 4, borderColor: 'primary.main', }} />
 
                 {/* Articles Section */}
                 <Grid container spacing={3} sx={{ justifyContent: 'center' }}>
