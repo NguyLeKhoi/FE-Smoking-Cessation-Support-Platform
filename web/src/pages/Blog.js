@@ -6,7 +6,8 @@ import {
     Grid,
     Card,
     CardMedia,
-    Divider
+    Divider,
+    Button
 } from '@mui/material';
 import Banner3 from '../assets/banner3.jpg';
 import Banner5 from '../assets/banner5.jpg';
@@ -71,6 +72,41 @@ const Blog = () => {
                         </Grid>
                     ))}
                 </Grid>
+
+                {/* Subscription Section */}
+                <Box sx={{
+                    mt: 8,
+                    textAlign: 'center',
+                    borderTop: '1px solid',
+                    borderColor: 'primary.main',
+                    pt: 4
+                }}>
+                    <Typography
+                        variant="h4"
+                        sx={{
+                            fontWeight: 600,
+                            mb: 2,
+                            textTransform: 'uppercase',
+                            color: 'primary.main'
+                        }}
+                    >
+                        Subscribe to receive more newsletter
+                    </Typography>
+                    <Button
+                        variant="contained"
+                        sx={{
+                            backgroundColor: 'primary.main',
+                            color: 'background.default',
+                            px: 4,
+                            py: 1.5,
+                            '&:hover': {
+                                backgroundColor: 'primary.dark'
+                            }
+                        }}
+                    >
+                        Subscribe Now
+                    </Button>
+                </Box>
             </Container>
         </Box>
     );
