@@ -4,6 +4,7 @@ import MainLayout from '../layout/MainLayout.js';
 // Pages
 import Homepage from '../pages/Homepage';
 import Loginpage from '../pages/Loginpage';
+import Blog from '../pages/Blog';
 
 export const routes = createBrowserRouter([
   {
@@ -19,6 +20,14 @@ export const routes = createBrowserRouter([
     element: (
       <MainLayout showHeader={false} showFooter={false}>
         <Loginpage />
+      </MainLayout>
+    ),
+  },
+  {
+    path: '/blog',
+    element: (
+      <MainLayout>
+        <Blog />
       </MainLayout>
     ),
   },
