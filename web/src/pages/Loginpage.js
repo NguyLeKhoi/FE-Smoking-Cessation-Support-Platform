@@ -136,6 +136,28 @@ export default function LoginPage() {
             {loading ? 'Signing in...' : 'Sign in'}
           </Button>
 
+          <Button
+            fullWidth
+            variant="outlined"
+            onClick={() => window.location.href = process.env.REACT_APP_BACKEND_GOOGLE_AUTH_URL}
+            startIcon={<img src="https://img.icons8.com/color/16/000000/google-logo.png" alt="Google logo" style={{ width: 20, height: 20 }} />}
+            sx={{
+              mt: 1,
+              mb: 2,
+              py: 1.5,
+              color: '#000', // Dark text color
+              borderColor: '#ccc', // Light grey border
+              borderRadius: '25px', // More rounded corners
+              backgroundColor: '#fff', // White background
+              '&:hover': {
+                borderColor: '#bbb', // Slightly darker grey on hover
+                backgroundColor: '#f0f0f0', // Light grey background on hover
+              },
+            }}
+          >
+            Sign in with Google
+          </Button>
+
           <Box sx={{ textAlign: 'center' }}>
             <Typography variant="body2" color="text.secondary">
               Don't have an account?{' '}

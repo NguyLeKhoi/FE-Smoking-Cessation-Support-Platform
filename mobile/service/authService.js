@@ -15,7 +15,7 @@ export const signup = async ({ username, email, password, first_name, last_name,
     return response.data;
   } catch (error) {
     console.error('Signup error:', error.response?.data || error);
-    throw new Error(error.response?.data?.message || 'Failed to sign up');
+    throw error;
   }
 };
 

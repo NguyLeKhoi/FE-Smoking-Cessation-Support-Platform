@@ -12,7 +12,7 @@ export default function SignupPage() {
     confirmPassword: '',
     first_name: '',
     last_name: '',
-    birth_date: '',
+    dob: '',
     phone_number: ''
   });
   const [error, setError] = useState('');
@@ -62,7 +62,7 @@ export default function SignupPage() {
         password: formData.password,
         first_name: formData.first_name,
         last_name: formData.last_name,
-        birth_date: formData.birth_date,
+        dob: formData.dob,
         phone_number: formData.phone_number
       };
 
@@ -78,21 +78,42 @@ export default function SignupPage() {
       }
     } catch (error) {
       console.error('Signup error caught:', error);
-      // Check if the error response contains specific validation errors
-      if (error.response && error.response.data && error.response.data.errors) {
-        const fieldErrors = error.response.data.errors;
-        // Assuming there's only one field error for now, or we can loop through them
-        if (fieldErrors.length > 0) {
-          setError(`${fieldErrors[0].path}: ${fieldErrors[0].message}`);
+      let errorMessage = 'An unexpected error occurred during signup.'; // Default error message
+
+      if (error.response) {
+        // Server responded with a status other than 2xx (e.g., 422)
+        console.log('Backend error response:', error.response);
+        if (error.response.data) {
+          console.log('Backend error response data:', error.response.data);
+
+          // --- Attempt to get specific error message from 'errors' array --- 
+          if (error.response.data.errors && Array.isArray(error.response.data.errors) && error.response.data.errors.length > 0) {
+            errorMessage = error.response.data.errors.map(err => `${err.path}: ${err.message}`).join(', ');
+          } else if (error.response.data.message) {
+             // --- Fallback to a general message from the backend --- 
+             errorMessage = error.response.data.message;
+          } else if (typeof error.response.data === 'string') {
+            // --- Handle plain string error responses --- 
+            errorMessage = error.response.data;
+          } else {
+             // --- If data exists but doesn't match expected structures --- 
+             errorMessage = `Request failed: ${JSON.stringify(error.response.data)}`;
+          }
+
+        } else if (error.message) {
+           // Use generic error message from the Error object if no response data
+           errorMessage = error.message;
         } else {
-          // If there are errors but no specific field errors listed
-          setError(error.response.data.message || 'Validation failed');
+          errorMessage = `Request failed with status ${error.response.status}`;
         }
       } else if (error.message) {
-        setError(error.message || 'Failed to sign up');
-      } else {
-        // ... existing code ...
+        // Something happened in setting up the request that triggered an Error
+        errorMessage = error.message;
       }
+
+      setError(errorMessage); // Set the determined error message
+      console.log('Setting error message:', errorMessage);
+
     } finally {
       setLoading(false);
     }
@@ -188,9 +209,9 @@ export default function SignupPage() {
           <TextField
             fullWidth
             label="Birth Date"
-            name="birth_date"
+            name="dob"
             type="date"
-            value={formData.birth_date}
+            value={formData.dob}
             onChange={handleChange}
             margin="normal"
             required

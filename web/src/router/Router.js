@@ -9,6 +9,7 @@ import Loginpage from '../pages/Loginpage';
 import Blog from '../pages/Blog';
 import Signuppage from '../pages/SignupPage';
 import ProfilePage from '../pages/ProfilePage';
+import LoginSuccessPage from '../pages/LoginSuccessPage';
 
 export const routes = createBrowserRouter([
   {
@@ -32,6 +33,14 @@ export const routes = createBrowserRouter([
     element: (
       <AuthLayout>
         <Signuppage />
+      </AuthLayout>
+    ),
+  },
+  {
+    path: '/login/success',
+    element: (
+      <AuthLayout>
+        <LoginSuccessPage />
       </AuthLayout>
     ),
   },
