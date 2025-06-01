@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Box, TextField, IconButton, Typography } from '@mui/material';
+import { Box, TextField, IconButton, Typography, Avatar } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import CloseIcon from '@mui/icons-material/Close';
+import FaceRetouchingNaturalOutlinedIcon from '@mui/icons-material/FaceRetouchingNaturalOutlined'; // Import AI icon
 import motivationService from '../services/motivationService';
 
 const Chatbox = ({ onClose }) => {
@@ -45,7 +46,7 @@ const Chatbox = ({ onClose }) => {
         right: 20,
         width: 400, // Increased width
         height: 500, // Increased height
-        bgcolor: '#262626', // Dark background similar to Instagram
+        bgcolor: '#262626', 
         color: 'white',
         borderRadius: 2, // Rounded corners
         boxShadow: 3,
@@ -85,18 +86,57 @@ const Chatbox = ({ onClose }) => {
           <Box
             key={index}
             sx={{
-              alignSelf: msg.sender === 'user' ? 'flex-end' : 'flex-start',
-              bgcolor: msg.sender === 'user' ? '#0095f6' : '#3a3a3a',
-              color: 'white',
-              borderRadius: 2,
-              p: '6px 10px',
-              maxWidth: '80%',
-              wordBreak: 'break-word',
+              display: 'flex',
+              alignItems: 'flex-start', // Align items to the start (top) of the flex container
+              justifyContent: msg.sender === 'user' ? 'flex-end' : 'flex-start', // Align container based on sender
             }}
           >
-            <Typography variant="body2">{msg.text}</Typography>
+            {msg.sender === 'ai' && (
+              <Avatar sx={{ bgcolor: '#1c1c1c', mr: 1 }}>
+                <FaceRetouchingNaturalOutlinedIcon sx={{ color: 'white' }} />
+              </Avatar>
+            )}
+            <Box
+              sx={{
+                bgcolor: msg.sender === 'user' ? '#0095f6' : '#3a3a3a', // Use Instagram blue for user, dark for AI
+                color: 'white',
+                borderRadius: 2, // Keep rounded corners
+                p: '8px 12px', // Adjust padding
+                maxWidth: '80%',
+                wordBreak: 'break-word',
+              }}
+            >
+              <Typography variant="body2">{msg.text}</Typography>
+            </Box>
           </Box>
         ))}
+        {/* Typing indicator */}
+        {loading && (
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              alignSelf: 'flex-start',
+            }}
+          >
+            <Avatar sx={{ bgcolor: '#1c1c1c', mr: 1 }}>
+              <FaceRetouchingNaturalOutlinedIcon sx={{ color: 'white' }} />
+            </Avatar>
+            <Box
+              sx={{
+                bgcolor: '#3a3a3a',
+                color: 'white',
+                borderRadius: 2,
+                p: '8px 12px',
+                maxWidth: '80%',
+                wordBreak: 'break-word',
+                fontStyle: 'italic',
+              }}
+            >
+              <Typography variant="body2">...</Typography>
+            </Box>
+          </Box>
+        )}
         <div ref={messagesEndRef} />
       </Box>
 

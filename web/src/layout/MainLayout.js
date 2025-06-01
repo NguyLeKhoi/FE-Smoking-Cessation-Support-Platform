@@ -4,12 +4,20 @@ import Footer from '../components/Footer';
 import Chatbox from '../components/Chatbox';
 import { Box, IconButton } from '@mui/material';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+import { isAuthenticated, logout } from '../services/authService'; // Import isAuthenticated and logout
 
 const MainLayout = ({ children, showHeader = true, showFooter = true }) => {
   const [isChatboxOpen, setIsChatboxOpen] = useState(false);
+  const [authStatus, setAuthStatus] = useState(isAuthenticated()); // State for authentication status
 
   const toggleChatbox = () => {
     setIsChatboxOpen(!isChatboxOpen);
+  };
+
+  // Function to handle logout and update auth status
+  const handleLogout = async () => {
+    await logout(); // Call the logout function from authService
+    setAuthStatus(false); // Update the auth status state
   };
 
   return (
@@ -25,11 +33,16 @@ const MainLayout = ({ children, showHeader = true, showFooter = true }) => {
           backdropFilter: 'blur(5px)', // Apply a blur effect
           WebkitBackdropFilter: 'blur(5px)', // For Safari support
         }}>
-          <Header />
+          <Header authStatus={authStatus} onLogout={handleLogout} />
         </Box>
       )}
       <main style={{ paddingTop: showHeader ? '64px' : 0 }}>
-        {children}
+        {React.Children.map(children, (child) => {
+          if (child && child.type && child.type.name === 'ProfilePage') {
+            return React.cloneElement(child, { handleLogout });
+          }
+          return child;
+        })}
       </main>
       
       {/* Chat button positioned fixed at bottom right */}
