@@ -12,8 +12,8 @@ export default function SignupPage() {
     confirmPassword: '',
     first_name: '',
     last_name: '',
-    birth_date: '',
-    phone_number: ''
+    dob: '',
+    phone_number: '',
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -21,7 +21,7 @@ export default function SignupPage() {
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -62,14 +62,14 @@ export default function SignupPage() {
         password: formData.password,
         first_name: formData.first_name,
         last_name: formData.last_name,
-        birth_date: formData.birth_date,
-        phone_number: formData.phone_number
+        dob: formData.dob,
+        phone_number: formData.phone_number,
       };
 
       console.log('Signup data being sent:', userData);
 
       const response = await signup(userData);
-      
+
       if (response.success) {
         navigate('/login');
       } else {
@@ -78,21 +78,40 @@ export default function SignupPage() {
       }
     } catch (error) {
       console.error('Signup error caught:', error);
-      // Check if the error response contains specific validation errors
-      if (error.response && error.response.data && error.response.data.errors) {
-        const fieldErrors = error.response.data.errors;
-        // Assuming there's only one field error for now, or we can loop through them
-        if (fieldErrors.length > 0) {
-          setError(`${fieldErrors[0].path}: ${fieldErrors[0].message}`);
+      let errorMessage = 'An unexpected error occurred during signup.'; // Default error message
+
+      if (error.response) {
+        // Server responded with a status other than 2xx (e.g., 422)
+        console.log('Backend error response:', error.response);
+        if (error.response.data) {
+          console.log('Backend error response data:', error.response.data);
+
+          // --- Attempt to get specific error message from 'errors' array --- 
+          if (error.response.data.errors && Array.isArray(error.response.data.errors) && error.response.data.errors.length > 0) {
+            errorMessage = error.response.data.errors.map((err) => `${err.path}: ${err.message}`).join(', ');
+          } else if (error.response.data.message) {
+            // --- Fallback to a general message from the backend --- 
+            errorMessage = error.response.data.message;
+          } else if (typeof error.response.data === 'string') {
+            // --- Handle plain string error responses --- 
+            errorMessage = error.response.data;
+          } else {
+            // --- If data exists but doesn't match expected structures --- 
+            errorMessage = `Request failed: ${JSON.stringify(error.response.data)}`;
+          }
+        } else if (error.message) {
+          // Use generic error message from the Error object if no response data
+          errorMessage = error.message;
         } else {
-          // If there are errors but no specific field errors listed
-          setError(error.response.data.message || 'Validation failed');
+          errorMessage = `Request failed with status ${error.response.status}`;
         }
       } else if (error.message) {
-        setError(error.message || 'Failed to sign up');
-      } else {
-        // ... existing code ...
+        // Something happened in setting up the request that triggered an Error
+        errorMessage = error.message;
       }
+
+      setError(errorMessage); // Set the determined error message
+      console.log('Setting error message:', errorMessage);
     } finally {
       setLoading(false);
     }
@@ -100,7 +119,7 @@ export default function SignupPage() {
 
   return (
     <Container maxWidth="sm">
-      <Box 
+      <Box
         sx={{
           mt: 8,
           display: 'flex',
@@ -108,16 +127,14 @@ export default function SignupPage() {
           alignItems: 'center',
           p: 4,
           borderRadius: 2,
-          boxShadow: '0 0 10px rgba(0,0,0,0.1)',
-          backgroundColor: 'rgba(255, 255, 255, 0.2)',
-          backdropFilter: 'blur(5px)',
-          WebkitBackdropFilter: 'blur(5px)',
+          bgcolor: '#2c3e50',
+          color: 'white',
         }}
       >
-        <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold', color: '#AF3E3E' }}>
+        <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold', color: 'white' }}>
           Create Account
         </Typography>
-        <Typography variant="body1" color="text.secondary" gutterBottom>
+        <Typography variant="body1" gutterBottom sx={{ color: '#b0b3b8' }}>
           Sign up to get started
         </Typography>
 
@@ -138,6 +155,21 @@ export default function SignupPage() {
                 onChange={handleChange}
                 required
                 autoComplete="given-name"
+                InputLabelProps={{
+                  style: { color: '#b0b3b8' },
+                }}
+                InputProps={{
+                  style: { color: 'white' },
+                }}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '4px',
+                    bgcolor: '#1c2833',
+                    '& fieldset': { borderColor: 'transparent' },
+                    '&:hover fieldset': { borderColor: 'transparent' },
+                    '&.Mui-focused fieldset': { borderColor: 'transparent' },
+                  },
+                }}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -149,6 +181,21 @@ export default function SignupPage() {
                 onChange={handleChange}
                 required
                 autoComplete="family-name"
+                InputLabelProps={{
+                  style: { color: '#b0b3b8' },
+                }}
+                InputProps={{
+                  style: { color: 'white' },
+                }}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '4px',
+                    bgcolor: '#1c2833',
+                    '& fieldset': { borderColor: 'transparent' },
+                    '&:hover fieldset': { borderColor: 'transparent' },
+                    '&.Mui-focused fieldset': { borderColor: 'transparent' },
+                  },
+                }}
               />
             </Grid>
           </Grid>
@@ -162,6 +209,21 @@ export default function SignupPage() {
             margin="normal"
             required
             autoComplete="username"
+            InputLabelProps={{
+              style: { color: '#b0b3b8' },
+            }}
+            InputProps={{
+              style: { color: 'white' },
+            }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '4px',
+                bgcolor: '#1c2833',
+                '& fieldset': { borderColor: 'transparent' },
+                '&:hover fieldset': { borderColor: 'transparent' },
+                '&.Mui-focused fieldset': { borderColor: 'transparent' },
+              },
+            }}
           />
           <TextField
             fullWidth
@@ -173,6 +235,21 @@ export default function SignupPage() {
             margin="normal"
             required
             autoComplete="email"
+            InputLabelProps={{
+              style: { color: '#b0b3b8' },
+            }}
+            InputProps={{
+              style: { color: 'white' },
+            }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '4px',
+                bgcolor: '#1c2833',
+                '& fieldset': { borderColor: 'transparent' },
+                '&:hover fieldset': { borderColor: 'transparent' },
+                '&.Mui-focused fieldset': { borderColor: 'transparent' },
+              },
+            }}
           />
           <TextField
             fullWidth
@@ -184,17 +261,44 @@ export default function SignupPage() {
             required
             autoComplete="tel"
             placeholder="1234567890"
+            InputLabelProps={{
+              style: { color: '#b0b3b8' },
+            }}
+            InputProps={{
+              style: { color: 'white' },
+            }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '4px',
+                bgcolor: '#1c2833',
+                '& fieldset': { borderColor: 'transparent' },
+                '&:hover fieldset': { borderColor: 'transparent' },
+                '&.Mui-focused fieldset': { borderColor: 'transparent' },
+              },
+            }}
           />
           <TextField
             fullWidth
             label="Birth Date"
-            name="birth_date"
+            name="dob"
             type="date"
-            value={formData.birth_date}
+            value={formData.dob}
             onChange={handleChange}
             margin="normal"
             required
-            InputLabelProps={{ shrink: true }}
+            InputLabelProps={{ shrink: true, style: { color: '#b0b3b8' } }}
+            InputProps={{
+                style: { color: 'white' },
+              }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '4px',
+                bgcolor: '#1c2833',
+                '& fieldset': { borderColor: 'transparent' },
+                '&:hover fieldset': { borderColor: 'transparent' },
+                '&.Mui-focused fieldset': { borderColor: 'transparent' },
+              },
+            }}
           />
           <TextField
             fullWidth
@@ -206,6 +310,21 @@ export default function SignupPage() {
             margin="normal"
             required
             autoComplete="new-password"
+            InputLabelProps={{
+              style: { color: '#b0b3b8' },
+            }}
+            InputProps={{
+              style: { color: 'white' },
+            }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '4px',
+                bgcolor: '#1c2833',
+                '& fieldset': { borderColor: 'transparent' },
+                '&:hover fieldset': { borderColor: 'transparent' },
+                '&.Mui-focused fieldset': { borderColor: 'transparent' },
+              },
+            }}
           />
           <TextField
             fullWidth
@@ -217,6 +336,21 @@ export default function SignupPage() {
             margin="normal"
             required
             autoComplete="new-password"
+            InputLabelProps={{
+              style: { color: '#b0b3b8' },
+            }}
+            InputProps={{
+              style: { color: 'white' },
+            }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '4px',
+                bgcolor: '#1c2833',
+                '& fieldset': { borderColor: 'transparent' },
+                '&:hover fieldset': { borderColor: 'transparent' },
+                '&.Mui-focused fieldset': { borderColor: 'transparent' },
+              },
+            }}
           />
 
           <Button
@@ -228,23 +362,47 @@ export default function SignupPage() {
               mt: 3,
               mb: 2,
               py: 1.5,
-              backgroundColor: '#AF3E3E',
+              bgcolor: '#00b0ff',
               '&:hover': {
-                backgroundColor: '#CD5656',
+                bgcolor: '#0091ea',
               },
+              borderRadius: '4px',
+              color: 'white',
             }}
           >
             {loading ? 'Creating Account...' : 'Sign up'}
           </Button>
 
-          <Box sx={{ textAlign: 'center' }}>
-            <Typography variant="body2" color="text.secondary">
+          <Button
+            fullWidth
+            variant="outlined"
+            onClick={() => window.location.href = process.env.REACT_APP_BACKEND_GOOGLE_AUTH_URL}
+            startIcon={<img src="https://img.icons8.com/color/16/000000/google-logo.png" alt="Google logo" style={{ width: 20, height: 20 }} />}
+            sx={{
+              mt: 1,
+              mb: 2,
+              py: 1.5,
+              color: 'black',
+              backgroundColor: 'white',
+              borderColor: '#3a3a3a',
+              borderRadius: '4px',
+              '&:hover': {
+                borderColor: '#555',
+                bgcolor: 'grey',
+              },
+            }}
+          >
+            Sign up with Google
+          </Button>
+
+          <Box sx={{ textAlign: 'center', mt: 2 }}>
+            <Typography variant="body2" sx={{ color: '#b0b3b8' }}>
               Already have an account?{' '}
               <Link
                 component="button"
                 variant="body2"
                 onClick={() => navigate('/login')}
-                sx={{ color: '#AF3E3E', fontWeight: 'bold' }}
+                sx={{ color: '#00b0ff', fontWeight: 'bold' }}
               >
                 Sign in
               </Link>

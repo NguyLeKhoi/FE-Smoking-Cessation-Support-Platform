@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import Banner3 from '../assets/banner3.jpg';
 import Banner5 from '../assets/banner5.jpg';
-import CustomCard from '../components/layout/CustomCard';
+import CustomCard from '../components/CustomCard';
 
 const Blog = () => {
     const articleTemplate = {

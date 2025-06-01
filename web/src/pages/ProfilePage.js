@@ -1,19 +1,18 @@
 import React from 'react';
 import { Button, Container, Typography, Box } from '@mui/material';
-import { logout } from '../services/authService';
 import { useNavigate } from 'react-router-dom';
 
-export default function ProfilePage() {
+export default function ProfilePage({ handleLogout }) {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
-    navigate('/');
+  const onLogoutClick = () => {
+    handleLogout();
+    navigate('/login');
   };
 
   return (
     <Container maxWidth="sm">
-      <Box 
+      <Box
         sx={{
           mt: 8,
           display: 'flex',
@@ -21,26 +20,28 @@ export default function ProfilePage() {
           alignItems: 'center',
           p: 4,
           borderRadius: 2,
-          boxShadow: '0 0 10px rgba(0,0,0,0.1)',
-          backgroundColor: '#EAEBD0'
+          bgcolor: '#2c3e50',
+          color: 'white',
         }}
       >
-        <Typography variant="h4" component="h1" gutterBottom sx={{ color: '#AF3E3E' }}>
+        <Typography variant="h4" component="h1" gutterBottom sx={{ color: 'white', fontWeight: 'bold' }}>
           Profile Page
         </Typography>
-        <Typography variant="body1" color="text.secondary" gutterBottom>
+        <Typography variant="body1" gutterBottom sx={{ color: '#b0b3b8' }}>
           Welcome to your profile.
         </Typography>
         <Button
           variant="contained"
-          onClick={handleLogout}
+          onClick={onLogoutClick}
           sx={{
             mt: 3,
             py: 1.5,
-            backgroundColor: '#AF3E3E',
+            bgcolor: '#00b0ff',
             '&:hover': {
-              backgroundColor: '#CD5656',
+              bgcolor: '#0091ea',
             },
+            borderRadius: '4px',
+            color: 'white',
           }}
         >
           Log Out

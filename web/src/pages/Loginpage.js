@@ -7,7 +7,7 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
-    password: ''
+    password: '',
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -23,7 +23,7 @@ export default function LoginPage() {
     // console.log('Form data changing:', e.target.name, e.target.value);
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -66,7 +66,7 @@ export default function LoginPage() {
 
   return (
     <Container maxWidth="sm">
-      <Box 
+      <Box
         sx={{
           mt: 8,
           display: 'flex',
@@ -74,18 +74,16 @@ export default function LoginPage() {
           alignItems: 'center',
           p: 4,
           borderRadius: 2,
-          boxShadow: '0 0 10px rgba(0,0,0,0.1)',
-          // Add semi-transparent background and backdrop filter for blur
-          backgroundColor: 'rgba(255, 255, 255, 0.2)', // Semi-transparent white
-          backdropFilter: 'blur(5px)', // Apply a blur effect
-          WebkitBackdropFilter: 'blur(5px)', // For Safari support
+          // boxShadow: '0 0 10px rgba(0,0,0,0.1)', // Remove light shadow
+          bgcolor: '#2c3e50', // Darker background for the form container
+          color: 'white', // White text color
         }}
       >
-        <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold', color: '#AF3E3E' }}> {/* Use dark red for title */}
-          Welcome Back
+        <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold', color: 'white' }}> {/* White title */}
+          Sign in
         </Typography>
-        <Typography variant="body1" color="text.secondary" gutterBottom>
-          Sign in to continue
+        <Typography variant="body1" gutterBottom sx={{ color: '#b0b3b8' }}> {/* Light grey subtitle */}
+          Welcome to Quitify!
         </Typography>
 
         {error && (
@@ -97,14 +95,29 @@ export default function LoginPage() {
         <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%', mt: 2 }}>
           <TextField
             fullWidth
-            label="Email"
+            label="Email or username"
             name="email"
-            type="email"
+            type="text"
             value={formData.email}
             onChange={handleChange}
             margin="normal"
             required
             autoComplete="email"
+            InputLabelProps={{
+              style: { color: '#b0b3b8' }, // Light grey label
+            }}
+            InputProps={{
+              style: { color: 'white' }, // White input text
+            }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '4px', // Slight rounding
+                bgcolor: '#1c2833', // Even darker background for input
+                '& fieldset': { borderColor: 'transparent' }, // Hide border
+                '&:hover fieldset': { borderColor: 'transparent' }, // Hide border on hover
+                '&.Mui-focused fieldset': { borderColor: 'transparent' }, // Hide border when focused
+              },
+            }}
           />
           <TextField
             fullWidth
@@ -116,7 +129,29 @@ export default function LoginPage() {
             margin="normal"
             required
             autoComplete="current-password"
+            InputLabelProps={{
+              style: { color: '#b0b3b8' }, // Light grey label
+            }}
+            InputProps={{
+              style: { color: 'white' }, // White input text
+            }}
+             sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '4px', // Slight rounding
+                bgcolor: '#1c2833', // Even darker background for input
+                '& fieldset': { borderColor: 'transparent' }, // Hide border
+                '&:hover fieldset': { borderColor: 'transparent' }, // Hide border on hover
+                '&.Mui-focused fieldset': { borderColor: 'transparent' }, // Hide border when focused
+              },
+            }}
           />
+
+          {/* Forgot password link */}
+          <Box sx={{ textAlign: 'right', mt: 1 }}>
+            <Link href="#" variant="body2" sx={{ color: '#00b0ff' }}> {/* Blue color for link */}
+              Forgot password?
+            </Link>
+          </Box>
 
           <Button
             type="submit"
@@ -127,23 +162,57 @@ export default function LoginPage() {
               mt: 3,
               mb: 2,
               py: 1.5,
-              backgroundColor: '#AF3E3E', // Use dark red for button
+              bgcolor: '#00b0ff', // Vibrant blue button
               '&:hover': {
-                backgroundColor: '#CD5656', // Use medium red for hover
+                bgcolor: '#0091ea', // Slightly darker blue on hover
               },
+              borderRadius: '4px', // Slight rounding
+              color: 'white', // White text
             }}
           >
             {loading ? 'Signing in...' : 'Sign in'}
           </Button>
 
-          <Box sx={{ textAlign: 'center' }}>
-            <Typography variant="body2" color="text.secondary">
+          {/* Divider */}
+          <Box sx={{ display: 'flex', alignItems: 'center', my: 3 }}>
+            <Box sx={{ flexGrow: 1, height: '1px', bgcolor: '#3a3a3a' }} />
+            <Typography variant="body2" sx={{ mx: 2, color: '#b0b3b8' }}>OR</Typography>
+            <Box sx={{ flexGrow: 1, height: '1px', bgcolor: '#3a3a3a' }} />
+          </Box>
+
+          {/* Social Login Buttons (placeholders) */}
+
+          <Button
+            fullWidth
+            variant="outlined"
+            onClick={() => window.location.href = process.env.REACT_APP_BACKEND_GOOGLE_AUTH_URL}
+            startIcon={<img src="https://img.icons8.com/color/16/000000/google-logo.png" alt="Google logo" style={{ width: 20, height: 20 }} />}
+            sx={{
+              mt: 1,
+              mb: 2,
+              py: 1.5,
+              color: 'black', // White text
+              backgroundColor: 'white',
+              borderColor: '#3a3a3a', // Dark border
+              borderRadius: '4px', // Slight rounding
+              '&:hover': {
+                borderColor: '#555', // Slightly lighter border on hover
+                bgcolor: 'grey', // Dark background on hover
+              },
+            }}
+          >
+            Sign in with Google
+          </Button>
+
+          {/* Signup link */}
+          <Box sx={{ textAlign: 'center', mt: 2 }}>
+            <Typography variant="body2" sx={{ color: '#b0b3b8' }}>
               Don't have an account?{' '}
               <Link
                 component="button"
                 variant="body2"
                 onClick={() => navigate('/signup')}
-                sx={{ color: '#AF3E3E', fontWeight: 'bold' }} // Use dark red for link
+                sx={{ color: '#00b0ff', fontWeight: 'bold' }} // Blue link
               >
                 Sign up
               </Link>

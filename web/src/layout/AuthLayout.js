@@ -1,6 +1,5 @@
 import React from 'react';
 import { Box } from '@mui/material';
-import AuthBackground from '../assets/auth_background.jpg'; // Import the image
 
 export default function AuthLayout({ children }) {
   return (
@@ -10,12 +9,9 @@ export default function AuthLayout({ children }) {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        // Use the imported image variable in the url()
-        backgroundImage: `url(${AuthBackground})`, // <--- Use the imported variable
-        backgroundSize: 'cover', // Cover the entire box
-        backgroundPosition: 'center', // Center the image
-        // Consider adding a background color as a fallback if the image fails to load
-        // backgroundColor: '#f5f5f5',
+        bgcolor: '#202A33', // Changed background color
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
         py: 4,
       }}
     >

@@ -23,7 +23,7 @@ export const signup = async (userData) => {
     return response.data;
   } catch (error) {
     if (error.response) {
-      throw new Error(error.response.data.message || 'Signup failed');
+      throw error;
     }
     throw new Error('Network error');
   }
@@ -44,9 +44,19 @@ export const refreshToken = async () => {
   }
 };
 
-export const logout = () => {
+export const logout = async () => {
+  try {
+    // Call the backend logout API
+    await api.post('/auth/logout');
+    console.log('Backend logout successful.');
+  } catch (error) {
+    console.error('Error calling backend logout API:', error);
+    // Continue with frontend logout even if backend call fails
+    // This might happen if the token is already invalid
+  }
+  // Clear frontend tokens regardless of backend call success
   localStorage.removeItem('accessToken');
-  localStorage.removeItem('refreshToken');
+  console.log('Frontend tokens cleared.');
 };
 
 export const isAuthenticated = () => {
