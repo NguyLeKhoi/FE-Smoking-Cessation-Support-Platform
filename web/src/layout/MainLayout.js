@@ -1,11 +1,21 @@
-import Header from '../components/layout/Header';
-import Footer from '../components/layout/Footer';
+import React, { useState } from 'react';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+import Chatbox from '../components/Chatbox';
+import { Box, IconButton } from '@mui/material';
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 
 const MainLayout = ({ children, showHeader = true, showFooter = true }) => {
+  const [isChatboxOpen, setIsChatboxOpen] = useState(false);
+
+  const toggleChatbox = () => {
+    setIsChatboxOpen(!isChatboxOpen);
+  };
+
   return (
-    <div>
+    <Box sx={{ position: 'relative', minHeight: '100vh' }}> {/* Ensure relative positioning for fixed children */}
       {showHeader && (
-        <div style={{
+        <Box style={{
           position: 'fixed',
           top: 0,
           left: 0,
@@ -16,11 +26,36 @@ const MainLayout = ({ children, showHeader = true, showFooter = true }) => {
           WebkitBackdropFilter: 'blur(5px)', // For Safari support
         }}>
           <Header />
-        </div>
+        </Box>
       )}
-      <main style={{ paddingTop: showHeader ? '64px' : 0 }}>{children}</main>
+      <main style={{ paddingTop: showHeader ? '64px' : 0 }}>
+        {children}
+      </main>
+      
+      {/* Chat button positioned fixed at bottom right */}
+      {!isChatboxOpen && (
+        <IconButton
+          aria-label="open chat"
+          onClick={toggleChatbox}
+          sx={{
+            position: 'fixed',
+            bottom: 20,
+            right: 20, // Keep it at right: 20 when chatbox is closed
+            zIndex: 1200, // Ensure button is above chatbox
+            bgcolor: '#0095f6', // Instagram blue
+            color: 'white',
+            '&:hover': { bgcolor: '#007ac1' },
+            transition: 'right 0.3s ease-in-out', // Smooth transition for position change
+          }}
+        >
+          <ChatBubbleOutlineIcon />
+        </IconButton>
+      )}
+
+      {isChatboxOpen && <Chatbox onClose={toggleChatbox} />}
+
       {showFooter && <Footer />}
-    </div>
+    </Box>
   );
 };
 

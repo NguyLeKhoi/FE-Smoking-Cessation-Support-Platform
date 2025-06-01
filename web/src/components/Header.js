@@ -3,7 +3,7 @@ import { AppBar, Toolbar, Typography, Button, IconButton, Box} from '@mui/materi
 import { useNavigate, Link as RouterLink, useLocation } from 'react-router-dom';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import { isAuthenticated } from '../../services/authService';
+import { isAuthenticated } from '../services/authService';
 
 const Header = () => {
   const navigate = useNavigate();
