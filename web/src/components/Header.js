@@ -80,9 +80,12 @@ const Header = ({ authStatus }) => {
             sx={{
               color: '#000000',
               fontWeight: 800,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1  
             }}
           >
-            Zerotine
+            Zerotine <img src="/smile-face.png" alt="Smiling face" style={{ width: '30px', height: 'auto' }} />
           </Typography>
         </Box>
         <Box sx={{ flexGrow: 1 }} />

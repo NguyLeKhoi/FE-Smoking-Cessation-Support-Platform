@@ -1,37 +1,120 @@
 import React from 'react';
 import { Container, Box, Typography, Grid } from '@mui/material';
+import homepageImage from '../assets/homepage.jpg';
 
 export default function HomePage() {
   return (
     <Box sx={{ bgcolor: 'background.paper' }}>
       {/* Hero Section */}
-      <Box sx={{ bgcolor: 'background.paper', py: { xs: 8, md: 12 }, px: 2 }}>
+      <Box sx={{
+        bgcolor: 'background.paper',
+        py: { xs: 8, md: 12 },
+        px: 2,
+        minHeight: '80vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
         <Container maxWidth="lg">
-          <Grid container alignItems="center" spacing={4}>
+          <Grid container alignItems="center" justifyContent="center" spacing={4}>
             <Grid item xs={12} md={6}>
-              <Typography variant="h3" gutterBottom sx={{ lineHeight: 1.1 }}>
-                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
-                  <Box>
-                    Quit smoking now.<br />Claiming your health.
-                  </Box>
-                  <img src="/smile-face.png" alt="Smiling face" style={{ width: '100px', height: 'auto' }} />
+              <Box sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                mb: 4,
+                alignItems: { xs: 'center', md: 'flex-start' },
+                textAlign: { xs: 'center', md: 'left' }
+              }}>
+                <Typography variant="h2" gutterBottom sx={{
+                  lineHeight: 1.1,
+                  fontWeight: 400,
+                  color: 'text.primary',
+                  fontSize: { xs: '2.5rem', md: '4rem' },
+                  mb: 2
+                }}>
+                  Quit smoking now
+                </Typography>
+                <Box sx={{ display: 'flex', justifyContent: { xs: 'center', md: 'flex-start' }, mb: 2 }}>
                 </Box>
+              </Box>
+
+              <Typography variant="h6" sx={{
+                color: 'text.primary',
+                lineHeight: 1.6,
+                mb: 4,
+                fontSize: { xs: '1rem', md: '1.25rem' },
+                maxWidth: '500px',
+                textAlign: { xs: 'center', md: 'center' },
+                mx: { xs: 'auto', md: 0 }
+              }}>
+                Zerotine's virtual clinic offers personalized substance use care for members wanting to cut back, stop or otherwise manage their tobacco use.
               </Typography>
 
+              <Box sx={{
+                mt: 4,
+                display: 'flex',
+                justifyContent: { xs: 'center', md: 'center' },
+                width: '100%'
+              }}>
+                <Box sx={{
+                  bgcolor: 'primary.main',
+                  color: 'white',
+                  px: 4,
+                  py: 2,
+                  borderRadius: 1,
+                  display: 'inline-block',
+                  fontSize: '1.1rem',
+                  fontWeight: 500,
+                  cursor: 'pointer',
+                  '&:hover': {
+                    bgcolor: 'primary.dark'
+                  }
+                }}>
+                  Get started
+                </Box>
+              </Box>
             </Grid>
-            <Grid item xs={12} md={6} sx={{ display: 'flex', justifyContent: 'center' }}>
-              {/* Placeholder for mobile screens image */}
-              <Box
-                sx={{
-                  width: { xs: '100%', md: 420 },
-                  height: { xs: 220, md: 340 },
-                  background: 'url(https://placehold.co/420x340?text=App+Screens)',
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  borderRadius: 4,
-                  boxShadow: 3,
-                }}
-              />
+
+            <Grid item xs={12} md={6} sx={{ display: 'flex', justifyContent: 'center', position: 'relative' }}>
+              <Box sx={{ position: 'relative', width: '100%', maxWidth: 500, height: 400 }}>
+                {/* Circular background elements */}
+                <Box sx={{
+                  position: 'absolute',
+                  top: 0,
+                  right: 0,
+                  width: 300,
+                  height: 300,
+                  bgcolor: 'rgba(255,255,255,0.3)',
+                  borderRadius: '50%',
+                  zIndex: 1
+                }} />
+                <Box sx={{
+                  position: 'absolute',
+                  top: 50,
+                  right: 50,
+                  width: 200,
+                  height: 200,
+                  bgcolor: 'rgba(255,255,255,0.5)',
+                  borderRadius: '50%',
+                  zIndex: 2
+                }} />
+
+                {/* Main image */}
+                <Box
+                  sx={{
+                    position: 'relative',
+                    bottom: 30,
+                    left: 70,
+                    width: 500,
+                    height: 500,
+                    background: `url(${homepageImage})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    borderRadius: 2,
+                    zIndex: 3,
+                  }}
+                />
+              </Box>
             </Grid>
           </Grid>
         </Container>
@@ -99,12 +182,12 @@ export default function HomePage() {
       </Box>
 
       {/* Health Section */}
-      <Box sx={{ bgcolor: '#EAEBD0', py: { xs: 8, md: 10 } }}>
+      <Box sx={{ bgcolor: 'section.main', py: { xs: 8, md: 10 } }}>
         <Container maxWidth="md">
-          <Typography variant="h3" fontWeight={700} align="center" color="white">
+          <Typography variant="h3" align="center" gutterBottom>
             Recover your health
           </Typography>
-          <Typography variant="h6" align="center" color="white" sx={{ mb: 4 }}>
+          <Typography variant="h6" align="center" sx={{ mb: 4 }}>
             Celebrate your accomplishment and all it brings
           </Typography>
           <Box sx={{ display: 'flex', justifyContent: 'center', gap: 4, flexWrap: 'wrap' }}>

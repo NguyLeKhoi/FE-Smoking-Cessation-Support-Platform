@@ -29,7 +29,7 @@ const theme = createTheme({
         },
         section: {
             light: '#ffffff',
-            main: '#EAEBD0',
+            main: '#fbd4bf',
             dark: '#dfdfc0',
         },
     },
