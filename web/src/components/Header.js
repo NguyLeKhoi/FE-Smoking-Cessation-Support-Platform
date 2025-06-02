@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppBar, Toolbar, Typography, Button, IconButton, Box} from '@mui/material';
+import { AppBar, Toolbar, Typography, Button, IconButton, Box } from '@mui/material';
 import { useNavigate, Link as RouterLink, useLocation } from 'react-router-dom';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 
@@ -9,7 +9,7 @@ const Header = ({ authStatus }) => {
 
   return (
     <AppBar position="static" sx={{
-      bgcolor: '#2c3e50', // Dark background color
+      bgcolor: '#ffffff', // Dark background color
       boxShadow: 'none',
       borderBottom: '1px solid #3a3a3a' // Darker border color
     }}>
@@ -21,7 +21,7 @@ const Header = ({ authStatus }) => {
           sx={{
             fontWeight: 600,
             fontSize: '3rem',
-            color: '#FFDB58', // Change to Mustard Yellow color for logo
+            color: '#3f332b', // Change to Mustard Yellow color for logo
             textDecoration: 'none',
             '&:hover': {
               opacity: 0.8
@@ -36,7 +36,7 @@ const Header = ({ authStatus }) => {
           to="/"
           sx={{
             ml: 3,
-            color: 'white', // Change back to white text color
+            color: '#000000', // Change back to white text color
             textDecoration: location.pathname === '/' ? 'underline' : 'none',
             textDecorationColor: 'white', // Change back to white underline
             '&:hover': {
@@ -56,7 +56,7 @@ const Header = ({ authStatus }) => {
           to="/blog"
           sx={{
             ml: 3,
-            color: 'white', // Change back to white text color
+            color: '#000000', // Change back to white text color
             textDecoration: location.pathname === '/blog' ? 'underline' : 'none',
             textDecorationColor: 'white', // Change back to white underline
             '&:hover': {
@@ -78,11 +78,11 @@ const Header = ({ authStatus }) => {
           <Typography
             variant="h4"
             sx={{
-              color: '#FFDB58',
+              color: '#000000',
               fontWeight: 800,
             }}
           >
-            Quitify
+            Zerotine
           </Typography>
         </Box>
         <Box sx={{ flexGrow: 1 }} />
@@ -106,7 +106,7 @@ const Header = ({ authStatus }) => {
                 color: 'white', // Keep white text on button
               }}
             >
-             Sign in
+              Sign in
             </Button>
           )}
         </Box>

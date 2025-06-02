@@ -3,13 +3,13 @@ import { Container, Box, Typography, Grid } from '@mui/material';
 
 export default function HomePage() {
   return (
-    <Box sx={{ bgcolor: '#202A33' }}>
+    <Box sx={{ bgcolor: 'background.paper' }}>
       {/* Hero Section */}
-      <Box sx={{ bgcolor: '#202A33', py: { xs: 8, md: 12 }, px: 2 }}>
+      <Box sx={{ bgcolor: 'background.paper', py: { xs: 8, md: 12 }, px: 2 }}>
         <Container maxWidth="lg">
           <Grid container alignItems="center" spacing={4}>
             <Grid item xs={12} md={6}>
-              <Typography variant="h3" fontWeight={700} color="white" gutterBottom sx={{ lineHeight: 1.1 }}>
+              <Typography variant="h3" gutterBottom sx={{ lineHeight: 1.1 }}>
                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
                   <Box>
                     Quit smoking now.<br />Claiming your health.
@@ -17,7 +17,7 @@ export default function HomePage() {
                   <img src="/smile-face.png" alt="Smiling face" style={{ width: '100px', height: 'auto' }} />
                 </Box>
               </Typography>
-          
+
             </Grid>
             <Grid item xs={12} md={6} sx={{ display: 'flex', justifyContent: 'center' }}>
               {/* Placeholder for mobile screens image */}
@@ -38,12 +38,12 @@ export default function HomePage() {
       </Box>
 
       {/* Share the journey Section */}
-      <Box sx={{ bgcolor: '#202A33', py: { xs: 8, md: 10 } }}>
+      <Box sx={{ bgcolor: 'section.main', py: { xs: 8, md: 10 } }}>
         <Container maxWidth="md">
-          <Typography variant="h3" fontWeight={700} align="center" gutterBottom color="white">
+          <Typography variant="h3" align="center" gutterBottom>
             Share the journey
           </Typography>
-          <Typography variant="h6" align="center" color="white" sx={{ mb: 4 }}>
+          <Typography variant="h6" align="center" sx={{ mb: 4 }}>
             Quitting smoking is easier with buddies who share your experiences
           </Typography>
           <Box sx={{ display: 'flex', justifyContent: 'center' }}>
@@ -63,12 +63,12 @@ export default function HomePage() {
       </Box>
 
       {/* Achievements Section */}
-      <Box sx={{ bgcolor: '#202A33', py: { xs: 8, md: 10 }, px: 2 }}>
+      <Box sx={{ bgcolor: 'background.paper', py: { xs: 8, md: 10 }, px: 2 }}>
         <Container maxWidth="md">
-          <Typography variant="h3" fontWeight={700} align="center" color="white" gutterBottom>
+          <Typography variant="h3" align="center" gutterBottom>
             Small achievements, big goals
           </Typography>
-          <Typography variant="h6" align="center" color="white" sx={{ mb: 4 }}>
+          <Typography variant="h6" align="center" sx={{ mb: 4 }}>
             With every step, your task of quitting smoking gets closer
           </Typography>
           <Box sx={{ display: 'flex', justifyContent: 'center', gap: 4, flexWrap: 'wrap' }}>
@@ -99,7 +99,7 @@ export default function HomePage() {
       </Box>
 
       {/* Health Section */}
-      <Box sx={{ bgcolor: '#202A33', py: { xs: 8, md: 10 } }}>
+      <Box sx={{ bgcolor: '#EAEBD0', py: { xs: 8, md: 10 } }}>
         <Container maxWidth="md">
           <Typography variant="h3" fontWeight={700} align="center" color="white">
             Recover your health
