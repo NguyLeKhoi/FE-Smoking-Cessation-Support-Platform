@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Container, TextField, Button, Typography, Box, Alert, Link } from '@mui/material';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { resetPassword } from '../services/authService'; // Uncommented
 
 export default function ResetPasswordPage() {
   const navigate = useNavigate();
-  const { token } = useParams(); // Get token from URL
+  const location = useLocation(); // Use useLocation to get the location object
+  const queryParams = new URLSearchParams(location.search); // Get query parameters
+  const token = queryParams.get('token'); // Get token from query parameters
   const [formData, setFormData] = useState({
     password: '',
     confirmPassword: '',
