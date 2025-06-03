@@ -148,7 +148,7 @@ export default function LoginPage() {
 
           {/* Forgot password link */}
           <Box sx={{ textAlign: 'right', mt: 1 }}>
-            <Link href="#" variant="body2" sx={{ color: '#00b0ff' }}> {/* Blue color for link */}
+            <Link component="button" variant="body2" onClick={() => navigate('/forgot-password')} sx={{ color: '#00b0ff' }}> {/* Blue color for link */}
               Forgot password?
             </Link>
           </Box>
@@ -161,13 +161,21 @@ export default function LoginPage() {
             sx={{
               mt: 3,
               mb: 2,
-              py: 1.5,
-              bgcolor: '#00b0ff', // Vibrant blue button
+              bgcolor: '#00b0ff', // Vibrant blue background
+              color: 'white', // White text color
+              borderRadius: '8px', // More rounded corners
+              px: 3,
+              py: 1.5, // Keep this one for vertical padding
+              boxShadow: '0 4px 0 #007ac1', // Custom box shadow for 3D effect
               '&:hover': {
                 bgcolor: '#0091ea', // Slightly darker blue on hover
+                boxShadow: '0 2px 0 #007ac1', // Adjust shadow on hover
+                transform: 'translateY(2px)', // Move button down slightly on hover
               },
-              borderRadius: '4px', // Slight rounding
-              color: 'white', // White text
+              '&:active': {
+                boxShadow: '0 0 0 #007ac1', // Remove shadow when pressed
+                transform: 'translateY(4px)', // Move button down further when pressed
+              },
             }}
           >
             {loading ? 'Signing in...' : 'Sign in'}
@@ -190,14 +198,22 @@ export default function LoginPage() {
             sx={{
               mt: 1,
               mb: 2,
-              py: 1.5,
-              color: 'black', // White text
-              backgroundColor: 'white',
+              color: 'black', // Black text
+              backgroundColor: 'white', // White background
               borderColor: '#3a3a3a', // Dark border
-              borderRadius: '4px', // Slight rounding
+              borderRadius: '8px', // More rounded corners
+              px: 3,
+              py: 1.5, // Keep this one for vertical padding
+              boxShadow: '0 4px 0 #212121', // Custom box shadow for 3D effect (dark grey)
               '&:hover': {
                 borderColor: '#555', // Slightly lighter border on hover
-                bgcolor: 'grey', // Dark background on hover
+                bgcolor: '#f0f0f0', // Light grey background on hover
+                boxShadow: '0 2px 0 #212121', // Adjust shadow on hover
+                transform: 'translateY(2px)', // Move button down slightly on hover
+              },
+              '&:active': {
+                boxShadow: '0 0 0 #212121', // Remove shadow when pressed
+                transform: 'translateY(4px)', // Move button down further when pressed
               },
             }}
           >

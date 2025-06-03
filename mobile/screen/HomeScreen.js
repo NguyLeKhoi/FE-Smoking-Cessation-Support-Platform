@@ -15,17 +15,17 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#EAEBD0',
+    backgroundColor: '#2c3e50',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 10,
-    color: '#000000',
+    color: 'white',
   },
   subtitle: {
     fontSize: 16,
-    color: '#DA6C6C',
+    color: '#b0b3b8',
   },
 });
 

@@ -31,9 +31,9 @@ const TabNavigator = () => {
 
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: '#CD5656',
-        tabBarInactiveTintColor: '#DA6C6C',
-        tabBarStyle: { backgroundColor: '#EAEBD0', borderTopWidth: 0, elevation: 0 },
+        tabBarActiveTintColor: '#00b0ff',
+        tabBarInactiveTintColor: '#b0b3b8',
+        tabBarStyle: { backgroundColor: '#1c2833', borderTopWidth: 0, elevation: 0 },
         headerShown: false,
       })}
     >
@@ -49,23 +49,29 @@ const DrawerNavigator = () => {
       initialRouteName="TabNavigator"
       screenOptions={{
         headerStyle: {
-          backgroundColor: '#EAEBD0',
+          backgroundColor: '#2c3e50',
         },
-        headerTintColor: '#CD5656',
+        headerTintColor: 'white',
         headerTitleStyle: {
           fontWeight: 'bold',
+          color: 'white',
         },
         drawerStyle: {
-          backgroundColor: '#EAEBD0',
+          backgroundColor: '#2c3e50',
           width: 240,
+        },
+        drawerInactiveTintColor: '#b0b3b8',
+        drawerActiveTintColor: '#00b0ff',
+        drawerLabelStyle: {
+          color: 'white',
         },
       }}
     >
-      <Drawer.Screen 
-        name="TabNavigator" 
+      <Drawer.Screen
+        name="TabNavigator"
         component={TabNavigator}
         options={{
-          title: 'Smoking cessation',
+          title: 'Quitify',
           drawerLabel: 'Main Menu',
         }}
       />
