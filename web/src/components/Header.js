@@ -71,8 +71,6 @@ const Header = ({ authStatus }) => {
               'img': {
                 transform: 'translateY(-5px)'
               },
-              // Apply hover background only if not active
-              bgcolor: !isActive('/') && '#3a475c',
             }
           }}
         >
@@ -93,8 +91,6 @@ const Header = ({ authStatus }) => {
               'img': {
                 transform: 'translateY(-5px)'
               },
-              // Apply hover background only if not active
-              bgcolor: !isActive('/blog') && '#3a475c',
             }
           }}
         >

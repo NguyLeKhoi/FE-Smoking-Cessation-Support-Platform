@@ -3,6 +3,7 @@ import { Container, Box, Typography, Grid } from '@mui/material';
 import homepageImage from '../assets/homepage.jpg';
 import Lottie from 'lottie-react';
 import quitSignAnimation from '../assets/animations/quit-sign.json';
+import QuotesCarousel from '../components/QuotesCarousel';
 
 export default function HomePage() {
   return (
@@ -10,9 +11,9 @@ export default function HomePage() {
       {/* Hero Section */}
       <Box sx={{
         bgcolor: 'background.paper',
-        py: { xs: 8, md: 12 },
+        py: { xs: 8, md: 8 },
         px: 2,
-        minHeight: '80vh',
+        minHeight: '100vh',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center'
@@ -29,7 +30,7 @@ export default function HomePage() {
               }}>
                 <Typography variant="h2" gutterBottom sx={{
                   lineHeight: 1.1,
-                  fontWeight: 400,
+                  fontWeight: 500,
                   color: 'text.primary',
                   fontSize: { xs: '2.5rem', md: '4rem' },
                   mb: 2
@@ -63,7 +64,7 @@ export default function HomePage() {
                   color: 'white',
                   px: 4,
                   py: 2,
-                  borderRadius: 1,
+                  borderRadius: 4,
                   display: 'inline-block',
                   fontSize: '1.1rem',
                   fontWeight: 500,
@@ -105,8 +106,8 @@ export default function HomePage() {
                       alignItems: 'center',
                       justifyContent: 'center',
                       overflow: 'hidden',
-                      bgcolor: 'transparent', 
-                      position: 'relative' 
+                      bgcolor: 'transparent',
+                      position: 'relative'
                     }}
                   >
                     <Lottie
@@ -130,6 +131,9 @@ export default function HomePage() {
           </Grid>
         </Container>
       </Box>
+
+      {/* Quotes Carousel Section */}
+      <QuotesCarousel />
 
       {/* Share the journey Section */}
       <Box sx={{ bgcolor: 'section.main', py: { xs: 8, md: 10 } }}>
@@ -155,7 +159,7 @@ export default function HomePage() {
                 position: 'relative' // Added position relative
               }}
             >
-             
+
             </Box>
           </Box>
         </Container>
