@@ -44,15 +44,16 @@ const Chatbox = ({ onClose }) => {
         position: 'fixed',
         bottom: 20,
         right: 20,
-        width: 400, // Increased width
-        height: 500, // Increased height
-        bgcolor: '#262626', 
+        width: 400,
+        height: 500,
+        bgcolor: '#262626',
         color: 'white',
-        borderRadius: 2, // Rounded corners
+        borderRadius: 2,
         boxShadow: 3,
         display: 'flex',
         flexDirection: 'column',
-        overflow: 'hidden', // Hide scrollbar on the main box
+        overflow: 'hidden',
+        zIndex: 9999,  // Add a high z-index to ensure it's on top
       }}
     >
       {/* Header */}
@@ -195,4 +196,4 @@ const Chatbox = ({ onClose }) => {
   );
 };
 
-export default Chatbox; 
+export default Chatbox;
