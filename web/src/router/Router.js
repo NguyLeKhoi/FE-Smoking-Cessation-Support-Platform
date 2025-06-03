@@ -10,6 +10,8 @@ import Blog from '../pages/Blog';
 import Signuppage from '../pages/SignupPage';
 import ProfilePage from '../pages/ProfilePage';
 import LoginSuccessPage from '../pages/LoginSuccessPage';
+import ForgotPasswordPage from '../pages/ForgotPasswordPage';
+import ResetPasswordPage from '../pages/ResetPasswordPage';
 
 export const routes = createBrowserRouter([
   {
@@ -60,6 +62,22 @@ export const routes = createBrowserRouter([
           <ProfilePage />
         </MainLayout>
       </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/forgot-password',
+    element: (
+      <AuthLayout>
+        <ForgotPasswordPage />
+      </AuthLayout>
+    ),
+  },
+  {
+    path: '/reset-password/:token',
+    element: (
+      <AuthLayout>
+        <ResetPasswordPage />
+      </AuthLayout>
     ),
   },
   {

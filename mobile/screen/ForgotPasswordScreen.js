@@ -40,7 +40,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
         <Text style={styles.buttonText}>{loading ? 'Sending...' : 'Send Reset Link'}</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.goBack()}>
-        <Text style={styles.backLink}>Back to Login</Text>
+        <Text style={styles.loginLink}>Back to Login</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -48,50 +48,62 @@ const ForgotPasswordScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
+    flex: 1,
+    backgroundColor: '#2c3e50',
     justifyContent: 'center',
-    padding: 24,
-    backgroundColor: '#EAEBD0',
+    paddingHorizontal: 20,
+  },
+  formContainer: {
+    padding: 40,
+    margin: 20,
+    borderRadius: 8,
+    backgroundColor: '#2c3e50',
   },
   title: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#000000',
-    marginBottom: 16,
+    color: 'white',
+    marginBottom: 10,
     textAlign: 'center',
   },
-   subtitle: {
+  subtitle: {
     fontSize: 16,
-    color: '#DA6C6C',
-    marginBottom: 24,
+    color: '#b0b3b8',
+    marginBottom: 30,
     textAlign: 'center',
   },
   input: {
-    backgroundColor: '#EAEBD0',
+    backgroundColor: '#1c2833',
     padding: 15,
-    borderRadius: 15,
+    borderRadius: 4,
     marginBottom: 15,
     fontSize: 16,
-    borderWidth: 1,
-    borderColor: '#DA6C6C',
+    color: 'white',
+    borderWidth: 0,
+    borderColor: 'transparent',
   },
   button: {
-    backgroundColor: '#CD5656',
+    backgroundColor: '#00b0ff',
     padding: 15,
-    borderRadius: 25,
+    borderRadius: 8,
     alignItems: 'center',
-    marginBottom: 20,
+    marginTop: 20,
+    shadowColor: '#007ac1',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 1,
+    shadowRadius: 0,
+    elevation: 5,
   },
   buttonText: {
-    color: '#AF3E3E',
+    color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
   },
-  backLink: {
-    color: '#CD5656',
+  loginLink: {
+    color: '#00b0ff',
     fontSize: 14,
     textAlign: 'center',
-    marginTop: 10,
+    marginTop: 20,
   },
 });
 

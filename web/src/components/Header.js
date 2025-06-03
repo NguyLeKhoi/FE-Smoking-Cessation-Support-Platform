@@ -7,6 +7,8 @@ const Header = ({ authStatus }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const isActive = (pathname) => location.pathname === pathname;
+
   return (
     <AppBar position="static" sx={{
       bgcolor: '#2c3e50', // Dark background color
@@ -36,18 +38,26 @@ const Header = ({ authStatus }) => {
           to="/"
           sx={{
             ml: 3,
-            color: 'white', // Change back to white text color
-            textDecoration: location.pathname === '/' ? 'underline' : 'none',
-            textDecorationColor: 'white', // Change back to white underline
+            textDecoration: 'none', // Remove underline
+            display: 'flex',
+            alignItems: 'center',
+            gap: 0.7,
+            px: 2, // Add padding
+            py: 1, // Add padding
+            borderRadius: '8px', // Add rounded corners
+            bgcolor: isActive('/') ? '#1c2833' : 'transparent', // Darker background if active
+            color: isActive('/') ? '#00b0ff' : 'white', // Blue text if active, white otherwise
             '&:hover': {
               opacity: 0.8,
-              'img': { // Apply hover effect to the image inside Typography
-                transform: 'translateY(-5px)' // Move image up on hover
-              }
+              'img': {
+                transform: 'translateY(-5px)'
+              },
+              // Apply hover background only if not active
+              bgcolor: !isActive('/') && '#3a475c',
             }
           }}
         >
-          <img src="icon/icons8-home-64.png" alt="Home Icon" style={{ width: '40px', height: '40px', verticalAlign: 'middle', transition: 'transform 0.3s ease-in-out' }} /> {/* Add custom Home Icon */}
+          <img src="icon/icons8-home-64.png" alt="Home Icon" style={{ width: '40px', height: '40px', verticalAlign: 'middle', transition: 'transform 0.3s ease-in-out' }} />
           Home
         </Typography>
         <Typography
@@ -56,21 +66,26 @@ const Header = ({ authStatus }) => {
           to="/blog"
           sx={{
             ml: 3,
-            color: 'white', // Change back to white text color
-            textDecoration: location.pathname === '/blog' ? 'underline' : 'none',
-            textDecorationColor: 'white', // Change back to white underline
+            textDecoration: 'none', // Remove underline
+            display: 'flex',
+            alignItems: 'center',
+            gap: 0.7,
+            px: 2, // Add padding
+            py: 1, // Add padding
+            borderRadius: '8px', // Add rounded corners
+            bgcolor: isActive('/blog') ? '#1c2833' : 'transparent', // Darker background if active
+            color: isActive('/blog') ? '#00b0ff' : 'white', // Blue text if active, white otherwise
             '&:hover': {
               opacity: 0.8,
-              'img': { // Apply hover effect to the image inside Typography
-                transform: 'translateY(-5px)' // Move image up on hover
-              }
-            },
-            display: 'flex', // Use flexbox to align icon and text
-            alignItems: 'center', // Vertically align items
-            gap: 0.7 // Add a small gap between icon and text
+              'img': {
+                transform: 'translateY(-5px)'
+              },
+              // Apply hover background only if not active
+              bgcolor: !isActive('/blog') && '#3a475c',
+            }
           }}
         >
-          <img src="icon/icons8-newspaper-64.png" alt="Blog Icon" style={{ width: '30px', height: '30px', verticalAlign: 'middle', transition: 'transform 0.3s ease-in-out' }} /> {/* Add custom Blog Icon */}
+          <img src="icon/icons8-newspaper-64.png" alt="Blog Icon" style={{ width: '30px', height: '30px', verticalAlign: 'middle', transition: 'transform 0.3s ease-in-out' }} />
           Blog
         </Typography>
         <Box sx={{ flexGrow: 1 }} />
@@ -96,14 +111,21 @@ const Header = ({ authStatus }) => {
               onClick={() => navigate('/login')}
               variant="contained"
               sx={{
-                bgcolor: '#00b0ff', // Keep blue button from login
-                '&:hover': {
-                  bgcolor: '#0091ea', // Keep darker blue on hover
-                },
-                borderRadius: '4px',
+                bgcolor: '#00b0ff', // Vibrant blue background
+                color: 'white', // White text color
+                borderRadius: '8px', // More rounded corners
                 px: 3,
                 py: 1,
-                color: 'white', // Keep white text on button
+                boxShadow: '0 4px 0 #007ac1', // Custom box shadow for 3D effect
+                '&:hover': {
+                  bgcolor: '#0091ea', // Slightly darker blue on hover
+                  boxShadow: '0 2px 0 #007ac1', // Adjust shadow on hover
+                  transform: 'translateY(2px)', // Move button down slightly on hover
+                },
+                '&:active': {
+                  boxShadow: '0 0 0 #007ac1', // Remove shadow when pressed
+                  transform: 'translateY(4px)', // Move button down further when pressed
+                },
               }}
             >
              Sign in
