@@ -1,20 +1,45 @@
-import React from 'react';
-import { AppBar, Toolbar, Typography, Button, IconButton, Box} from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { AppBar, Toolbar, Typography, Button, IconButton, Box } from '@mui/material';
 import { useNavigate, Link as RouterLink, useLocation } from 'react-router-dom';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 
 const Header = ({ authStatus }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [scrolled, setScrolled] = useState(false);
+
+  // Add scroll event listener
+  useEffect(() => {
+    const handleScroll = () => {
+      // Add shadow when scrolled more than 10px
+      if (window.scrollY > 10) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    // Cleanup function
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   const isActive = (pathname) => location.pathname === pathname;
 
   return (
-    <AppBar position="static" sx={{
-      bgcolor: '#2c3e50', // Dark background color
-      boxShadow: 'none',
-      borderBottom: '1px solid #3a3a3a' // Darker border color
-    }}>
+    <AppBar
+      position="fixed"
+      sx={{
+        bgcolor: '#ffffff',
+        boxShadow: scrolled ? '0px 1px 8px -1px rgba(0,0,0,0.01), 0px 4px 5px 0px rgba(0,0,0,0.07), 0px 1px 10px 0px rgba(0,0,0,0.06)' : 'none',
+        transition: 'box-shadow 0.3s ease',
+        width: '100%',
+        zIndex: 1100
+      }}
+    >
       <Toolbar sx={{ minHeight: 80, display: 'flex', alignItems: 'center' }}>
         <Typography
           variant="h4"
@@ -23,7 +48,7 @@ const Header = ({ authStatus }) => {
           sx={{
             fontWeight: 600,
             fontSize: '3rem',
-            color: '#FFDB58', // Change to Mustard Yellow color for logo
+            color: '#3f332b', // Change to Mustard Yellow color for logo
             textDecoration: 'none',
             '&:hover': {
               opacity: 0.8
@@ -38,22 +63,14 @@ const Header = ({ authStatus }) => {
           to="/"
           sx={{
             ml: 3,
-            textDecoration: 'none', // Remove underline
-            display: 'flex',
-            alignItems: 'center',
-            gap: 0.7,
-            px: 2, // Add padding
-            py: 1, // Add padding
-            borderRadius: '8px', // Add rounded corners
-            bgcolor: isActive('/') ? '#1c2833' : 'transparent', // Darker background if active
-            color: isActive('/') ? '#00b0ff' : 'white', // Blue text if active, white otherwise
+            color: '#000000', // Change back to white text color
+            textDecoration: location.pathname === '/' ? 'underline' : 'none',
+            textDecorationColor: 'black', // Change back to white underline
             '&:hover': {
               opacity: 0.8,
               'img': {
                 transform: 'translateY(-5px)'
               },
-              // Apply hover background only if not active
-              bgcolor: !isActive('/') && '#3a475c',
             }
           }}
         >
@@ -66,22 +83,14 @@ const Header = ({ authStatus }) => {
           to="/blog"
           sx={{
             ml: 3,
-            textDecoration: 'none', // Remove underline
-            display: 'flex',
-            alignItems: 'center',
-            gap: 0.7,
-            px: 2, // Add padding
-            py: 1, // Add padding
-            borderRadius: '8px', // Add rounded corners
-            bgcolor: isActive('/blog') ? '#1c2833' : 'transparent', // Darker background if active
-            color: isActive('/blog') ? '#00b0ff' : 'white', // Blue text if active, white otherwise
+            color: '#000000', // Change back to white text color
+            textDecoration: location.pathname === '/blog' ? 'underline' : 'none',
+            textDecorationColor: 'white', // Change back to white underline
             '&:hover': {
               opacity: 0.8,
               'img': {
                 transform: 'translateY(-5px)'
               },
-              // Apply hover background only if not active
-              bgcolor: !isActive('/blog') && '#3a475c',
             }
           }}
         >
@@ -93,11 +102,14 @@ const Header = ({ authStatus }) => {
           <Typography
             variant="h4"
             sx={{
-              color: '#FFDB58',
+              color: '#000000',
               fontWeight: 800,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1
             }}
           >
-            Quitify
+            Zerotine <img src="/smile-face.png" alt="Smiling face" style={{ width: '30px', height: 'auto' }} />
           </Typography>
         </Box>
         <Box sx={{ flexGrow: 1 }} />
@@ -128,7 +140,7 @@ const Header = ({ authStatus }) => {
                 },
               }}
             >
-             Sign in
+              Sign in
             </Button>
           )}
         </Box>
