@@ -53,7 +53,7 @@ const Chatbox = ({ onClose }) => {
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
-        zIndex: 9999,  // Add a high z-index to ensure it's on top
+        zIndex: 9999,  
       }}
     >
       {/* Header */}

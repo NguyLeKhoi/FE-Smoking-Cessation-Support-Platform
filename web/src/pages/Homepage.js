@@ -13,7 +13,7 @@ export default function HomePage() {
         bgcolor: 'background.paper',
         py: { xs: 8, md: 8 },
         px: 2,
-        minHeight: '100vh',
+        minHeight: '90vh',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center'
