@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { AppBar, Toolbar, Typography, Button, IconButton, Box } from '@mui/material';
 import { useNavigate, Link as RouterLink, useLocation } from 'react-router-dom';
 import AccountCircle from '@mui/icons-material/AccountCircle';
+import { AnimatedUnderline } from './animated/AnimatedUnderline';
 
 const Header = ({ authStatus }) => {
   const navigate = useNavigate();
@@ -27,8 +28,6 @@ const Header = ({ authStatus }) => {
     };
   }, []);
 
-  const isActive = (pathname) => location.pathname === pathname;
-
   return (
     <AppBar
       position="fixed"
@@ -41,7 +40,6 @@ const Header = ({ authStatus }) => {
       }}
     >
       <Toolbar sx={{ minHeight: 80, display: 'flex', alignItems: 'center' }}>
-
         <Typography
           variant="h4"
           sx={{
@@ -57,46 +55,66 @@ const Header = ({ authStatus }) => {
 
         {/* Added spacer */}
         <Box sx={{ flexGrow: 0.5 }} />
-        <Typography
-          variant="h6"
-          component={RouterLink}
-          to="/"
-          sx={{
-            color: '#000000',
-            textDecoration: location.pathname === '/' ? 'underline' : 'none',
-            textDecorationColor: 'black',
-            '&:hover': {
-              opacity: 0.8,
-              'img': {
-                transform: 'translateY(-5px)'
-              },
-            }
-          }}
-        >
-          <img src="icon/icons8-home-64.png" alt="Home Icon" style={{ width: '40px', height: '40px', verticalAlign: 'middle', transition: 'transform 0.3s ease-in-out' }} />
-          Home
-        </Typography>
 
-        <Typography
-          variant="h6"
-          component={RouterLink}
-          to="/blog"
-          sx={{
-            ml: 3,
-            color: '#000000',
-            textDecoration: location.pathname === '/blog' ? 'underline' : 'none',
-            textDecorationColor: 'white',
-            '&:hover': {
-              opacity: 0.8,
-              'img': {
-                transform: 'translateY(-5px)'
-              },
-            }
-          }}
-        >
-          <img src="icon/icons8-newspaper-64.png" alt="Blog Icon" style={{ width: '30px', height: '30px', verticalAlign: 'middle', transition: 'transform 0.3s ease-in-out' }} />
-          Blog
-        </Typography>
+        {/* Home link with AnimatedUnderline */}
+        <Box component={RouterLink} to="/" sx={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
+          <AnimatedUnderline>
+            <Typography
+              variant="h6"
+              sx={{
+                color: '#000000',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+                '&:hover img': {
+                  transform: 'translateY(-5px)'
+                }
+              }}
+            >
+              <img
+                src="icon/icons8-home-64.png"
+                alt="Home Icon"
+                style={{
+                  width: '40px',
+                  height: '40px',
+                  verticalAlign: 'middle',
+                  transition: 'transform 0.3s ease-in-out'
+                }}
+              />
+              Home
+            </Typography>
+          </AnimatedUnderline>
+        </Box>
+
+        {/* Blog link with AnimatedUnderline */}
+        <Box component={RouterLink} to="/blog" sx={{ textDecoration: 'none', display: 'flex', alignItems: 'center', ml: 3 }}>
+          <AnimatedUnderline>
+            <Typography
+              variant="h6"
+              sx={{
+                color: '#000000',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+                '&:hover img': {
+                  transform: 'translateY(-5px)'
+                }
+              }}
+            >
+              <img
+                src="icon/icons8-newspaper-64.png"
+                alt="Blog Icon"
+                style={{
+                  width: '30px',
+                  height: '30px',
+                  verticalAlign: 'middle',
+                  transition: 'transform 0.3s ease-in-out'
+                }}
+              />
+              Blog
+            </Typography>
+          </AnimatedUnderline>
+        </Box>
 
         {/* Flexible space to push login to the right */}
         <Box sx={{ flexGrow: 1 }} />
