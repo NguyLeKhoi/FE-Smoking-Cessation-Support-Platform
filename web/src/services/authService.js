@@ -70,4 +70,28 @@ export const getCurrentUser = async () => {
   } catch (error) {
     throw new Error('Failed to get user data');
   }
+};
+
+export const forgotPassword = async (emailData) => {
+  try {
+    const response = await api.post('/auth/forgot-password', emailData);
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      throw error.response.data.message || 'Forgot password request failed';
+    }
+    throw new Error('Network error');
+  }
+};
+
+export const resetPassword = async (resetData) => {
+  try {
+    const response = await api.post('/auth/reset-password', resetData);
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      throw error.response.data.message || 'Password reset failed';
+    }
+    throw new Error('Network error');
+  }
 }; 

@@ -47,6 +47,7 @@ const SignUpScreen = ({ navigation }) => {
       <TextInput
         style={styles.input}
         placeholder="Username"
+        placeholderTextColor="white"
         value={form.username}
         onChangeText={text => handleChange('username', text)}
         autoCapitalize="none"
@@ -54,6 +55,7 @@ const SignUpScreen = ({ navigation }) => {
       <TextInput
         style={styles.input}
         placeholder="Email"
+        placeholderTextColor="white"
         value={form.email}
         onChangeText={text => handleChange('email', text)}
         keyboardType="email-address"
@@ -62,6 +64,7 @@ const SignUpScreen = ({ navigation }) => {
       <TextInput
         style={styles.input}
         placeholder="Password"
+        placeholderTextColor="white"
         value={form.password}
         onChangeText={text => handleChange('password', text)}
         secureTextEntry
@@ -69,18 +72,21 @@ const SignUpScreen = ({ navigation }) => {
       <TextInput
         style={styles.input}
         placeholder="First Name"
+        placeholderTextColor="white"
         value={form.first_name}
         onChangeText={text => handleChange('first_name', text)}
       />
       <TextInput
         style={styles.input}
         placeholder="Last Name"
+        placeholderTextColor="white"
         value={form.last_name}
         onChangeText={text => handleChange('last_name', text)}
       />
       <TextInput
         style={styles.input}
         placeholder="Birth Date (yyyy-mm-dd)"
+        placeholderTextColor="white"
         value={form.birth_date}
         onChangeText={text => handleChange('birth_date', text)}
         keyboardType="numbers-and-punctuation"
@@ -89,6 +95,7 @@ const SignUpScreen = ({ navigation }) => {
       <TextInput
         style={styles.input}
         placeholder="Phone Number"
+        placeholderTextColor="white"
         value={form.phone_number}
         onChangeText={text => handleChange('phone_number', text)}
         keyboardType="phone-pad"
@@ -108,41 +115,64 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: 'center',
     padding: 24,
-    backgroundColor: '#EAEBD0',
+    backgroundColor: '#2c3e50',
   },
   title: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#000000',
+    color: 'white',
     marginBottom: 24,
     textAlign: 'center',
   },
   input: {
-    backgroundColor: '#EAEBD0',
+    backgroundColor: '#1c2833',
     padding: 15,
-    borderRadius: 15,
+    borderRadius: 4,
     marginBottom: 15,
     fontSize: 16,
-    borderWidth: 1,
-    borderColor: '#DA6C6C',
+    color: 'white',
+    borderWidth: 0,
+    borderColor: 'transparent',
   },
   button: {
-    backgroundColor: '#CD5656',
+    backgroundColor: '#00b0ff',
     padding: 15,
-    borderRadius: 25,
+    borderRadius: 8,
     alignItems: 'center',
     marginBottom: 20,
+    shadowColor: '#007ac1',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 1,
+    shadowRadius: 0,
+    elevation: 5,
   },
   buttonText: {
-    color: '#AF3E3E',
+    color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
   },
   loginLink: {
-    color: '#CD5656',
+    color: '#00b0ff',
     fontSize: 14,
     textAlign: 'center',
     marginTop: 10,
+  },
+  googleButton: {
+    backgroundColor: 'white',
+    padding: 15,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginBottom: 20,
+    shadowColor: '#212121',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 1,
+    shadowRadius: 0,
+    elevation: 5,
+  },
+  googleButtonText: {
+    color: 'black',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 

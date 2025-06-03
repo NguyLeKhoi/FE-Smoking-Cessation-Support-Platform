@@ -41,13 +41,14 @@ const LoginScreen = ({ navigation }) => {
       style={styles.container}
     >
       <View style={styles.formContainer}>
-        <Text style={styles.title}>Welcome Back</Text>
-        <Text style={styles.subtitle}>Sign in to continue</Text>
+        <Text style={styles.title}>Sign in </Text>
+        <Text style={styles.subtitle}>Welcome to Quitify</Text>
 
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.input}
             placeholder="Email"
+            placeholderTextColor="white"
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
@@ -56,6 +57,7 @@ const LoginScreen = ({ navigation }) => {
           <TextInput
             style={styles.input}
             placeholder="Password"
+            placeholderTextColor="white"
             value={password}
             onChangeText={setPassword}
             secureTextEntry
@@ -99,23 +101,27 @@ const LoginScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#EAEBD0',
+    backgroundColor: '#2c3e50',
   },
   formContainer: {
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: 20,
+    padding: 40,
+    margin: 20,
+    borderRadius: 8,
+    backgroundColor: '#2c3e50',
   },
   title: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#000000',
+    color: 'white',
     marginBottom: 10,
     textAlign: 'center',
   },
   subtitle: {
     fontSize: 16,
-    color: '#DA6C6C',
+    color: '#b0b3b8',
     marginBottom: 30,
     textAlign: 'center',
   },
@@ -123,56 +129,68 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   input: {
-    backgroundColor: '#EAEBD0',
+    backgroundColor: '#1c2833',
     padding: 15,
-    borderRadius: 15,
+    borderRadius: 4,
     marginBottom: 15,
     fontSize: 16,
-    borderWidth: 1,
-    borderColor: '#DA6C6C',
+    color: 'white',
+    borderWidth: 0,
+    borderColor: 'transparent',
   },
   forgotPassword: {
     alignSelf: 'flex-end',
     marginBottom: 20,
   },
   forgotPasswordText: {
-    color: '#CD5656',
+    color: '#00b0ff',
     fontSize: 14,
   },
   loginButton: {
-    backgroundColor: '#CD5656',
+    backgroundColor: '#00b0ff',
     padding: 15,
-    borderRadius: 25,
+    borderRadius: 8,
     alignItems: 'center',
     marginBottom: 20,
+    shadowColor: '#007ac1',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 1,
+    shadowRadius: 0,
+    elevation: 5,
   },
   loginButtonText: {
-    color: 'black',
+    color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
   },
   registerContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
+    marginTop: 20,
   },
   registerText: {
-    color: '#DA6C6C',
+    color: '#b0b3b8',
     fontSize: 14,
   },
   registerLink: {
-    color: '#CD5656',
+    color: '#00b0ff',
     fontSize: 14,
     fontWeight: 'bold',
   },
   googleButton: {
-    backgroundColor: '#AF3E3E',
+    backgroundColor: 'white',
     padding: 15,
-    borderRadius: 25,
+    borderRadius: 8,
     alignItems: 'center',
     marginBottom: 20,
+    shadowColor: '#212121',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 1,
+    shadowRadius: 0,
+    elevation: 5,
   },
   googleButtonText: {
-    color: '#EAEBD0',
+    color: 'black',
     fontSize: 16,
     fontWeight: 'bold',
   },

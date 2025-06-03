@@ -361,13 +361,21 @@ export default function SignupPage() {
             sx={{
               mt: 3,
               mb: 2,
-              py: 1.5,
               bgcolor: '#00b0ff',
+              color: 'white',
+              borderRadius: '8px',
+              px: 3,
+              py: 1.5,
+              boxShadow: '0 4px 0 #007ac1',
               '&:hover': {
                 bgcolor: '#0091ea',
+                boxShadow: '0 2px 0 #007ac1',
+                transform: 'translateY(2px)',
               },
-              borderRadius: '4px',
-              color: 'white',
+              '&:active': {
+                boxShadow: '0 0 0 #007ac1',
+                transform: 'translateY(4px)',
+              },
             }}
           >
             {loading ? 'Creating Account...' : 'Sign up'}
@@ -381,14 +389,22 @@ export default function SignupPage() {
             sx={{
               mt: 1,
               mb: 2,
-              py: 1.5,
               color: 'black',
               backgroundColor: 'white',
               borderColor: '#3a3a3a',
-              borderRadius: '4px',
+              borderRadius: '8px',
+              px: 3,
+              py: 1.5,
+              boxShadow: '0 4px 0 #212121',
               '&:hover': {
                 borderColor: '#555',
-                bgcolor: 'grey',
+                bgcolor: '#f0f0f0',
+                boxShadow: '0 2px 0 #212121',
+                transform: 'translateY(2px)',
+              },
+              '&:active': {
+                boxShadow: '0 0 0 #212121',
+                transform: 'translateY(4px)',
               },
             }}
           >
