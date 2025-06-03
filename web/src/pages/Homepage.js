@@ -1,6 +1,8 @@
 import React from 'react';
 import { Container, Box, Typography, Grid } from '@mui/material';
 import homepageImage from '../assets/homepage.jpg';
+import Lottie from 'lottie-react';
+import quitSignAnimation from '../assets/animations/quit-sign.json';
 
 export default function HomePage() {
   return (
@@ -70,37 +72,16 @@ export default function HomePage() {
                     bgcolor: 'primary.dark'
                   }
                 }}>
-                  Get started
+                  Take a Quiz
                 </Box>
               </Box>
             </Grid>
 
             <Grid item xs={12} md={6} sx={{ display: 'flex', justifyContent: 'center', position: 'relative' }}>
               <Box sx={{ position: 'relative', width: '100%', maxWidth: 500, height: 400 }}>
-                {/* Circular background elements */}
-                <Box sx={{
-                  position: 'absolute',
-                  top: 0,
-                  right: 0,
-                  width: 300,
-                  height: 300,
-                  bgcolor: 'rgba(255,255,255,0.3)',
-                  borderRadius: '50%',
-                  zIndex: 1
-                }} />
-                <Box sx={{
-                  position: 'absolute',
-                  top: 50,
-                  right: 50,
-                  width: 200,
-                  height: 200,
-                  bgcolor: 'rgba(255,255,255,0.5)',
-                  borderRadius: '50%',
-                  zIndex: 2
-                }} />
 
                 {/* Main image */}
-                <Box
+                {/* <Box
                   sx={{
                     position: 'relative',
                     bottom: 30,
@@ -113,7 +94,37 @@ export default function HomePage() {
                     borderRadius: 2,
                     zIndex: 3,
                   }}
-                />
+                /> */}
+
+                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                  <Box
+                    sx={{
+                      width: { xs: '100%', md: 450 },
+                      height: { xs: 220, md: 400 },
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      overflow: 'hidden',
+                      bgcolor: 'transparent', 
+                      position: 'relative' 
+                    }}
+                  >
+                    <Lottie
+                      animationData={quitSignAnimation}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                      }}
+                      loop={true}
+                      rendererSettings={{
+                        preserveAspectRatio: 'xMidYMid slice',
+                        clearCanvas: true,
+                        progressiveLoad: true,
+                        backgroundColor: 'transparent' // Additional transparency setting
+                      }}
+                    />
+                  </Box>
+                </Box>
               </Box>
             </Grid>
           </Grid>
@@ -134,13 +145,18 @@ export default function HomePage() {
               sx={{
                 width: { xs: '100%', md: 350 },
                 height: { xs: 220, md: 400 },
-                background: 'url(https://placehold.co/350x400?text=Community+Screen)',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
                 borderRadius: 4,
                 boxShadow: 3,
+                overflow: 'hidden',
+                bgcolor: 'transparent', // Changed from background.paper to transparent
+                position: 'relative' // Added position relative
               }}
-            />
+            >
+             
+            </Box>
           </Box>
         </Container>
       </Box>
