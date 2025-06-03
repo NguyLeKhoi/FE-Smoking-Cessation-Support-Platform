@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { AppBar, Toolbar, Typography, Button, IconButton, Box } from '@mui/material';
 import { useNavigate, Link as RouterLink, useLocation } from 'react-router-dom';
 import AccountCircle from '@mui/icons-material/AccountCircle';
@@ -6,13 +6,38 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 const Header = ({ authStatus }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [scrolled, setScrolled] = useState(false);
+
+  // Add scroll event listener
+  useEffect(() => {
+    const handleScroll = () => {
+      // Add shadow when scrolled more than 10px
+      if (window.scrollY > 10) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    // Cleanup function
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   return (
-    <AppBar position="static" sx={{
-      bgcolor: '#ffffff', // Dark background color
-      boxShadow: 'none',
-      borderBottom: '1px solid #3a3a3a' // Darker border color
-    }}>
+    <AppBar
+      position="fixed"
+      sx={{
+        bgcolor: '#ffffff',
+        boxShadow: scrolled ? '0px 1px 8px -1px rgba(0,0,0,0.01), 0px 4px 5px 0px rgba(0,0,0,0.07), 0px 1px 10px 0px rgba(0,0,0,0.06)' : 'none',
+        transition: 'box-shadow 0.3s ease',
+        width: '100%',
+        zIndex: 1100
+      }}
+    >
       <Toolbar sx={{ minHeight: 80, display: 'flex', alignItems: 'center' }}>
         <Typography
           variant="h4"
@@ -82,7 +107,7 @@ const Header = ({ authStatus }) => {
               fontWeight: 800,
               display: 'flex',
               alignItems: 'center',
-              gap: 1  
+              gap: 1
             }}
           >
             Zerotine <img src="/smile-face.png" alt="Smiling face" style={{ width: '30px', height: 'auto' }} />
