@@ -41,13 +41,14 @@ const LoginScreen = ({ navigation }) => {
       style={styles.container}
     >
       <View style={styles.formContainer}>
-        <Text style={styles.title}>Welcome Back</Text>
-        <Text style={styles.subtitle}>Sign in to continue</Text>
+        <Text style={styles.title}>Sign in </Text>
+        <Text style={styles.subtitle}>Welcome to Quitify</Text>
 
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.input}
             placeholder="Email"
+            placeholderTextColor="white"
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
@@ -56,6 +57,7 @@ const LoginScreen = ({ navigation }) => {
           <TextInput
             style={styles.input}
             placeholder="Password"
+            placeholderTextColor="white"
             value={password}
             onChangeText={setPassword}
             secureTextEntry

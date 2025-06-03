@@ -47,6 +47,7 @@ const SignUpScreen = ({ navigation }) => {
       <TextInput
         style={styles.input}
         placeholder="Username"
+        placeholderTextColor="white"
         value={form.username}
         onChangeText={text => handleChange('username', text)}
         autoCapitalize="none"
@@ -54,6 +55,7 @@ const SignUpScreen = ({ navigation }) => {
       <TextInput
         style={styles.input}
         placeholder="Email"
+        placeholderTextColor="white"
         value={form.email}
         onChangeText={text => handleChange('email', text)}
         keyboardType="email-address"
@@ -62,6 +64,7 @@ const SignUpScreen = ({ navigation }) => {
       <TextInput
         style={styles.input}
         placeholder="Password"
+        placeholderTextColor="white"
         value={form.password}
         onChangeText={text => handleChange('password', text)}
         secureTextEntry
@@ -69,18 +72,21 @@ const SignUpScreen = ({ navigation }) => {
       <TextInput
         style={styles.input}
         placeholder="First Name"
+        placeholderTextColor="white"
         value={form.first_name}
         onChangeText={text => handleChange('first_name', text)}
       />
       <TextInput
         style={styles.input}
         placeholder="Last Name"
+        placeholderTextColor="white"
         value={form.last_name}
         onChangeText={text => handleChange('last_name', text)}
       />
       <TextInput
         style={styles.input}
         placeholder="Birth Date (yyyy-mm-dd)"
+        placeholderTextColor="white"
         value={form.birth_date}
         onChangeText={text => handleChange('birth_date', text)}
         keyboardType="numbers-and-punctuation"
@@ -89,6 +95,7 @@ const SignUpScreen = ({ navigation }) => {
       <TextInput
         style={styles.input}
         placeholder="Phone Number"
+        placeholderTextColor="white"
         value={form.phone_number}
         onChangeText={text => handleChange('phone_number', text)}
         keyboardType="phone-pad"

@@ -78,6 +78,7 @@ const ResetPasswordScreen = ({ navigation }) => {
           <TextInput
             style={styles.input}
             placeholder="New Password"
+            placeholderTextColor="white"
             value={password}
             onChangeText={setPassword}
             secureTextEntry
@@ -85,6 +86,7 @@ const ResetPasswordScreen = ({ navigation }) => {
           <TextInput
             style={styles.input}
             placeholder="Confirm New Password"
+            placeholderTextColor="white"
             value={confirmPassword}
             onChangeText={setConfirmPassword}
             secureTextEntry
