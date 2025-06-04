@@ -260,30 +260,30 @@ export default function SignupPage() {
               </Grid>
             </Grid>
 
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              disabled={loading}
-              sx={{
-                mt: 4,
-                mb: 2,
-                py: 1.5,
-                bgcolor: 'primary.main',
-                color: 'white',
-                borderRadius: '12px',
-                boxShadow: '0 4px 0 rgba(0, 0, 0, 0.2)',
-                '&:hover': {
-                  bgcolor: 'primary.dark',
-                  boxShadow: '0 2px 0 rgba(0, 0, 0, 0.2)',
-                  transform: 'translateY(2px)',
-                },
-                '&:active': {
-                  boxShadow: '0 0 0 rgba(0, 0, 0, 0.2)',
-                  transform: 'translateY(4px)',
-                },
-              }}
-            >
+           <Button
+                    type="submit"
+                    fullWidth
+                    variant="contained"
+                    disabled={loading}
+                    sx={{
+                      mt: 4,
+                      mb: 2,
+                      py: 1.5,
+                      bgcolor: '#000000', 
+                      color: 'white',
+                      borderRadius: '12px',
+                      boxShadow: '0 4px 0 #00000080',
+                      '&:hover': {
+                        bgcolor: '#000000cd',
+                        boxShadow: '0 2px 0 #00000080',
+                        transform: 'translateY(2px)',
+                      },
+                      '&:active': {
+                        boxShadow: '0 0 0 #00000080',
+                        transform: 'translateY(4px)',
+                      },
+                    }}
+                  >
               {loading ? 'Creating Account...' : 'Sign up'}
             </Button>
 
