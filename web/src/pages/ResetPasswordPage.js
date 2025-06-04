@@ -78,11 +78,12 @@ export default function ResetPasswordPage() {
           alignItems: 'center',
           p: 4,
           borderRadius: 2,
-          bgcolor: '#2c3e50',
-          color: 'white',
+          bgcolor: 'white',
+          color: 'black',
+          boxShadow: '0 0 10px rgba(0,0,0,0.1)',
         }}
       >
-        <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold', color: 'white' }}>
+        <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold', color: 'black' }}>
           Reset Password
         </Typography>
 
@@ -109,18 +110,18 @@ export default function ResetPasswordPage() {
             margin="normal"
             required
             InputLabelProps={{
-              style: { color: '#b0b3b8' },
+              style: { color: '#666666' },
             }}
             InputProps={{
-              style: { color: 'white' },
+              style: { color: 'black' },
             }}
             sx={{
               '& .MuiOutlinedInput-root': {
                 borderRadius: '4px',
-                bgcolor: '#1c2833',
-                '& fieldset': { borderColor: 'transparent' },
-                '&:hover fieldset': { borderColor: 'transparent' },
-                '&.Mui-focused fieldset': { borderColor: 'transparent' },
+                bgcolor: '#f5f5f5',
+                '& fieldset': { borderColor: '#e0e0e0' },
+                '&:hover fieldset': { borderColor: '#00b0ff' },
+                '&.Mui-focused fieldset': { borderColor: '#00b0ff' },
               },
             }}
           />
@@ -134,18 +135,18 @@ export default function ResetPasswordPage() {
             margin="normal"
             required
             InputLabelProps={{
-              style: { color: '#b0b3b8' },
+              style: { color: '#666666' },
             }}
             InputProps={{
-              style: { color: 'white' },
+              style: { color: 'black' },
             }}
              sx={{
               '& .MuiOutlinedInput-root': {
                 borderRadius: '4px',
-                bgcolor: '#1c2833',
-                '& fieldset': { borderColor: 'transparent' },
-                '&:hover fieldset': { borderColor: 'transparent' },
-                '&.Mui-focused fieldset': { borderColor: 'transparent' },
+                bgcolor: '#f5f5f5',
+                '& fieldset': { borderColor: '#e0e0e0' },
+                '&:hover fieldset': { borderColor: '#00b0ff' },
+                '&.Mui-focused fieldset': { borderColor: '#00b0ff' },
               },
             }}
           />
@@ -179,7 +180,7 @@ export default function ResetPasswordPage() {
           </Button>
 
            <Box sx={{ textAlign: 'center', mt: 2 }}>
-            <Typography variant="body2" sx={{ color: '#b0b3b8' }}>
+            <Typography variant="body2" sx={{ color: '#666666' }}>
               Remember your password?{' '}
               <Link
                 component="button"

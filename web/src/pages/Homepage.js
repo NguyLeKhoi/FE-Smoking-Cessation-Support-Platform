@@ -1,6 +1,5 @@
 import React from 'react';
 import { Container, Box, Typography, Grid } from '@mui/material';
-import homepageImage from '../assets/homepage.jpg';
 import Lottie from 'lottie-react';
 import quitSignAnimation from '../assets/animations/quit-sign.json';
 import QuotesCarousel from '../components/QuotesCarousel';

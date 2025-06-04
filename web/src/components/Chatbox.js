@@ -66,7 +66,7 @@ const Chatbox = ({ onClose }) => {
           borderBottom: '1px solid #3a3a3a', // Subtle separator
         }}
       >
-        <Typography variant="h6">Chat with our AI coach</Typography>
+        <Typography variant="h6" color="white">Zerotine Ai Coach</Typography>
         <IconButton size="small" onClick={onClose} sx={{ color: '#aaa' }}>
           <CloseIcon />
         </IconButton>

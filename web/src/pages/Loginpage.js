@@ -74,16 +74,16 @@ export default function LoginPage() {
           alignItems: 'center',
           p: 4,
           borderRadius: 2,
-          // boxShadow: '0 0 10px rgba(0,0,0,0.1)', // Remove light shadow
-          bgcolor: '#2c3e50', // Darker background for the form container
-          color: 'white', // White text color
+          bgcolor: 'white',
+          color: 'black',
+          boxShadow: '0 0 10px rgba(0,0,0,0.1)',
         }}
       >
-        <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold', color: 'white' }}> {/* White title */}
+        <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold', color: 'black' }}>
           Sign in
         </Typography>
-        <Typography variant="body1" gutterBottom sx={{ color: '#b0b3b8' }}> {/* Light grey subtitle */}
-          Welcome to Quitify!
+        <Typography variant="body1" gutterBottom sx={{ color: '#666666' }}>
+          Welcome to Zerotine!
         </Typography>
 
         {error && (
@@ -104,18 +104,18 @@ export default function LoginPage() {
             required
             autoComplete="email"
             InputLabelProps={{
-              style: { color: '#b0b3b8' }, // Light grey label
+              style: { color: '#666666' },
             }}
             InputProps={{
-              style: { color: 'white' }, // White input text
+              style: { color: 'black' },
             }}
             sx={{
               '& .MuiOutlinedInput-root': {
-                borderRadius: '4px', // Slight rounding
-                bgcolor: '#1c2833', // Even darker background for input
-                '& fieldset': { borderColor: 'transparent' }, // Hide border
-                '&:hover fieldset': { borderColor: 'transparent' }, // Hide border on hover
-                '&.Mui-focused fieldset': { borderColor: 'transparent' }, // Hide border when focused
+                borderRadius: '4px',
+                bgcolor: '#f5f5f5',
+                '& fieldset': { borderColor: '#e0e0e0' },
+                '&:hover fieldset': { borderColor: '#00b0ff' },
+                '&.Mui-focused fieldset': { borderColor: '#00b0ff' },
               },
             }}
           />
@@ -130,18 +130,18 @@ export default function LoginPage() {
             required
             autoComplete="current-password"
             InputLabelProps={{
-              style: { color: '#b0b3b8' }, // Light grey label
+              style: { color: '#666666' },
             }}
             InputProps={{
-              style: { color: 'white' }, // White input text
+              style: { color: 'black' },
             }}
-             sx={{
+            sx={{
               '& .MuiOutlinedInput-root': {
-                borderRadius: '4px', // Slight rounding
-                bgcolor: '#1c2833', // Even darker background for input
-                '& fieldset': { borderColor: 'transparent' }, // Hide border
-                '&:hover fieldset': { borderColor: 'transparent' }, // Hide border on hover
-                '&.Mui-focused fieldset': { borderColor: 'transparent' }, // Hide border when focused
+                borderRadius: '4px',
+                bgcolor: '#f5f5f5',
+                '& fieldset': { borderColor: '#e0e0e0' },
+                '&:hover fieldset': { borderColor: '#00b0ff' },
+                '&.Mui-focused fieldset': { borderColor: '#00b0ff' },
               },
             }}
           />
@@ -183,9 +183,9 @@ export default function LoginPage() {
 
           {/* Divider */}
           <Box sx={{ display: 'flex', alignItems: 'center', my: 3 }}>
-            <Box sx={{ flexGrow: 1, height: '1px', bgcolor: '#3a3a3a' }} />
-            <Typography variant="body2" sx={{ mx: 2, color: '#b0b3b8' }}>OR</Typography>
-            <Box sx={{ flexGrow: 1, height: '1px', bgcolor: '#3a3a3a' }} />
+            <Box sx={{ flexGrow: 1, height: '1px', bgcolor: '#e0e0e0' }} />
+            <Typography variant="body2" sx={{ mx: 2, color: '#666666' }}>OR</Typography>
+            <Box sx={{ flexGrow: 1, height: '1px', bgcolor: '#e0e0e0' }} />
           </Box>
 
           {/* Social Login Buttons (placeholders) */}
@@ -222,13 +222,13 @@ export default function LoginPage() {
 
           {/* Signup link */}
           <Box sx={{ textAlign: 'center', mt: 2 }}>
-            <Typography variant="body2" sx={{ color: '#b0b3b8' }}>
+            <Typography variant="body2" sx={{ color: '#666666' }}>
               Don't have an account?{' '}
               <Link
                 component="button"
                 variant="body2"
                 onClick={() => navigate('/signup')}
-                sx={{ color: '#00b0ff', fontWeight: 'bold' }} // Blue link
+                sx={{ color: '#00b0ff', fontWeight: 'bold' }}
               >
                 Sign up
               </Link>

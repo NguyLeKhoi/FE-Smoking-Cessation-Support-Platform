@@ -127,14 +127,15 @@ export default function SignupPage() {
           alignItems: 'center',
           p: 4,
           borderRadius: 2,
-          bgcolor: '#2c3e50',
-          color: 'white',
+          bgcolor: 'white',
+          color: 'black',
+          boxShadow: '0 0 10px rgba(0,0,0,0.1)',
         }}
       >
-        <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold', color: 'white' }}>
+        <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold', color: 'black' }}>
           Create Account
         </Typography>
-        <Typography variant="body1" gutterBottom sx={{ color: '#b0b3b8' }}>
+        <Typography variant="body1" gutterBottom sx={{ color: '#666666' }}>
           Sign up to get started
         </Typography>
 
@@ -156,18 +157,18 @@ export default function SignupPage() {
                 required
                 autoComplete="given-name"
                 InputLabelProps={{
-                  style: { color: '#b0b3b8' },
+                  style: { color: '#666666' },
                 }}
                 InputProps={{
-                  style: { color: 'white' },
+                  style: { color: 'black' },
                 }}
                 sx={{
                   '& .MuiOutlinedInput-root': {
                     borderRadius: '4px',
-                    bgcolor: '#1c2833',
-                    '& fieldset': { borderColor: 'transparent' },
-                    '&:hover fieldset': { borderColor: 'transparent' },
-                    '&.Mui-focused fieldset': { borderColor: 'transparent' },
+                    bgcolor: '#f5f5f5',
+                    '& fieldset': { borderColor: '#e0e0e0' },
+                    '&:hover fieldset': { borderColor: '#00b0ff' },
+                    '&.Mui-focused fieldset': { borderColor: '#00b0ff' },
                   },
                 }}
               />
@@ -182,18 +183,18 @@ export default function SignupPage() {
                 required
                 autoComplete="family-name"
                 InputLabelProps={{
-                  style: { color: '#b0b3b8' },
+                  style: { color: '#666666' },
                 }}
                 InputProps={{
-                  style: { color: 'white' },
+                  style: { color: 'black' },
                 }}
                 sx={{
                   '& .MuiOutlinedInput-root': {
                     borderRadius: '4px',
-                    bgcolor: '#1c2833',
-                    '& fieldset': { borderColor: 'transparent' },
-                    '&:hover fieldset': { borderColor: 'transparent' },
-                    '&.Mui-focused fieldset': { borderColor: 'transparent' },
+                    bgcolor: '#f5f5f5',
+                    '& fieldset': { borderColor: '#e0e0e0' },
+                    '&:hover fieldset': { borderColor: '#00b0ff' },
+                    '&.Mui-focused fieldset': { borderColor: '#00b0ff' },
                   },
                 }}
               />
@@ -210,18 +211,18 @@ export default function SignupPage() {
             required
             autoComplete="username"
             InputLabelProps={{
-              style: { color: '#b0b3b8' },
+              style: { color: '#666666' },
             }}
             InputProps={{
-              style: { color: 'white' },
+              style: { color: 'black' },
             }}
             sx={{
               '& .MuiOutlinedInput-root': {
                 borderRadius: '4px',
-                bgcolor: '#1c2833',
-                '& fieldset': { borderColor: 'transparent' },
-                '&:hover fieldset': { borderColor: 'transparent' },
-                '&.Mui-focused fieldset': { borderColor: 'transparent' },
+                bgcolor: '#f5f5f5',
+                '& fieldset': { borderColor: '#e0e0e0' },
+                '&:hover fieldset': { borderColor: '#00b0ff' },
+                '&.Mui-focused fieldset': { borderColor: '#00b0ff' },
               },
             }}
           />
@@ -236,18 +237,18 @@ export default function SignupPage() {
             required
             autoComplete="email"
             InputLabelProps={{
-              style: { color: '#b0b3b8' },
+              style: { color: '#666666' },
             }}
             InputProps={{
-              style: { color: 'white' },
+              style: { color: 'black' },
             }}
             sx={{
               '& .MuiOutlinedInput-root': {
                 borderRadius: '4px',
-                bgcolor: '#1c2833',
-                '& fieldset': { borderColor: 'transparent' },
-                '&:hover fieldset': { borderColor: 'transparent' },
-                '&.Mui-focused fieldset': { borderColor: 'transparent' },
+                bgcolor: '#f5f5f5',
+                '& fieldset': { borderColor: '#e0e0e0' },
+                '&:hover fieldset': { borderColor: '#00b0ff' },
+                '&.Mui-focused fieldset': { borderColor: '#00b0ff' },
               },
             }}
           />
@@ -262,18 +263,18 @@ export default function SignupPage() {
             autoComplete="tel"
             placeholder="1234567890"
             InputLabelProps={{
-              style: { color: '#b0b3b8' },
+              style: { color: '#666666' },
             }}
             InputProps={{
-              style: { color: 'white' },
+              style: { color: 'black' },
             }}
             sx={{
               '& .MuiOutlinedInput-root': {
                 borderRadius: '4px',
-                bgcolor: '#1c2833',
-                '& fieldset': { borderColor: 'transparent' },
-                '&:hover fieldset': { borderColor: 'transparent' },
-                '&.Mui-focused fieldset': { borderColor: 'transparent' },
+                bgcolor: '#f5f5f5',
+                '& fieldset': { borderColor: '#e0e0e0' },
+                '&:hover fieldset': { borderColor: '#00b0ff' },
+                '&.Mui-focused fieldset': { borderColor: '#00b0ff' },
               },
             }}
           />
@@ -286,17 +287,17 @@ export default function SignupPage() {
             onChange={handleChange}
             margin="normal"
             required
-            InputLabelProps={{ shrink: true, style: { color: '#b0b3b8' } }}
+            InputLabelProps={{ shrink: true, style: { color: '#666666' } }}
             InputProps={{
-                style: { color: 'white' },
+                style: { color: 'black' },
               }}
             sx={{
               '& .MuiOutlinedInput-root': {
                 borderRadius: '4px',
-                bgcolor: '#1c2833',
-                '& fieldset': { borderColor: 'transparent' },
-                '&:hover fieldset': { borderColor: 'transparent' },
-                '&.Mui-focused fieldset': { borderColor: 'transparent' },
+                bgcolor: '#f5f5f5',
+                '& fieldset': { borderColor: '#e0e0e0' },
+                '&:hover fieldset': { borderColor: '#00b0ff' },
+                '&.Mui-focused fieldset': { borderColor: '#00b0ff' },
               },
             }}
           />
@@ -311,18 +312,18 @@ export default function SignupPage() {
             required
             autoComplete="new-password"
             InputLabelProps={{
-              style: { color: '#b0b3b8' },
+              style: { color: '#666666' },
             }}
             InputProps={{
-              style: { color: 'white' },
+              style: { color: 'black' },
             }}
             sx={{
               '& .MuiOutlinedInput-root': {
                 borderRadius: '4px',
-                bgcolor: '#1c2833',
-                '& fieldset': { borderColor: 'transparent' },
-                '&:hover fieldset': { borderColor: 'transparent' },
-                '&.Mui-focused fieldset': { borderColor: 'transparent' },
+                bgcolor: '#f5f5f5',
+                '& fieldset': { borderColor: '#e0e0e0' },
+                '&:hover fieldset': { borderColor: '#00b0ff' },
+                '&.Mui-focused fieldset': { borderColor: '#00b0ff' },
               },
             }}
           />
@@ -337,18 +338,18 @@ export default function SignupPage() {
             required
             autoComplete="new-password"
             InputLabelProps={{
-              style: { color: '#b0b3b8' },
+              style: { color: '#666666' },
             }}
             InputProps={{
-              style: { color: 'white' },
+              style: { color: 'black' },
             }}
             sx={{
               '& .MuiOutlinedInput-root': {
                 borderRadius: '4px',
-                bgcolor: '#1c2833',
-                '& fieldset': { borderColor: 'transparent' },
-                '&:hover fieldset': { borderColor: 'transparent' },
-                '&.Mui-focused fieldset': { borderColor: 'transparent' },
+                bgcolor: '#f5f5f5',
+                '& fieldset': { borderColor: '#e0e0e0' },
+                '&:hover fieldset': { borderColor: '#00b0ff' },
+                '&.Mui-focused fieldset': { borderColor: '#00b0ff' },
               },
             }}
           />
@@ -412,7 +413,7 @@ export default function SignupPage() {
           </Button>
 
           <Box sx={{ textAlign: 'center', mt: 2 }}>
-            <Typography variant="body2" sx={{ color: '#b0b3b8' }}>
+            <Typography variant="body2" sx={{ color: '#666666' }}>
               Already have an account?{' '}
               <Link
                 component="button"
