@@ -10,8 +10,8 @@ import { InertiaPlugin } from 'gsap/InertiaPlugin';
 gsap.registerPlugin(InertiaPlugin);
 
 const GlowingDotsGrid = ({
-    baseColor = "#3f332b",
-    activeColor = "#FFF4A4",
+    baseColor = "#3f332b33",
+    activeColor = "#3f332b",
     threshold = 150,
     speedThreshold = 100,
     shockRadius = 250,

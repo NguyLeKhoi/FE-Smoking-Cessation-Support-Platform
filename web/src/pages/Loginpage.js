@@ -93,8 +93,8 @@ export default function LoginPage() {
     >
       {/* Background Glowing Dots Grid */}
       <GlowingDotsGrid
-        dotSize={8}     // Larger dots
-        dotGap={35}      // More space between dots
+        dotSize={12}     // Larger dots
+        dotGap={38}      // More space between dots
         threshold={150}
         speedThreshold={100}
         shockRadius={250}

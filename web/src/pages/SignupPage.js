@@ -152,12 +152,12 @@ export default function SignupPage() {
       left: 0,
       right: 0,
       bottom: 0,
-      bgcolor: '#ffffff', // Changed to match login page
+      bgcolor: '#f6f5f3',
     }}>
       {/* Add GlowingDotsGrid */}
       <GlowingDotsGrid
-        dotSize={8}     // Larger dots
-        dotGap={35}      // More space between dots
+        dotSize={12}     // Larger dots
+        dotGap={38}      // More space between dots
         threshold={150}
         speedThreshold={100}
         shockRadius={250}
