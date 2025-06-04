@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Container, TextField, Button, Typography, Box, Alert, Link, Grid } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { signup } from '../services/authService';
+import GlowingDotsGrid from '../components/animated/GlowingDotsGrid'; // Add this import
 
 export default function SignupPage() {
   const navigate = useNavigate();
@@ -17,14 +18,14 @@ export default function SignupPage() {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  
+
   // Effect to disable scrolling when component mounts
   useEffect(() => {
     // Save the current overflow style
     const originalStyle = window.getComputedStyle(document.body).overflow;
     // Disable scrolling
     document.body.style.overflow = 'hidden';
-    
+
     // Re-enable scrolling when component unmounts
     return () => {
       document.body.style.overflow = originalStyle;
@@ -140,7 +141,7 @@ export default function SignupPage() {
   };
 
   return (
-    <Box sx={{ 
+    <Box sx={{
       height: '100vh',
       display: 'flex',
       alignItems: 'center',
@@ -151,9 +152,26 @@ export default function SignupPage() {
       left: 0,
       right: 0,
       bottom: 0,
-      bgcolor: '#f6f5f3',
+      bgcolor: '#ffffff', // Changed to match login page
     }}>
-      <Container maxWidth="md">
+      {/* Add GlowingDotsGrid */}
+      <GlowingDotsGrid
+        dotSize={8}     // Larger dots
+        dotGap={35}      // More space between dots
+        threshold={150}
+        speedThreshold={100}
+        shockRadius={250}
+        sx={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          zIndex: 1, // Behind the signup form
+        }}
+      />
+
+      <Container maxWidth="md" sx={{ zIndex: 2 }}> {/* Add zIndex to ensure form is above grid */}
         <Box
           sx={{
             display: 'flex',
@@ -167,6 +185,7 @@ export default function SignupPage() {
             mx: 'auto',
             maxHeight: '90vh',
             overflowY: 'auto', // Allow scrolling within the form
+            backdropFilter: 'blur(5px)', // Add slight blur for better text contrast
           }}
         >
           <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 700, color: 'text.primary', mb: 1 }}>
@@ -287,30 +306,30 @@ export default function SignupPage() {
               </Grid>
             </Grid>
 
-           <Button
-                    type="submit"
-                    fullWidth
-                    variant="contained"
-                    disabled={loading}
-                    sx={{
-                      mt: 4,
-                      mb: 2,
-                      py: 1.5,
-                      bgcolor: '#000000', 
-                      color: 'white',
-                      borderRadius: '12px',
-                      boxShadow: '0 4px 0 #00000080',
-                      '&:hover': {
-                        bgcolor: '#000000cd',
-                        boxShadow: '0 2px 0 #00000080',
-                        transform: 'translateY(2px)',
-                      },
-                      '&:active': {
-                        boxShadow: '0 0 0 #00000080',
-                        transform: 'translateY(4px)',
-                      },
-                    }}
-                  >
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              disabled={loading}
+              sx={{
+                mt: 4,
+                mb: 2,
+                py: 1.5,
+                bgcolor: '#000000',
+                color: 'white',
+                borderRadius: '12px',
+                boxShadow: '0 4px 0 #00000080',
+                '&:hover': {
+                  bgcolor: '#000000cd',
+                  boxShadow: '0 2px 0 #00000080',
+                  transform: 'translateY(2px)',
+                },
+                '&:active': {
+                  boxShadow: '0 0 0 #00000080',
+                  transform: 'translateY(4px)',
+                },
+              }}
+            >
               {loading ? 'Creating Account...' : 'Sign up'}
             </Button>
 

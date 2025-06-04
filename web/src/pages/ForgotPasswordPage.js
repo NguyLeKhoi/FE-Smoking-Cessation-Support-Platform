@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Container, TextField, Button, Typography, Box, Alert, Link } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { forgotPassword } from '../services/authService';
+import GlowingDotsGrid from '../components/animated/GlowingDotsGrid'; // Add this import
 
 export default function ForgotPasswordPage() {
   const navigate = useNavigate();
@@ -16,7 +17,7 @@ export default function ForgotPasswordPage() {
     const originalStyle = window.getComputedStyle(document.body).overflow;
     // Disable scrolling
     document.body.style.overflow = 'hidden';
-    
+
     // Re-enable scrolling when component unmounts
     return () => {
       document.body.style.overflow = originalStyle;
@@ -74,23 +75,40 @@ export default function ForgotPasswordPage() {
       left: 0,
       right: 0,
       bottom: 0,
-      bgcolor: '#f6f5f3',
+      bgcolor: '#ffffff', // Changed to white to match other pages
     }}>
-      <Container maxWidth="sm">
+      {/* Add GlowingDotsGrid */}
+      <GlowingDotsGrid
+        dotSize={8}     // Larger dots
+        dotGap={35}      // More space between dots
+        threshold={150}
+        speedThreshold={100}
+        shockRadius={250}
+        sx={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          zIndex: 1, // Behind the login form
+        }}
+      />
+
+      <Container maxWidth="sm" sx={{ zIndex: 2 }}>
         <Box
           sx={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            p: { xs: 3, md: 6 },
+            p: { xs: 3, md: 5 },
             borderRadius: 3,
             bgcolor: 'background.paper',
             boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.05)',
             maxWidth: 500,
-            minWidth: 600,
             mx: 'auto',
             maxHeight: '90vh',
             overflowY: 'auto',
+            backdropFilter: 'blur(5px)', // Add slight blur for better text contrast
           }}
         >
           <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 700, color: 'text.primary', mb: 1 }}>

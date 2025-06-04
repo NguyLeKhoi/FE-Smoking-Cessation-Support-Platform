@@ -93,6 +93,11 @@ export default function LoginPage() {
     >
       {/* Background Glowing Dots Grid */}
       <GlowingDotsGrid
+        dotSize={8}     // Larger dots
+        dotGap={35}      // More space between dots
+        threshold={150}
+        speedThreshold={100}
+        shockRadius={250}
         sx={{
           position: 'absolute',
           top: 0,
@@ -100,6 +105,7 @@ export default function LoginPage() {
           width: '100%',
           height: '100%',
           zIndex: 1, // Behind the login form
+
         }}
       />
 
@@ -119,7 +125,7 @@ export default function LoginPage() {
             maxHeight: '90vh',
             overflowY: 'auto',
             // Optional: Add slight transparency to see the background
-            bgcolor: 'rgba(255, 255, 255, 0.95)', // Semi-transparent white
+            bgcolor: '#ffffff',
           }}
         >
           <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 700, color: 'text.primary', mb: 1 }}>

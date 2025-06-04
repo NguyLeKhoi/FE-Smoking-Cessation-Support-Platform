@@ -1,25 +1,30 @@
 import React, { useEffect, useRef } from 'react';
 import { Box } from '@mui/material';
 import { gsap } from 'gsap';
+import { InertiaPlugin } from 'gsap/InertiaPlugin';
 
+
+
+
+// Register the plugin
+gsap.registerPlugin(InertiaPlugin);
 
 const GlowingDotsGrid = ({
-    baseColor = "#245E51",
-    activeColor = "#A8FF51",
+    baseColor = "#3f332b",
+    activeColor = "#FFF4A4",
     threshold = 150,
     speedThreshold = 100,
     shockRadius = 250,
     shockPower = 5,
     maxSpeed = 5000,
     centerHole = true,
+    dotSize = 8,  // Add a dotSize prop (in pixels)
+    dotGap = 40,  // Add a dotGap prop (in pixels)
     sx = {}
 }) => {
     const containerRef = useRef(null);
     const dotsRef = useRef([]);
     const dotCentersRef = useRef([]);
-
-    // Check if InertiaPlugin is available
-    const hasInertiaPlugin = gsap.plugins.inertia !== undefined;
 
     useEffect(() => {
         if (!containerRef.current) return;
@@ -32,14 +37,16 @@ const GlowingDotsGrid = ({
             dotsRef.current = [];
             dotCentersRef.current = [];
 
-            const style = getComputedStyle(container);
-            const dotPx = parseFloat(style.fontSize);
-            const gapPx = dotPx * 2;
+
+            // Use explicit dot size and gap instead of relying on fontSize
+            const dotPx = dotSize;
+            const gapPx = dotGap;
             const contW = container.clientWidth;
             const contH = container.clientHeight;
 
-            const cols = Math.floor((contW + gapPx) / (dotPx + gapPx));
-            const rows = Math.floor((contH + gapPx) / (dotPx + gapPx));
+            // Calculate columns and rows based on specified gap
+            const cols = Math.floor(contW / (dotPx + gapPx));
+            const rows = Math.floor(contH / (dotPx + gapPx));
             const total = cols * rows;
 
             const holeCols = centerHole ? (cols % 2 === 0 ? 4 : 5) : 0;
@@ -47,6 +54,7 @@ const GlowingDotsGrid = ({
             const startCol = (cols - holeCols) / 2;
             const startRow = (rows - holeRows) / 2;
 
+            // Create grid with more spacing
             for (let i = 0; i < total; i++) {
                 const row = Math.floor(i / cols);
                 const col = i % cols;
@@ -56,6 +64,13 @@ const GlowingDotsGrid = ({
 
                 const d = document.createElement("div");
                 d.classList.add("dot");
+                
+                // Set explicit size and position for each dot
+                d.style.width = `${dotPx}px`;
+                d.style.height = `${dotPx}px`;
+                d.style.position = 'absolute';
+                d.style.left = `${col * (dotPx + gapPx) + gapPx/2}px`;
+                d.style.top = `${row * (dotPx + gapPx) + gapPx/2}px`;
 
                 if (isHole) {
                     d.style.visibility = "hidden";
@@ -123,37 +138,18 @@ const GlowingDotsGrid = ({
                         const pushX = (x - e.pageX) + vx * 0.005;
                         const pushY = (y - e.pageY) + vy * 0.005;
 
-                        if (hasInertiaPlugin) {
-                            gsap.to(el, {
-                                inertia: { x: pushX, y: pushY, resistance: 750 },
-                                onComplete() {
-                                    gsap.to(el, {
-                                        x: 0,
-                                        y: 0,
-                                        duration: 1.5,
-                                        ease: "elastic.out(1,0.75)",
-                                    });
-                                    el._inertiaApplied = false;
-                                },
-                            });
-                        } else {
-                            // Fallback animation without InertiaPlugin
-                            gsap.to(el, {
-                                x: pushX,
-                                y: pushY,
-                                duration: 0.5,
-                                ease: "power2.out",
-                                onComplete() {
-                                    gsap.to(el, {
-                                        x: 0,
-                                        y: 0,
-                                        duration: 1.5,
-                                        ease: "elastic.out(1,0.75)",
-                                    });
-                                    el._inertiaApplied = false;
-                                },
-                            });
-                        }
+                        gsap.to(el, {
+                            inertia: { x: pushX, y: pushY, resistance: 750 },
+                            onComplete() {
+                                gsap.to(el, {
+                                    x: 0,
+                                    y: 0,
+                                    duration: 1.5,
+                                    ease: "elastic.out(1,0.75)",
+                                });
+                                el._inertiaApplied = false;
+                            },
+                        });
                     }
                 });
             });
@@ -168,37 +164,18 @@ const GlowingDotsGrid = ({
                     const pushX = (x - e.pageX) * shockPower * falloff;
                     const pushY = (y - e.pageY) * shockPower * falloff;
 
-                    if (hasInertiaPlugin) {
-                        gsap.to(el, {
-                            inertia: { x: pushX, y: pushY, resistance: 750 },
-                            onComplete() {
-                                gsap.to(el, {
-                                    x: 0,
-                                    y: 0,
-                                    duration: 1.5,
-                                    ease: "elastic.out(1,0.75)",
-                                });
-                                el._inertiaApplied = false;
-                            },
-                        });
-                    } else {
-                        // Fallback animation without InertiaPlugin
-                        gsap.to(el, {
-                            x: pushX,
-                            y: pushY,
-                            duration: 0.5,
-                            ease: "power2.out",
-                            onComplete() {
-                                gsap.to(el, {
-                                    x: 0,
-                                    y: 0,
-                                    duration: 1.5,
-                                    ease: "elastic.out(1,0.75)",
-                                });
-                                el._inertiaApplied = false;
-                            },
-                        });
-                    }
+                    gsap.to(el, {
+                        inertia: { x: pushX, y: pushY, resistance: 750 },
+                        onComplete() {
+                            gsap.to(el, {
+                                x: 0,
+                                y: 0,
+                                duration: 1.5,
+                                ease: "elastic.out(1,0.75)",
+                            });
+                            el._inertiaApplied = false;
+                        },
+                    });
                 }
             });
         };
@@ -212,7 +189,7 @@ const GlowingDotsGrid = ({
             window.removeEventListener("mousemove", handleMouseMove);
             window.removeEventListener("click", handleClick);
         };
-    }, [baseColor, activeColor, threshold, speedThreshold, shockRadius, shockPower, maxSpeed, centerHole]);
+    }, [baseColor, activeColor, threshold, speedThreshold, shockRadius, shockPower, maxSpeed, centerHole, dotSize, dotGap]);
 
     return (
         <Box
@@ -223,7 +200,7 @@ const GlowingDotsGrid = ({
                 width: '100%',
                 height: '100%',
                 overflow: 'hidden',
-                fontSize: '8px',
+                fontSize: `${dotSize}px`,
                 display: 'flex',
                 flexFlow: 'wrap',
                 justifyContent: 'center',
