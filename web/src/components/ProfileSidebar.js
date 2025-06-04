@@ -60,17 +60,6 @@ const IconText = styled(Typography)(({ theme }) => ({
 // Logo component
 const Logo = () => (
     <Box sx={{ display: 'flex', alignItems: 'center', mb: 4, pl: 1 }}>
-        <Typography
-            variant="h5"
-            component="div"
-            sx={{
-                fontWeight: 800,
-                color: 'primary.main',
-                letterSpacing: '0.5px'
-            }}
-        >
-            Zerotine
-        </Typography>
     </Box>
 );
 
@@ -82,7 +71,8 @@ const UserProfileSection = () => (
                 width: 40,
                 height: 40,
                 bgcolor: 'section.main',
-                border: '2px solid #000'
+                border: '2px solid #000',
+                color: 'black',
             }}
         >
             U
