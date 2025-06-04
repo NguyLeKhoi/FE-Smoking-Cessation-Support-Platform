@@ -4,11 +4,9 @@ import { styled } from '@mui/system';
 import { useLocation } from 'react-router-dom'; // Remove useNavigate
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import PersonIcon from '@mui/icons-material/Person';
-import HomeIcon from '@mui/icons-material/Home';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import ExploreIcon from '@mui/icons-material/Explore';
 import StorefrontIcon from '@mui/icons-material/Storefront';
-import TranslateIcon from '@mui/icons-material/Translate';
 
 const menuItems = [
     // { label: 'LEARN', icon: <HomeIcon fontSize="medium" />, path: '/learn' },

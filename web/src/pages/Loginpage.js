@@ -118,14 +118,12 @@ export default function LoginPage() {
             alignItems: 'center',
             p: { xs: 3, md: 5 },
             borderRadius: 3,
-            bgcolor: 'background.paper',
+            bgcolor: '#ffffff',
             boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.05)',
             maxWidth: 500,
             mx: 'auto',
             maxHeight: '90vh',
             overflowY: 'auto',
-            // Optional: Add slight transparency to see the background
-            bgcolor: '#ffffff',
           }}
         >
           <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 700, color: 'text.primary', mb: 1 }}>
