@@ -10,10 +10,9 @@ import ExploreIcon from '@mui/icons-material/Explore';
 import StorefrontIcon from '@mui/icons-material/Storefront';
 import TranslateIcon from '@mui/icons-material/Translate';
 
-// Sidebar item config with Material UI icons for consistency and paths
 const menuItems = [
-    { label: 'LEARN', icon: <HomeIcon fontSize="medium" />, path: '/learn' },
-    { label: 'LETTERS', icon: <TranslateIcon fontSize="medium" />, path: '/letters' },
+    // { label: 'LEARN', icon: <HomeIcon fontSize="medium" />, path: '/learn' },
+    // { label: 'LETTERS', icon: <TranslateIcon fontSize="medium" />, path: '/letters' },
     { label: 'LEADERBOARDS', icon: <EmojiEventsIcon fontSize="medium" />, path: '/leaderboards' },
     { label: 'QUESTS', icon: <ExploreIcon fontSize="medium" />, hasNotification: true, path: '/quests' },
     { label: 'SHOP', icon: <StorefrontIcon fontSize="medium" />, path: '/shop' },

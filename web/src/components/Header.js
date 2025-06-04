@@ -132,7 +132,7 @@ const Header = ({ authStatus }) => {
         {/* Login button area */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
           {authStatus ? (
-            <IconButton color="inherit" component={RouterLink} to="/profile" sx={{ color: 'white', fontSize: '2rem' }}>
+            <IconButton color="inherit" component={RouterLink} to="/profile" sx={{ color: '#3f332b', fontSize: '2rem' }}>
               <AccountCircle />
             </IconButton>
           ) : (
