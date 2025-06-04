@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, TextField, Button, Typography, Box, Alert, Link, Grid } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { signup } from '../services/authService';
@@ -17,6 +17,19 @@ export default function SignupPage() {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  
+  // Effect to disable scrolling when component mounts
+  useEffect(() => {
+    // Save the current overflow style
+    const originalStyle = window.getComputedStyle(document.body).overflow;
+    // Disable scrolling
+    document.body.style.overflow = 'hidden';
+    
+    // Re-enable scrolling when component unmounts
+    return () => {
+      document.body.style.overflow = originalStyle;
+    };
+  }, []);
 
   const handleChange = (e) => {
     setFormData({
@@ -127,7 +140,19 @@ export default function SignupPage() {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', py: 8 }}>
+    <Box sx={{ 
+      height: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      overflow: 'hidden',
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      bgcolor: '#f6f5f3',
+    }}>
       <Container maxWidth="md">
         <Box
           sx={{
@@ -140,6 +165,8 @@ export default function SignupPage() {
             boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.05)',
             maxWidth: 800,
             mx: 'auto',
+            maxHeight: '90vh',
+            overflowY: 'auto', // Allow scrolling within the form
           }}
         >
           <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 700, color: 'text.primary', mb: 1 }}>
@@ -323,7 +350,28 @@ export default function SignupPage() {
                   component="button"
                   variant="body1"
                   onClick={() => navigate('/login')}
-                  sx={{ color: 'primary.main', fontWeight: 600, textDecoration: 'none' }}
+                  sx={{
+                    color: 'primary.main',
+                    fontWeight: 600,
+                    textDecoration: 'none',
+                    position: 'relative',
+                    '&::after': {
+                      content: '""',
+                      position: 'absolute',
+                      width: '100%',
+                      transform: 'scaleX(0)',
+                      height: '2px',
+                      bottom: -1,
+                      left: 0,
+                      backgroundColor: 'primary.main',
+                      transformOrigin: 'bottom right',
+                      transition: 'transform 0.3s ease-out'
+                    },
+                    '&:hover::after': {
+                      transform: 'scaleX(1)',
+                      transformOrigin: 'bottom left'
+                    }
+                  }}
                 >
                   Sign in
                 </Link>

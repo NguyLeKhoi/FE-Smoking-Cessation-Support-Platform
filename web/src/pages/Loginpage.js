@@ -84,12 +84,13 @@ export default function LoginPage() {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      overflow: 'hidden', // Prevent scrolling within this container
-      position: 'fixed',  // Fix the position
+      overflow: 'hidden',
+      position: 'fixed',
       top: 0,
       left: 0,
       right: 0,
       bottom: 0,
+      bgcolor: '#f6f5f3',
     }}>
       <Container maxWidth="sm">
         <Box
@@ -174,11 +175,11 @@ export default function LoginPage() {
                 boxShadow: '0 4px 0 #00000080',
                 '&:hover': {
                   bgcolor: '#000000cd',
-                  boxShadow: '0 2px 0 #007ac1',
+                  boxShadow: '0 2px 0 #00000080',
                   transform: 'translateY(2px)',
                 },
                 '&:active': {
-                  boxShadow: '0 0 0 #007ac1',
+                  boxShadow: '0 0 0 #00000080',
                   transform: 'translateY(4px)',
                 },
               }}
@@ -229,7 +230,28 @@ export default function LoginPage() {
                   component="button"
                   variant="body1"
                   onClick={() => navigate('/signup')}
-                  sx={{ color: 'primary.main', fontWeight: 600, textDecoration: 'none' }}
+                  sx={{
+                    color: 'primary.main',
+                    fontWeight: 600,
+                    textDecoration: 'none',
+                    position: 'relative',
+                    '&::after': {
+                      content: '""',
+                      position: 'absolute',
+                      width: '100%',
+                      transform: 'scaleX(0)',
+                      height: '2px',
+                      bottom: -1,
+                      left: 0,
+                      backgroundColor: 'primary.main',
+                      transformOrigin: 'bottom right',
+                      transition: 'transform 0.3s ease-out'
+                    },
+                    '&:hover::after': {
+                      transform: 'scaleX(1)',
+                      transformOrigin: 'bottom left'
+                    }
+                  }}
                 >
                   Sign up
                 </Link>
