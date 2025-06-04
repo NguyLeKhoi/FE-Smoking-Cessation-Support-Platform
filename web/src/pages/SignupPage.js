@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, TextField, Button, Typography, Box, Alert, Link, Grid } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { signup } from '../services/authService';
+import GlowingDotsGrid from '../components/animated/GlowingDotsGrid'; // Add this import
 
 export default function SignupPage() {
   const navigate = useNavigate();
@@ -17,6 +18,19 @@ export default function SignupPage() {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Effect to disable scrolling when component mounts
+  useEffect(() => {
+    // Save the current overflow style
+    const originalStyle = window.getComputedStyle(document.body).overflow;
+    // Disable scrolling
+    document.body.style.overflow = 'hidden';
+
+    // Re-enable scrolling when component unmounts
+    return () => {
+      document.body.style.overflow = originalStyle;
+    };
+  }, []);
 
   const handleChange = (e) => {
     setFormData({
@@ -73,359 +87,318 @@ export default function SignupPage() {
       if (response.success) {
         navigate('/login');
       } else {
-        // Fallback for generic success: false response (shouldn't happen if backend follows standard)
         setError('Failed to create account');
       }
     } catch (error) {
       console.error('Signup error caught:', error);
-      let errorMessage = 'An unexpected error occurred during signup.'; // Default error message
+      let errorMessage = 'An unexpected error occurred during signup.';
 
       if (error.response) {
-        // Server responded with a status other than 2xx (e.g., 422)
         console.log('Backend error response:', error.response);
         if (error.response.data) {
           console.log('Backend error response data:', error.response.data);
 
-          // --- Attempt to get specific error message from 'errors' array --- 
           if (error.response.data.errors && Array.isArray(error.response.data.errors) && error.response.data.errors.length > 0) {
             errorMessage = error.response.data.errors.map((err) => `${err.path}: ${err.message}`).join(', ');
           } else if (error.response.data.message) {
-            // --- Fallback to a general message from the backend --- 
             errorMessage = error.response.data.message;
           } else if (typeof error.response.data === 'string') {
-            // --- Handle plain string error responses --- 
             errorMessage = error.response.data;
           } else {
-            // --- If data exists but doesn't match expected structures --- 
             errorMessage = `Request failed: ${JSON.stringify(error.response.data)}`;
           }
         } else if (error.message) {
-          // Use generic error message from the Error object if no response data
           errorMessage = error.message;
         } else {
           errorMessage = `Request failed with status ${error.response.status}`;
         }
       } else if (error.message) {
-        // Something happened in setting up the request that triggered an Error
         errorMessage = error.message;
       }
 
-      setError(errorMessage); // Set the determined error message
+      setError(errorMessage);
       console.log('Setting error message:', errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
+  // Common text field styling based on theme
+  const textFieldStyle = {
+    '& .MuiOutlinedInput-root': {
+      borderRadius: '12px',
+      bgcolor: 'background.paper',
+      '& fieldset': { borderColor: 'rgba(0, 0, 0, 0.12)' },
+      '&:hover fieldset': { borderColor: 'rgba(0, 0, 0, 0.24)' },
+      '&.Mui-focused fieldset': { borderColor: 'primary.main' },
+    },
+    '& .MuiInputLabel-root': {
+      color: 'text.secondary',
+    },
+    '& .MuiOutlinedInput-input': {
+      color: 'text.primary',
+    },
+  };
+
   return (
-    <Container maxWidth="sm">
-      <Box
+    <Box sx={{
+      height: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      overflow: 'hidden',
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      bgcolor: '#f6f5f3',
+    }}>
+      {/* Add GlowingDotsGrid */}
+      <GlowingDotsGrid
+        dotSize={12}     // Larger dots
+        dotGap={38}      // More space between dots
+        threshold={150}
+        speedThreshold={100}
+        shockRadius={250}
         sx={{
-          mt: 8,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          p: 4,
-          borderRadius: 2,
-          bgcolor: '#2c3e50',
-          color: 'white',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          zIndex: 1, // Behind the signup form
         }}
-      >
-        <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold', color: 'white' }}>
-          Create Account
-        </Typography>
-        <Typography variant="body1" gutterBottom sx={{ color: '#b0b3b8' }}>
-          Sign up to get started
-        </Typography>
+      />
 
-        {error && (
-          <Alert severity="error" sx={{ width: '100%', mb: 2 }}>
-            {error}
-          </Alert>
-        )}
+      <Container maxWidth="md" sx={{ zIndex: 2 }}> {/* Add zIndex to ensure form is above grid */}
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            p: { xs: 3, md: 6 },
+            borderRadius: 3,
+            bgcolor: 'background.paper',
+            boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.05)',
+            maxWidth: 800,
+            mx: 'auto',
+            maxHeight: '90vh',
+            overflowY: 'auto', // Allow scrolling within the form
+            backdropFilter: 'blur(5px)', // Add slight blur for better text contrast
+          }}
+        >
+          <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 700, color: 'text.primary', mb: 1 }}>
+            Create Account
+          </Typography>
+          <Typography variant="h6" gutterBottom sx={{ color: 'text.secondary', mb: 4, textAlign: 'center' }}>
+            Sign up to get started with your journey to quit smoking
+          </Typography>
 
-        <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%', mt: 2 }}>
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="First Name"
-                name="first_name"
-                value={formData.first_name}
-                onChange={handleChange}
-                required
-                autoComplete="given-name"
-                InputLabelProps={{
-                  style: { color: '#b0b3b8' },
-                }}
-                InputProps={{
-                  style: { color: 'white' },
-                }}
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: '4px',
-                    bgcolor: '#1c2833',
-                    '& fieldset': { borderColor: 'transparent' },
-                    '&:hover fieldset': { borderColor: 'transparent' },
-                    '&.Mui-focused fieldset': { borderColor: 'transparent' },
-                  },
-                }}
-              />
+          {error && (
+            <Alert severity="error" sx={{ width: '100%', mb: 3, borderRadius: 2 }}>
+              {error}
+            </Alert>
+          )}
+
+          <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%', mt: 2 }}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="First Name"
+                  name="first_name"
+                  value={formData.first_name}
+                  onChange={handleChange}
+                  required
+                  autoComplete="given-name"
+                  sx={textFieldStyle}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Last Name"
+                  name="last_name"
+                  value={formData.last_name}
+                  onChange={handleChange}
+                  required
+                  autoComplete="family-name"
+                  sx={textFieldStyle}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Username"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  required
+                  autoComplete="username"
+                  sx={textFieldStyle}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Email"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  autoComplete="email"
+                  sx={textFieldStyle}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Phone Number"
+                  name="phone_number"
+                  value={formData.phone_number}
+                  onChange={handleChange}
+                  required
+                  autoComplete="tel"
+                  placeholder="1234567890"
+                  sx={textFieldStyle}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Birth Date"
+                  name="dob"
+                  type="date"
+                  value={formData.dob}
+                  onChange={handleChange}
+                  required
+                  InputLabelProps={{ shrink: true }}
+                  sx={textFieldStyle}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Password"
+                  name="password"
+                  type="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                  autoComplete="new-password"
+                  sx={textFieldStyle}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Confirm Password"
+                  name="confirmPassword"
+                  type="password"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  required
+                  autoComplete="new-password"
+                  sx={textFieldStyle}
+                />
+              </Grid>
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Last Name"
-                name="last_name"
-                value={formData.last_name}
-                onChange={handleChange}
-                required
-                autoComplete="family-name"
-                InputLabelProps={{
-                  style: { color: '#b0b3b8' },
-                }}
-                InputProps={{
-                  style: { color: 'white' },
-                }}
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: '4px',
-                    bgcolor: '#1c2833',
-                    '& fieldset': { borderColor: 'transparent' },
-                    '&:hover fieldset': { borderColor: 'transparent' },
-                    '&.Mui-focused fieldset': { borderColor: 'transparent' },
-                  },
-                }}
-              />
-            </Grid>
-          </Grid>
 
-          <TextField
-            fullWidth
-            label="Username"
-            name="username"
-            value={formData.username}
-            onChange={handleChange}
-            margin="normal"
-            required
-            autoComplete="username"
-            InputLabelProps={{
-              style: { color: '#b0b3b8' },
-            }}
-            InputProps={{
-              style: { color: 'white' },
-            }}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                borderRadius: '4px',
-                bgcolor: '#1c2833',
-                '& fieldset': { borderColor: 'transparent' },
-                '&:hover fieldset': { borderColor: 'transparent' },
-                '&.Mui-focused fieldset': { borderColor: 'transparent' },
-              },
-            }}
-          />
-          <TextField
-            fullWidth
-            label="Email"
-            name="email"
-            type="email"
-            value={formData.email}
-            onChange={handleChange}
-            margin="normal"
-            required
-            autoComplete="email"
-            InputLabelProps={{
-              style: { color: '#b0b3b8' },
-            }}
-            InputProps={{
-              style: { color: 'white' },
-            }}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                borderRadius: '4px',
-                bgcolor: '#1c2833',
-                '& fieldset': { borderColor: 'transparent' },
-                '&:hover fieldset': { borderColor: 'transparent' },
-                '&.Mui-focused fieldset': { borderColor: 'transparent' },
-              },
-            }}
-          />
-          <TextField
-            fullWidth
-            label="Phone Number"
-            name="phone_number"
-            value={formData.phone_number}
-            onChange={handleChange}
-            margin="normal"
-            required
-            autoComplete="tel"
-            placeholder="1234567890"
-            InputLabelProps={{
-              style: { color: '#b0b3b8' },
-            }}
-            InputProps={{
-              style: { color: 'white' },
-            }}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                borderRadius: '4px',
-                bgcolor: '#1c2833',
-                '& fieldset': { borderColor: 'transparent' },
-                '&:hover fieldset': { borderColor: 'transparent' },
-                '&.Mui-focused fieldset': { borderColor: 'transparent' },
-              },
-            }}
-          />
-          <TextField
-            fullWidth
-            label="Birth Date"
-            name="dob"
-            type="date"
-            value={formData.dob}
-            onChange={handleChange}
-            margin="normal"
-            required
-            InputLabelProps={{ shrink: true, style: { color: '#b0b3b8' } }}
-            InputProps={{
-                style: { color: 'white' },
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              disabled={loading}
+              sx={{
+                mt: 4,
+                mb: 2,
+                py: 1.5,
+                bgcolor: '#000000',
+                color: 'white',
+                borderRadius: '12px',
+                boxShadow: '0 4px 0 #00000080',
+                '&:hover': {
+                  bgcolor: '#000000cd',
+                  boxShadow: '0 2px 0 #00000080',
+                  transform: 'translateY(2px)',
+                },
+                '&:active': {
+                  boxShadow: '0 0 0 #00000080',
+                  transform: 'translateY(4px)',
+                },
               }}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                borderRadius: '4px',
-                bgcolor: '#1c2833',
-                '& fieldset': { borderColor: 'transparent' },
-                '&:hover fieldset': { borderColor: 'transparent' },
-                '&.Mui-focused fieldset': { borderColor: 'transparent' },
-              },
-            }}
-          />
-          <TextField
-            fullWidth
-            label="Password"
-            name="password"
-            type="password"
-            value={formData.password}
-            onChange={handleChange}
-            margin="normal"
-            required
-            autoComplete="new-password"
-            InputLabelProps={{
-              style: { color: '#b0b3b8' },
-            }}
-            InputProps={{
-              style: { color: 'white' },
-            }}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                borderRadius: '4px',
-                bgcolor: '#1c2833',
-                '& fieldset': { borderColor: 'transparent' },
-                '&:hover fieldset': { borderColor: 'transparent' },
-                '&.Mui-focused fieldset': { borderColor: 'transparent' },
-              },
-            }}
-          />
-          <TextField
-            fullWidth
-            label="Confirm Password"
-            name="confirmPassword"
-            type="password"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            margin="normal"
-            required
-            autoComplete="new-password"
-            InputLabelProps={{
-              style: { color: '#b0b3b8' },
-            }}
-            InputProps={{
-              style: { color: 'white' },
-            }}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                borderRadius: '4px',
-                bgcolor: '#1c2833',
-                '& fieldset': { borderColor: 'transparent' },
-                '&:hover fieldset': { borderColor: 'transparent' },
-                '&.Mui-focused fieldset': { borderColor: 'transparent' },
-              },
-            }}
-          />
+            >
+              {loading ? 'Creating Account...' : 'Sign up'}
+            </Button>
 
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            disabled={loading}
-            sx={{
-              mt: 3,
-              mb: 2,
-              bgcolor: '#00b0ff',
-              color: 'white',
-              borderRadius: '8px',
-              px: 3,
-              py: 1.5,
-              boxShadow: '0 4px 0 #007ac1',
-              '&:hover': {
-                bgcolor: '#0091ea',
-                boxShadow: '0 2px 0 #007ac1',
-                transform: 'translateY(2px)',
-              },
-              '&:active': {
-                boxShadow: '0 0 0 #007ac1',
-                transform: 'translateY(4px)',
-              },
-            }}
-          >
-            {loading ? 'Creating Account...' : 'Sign up'}
-          </Button>
+            <Button
+              fullWidth
+              variant="outlined"
+              onClick={() => window.location.href = process.env.REACT_APP_BACKEND_GOOGLE_AUTH_URL}
+              startIcon={<img src="https://img.icons8.com/color/16/000000/google-logo.png" alt="Google logo" style={{ width: 20, height: 20 }} />}
+              sx={{
+                mt: 2,
+                mb: 3,
+                py: 1.5,
+                color: 'text.primary',
+                backgroundColor: 'background.paper',
+                borderColor: 'rgba(0, 0, 0, 0.23)',
+                borderRadius: '12px',
+                boxShadow: '0 4px 0 rgba(0, 0, 0, 0.1)',
+                '&:hover': {
+                  borderColor: 'text.primary',
+                  bgcolor: 'rgba(0, 0, 0, 0.04)',
+                  boxShadow: '0 2px 0 rgba(0, 0, 0, 0.1)',
+                  transform: 'translateY(2px)',
+                },
+                '&:active': {
+                  boxShadow: '0 0 0 rgba(0, 0, 0, 0.1)',
+                  transform: 'translateY(4px)',
+                },
+              }}
+            >
+              Sign up with Google
+            </Button>
 
-          <Button
-            fullWidth
-            variant="outlined"
-            onClick={() => window.location.href = process.env.REACT_APP_BACKEND_GOOGLE_AUTH_URL}
-            startIcon={<img src="https://img.icons8.com/color/16/000000/google-logo.png" alt="Google logo" style={{ width: 20, height: 20 }} />}
-            sx={{
-              mt: 1,
-              mb: 2,
-              color: 'black',
-              backgroundColor: 'white',
-              borderColor: '#3a3a3a',
-              borderRadius: '8px',
-              px: 3,
-              py: 1.5,
-              boxShadow: '0 4px 0 #212121',
-              '&:hover': {
-                borderColor: '#555',
-                bgcolor: '#f0f0f0',
-                boxShadow: '0 2px 0 #212121',
-                transform: 'translateY(2px)',
-              },
-              '&:active': {
-                boxShadow: '0 0 0 #212121',
-                transform: 'translateY(4px)',
-              },
-            }}
-          >
-            Sign up with Google
-          </Button>
-
-          <Box sx={{ textAlign: 'center', mt: 2 }}>
-            <Typography variant="body2" sx={{ color: '#b0b3b8' }}>
-              Already have an account?{' '}
-              <Link
-                component="button"
-                variant="body2"
-                onClick={() => navigate('/login')}
-                sx={{ color: '#00b0ff', fontWeight: 'bold' }}
-              >
-                Sign in
-              </Link>
-            </Typography>
+            <Box sx={{ textAlign: 'center', mt: 3 }}>
+              <Typography variant="body1" sx={{ color: 'text.secondary' }}>
+                Already have an account?{' '}
+                <Link
+                  component="button"
+                  variant="body1"
+                  onClick={() => navigate('/login')}
+                  sx={{
+                    color: 'primary.main',
+                    fontWeight: 600,
+                    textDecoration: 'none',
+                    position: 'relative',
+                    '&::after': {
+                      content: '""',
+                      position: 'absolute',
+                      width: '100%',
+                      transform: 'scaleX(0)',
+                      height: '2px',
+                      bottom: -1,
+                      left: 0,
+                      backgroundColor: 'primary.main',
+                      transformOrigin: 'bottom right',
+                      transition: 'transform 0.3s ease-out'
+                    },
+                    '&:hover::after': {
+                      transform: 'scaleX(1)',
+                      transformOrigin: 'bottom left'
+                    }
+                  }}
+                >
+                  Sign in
+                </Link>
+              </Typography>
+            </Box>
           </Box>
         </Box>
-      </Box>
-    </Container>
+      </Container>
+    </Box>
   );
-} 
+}
