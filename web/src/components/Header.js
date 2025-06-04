@@ -40,18 +40,28 @@ const Header = ({ authStatus }) => {
       }}
     >
       <Toolbar sx={{ minHeight: 80, display: 'flex', alignItems: 'center' }}>
-        <Typography
-          variant="h4"
-          sx={{
-            color: '#000000',
-            fontWeight: 800,
+        <Box 
+          component={RouterLink} 
+          to="/" 
+          sx={{ 
+            textDecoration: 'none',
             display: 'flex',
-            alignItems: 'center',
-            gap: 1
+            alignItems: 'center'
           }}
         >
-          Zerotine
-        </Typography>
+          <Typography
+            variant="h4"
+            sx={{
+              color: '#000000',
+              fontWeight: 800,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1
+            }}
+          >
+            Zerotine
+          </Typography>
+        </Box>
 
         {/* Added spacer */}
         <Box sx={{ flexGrow: 0.5 }} />
