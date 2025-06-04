@@ -1,0 +1,42 @@
+body {
+    background-color: #08342a;
+    margin: 0;
+    min-height: 100vh;
+}
+
+.section-resource {
+    padding: 4em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    position: relative;
+}
+
+.dots-wrap {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.dots-container {
+    display: flex;
+    flex-flow: wrap;
+    justify-content: center;
+    align-items: center;
+    grid-column-gap: 2em;
+    grid-row-gap: 2em;
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.dot {
+    background-color: #245e51;
+    border-radius: 50%;
+    width: 1em;
+    height: 1em;
+    position: relative;
+    transform: translate(0);
+    will-change: transform, background-color;
+}
