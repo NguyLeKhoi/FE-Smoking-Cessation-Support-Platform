@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Container, TextField, Button, Typography, Box, Alert, Link } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { login } from '../services/authService';
+import GlowingDotsGrid from '../components/animated/GlowingDotsGrid';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -14,12 +15,8 @@ export default function LoginPage() {
 
   // Effect to disable scrolling when component mounts
   useEffect(() => {
-    // Save the current overflow style
     const originalStyle = window.getComputedStyle(document.body).overflow;
-    // Disable scrolling
     document.body.style.overflow = 'hidden';
-
-    // Re-enable scrolling when component unmounts
     return () => {
       document.body.style.overflow = originalStyle;
     };
@@ -61,9 +58,8 @@ export default function LoginPage() {
     }
   };
 
-  // Common text field styling based on theme
   const textFieldStyle = {
-    '& .MuiOutlinedInput-root': {
+    '& .MuiOutlinedInput-root CVroot': {
       borderRadius: '12px',
       bgcolor: 'background.paper',
       '& fieldset': { borderColor: 'rgba(0, 0, 0, 0.12)' },
@@ -79,20 +75,36 @@ export default function LoginPage() {
   };
 
   return (
-    <Box sx={{
-      height: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      overflow: 'hidden',
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      bgcolor: '#f6f5f3',
-    }}>
-      <Container maxWidth="sm">
+    <Box
+      sx={{
+        height: '100vh',
+        width: '100vw',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'hidden',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        bgcolor: '#f6f5f3',
+      }}
+    >
+      {/* Background Glowing Dots Grid */}
+      <GlowingDotsGrid
+        sx={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          zIndex: 1, // Behind the login form
+        }}
+      />
+
+      {/* Login Form Container */}
+      <Container maxWidth="sm" sx={{ zIndex: 2 }}>
         <Box
           sx={{
             display: 'flex',
@@ -105,7 +117,9 @@ export default function LoginPage() {
             maxWidth: 500,
             mx: 'auto',
             maxHeight: '90vh',
-            overflowY: 'auto', // Allow scrolling within the form if needed
+            overflowY: 'auto',
+            // Optional: Add slight transparency to see the background
+            bgcolor: 'rgba(255, 255, 255, 0.95)', // Semi-transparent white
           }}
         >
           <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 700, color: 'text.primary', mb: 1 }}>
@@ -148,7 +162,6 @@ export default function LoginPage() {
               sx={textFieldStyle}
             />
 
-            {/* Forgot password link */}
             <Box sx={{ textAlign: 'right', mt: 1 }}>
               <Link
                 component="button"
@@ -187,7 +200,6 @@ export default function LoginPage() {
               {loading ? 'Signing in...' : 'Sign in'}
             </Button>
 
-            {/* Divider */}
             <Box sx={{ display: 'flex', alignItems: 'center', my: 3 }}>
               <Box sx={{ flexGrow: 1, height: '1px', bgcolor: 'rgba(0, 0, 0, 0.1)' }} />
               <Typography variant="body2" sx={{ mx: 2, color: 'text.secondary' }}>OR</Typography>
@@ -222,7 +234,6 @@ export default function LoginPage() {
               Sign in with Google
             </Button>
 
-            {/* Signup link */}
             <Box sx={{ textAlign: 'center', mt: 2 }}>
               <Typography variant="body1" sx={{ color: 'text.secondary' }}>
                 Don't have an account?{' '}
@@ -245,12 +256,12 @@ export default function LoginPage() {
                       left: 0,
                       backgroundColor: 'primary.main',
                       transformOrigin: 'bottom right',
-                      transition: 'transform 0.3s ease-out'
+                      transition: 'transform 0.3s ease-out',
                     },
                     '&:hover::after': {
                       transform: 'scaleX(1)',
-                      transformOrigin: 'bottom left'
-                    }
+                      transformOrigin: 'bottom left',
+                    },
                   }}
                 >
                   Sign up
