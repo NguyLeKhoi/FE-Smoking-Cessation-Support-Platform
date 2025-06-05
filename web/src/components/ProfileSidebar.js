@@ -74,11 +74,11 @@ const UserProfileSection = () => (
                 color: 'black',
             }}
         >
-            U
+            J
         </Avatar>
         <Box sx={{ ml: 2 }}>
             <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                User Name
+                johnsmith
             </Typography>
             <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                 Basic Level
@@ -157,11 +157,6 @@ const ProfileSidebar = () => {
                 ))}
             </List>
 
-            <Box sx={{ mt: 'auto', pt: 4, pb: 2, textAlign: 'center' }}>
-                <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                    © 2025 Zerotine App
-                </Typography>
-            </Box>
         </SidebarContainer>
     );
 };

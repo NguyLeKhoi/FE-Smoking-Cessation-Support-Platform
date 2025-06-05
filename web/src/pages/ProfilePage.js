@@ -20,7 +20,6 @@ export default function ProfilePage({ handleLogout }) {
     joined: "June 2023"
   };
 
-  // Statistics data
   const statisticsData = [
     {
       icon: '💧',
@@ -62,9 +61,6 @@ export default function ProfilePage({ handleLogout }) {
         bgcolor: 'background.paper',
         color: 'text.primary',
       }}>
-        <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: 'text.primary' }}>
-          User Profile
-        </Typography>
 
         {/* User Information Section */}
         <Paper
@@ -78,65 +74,129 @@ export default function ProfilePage({ handleLogout }) {
             mb: 4
           }}
         >
-          <Grid container spacing={5}>
-            <Grid item xs={12} md={6}>
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="subtitle2" sx={{ color: 'text.secondary', mb: 0.5 }}>
-                  Username
-                </Typography>
-                <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
-                  {userData.username}
-                </Typography>
+          <Box sx={{ display: 'flex', gap: 4, alignItems: 'flex-start' }}>
+            {/* Avatar Section - Left Side */}
+            <Box sx={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center',
+              minWidth: '200px'
+            }}>
+              <Box
+                sx={{
+                  width: 160,
+                  height: 160,
+                  borderRadius: '50%',
+                  bgcolor: '#f0f0f0',
+                  border: '4px solid',
+                  borderColor: 'primary.main',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '64px',
+                  mb: 2,
+                  position: 'relative',
+                  overflow: 'hidden'
+                }}
+              >
+                {userData.username.charAt(0).toUpperCase()}
+                {/* Alternatively, use an image:
+                <Box 
+                  component="img"
+                  src="https://via.placeholder.com/160"
+                  alt="User avatar"
+                  sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+                */}
               </Box>
+              <Typography 
+                variant="h6" 
+                sx={{ 
+                  fontWeight: 'bold', 
+                  textAlign: 'center',
+                  color: 'text.primary'
+                }}
+              >
+                {userData.username}
+              </Typography>
+              <Typography 
+                variant="body2" 
+                sx={{ 
+                  color: 'text.secondary',
+                  textAlign: 'center'
+                }}
+              >
+                Member since {userData.joined}
+              </Typography>
+              <Button
+                variant="outlined"
+                size="small"
+                sx={{
+                  mt: 2,
+                  borderRadius: 2,
+                  textTransform: 'none',
+                  px: 3
+                }}
+              >
+                Edit Profile
+              </Button>
+            </Box>
 
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="subtitle2" sx={{ color: 'text.secondary', mb: 0.5 }}>
-                  Role
-                </Typography>
-                <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
-                  {userData.role}
-                </Typography>
-              </Box>
+            {/* User Information - Right Side */}
+            <Box sx={{ flex: 1 }}>
+              <Typography 
+                variant="h6" 
+                sx={{ 
+                  fontWeight: 'bold', 
+                  mb: 3,
+                  color: 'text.primary'
+                }}
+              >
+                Personal Information
+              </Typography>
+              <Grid container spacing={3}>
+                <Grid item xs={12} sm={6}>
+                  <Box sx={{ mb: 2 }}>
+                    <Typography variant="subtitle2" sx={{ color: 'text.secondary', mb: 0.5 }}>
+                      Email
+                    </Typography>
+                    <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
+                      {userData.email}
+                    </Typography>
+                  </Box>
 
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="subtitle2" sx={{ color: 'text.secondary', mb: 0.5 }}>
-                  Joined
-                </Typography>
-                <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
-                  {userData.joined}
-                </Typography>
-              </Box>
-            </Grid>
+                  <Box sx={{ mb: 2 }}>
+                    <Typography variant="subtitle2" sx={{ color: 'text.secondary', mb: 0.5 }}>
+                      Phone Number
+                    </Typography>
+                    <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
+                      {userData.phone_number}
+                    </Typography>
+                  </Box>
+                </Grid>
 
-            <Grid item xs={12} md={6}>
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="subtitle2" sx={{ color: 'text.secondary', mb: 0.5 }}>
-                  Email
-                </Typography>
-                <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
-                  {userData.email}
-                </Typography>
-              </Box>
+                <Grid item xs={12} sm={6}>
+                  <Box sx={{ mb: 2 }}>
+                    <Typography variant="subtitle2" sx={{ color: 'text.secondary', mb: 0.5 }}>
+                      Role
+                    </Typography>
+                    <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
+                      {userData.role}
+                    </Typography>
+                  </Box>
 
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="subtitle2" sx={{ color: 'text.secondary', mb: 0.5 }}>
-                  Phone Number
-                </Typography>
-                <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
-                  {userData.phone_number}
-                </Typography>
-              </Box>
-
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="subtitle2" sx={{ color: 'text.secondary', mb: 0.5 }}>
-                  Date of Birth
-                </Typography>
-                <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
-                  {userData.dob}
-                </Typography>
-              </Box>
-            </Grid>
-          </Grid>
+                  <Box sx={{ mb: 2 }}>
+                    <Typography variant="subtitle2" sx={{ color: 'text.secondary', mb: 0.5 }}>
+                      Date of Birth
+                    </Typography>
+                    <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
+                      {userData.dob}
+                    </Typography>
+                  </Box>
+                </Grid>
+              </Grid>
+            </Box>
+          </Box>
         </Paper>
 
         {/* Statistics Section*/}
@@ -234,7 +294,13 @@ export default function ProfilePage({ handleLogout }) {
         {/* Achievements Section */}
         <Box sx={{ mt: 5 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-            <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'text.primary' }}>
+            <Typography variant="h5"
+              sx={{
+                fontWeight: 'bold',
+                mb: 1,
+                color: 'text.primary',
+                fontSize: '32px'
+              }}>
               Achievements
             </Typography>
             <Typography
