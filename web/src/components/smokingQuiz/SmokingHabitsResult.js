@@ -4,15 +4,25 @@ import SavingsIcon from '@mui/icons-material/Savings';
 import HealthAndSafetyIcon from '@mui/icons-material/HealthAndSafety';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
+import SmartToyIcon from '@mui/icons-material/SmartToy';
 
 const SmokingHabitsResult = ({ data }) => {
   if (!data) return null;
-
-  // Calculate smoking statistics
-  const cigarettesPerDay = data.cigarettes_per_day || 0;
-  const smokingYears = data.smoking_years || 0;
-  const pricePerPack = data.price_per_pack || 0;
-  const cigarettesPerPack = data.cigarettes_per_pack || 20;
+  
+  // Ensure we're working with the correct data structure
+  console.log("Raw result data:", data);
+  
+  // Get data from the right location in the response
+  const smokingData = data.data || data; // Handle both {data: {...}} and direct object format
+  
+  // Access fields with proper error handling
+  const cigarettesPerDay = parseFloat(smokingData.cigarettes_per_day);
+  const smokingYears = parseFloat(smokingData.smoking_years);
+  const pricePerPack = parseFloat(smokingData.price_per_pack);
+  const cigarettesPerPack = parseFloat(smokingData.cigarettes_per_pack);
+  const triggers = Array.isArray(smokingData.triggers) ? smokingData.triggers : [];
+  const healthIssues = smokingData.health_issues || "";
+  const aiFeedback = smokingData.ai_feedback || "";
   
   // Calculate lifetime cigarettes
   const lifetimeCigarettes = cigarettesPerDay * 365 * smokingYears;
@@ -27,6 +37,14 @@ const SmokingHabitsResult = ({ data }) => {
   const minutesPerDay = cigarettesPerDay * 5;
   const daysSpentSmoking = (minutesPerDay * 365 * smokingYears) / (60 * 24);
 
+  // Format AI feedback with paragraph breaks
+  const formattedAiFeedback = aiFeedback ? 
+    aiFeedback.split('\n\n').map((paragraph, index) => (
+      <Typography key={index} variant="body1" paragraph>
+        {paragraph}
+      </Typography>
+    )) : null;
+
   return (
     <Box>
       <Typography 
@@ -40,6 +58,46 @@ const SmokingHabitsResult = ({ data }) => {
       >
         Your Smoking Impact Assessment
       </Typography>
+
+      {aiFeedback && (
+        <Box sx={{ mb: 5 }}>
+          <Paper 
+            elevation={0}
+            sx={{ 
+              p: 3, 
+              borderRadius: 3,
+              border: '1px solid',
+              borderColor: 'divider',
+              bgcolor: 'rgba(0, 0, 0, 0.02)',
+              position: 'relative',
+              overflow: 'hidden'
+            }}
+          >
+            <Box 
+              sx={{ 
+                display: 'flex', 
+                alignItems: 'center',
+                mb: 2
+              }}
+            >
+              <SmartToyIcon sx={{ mr: 1.5, color: 'primary.main' }} />
+              <Typography 
+                variant="h6" 
+                sx={{ 
+                  fontWeight: 600,
+                  color: 'text.primary'
+                }}
+              >
+                Personalized Feedback
+              </Typography>
+            </Box>
+            
+            <Box sx={{ pl: 1 }}>
+              {formattedAiFeedback}
+            </Box>
+          </Paper>
+        </Box>
+      )}
 
       <Typography 
         variant="body1" 
@@ -72,7 +130,7 @@ const SmokingHabitsResult = ({ data }) => {
               }} 
             />
             <Typography variant="h3" sx={{ fontWeight: 700, mb: 1 }}>
-              {lifetimeCigarettes.toLocaleString()}
+              {Math.round(lifetimeCigarettes).toLocaleString()}
             </Typography>
             <Typography variant="body1" color="text.secondary">
               Cigarettes smoked in your lifetime
@@ -103,7 +161,7 @@ const SmokingHabitsResult = ({ data }) => {
               }} 
             />
             <Typography variant="h3" sx={{ fontWeight: 700, mb: 1 }}>
-              ${lifetimeCost.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+              ${Math.round(lifetimeCost).toLocaleString()}
             </Typography>
             <Typography variant="body1" color="text.secondary">
               Lifetime spending on cigarettes
@@ -165,7 +223,7 @@ const SmokingHabitsResult = ({ data }) => {
               }} 
             />
             <Typography variant="h3" sx={{ fontWeight: 700, mb: 1 }}>
-              {(data.cigarettes_per_day * 11).toFixed(0)}
+              {Math.round(cigarettesPerDay * 11)}
             </Typography>
             <Typography variant="body1" color="text.secondary">
               Minutes of life lost per day
@@ -195,9 +253,9 @@ const SmokingHabitsResult = ({ data }) => {
             borderColor: 'divider'
           }}
         >
-          {data.triggers && data.triggers.length > 0 ? (
+          {triggers && triggers.length > 0 ? (
             <Grid container spacing={2}>
-              {data.triggers.map((trigger, index) => (
+              {triggers.map((trigger, index) => (
                 <Grid item xs={12} sm={6} key={index}>
                   <Box 
                     sx={{ 
@@ -230,7 +288,7 @@ const SmokingHabitsResult = ({ data }) => {
         </Paper>
       </Box>
 
-      {data.health_issues && (
+      {healthIssues && (
         <Box sx={{ mb: 4 }}>
           <Typography 
             variant="h5" 
@@ -253,7 +311,7 @@ const SmokingHabitsResult = ({ data }) => {
             }}
           >
             <Typography variant="body1">
-              {data.health_issues || "No health issues reported."}
+              {healthIssues}
             </Typography>
           </Paper>
         </Box>
