@@ -5,10 +5,12 @@ import HealthAndSafetyIcon from '@mui/icons-material/HealthAndSafety';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
+import SmokingHabitsQuestions from './SmokingHabitsQuestions';
 
 const SmokingHabitsResult = ({ data }) => {
-    // const navigate = useNavigate();
-
+    // Get questions to reference fields and labels
+    const { questions } = SmokingHabitsQuestions();
+    
     if (!data) return null;
 
     // Ensure we're working with the correct data structure
@@ -394,6 +396,43 @@ const SmokingHabitsResult = ({ data }) => {
                             </Typography>
                         </Box>
                     </Box>
+                </Paper>
+            </Box>
+
+            {/* You could add an additional section that shows the original answers */}
+            <Box sx={{ mt: 6, mb: 4 }}>
+                <Typography
+                    variant="h5"
+                    sx={{
+                        fontWeight: 600,
+                        mb: 2,
+                        color: 'text.primary'
+                    }}
+                >
+                    Your Assessment Answers
+                </Typography>
+
+                <Paper
+                    elevation={0}
+                    sx={{
+                        p: 3,
+                        borderRadius: 3,
+                        border: '1px solid',
+                        borderColor: 'divider'
+                    }}
+                >
+                    {questions.map(question => (
+                        <Box key={question.id} sx={{ mb: 2 }}>
+                            <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                                {question.question}
+                            </Typography>
+                            <Typography variant="body1">
+                                {question.field === 'triggers' 
+                                    ? (triggers.length > 0 ? triggers.join(', ') : 'None selected')
+                                    : smokingData[question.field] || 'Not provided'}
+                            </Typography>
+                        </Box>
+                    ))}
                 </Paper>
             </Box>
         </Box>
