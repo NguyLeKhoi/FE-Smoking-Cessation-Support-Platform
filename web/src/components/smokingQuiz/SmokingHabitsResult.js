@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, Grid, Paper, Divider } from '@mui/material';
+import { Box, Typography, Grid, Paper } from '@mui/material';
 import SavingsIcon from '@mui/icons-material/Savings';
 import HealthAndSafetyIcon from '@mui/icons-material/HealthAndSafety';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
@@ -7,6 +7,8 @@ import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
 
 const SmokingHabitsResult = ({ data }) => {
+  // const navigate = useNavigate();
+  
   if (!data) return null;
   
   // Ensure we're working with the correct data structure

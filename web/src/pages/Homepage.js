@@ -1,11 +1,14 @@
 import React from 'react';
 import { Container, Box, Typography, Grid } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import homepageImage from '../assets/homepage.jpg';
 import Lottie from 'lottie-react';
 import quitSignAnimation from '../assets/animations/quit-sign.json';
 import QuotesCarousel from '../components/QuotesCarousel';
 
 export default function HomePage() {
+  const navigate = useNavigate();
+
   return (
     <Box sx={{ bgcolor: 'background.paper' }}>
       {/* Hero Section */}
@@ -59,20 +62,23 @@ export default function HomePage() {
                 justifyContent: { xs: 'center', md: 'center' },
                 width: '100%'
               }}>
-                <Box sx={{
-                  bgcolor: 'primary.main',
-                  color: 'white',
-                  px: 4,
-                  py: 2,
-                  borderRadius: 4,
-                  display: 'inline-block',
-                  fontSize: '1.1rem',
-                  fontWeight: 500,
-                  cursor: 'pointer',
-                  '&:hover': {
-                    bgcolor: 'primary.dark'
-                  }
-                }}>
+                <Box 
+                  onClick={() => navigate('/smoking-quiz')}
+                  sx={{
+                    bgcolor: 'primary.main',
+                    color: 'white',
+                    px: 4,
+                    py: 2,
+                    borderRadius: 4,
+                    display: 'inline-block',
+                    fontSize: '1.1rem',
+                    fontWeight: 500,
+                    cursor: 'pointer',
+                    '&:hover': {
+                      bgcolor: 'primary.dark'
+                    }
+                  }}
+                >
                   Take a Quiz
                 </Box>
               </Box>

@@ -12,10 +12,14 @@ import {
     Checkbox, 
     Container 
 } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import HomeIcon from '@mui/icons-material/Home';
 import smokingService from '../services/smokingService';
 import SmokingHabitsResult from '../components/smokingQuiz/SmokingHabitsResult';
 
 const SmokingQuiz = () => {
+    const navigate = useNavigate();
+    
     const [formData, setFormData] = useState({
         cigarettes_per_pack: 20,
         price_per_pack: 5.99,
@@ -320,7 +324,7 @@ const SmokingQuiz = () => {
                     >
                         <SmokingHabitsResult data={result} />
                         
-                        <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
+                        <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center', gap: 2, flexDirection: 'column', alignItems: 'center' }}>
                             <Button
                                 onClick={handleRetakeQuiz}
                                 variant="outlined"
@@ -337,6 +341,31 @@ const SmokingQuiz = () => {
                                 }}
                             >
                                 Retake Assessment
+                            </Button>
+                            
+                            <Button
+                                variant="contained"
+                                startIcon={<HomeIcon />}
+                                onClick={() => navigate('/')}
+                                sx={{
+                                    py: 1.5,
+                                    px: 4,
+                                    bgcolor: '#000000',
+                                    color: 'white',
+                                    borderRadius: '12px',
+                                    boxShadow: '0 4px 0 #00000080',
+                                    '&:hover': {
+                                        bgcolor: '#000000cd',
+                                        boxShadow: '0 2px 0 #00000080',
+                                        transform: 'translateY(2px)',
+                                    },
+                                    '&:active': {
+                                        boxShadow: '0 0 0 #00000080',
+                                        transform: 'translateY(4px)',
+                                    },
+                                }}
+                            >
+                                Back to Homepage
                             </Button>
                         </Box>
                     </Box>
