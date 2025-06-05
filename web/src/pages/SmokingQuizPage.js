@@ -93,6 +93,22 @@ const SmokingQuiz = () => {
         fetchExistingData();
     }, []);
 
+    // Effect to disable scrolling when showing the quiz form
+    useEffect(() => {
+        if (showForm) {
+            // Disable scrolling
+            document.body.style.overflow = 'hidden';
+        } else {
+            // Re-enable scrolling
+            document.body.style.overflow = 'auto';
+        }
+
+        // Cleanup function to re-enable scrolling when component unmounts
+        return () => {
+            document.body.style.overflow = 'auto';
+        };
+    }, [showForm]);
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         dispatch({ type: 'UPDATE_FIELD', field: name, value });
@@ -169,6 +185,7 @@ const SmokingQuiz = () => {
             minWidth: '100%',
             bgcolor: 'background.default',
             py: 5,
+            overflow: showForm ? 'hidden' : 'auto',
         }}>
             <Container maxWidth="md">
                 {error && (
@@ -190,7 +207,11 @@ const SmokingQuiz = () => {
                             borderRadius: 3,
                             bgcolor: '#ffffff',
                             boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.05)',
-                            mb: 4
+                            mb: 4,
+                            height: 'auto',
+                            maxHeight: 'calc(100vh - 80px)',
+                            display: 'flex',
+                            flexDirection: 'column'
                         }}
                     >
                         <Typography
@@ -215,7 +236,7 @@ const SmokingQuiz = () => {
                             Question {currentQuestion + 1} of {questions.length}
                         </Typography>
 
-                        <Box sx={{ mt: 2 }}>
+                        <Box sx={{ mt: 2, flexGrow: 1 }}>
                             <Typography
                                 variant="subtitle1"
                                 sx={{
