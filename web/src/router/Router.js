@@ -12,6 +12,7 @@ import ProfilePage from '../pages/ProfilePage';
 import LoginSuccessPage from '../pages/LoginSuccessPage';
 import ForgotPasswordPage from '../pages/ForgotPasswordPage';
 import ResetPasswordPage from '../pages/ResetPasswordPage';
+import SmokingQuizPage from '../pages/SmokingQuizPage';
 
 export const routes = createBrowserRouter([
   {
@@ -77,6 +78,14 @@ export const routes = createBrowserRouter([
     element: (
       <AuthLayout>
         <ResetPasswordPage />
+      </AuthLayout>
+    ),
+  },
+  {
+    path: '/smoking-quiz',
+    element: (
+      <AuthLayout>
+        <SmokingQuizPage />
       </AuthLayout>
     ),
   },

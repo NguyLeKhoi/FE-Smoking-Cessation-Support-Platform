@@ -26,7 +26,7 @@ const SidebarContainer = styled(Paper)(({ theme }) => ({
     height: '100vh',
     backgroundColor: theme.palette.background.paper,
     boxShadow: '4px 0px 10px rgba(0, 0, 0, 0.03)',
-    padding: '24px 16px',
+    padding: '50px 16px',
     display: 'flex',
     flexDirection: 'column',
     color: theme.palette.text.primary,
@@ -60,11 +60,6 @@ const IconText = styled(Typography)(({ theme }) => ({
     color: theme.palette.text.primary,
 }));
 
-// Logo component
-const Logo = () => (
-    <Box sx={{ display: 'flex', alignItems: 'center', mb: 4, pl: 1 }}>
-    </Box>
-);
 
 // User profile section
 const UserProfileSection = () => (
@@ -106,7 +101,6 @@ const ProfileSidebar = () => {
 
     return (
         <SidebarContainer elevation={0}>
-            <Logo />
             <UserProfileSection />
 
             <Typography
