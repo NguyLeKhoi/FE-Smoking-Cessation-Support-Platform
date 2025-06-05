@@ -6,7 +6,7 @@ import { Box, IconButton } from '@mui/material';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import { isAuthenticated, logout } from '../services/authService'; // Import isAuthenticated and logout
 
-const MainLayout = ({ children, showHeader = true, showFooter = true }) => {
+export default function MainLayout({ children, showHeader = true, showFooter = true }) {
   const [isChatboxOpen, setIsChatboxOpen] = useState(false);
   const [authStatus, setAuthStatus] = useState(isAuthenticated()); // State for authentication status
 
@@ -21,7 +21,7 @@ const MainLayout = ({ children, showHeader = true, showFooter = true }) => {
   };
 
   return (
-    <Box sx={{ position: 'relative', minHeight: '100vh' }}> {/* Ensure relative positioning for fixed children */}
+    <Box sx={{ position: 'relative', display: 'flex', flexDirection: 'column', minHeight: '100vh' }}> {/* Ensure relative positioning for fixed children */}
       {showHeader && (
         <Box style={{
           position: 'fixed',
@@ -29,21 +29,21 @@ const MainLayout = ({ children, showHeader = true, showFooter = true }) => {
           left: 0,
           width: '100%',
           zIndex: 1100, // Ensure header is above other content, adjust as needed
-          backgroundColor: 'rgba(255, 255, 255, 0.2)', // Semi-transparent white
+          backgroundColor: '#F9F7F4', // Semi-transparent white
           backdropFilter: 'blur(5px)', // Apply a blur effect
           WebkitBackdropFilter: 'blur(5px)', // For Safari support
         }}>
           <Header authStatus={authStatus} onLogout={handleLogout} />
         </Box>
       )}
-      <main style={{ paddingTop: showHeader ? '64px' : 0 }}>
+      <Box component="main" sx={{ flexGrow: 1, paddingTop: showHeader ? '64px' : 0 }}>
         {React.Children.map(children, (child) => {
           if (child && child.type && child.type.name === 'ProfilePage') {
             return React.cloneElement(child, { handleLogout });
           }
           return child;
         })}
-      </main>
+      </Box>
       
       {/* Chat button positioned fixed at bottom right */}
       {!isChatboxOpen && (
@@ -55,9 +55,9 @@ const MainLayout = ({ children, showHeader = true, showFooter = true }) => {
             bottom: 20,
             right: 20, // Keep it at right: 20 when chatbox is closed
             zIndex: 1200, // Ensure button is above chatbox
-            bgcolor: '#0095f6', // Instagram blue
+            bgcolor: '#F9F7F4', // Instagram blue
             color: 'white',
-            '&:hover': { bgcolor: '#007ac1' },
+            '&:hover': { bgcolor: '#ffffff' },
             transition: 'right 0.3s ease-in-out', // Smooth transition for position change
           }}
         >
@@ -71,5 +71,3 @@ const MainLayout = ({ children, showHeader = true, showFooter = true }) => {
     </Box>
   );
 };
-
-export default MainLayout;
