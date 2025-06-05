@@ -1,5 +1,14 @@
-import React from 'react';
-import { Box, Typography, Grid, Paper } from '@mui/material';
+import React, { useState } from 'react';
+import { 
+    Box, 
+    Typography, 
+    Grid, 
+    Paper, 
+    Accordion, 
+    AccordionSummary, 
+    AccordionDetails 
+} from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SavingsIcon from '@mui/icons-material/Savings';
 import HealthAndSafetyIcon from '@mui/icons-material/HealthAndSafety';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
@@ -65,34 +74,36 @@ const SmokingHabitsResult = ({ data }) => {
 
             {aiFeedback && (
                 <Box sx={{ mb: 5, width: '100%' }}>
-                    <Paper
+                    <Accordion 
+                        defaultExpanded={true} // Start expanded to show the important feedback
                         elevation={0}
                         sx={{
-                            p: { xs: 3, md: 4 }, // Responsive padding
-                            borderRadius: 3,
+                            borderRadius: '12px',
                             border: '1px solid',
                             borderColor: 'divider',
                             bgcolor: 'rgba(0, 0, 0, 0.02)',
-                            position: 'relative',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            width: '100%',
-                            height: 'auto', // Allow height to adjust to content
-                            minHeight: '100px',
-                            boxSizing: 'border-box', // Include padding in element's dimensions
+                            '&:before': {
+                                display: 'none',
+                            },
+                            overflow: 'hidden'
                         }}
                     >
-                        <Box
+                        <AccordionSummary
+                            expandIcon={<ExpandMoreIcon />}
+                            aria-controls="ai-feedback-content"
+                            id="ai-feedback-header"
                             sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                mb: 3,
-                                flexShrink: 0 // Prevent this from shrinking
+                                backgroundColor: 'rgba(0, 0, 0, 0.02)',
+                                borderBottom: '1px solid',
+                                borderBottomColor: expanded => expanded ? 'divider' : 'transparent',
+                                transition: 'all 0.2s ease',
+                                '&:hover': {
+                                    backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                                }
                             }}
                         >
-                            {/* <SmartToyIcon sx={{ mr: 1.5, color: 'primary.main', flexShrink: 0 }} /> */}
                             <Typography
-                                variant="h6"
+                                variant="h5"
                                 sx={{
                                     fontWeight: 600,
                                     color: 'text.primary'
@@ -100,34 +111,34 @@ const SmokingHabitsResult = ({ data }) => {
                             >
                                 Personalized Feedback
                             </Typography>
-                        </Box>
-
-                        <Box sx={{
-                            pl: 1,
-                            wordBreak: 'break-word',
-                            whiteSpace: 'pre-wrap',
-                            width: '100%',
-                            height: 'auto',
-                            overflow: 'visible',
-                            flexGrow: 1 // Allow this section to grow
-                        }}>
-                            {aiFeedback.split('\n\n').map((paragraph, index) => (
-                                <Typography
-                                    key={index}
-                                    variant="body1"
-                                    paragraph
-                                    sx={{
-                                        mb: 2,
-                                        lineHeight: 1.7,
-                                        width: '100%',
-                                        display: 'block'
-                                    }}
-                                >
-                                    {paragraph}
-                                </Typography>
-                            ))}
-                        </Box>
-                    </Paper>
+                        </AccordionSummary>
+                        <AccordionDetails sx={{ p: { xs: 3, md: 4 } }}>
+                            <Box sx={{
+                                pl: 1,
+                                wordBreak: 'break-word',
+                                whiteSpace: 'pre-wrap',
+                                width: '100%',
+                                height: 'auto',
+                                overflow: 'visible'
+                            }}>
+                                {aiFeedback.split('\n\n').map((paragraph, index) => (
+                                    <Typography
+                                        key={index}
+                                        variant="body1"
+                                        paragraph
+                                        sx={{
+                                            mb: 2,
+                                            lineHeight: 1.7,
+                                            width: '100%',
+                                            display: 'block'
+                                        }}
+                                    >
+                                        {paragraph}
+                                    </Typography>
+                                ))}
+                            </Box>
+                        </AccordionDetails>
+                    </Accordion>
                 </Box>
             )}
 
@@ -156,7 +167,7 @@ const SmokingHabitsResult = ({ data }) => {
                             alignItems: 'center',
                             justifyContent: 'center',
                             textAlign: 'center',
-                            boxSizing: 'border-box' // Include padding in width calculations
+                            boxSizing: 'border-box' // Include padding in element's dimensions
                         }}
                     >
                         <LocalFireDepartmentIcon
@@ -191,7 +202,7 @@ const SmokingHabitsResult = ({ data }) => {
                             alignItems: 'center',
                             justifyContent: 'center',
                             textAlign: 'center',
-                            boxSizing: 'border-box' // Include padding in width calculations
+                            boxSizing: 'border-box' // Include padding in element's dimensions
                         }}
                     >
                         <SavingsIcon
@@ -226,7 +237,7 @@ const SmokingHabitsResult = ({ data }) => {
                             alignItems: 'center',
                             justifyContent: 'center',
                             textAlign: 'center',
-                            boxSizing: 'border-box' // Include padding in width calculations
+                            boxSizing: 'border-box' // Include padding in element's dimensions
                         }}
                     >
                         <AccessTimeIcon
@@ -261,7 +272,7 @@ const SmokingHabitsResult = ({ data }) => {
                             alignItems: 'center',
                             justifyContent: 'center',
                             textAlign: 'center',
-                            boxSizing: 'border-box' // Include padding in width calculations
+                            boxSizing: 'border-box' // Include padding in element's dimensions
                         }}
                     >
                         <HealthAndSafetyIcon
@@ -416,41 +427,63 @@ const SmokingHabitsResult = ({ data }) => {
                 </Paper>
             </Box>
 
-            {/* You could add an additional section that shows the original answers */}
+            {/* shows the original answers */}
             <Box sx={{ mt: 6, mb: 4 }}>
-                <Typography
-                    variant="h5"
-                    sx={{
-                        fontWeight: 600,
-                        mb: 2,
-                        color: 'text.primary'
-                    }}
-                >
-                    Your Assessment Answers
-                </Typography>
-
-                <Paper
+                <Accordion 
                     elevation={0}
                     sx={{
-                        p: 3,
-                        borderRadius: 3,
+                        borderRadius: '12px',
                         border: '1px solid',
-                        borderColor: 'divider'
+                        borderColor: 'divider',
+                        '&:before': {
+                            display: 'none',
+                        },
+                        overflow: 'hidden'
                     }}
                 >
-                    {questions.map(question => (
-                        <Box key={question.id} sx={{ mb: 2 }}>
-                            <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                                {question.question}
-                            </Typography>
-                            <Typography variant="body1">
-                                {question.field === 'triggers'
-                                    ? (triggers.length > 0 ? triggers.join(', ') : 'None selected')
-                                    : smokingData[question.field] || 'Not provided'}
-                            </Typography>
-                        </Box>
-                    ))}
-                </Paper>
+                    <AccordionSummary
+                        expandIcon={<ExpandMoreIcon />}
+                        aria-controls="assessment-answers-content"
+                        id="assessment-answers-header"
+                        sx={{
+                            backgroundColor: 'rgba(0, 0, 0, 0.02)',
+                            borderBottom: '1px solid',
+                            borderBottomColor: expanded => expanded ? 'divider' : 'transparent',
+                            transition: 'all 0.2s ease',
+                            '&:hover': {
+                                backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                            }
+                        }}
+                    >
+                        <Typography
+                            variant="h5"
+                            sx={{
+                                fontWeight: 600,
+                                color: 'text.primary'
+                            }}
+                        >
+                            Your Assessment Answers
+                        </Typography>
+                    </AccordionSummary>
+                    <AccordionDetails sx={{ p: 3 }}>
+                        {questions.map(question => (
+                            <Box key={question.id} sx={{ 
+                                mb: 2,
+                                pb: 2,
+                                borderBottom: question.id !== questions.length ? '1px solid rgba(0, 0, 0, 0.08)' : 'none'
+                            }}>
+                                <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 0.5 }}>
+                                    {question.question}
+                                </Typography>
+                                <Typography variant="body1" sx={{ color: 'text.secondary' }}>
+                                    {question.field === 'triggers'
+                                        ? (triggers.length > 0 ? triggers.join(', ') : 'None selected')
+                                        : smokingData[question.field] || 'Not provided'}
+                                </Typography>
+                            </Box>
+                        ))}
+                    </AccordionDetails>
+                </Accordion>
             </Box>
         </Box>
     );
