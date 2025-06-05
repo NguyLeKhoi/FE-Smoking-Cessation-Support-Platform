@@ -1,16 +1,16 @@
 // Smoking Habit Quiz - Frontend (React)
 
 import React, { useState } from 'react';
-import { 
-    Typography, 
-    Box, 
-    TextField, 
-    Button, 
-    FormControl, 
+import {
+    Typography,
+    Box,
+    TextField,
+    Button,
+    FormControl,
     FormGroup,
-    FormControlLabel, 
-    Checkbox, 
-    Container 
+    FormControlLabel,
+    Checkbox,
+    Container
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import HomeIcon from '@mui/icons-material/Home';
@@ -19,7 +19,7 @@ import SmokingHabitsResult from '../components/smokingQuiz/SmokingHabitsResult';
 
 const SmokingQuiz = () => {
     const navigate = useNavigate();
-    
+
     const [formData, setFormData] = useState({
         cigarettes_per_pack: 20,
         price_per_pack: 5.99,
@@ -47,14 +47,14 @@ const SmokingQuiz = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         try {
             // Validate form data before submitting
             if (!formData.cigarettes_per_day || !formData.smoking_years) {
                 console.error('Please fill in all required fields');
                 return;
             }
-            
+
             // Make sure triggers is an array (even if empty)
             const dataToSubmit = {
                 ...formData,
@@ -64,13 +64,13 @@ const SmokingQuiz = () => {
                 price_per_pack: Number(formData.price_per_pack),
                 cigarettes_per_pack: Number(formData.cigarettes_per_pack)
             };
-            
+
             const data = await smokingService.createSmokingHabit(dataToSubmit);
             setResult(data);
             setShowForm(false); // Hide the form after submission
         } catch (error) {
             console.error('Error:', error);
-            
+
             // Display more specific error information
             if (error.response) {
                 // The request was made and the server responded with a status code
@@ -93,10 +93,12 @@ const SmokingQuiz = () => {
     };
 
     return (
-        <Box sx={{ 
-            minHeight: '100vh', 
-            bgcolor: '#f6f5f3',
-            py: 4,
+        <Box sx={{
+            minHeight: '100vh',
+            minWidth: '100%',
+            bgcolor: 'background.default',
+            py: 5,
+            
         }}>
             <Container maxWidth="md">
                 {showForm ? (
@@ -109,33 +111,33 @@ const SmokingQuiz = () => {
                             mb: 4
                         }}
                     >
-                        <Typography 
-                            variant="h3" 
-                            component="h1" 
-                            sx={{ 
-                                fontWeight: 700, 
+                        <Typography
+                            variant="h3"
+                            component="h1"
+                            sx={{
+                                fontWeight: 700,
                                 mb: 2,
                                 color: 'text.primary'
                             }}
                         >
                             Smoking Habit Assessment
                         </Typography>
-                        
-                        <Typography 
-                            variant="h6" 
-                            sx={{ 
+
+                        <Typography
+                            variant="h6"
+                            sx={{
                                 mb: 4,
                                 color: 'text.secondary'
                             }}
                         >
                             Let's understand your smoking habits to help you quit
                         </Typography>
-                        
+
                         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
                             <Box sx={{ mb: 3 }}>
-                                <Typography 
-                                    variant="subtitle1" 
-                                    sx={{ 
+                                <Typography
+                                    variant="subtitle1"
+                                    sx={{
                                         mb: 1,
                                         fontWeight: 'medium',
                                         color: 'text.primary'
@@ -170,9 +172,9 @@ const SmokingQuiz = () => {
                             </Box>
 
                             <Box sx={{ mb: 3 }}>
-                                <Typography 
-                                    variant="subtitle1" 
-                                    sx={{ 
+                                <Typography
+                                    variant="subtitle1"
+                                    sx={{
                                         mb: 1,
                                         fontWeight: 'medium',
                                         color: 'text.primary'
@@ -207,9 +209,9 @@ const SmokingQuiz = () => {
                             </Box>
 
                             <Box sx={{ mb: 3 }}>
-                                <Typography 
-                                    variant="subtitle1" 
-                                    sx={{ 
+                                <Typography
+                                    variant="subtitle1"
+                                    sx={{
                                         mb: 1,
                                         fontWeight: 'medium',
                                         color: 'text.primary'
@@ -223,9 +225,9 @@ const SmokingQuiz = () => {
                                             <FormControlLabel
                                                 key={trigger}
                                                 control={
-                                                    <Checkbox 
-                                                        checked={formData.triggers.includes(trigger)} 
-                                                        onChange={handleCheckboxChange} 
+                                                    <Checkbox
+                                                        checked={formData.triggers.includes(trigger)}
+                                                        onChange={handleCheckboxChange}
                                                         value={trigger}
                                                         sx={{
                                                             color: 'rgba(0, 0, 0, 0.6)',
@@ -236,7 +238,7 @@ const SmokingQuiz = () => {
                                                     />
                                                 }
                                                 label={trigger}
-                                                sx={{ 
+                                                sx={{
                                                     color: 'text.secondary',
                                                     '& .MuiFormControlLabel-label': {
                                                         fontSize: '0.95rem',
@@ -249,9 +251,9 @@ const SmokingQuiz = () => {
                             </Box>
 
                             <Box sx={{ mb: 4 }}>
-                                <Typography 
-                                    variant="subtitle1" 
-                                    sx={{ 
+                                <Typography
+                                    variant="subtitle1"
+                                    sx={{
                                         mb: 1,
                                         fontWeight: 'medium',
                                         color: 'text.primary'
@@ -323,7 +325,7 @@ const SmokingQuiz = () => {
                         }}
                     >
                         <SmokingHabitsResult data={result} />
-                        
+
                         <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center', gap: 2, flexDirection: 'column', alignItems: 'center' }}>
                             <Button
                                 onClick={handleRetakeQuiz}
@@ -342,7 +344,7 @@ const SmokingQuiz = () => {
                             >
                                 Retake Assessment
                             </Button>
-                            
+
                             <Button
                                 variant="contained"
                                 startIcon={<HomeIcon />}

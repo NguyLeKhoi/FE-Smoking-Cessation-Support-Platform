@@ -29,7 +29,7 @@ export default function MainLayout({ children, showHeader = true, showFooter = t
           left: 0,
           width: '100%',
           zIndex: 1100, // Ensure header is above other content, adjust as needed
-          backgroundColor: 'rgba(255, 255, 255, 0.2)', // Semi-transparent white
+          backgroundColor: '#F9F7F4', // Semi-transparent white
           backdropFilter: 'blur(5px)', // Apply a blur effect
           WebkitBackdropFilter: 'blur(5px)', // For Safari support
         }}>
@@ -55,9 +55,9 @@ export default function MainLayout({ children, showHeader = true, showFooter = t
             bottom: 20,
             right: 20, // Keep it at right: 20 when chatbox is closed
             zIndex: 1200, // Ensure button is above chatbox
-            bgcolor: '#0095f6', // Instagram blue
+            bgcolor: '#F9F7F4', // Instagram blue
             color: 'white',
-            '&:hover': { bgcolor: '#007ac1' },
+            '&:hover': { bgcolor: '#ffffff' },
             transition: 'right 0.3s ease-in-out', // Smooth transition for position change
           }}
         >
