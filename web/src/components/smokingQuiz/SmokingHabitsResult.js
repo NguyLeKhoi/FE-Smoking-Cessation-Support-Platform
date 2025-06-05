@@ -10,7 +10,7 @@ import SmokingHabitsQuestions from './SmokingHabitsQuestions';
 const SmokingHabitsResult = ({ data }) => {
     // Get questions to reference fields and labels
     const { questions } = SmokingHabitsQuestions();
-    
+
     if (!data) return null;
 
     // Ensure we're working with the correct data structure
@@ -90,7 +90,7 @@ const SmokingHabitsResult = ({ data }) => {
                                 flexShrink: 0 // Prevent this from shrinking
                             }}
                         >
-                            <SmartToyIcon sx={{ mr: 1.5, color: 'primary.main', flexShrink: 0 }} />
+                            {/* <SmartToyIcon sx={{ mr: 1.5, color: 'primary.main', flexShrink: 0 }} /> */}
                             <Typography
                                 variant="h6"
                                 sx={{
@@ -138,20 +138,25 @@ const SmokingHabitsResult = ({ data }) => {
                 Based on your smoking habits, we've calculated the impact on your health, finances, and time.
             </Typography>
 
-            <Grid container spacing={3} sx={{ mb: 4 }}>
-                <Grid item xs={12} sm={6} md={3}>
+            <Grid container spacing={3} sx={{ mb: 4 }} justifyContent="center">
+                {/* Each grid item will have exactly the same width */}
+                <Grid item xs={12} sm={6} md={3} sx={{ width: { xs: '100%', sm: '50%', md: '40%' } }}>
                     <Paper
                         elevation={0}
                         sx={{
                             p: 3,
                             height: '100%',
+                            minHeight: '240px',
+                            width: '100%', // Ensure paper takes full width of grid item
                             borderRadius: 3,
                             border: '1px solid',
                             borderColor: 'divider',
                             display: 'flex',
                             flexDirection: 'column',
                             alignItems: 'center',
-                            textAlign: 'center'
+                            justifyContent: 'center',
+                            textAlign: 'center',
+                            boxSizing: 'border-box' // Include padding in width calculations
                         }}
                     >
                         <LocalFireDepartmentIcon
@@ -161,7 +166,7 @@ const SmokingHabitsResult = ({ data }) => {
                                 mb: 2
                             }}
                         />
-                        <Typography variant="h3" sx={{ fontWeight: 700, mb: 1 }}>
+                        <Typography variant="h3" sx={{ fontWeight: 700, mb: 1, lineHeight: 1.2 }}>
                             {Math.round(lifetimeCigarettes).toLocaleString()}
                         </Typography>
                         <Typography variant="body1" color="text.secondary">
@@ -170,19 +175,23 @@ const SmokingHabitsResult = ({ data }) => {
                     </Paper>
                 </Grid>
 
-                <Grid item xs={12} sm={6} md={3}>
+                <Grid item xs={12} sm={6} md={3} sx={{ width: { xs: '100%', sm: '50%', md: '40%' } }}>
                     <Paper
                         elevation={0}
                         sx={{
                             p: 3,
                             height: '100%',
+                            minHeight: '240px',
+                            width: '100%', // Ensure paper takes full width of grid item
                             borderRadius: 3,
                             border: '1px solid',
                             borderColor: 'divider',
                             display: 'flex',
                             flexDirection: 'column',
                             alignItems: 'center',
-                            textAlign: 'center'
+                            justifyContent: 'center',
+                            textAlign: 'center',
+                            boxSizing: 'border-box' // Include padding in width calculations
                         }}
                     >
                         <SavingsIcon
@@ -192,7 +201,7 @@ const SmokingHabitsResult = ({ data }) => {
                                 mb: 2
                             }}
                         />
-                        <Typography variant="h3" sx={{ fontWeight: 700, mb: 1 }}>
+                        <Typography variant="h3" sx={{ fontWeight: 700, mb: 1, lineHeight: 1.2 }}>
                             ${Math.round(lifetimeCost).toLocaleString()}
                         </Typography>
                         <Typography variant="body1" color="text.secondary">
@@ -201,19 +210,23 @@ const SmokingHabitsResult = ({ data }) => {
                     </Paper>
                 </Grid>
 
-                <Grid item xs={12} sm={6} md={3}>
+                <Grid item xs={12} sm={6} md={3} sx={{ width: { xs: '100%', sm: '50%', md: '40%' } }}>
                     <Paper
                         elevation={0}
                         sx={{
                             p: 3,
                             height: '100%',
+                            minHeight: '240px',
+                            width: '100%', // Ensure paper takes full width of grid item
                             borderRadius: 3,
                             border: '1px solid',
                             borderColor: 'divider',
                             display: 'flex',
                             flexDirection: 'column',
                             alignItems: 'center',
-                            textAlign: 'center'
+                            justifyContent: 'center',
+                            textAlign: 'center',
+                            boxSizing: 'border-box' // Include padding in width calculations
                         }}
                     >
                         <AccessTimeIcon
@@ -223,7 +236,7 @@ const SmokingHabitsResult = ({ data }) => {
                                 mb: 2
                             }}
                         />
-                        <Typography variant="h3" sx={{ fontWeight: 700, mb: 1 }}>
+                        <Typography variant="h3" sx={{ fontWeight: 700, mb: 1, lineHeight: 1.2 }}>
                             {daysSpentSmoking.toFixed(1)}
                         </Typography>
                         <Typography variant="body1" color="text.secondary">
@@ -232,19 +245,23 @@ const SmokingHabitsResult = ({ data }) => {
                     </Paper>
                 </Grid>
 
-                <Grid item xs={12} sm={6} md={3}>
+                <Grid item xs={12} sm={6} md={3} sx={{ width: { xs: '100%', sm: '50%', md: '40%' } }}>
                     <Paper
                         elevation={0}
                         sx={{
                             p: 3,
                             height: '100%',
+                            minHeight: '240px',
+                            width: '100%', // Ensure paper takes full width of grid item
                             borderRadius: 3,
                             border: '1px solid',
                             borderColor: 'divider',
                             display: 'flex',
                             flexDirection: 'column',
                             alignItems: 'center',
-                            textAlign: 'center'
+                            justifyContent: 'center',
+                            textAlign: 'center',
+                            boxSizing: 'border-box' // Include padding in width calculations
                         }}
                     >
                         <HealthAndSafetyIcon
@@ -254,7 +271,7 @@ const SmokingHabitsResult = ({ data }) => {
                                 mb: 2
                             }}
                         />
-                        <Typography variant="h3" sx={{ fontWeight: 700, mb: 1 }}>
+                        <Typography variant="h3" sx={{ fontWeight: 700, mb: 1, lineHeight: 1.2 }}>
                             {Math.round(cigarettesPerDay * 11)}
                         </Typography>
                         <Typography variant="body1" color="text.secondary">
@@ -427,7 +444,7 @@ const SmokingHabitsResult = ({ data }) => {
                                 {question.question}
                             </Typography>
                             <Typography variant="body1">
-                                {question.field === 'triggers' 
+                                {question.field === 'triggers'
                                     ? (triggers.length > 0 ? triggers.join(', ') : 'None selected')
                                     : smokingData[question.field] || 'Not provided'}
                             </Typography>
