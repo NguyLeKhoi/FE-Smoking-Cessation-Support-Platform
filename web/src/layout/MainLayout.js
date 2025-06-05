@@ -6,7 +6,7 @@ import { Box, IconButton } from '@mui/material';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import { isAuthenticated, logout } from '../services/authService'; // Import isAuthenticated and logout
 
-const MainLayout = ({ children, showHeader = true, showFooter = true }) => {
+export default function MainLayout({ children, showHeader = true, showFooter = true }) {
   const [isChatboxOpen, setIsChatboxOpen] = useState(false);
   const [authStatus, setAuthStatus] = useState(isAuthenticated()); // State for authentication status
 
@@ -21,7 +21,7 @@ const MainLayout = ({ children, showHeader = true, showFooter = true }) => {
   };
 
   return (
-    <Box sx={{ position: 'relative', minHeight: '100vh' }}> {/* Ensure relative positioning for fixed children */}
+    <Box sx={{ position: 'relative', display: 'flex', flexDirection: 'column', minHeight: '100vh' }}> {/* Ensure relative positioning for fixed children */}
       {showHeader && (
         <Box style={{
           position: 'fixed',
@@ -36,14 +36,14 @@ const MainLayout = ({ children, showHeader = true, showFooter = true }) => {
           <Header authStatus={authStatus} onLogout={handleLogout} />
         </Box>
       )}
-      <main style={{ paddingTop: showHeader ? '64px' : 0 }}>
+      <Box component="main" sx={{ flexGrow: 1, paddingTop: showHeader ? '64px' : 0 }}>
         {React.Children.map(children, (child) => {
           if (child && child.type && child.type.name === 'ProfilePage') {
             return React.cloneElement(child, { handleLogout });
           }
           return child;
         })}
-      </main>
+      </Box>
       
       {/* Chat button positioned fixed at bottom right */}
       {!isChatboxOpen && (
@@ -71,5 +71,3 @@ const MainLayout = ({ children, showHeader = true, showFooter = true }) => {
     </Box>
   );
 };
-
-export default MainLayout;

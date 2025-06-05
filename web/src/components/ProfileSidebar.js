@@ -31,11 +31,11 @@ const SidebarContainer = styled(Paper)(({ theme }) => ({
     flexDirection: 'column',
     color: theme.palette.text.primary,
     borderRight: `1px solid ${theme.palette.divider}`,
-    position: 'sticky', // Make the sidebar sticky
-    top: 0, // Stick to the top of the viewport
-    left: 0, // Ensure it stays at the left
-    zIndex: 10, // Higher z-index to stay above content
-    overflowY: 'auto', // Allow scrolling within sidebar if content is too tall
+    position: 'sticky',
+    top: 0,
+    left: 0,
+    zIndex: 10,
+    overflowY: 'auto',
 }));
 
 const StyledListItem = styled(ListItem)(({ theme, active }) => ({
@@ -94,17 +94,13 @@ const UserProfileSection = () => (
 const ProfileSidebar = () => {
     const location = useLocation();
     const [activeItem, setActiveItem] = useState(() => {
-        // Set initial active item based on current path
         const currentPath = location.pathname;
         const foundItem = menuItems.findIndex(item => currentPath.includes(item.path));
-        return foundItem >= 0 ? foundItem : 5; // Default to profile if no match
+        return foundItem >= 0 ? foundItem : 5;
     });
 
     const handleItemClick = (index) => {
-        // Just update the active item without navigation
         setActiveItem(index);
-
-        // Optional: Add a console log to show which page would be navigated to
         console.log(`Selected: ${menuItems[index].label} (${menuItems[index].path})`);
     };
 

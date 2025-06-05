@@ -15,7 +15,7 @@ export default function ProfilePage({ handleLogout }) {
     username: "johnsmith",
     role: "MEMBER",
     email: "john.smith@example.com",
-    phone_number: "+1 (555) 123-4567",
+    phone_number: "+84 (555) 123-4567",
     dob: "1990-05-15",
     joined: "June 2023"
   };
@@ -48,7 +48,12 @@ export default function ProfilePage({ handleLogout }) {
   ];
 
   return (
-    <Box sx={{ display: 'flex', height: '100vh', bgcolor: 'background.default' }}>
+    <Box sx={{ 
+      display: 'flex',
+      minHeight: '100vh', 
+      bgcolor: 'background.default',
+      overflow: 'visible' 
+    }}>
       <ProfileSidebar />
 
       {/* Main content */}
@@ -57,7 +62,6 @@ export default function ProfilePage({ handleLogout }) {
         display: 'flex',
         flexDirection: 'column',
         p: 4,
-        overflow: 'auto',
         bgcolor: 'background.paper',
         color: 'text.primary',
       }}>

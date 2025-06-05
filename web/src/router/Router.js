@@ -58,7 +58,7 @@ export const routes = createBrowserRouter([
     path: '/profile',
     element: (
       <ProtectedRoute>
-        <MainLayout>
+        <MainLayout showFooter={false}>
           <ProfilePage />
         </MainLayout>
       </ProtectedRoute>
