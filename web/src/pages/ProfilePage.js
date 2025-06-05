@@ -23,7 +23,7 @@ export default function ProfilePage({ handleLogout }) {
   const statisticsData = [
     {
       icon: '💧',
-      value: '0',
+      value: '63',
       label: 'Day streak',
       iconColor: '#64748b'
     },
@@ -76,9 +76,9 @@ export default function ProfilePage({ handleLogout }) {
         >
           <Box sx={{ display: 'flex', gap: 4, alignItems: 'flex-start' }}>
             {/* Avatar Section - Left Side */}
-            <Box sx={{ 
-              display: 'flex', 
-              flexDirection: 'column', 
+            <Box sx={{
+              display: 'flex',
+              flexDirection: 'column',
               alignItems: 'center',
               minWidth: '200px'
             }}>
@@ -109,19 +109,19 @@ export default function ProfilePage({ handleLogout }) {
                 />
                 */}
               </Box>
-              <Typography 
-                variant="h6" 
-                sx={{ 
-                  fontWeight: 'bold', 
+              <Typography
+                variant="h6"
+                sx={{
+                  fontWeight: 'bold',
                   textAlign: 'center',
                   color: 'text.primary'
                 }}
               >
                 {userData.username}
               </Typography>
-              <Typography 
-                variant="body2" 
-                sx={{ 
+              <Typography
+                variant="body2"
+                sx={{
                   color: 'text.secondary',
                   textAlign: 'center'
                 }}
@@ -144,10 +144,10 @@ export default function ProfilePage({ handleLogout }) {
 
             {/* User Information - Right Side */}
             <Box sx={{ flex: 1 }}>
-              <Typography 
-                variant="h6" 
-                sx={{ 
-                  fontWeight: 'bold', 
+              <Typography
+                variant="h6"
+                sx={{
+                  fontWeight: 'bold',
                   mb: 3,
                   color: 'text.primary'
                 }}
@@ -201,27 +201,27 @@ export default function ProfilePage({ handleLogout }) {
 
         {/* Statistics Section*/}
         <Box sx={{ mt: 4 }}>
-          <Typography 
-            variant="h5" 
-            sx={{ 
-              fontWeight: 'bold', 
-              mb: 3, 
+          <Typography
+            variant="h5"
+            sx={{
+              fontWeight: 'bold',
+              mb: 3,
               color: 'text.primary',
               fontSize: '32px'
             }}
           >
             Statistics
           </Typography>
-          <Grid container spacing={4}> 
+          <Grid container spacing={4}>
             {statisticsData.map((stat, index) => (
               <Grid item xs={12} sm={6} key={index}>
                 <Paper
                   elevation={0}
                   sx={{
                     p: 3,
-                    height: '120px', 
-                    width: '100%', 
-                    minWidth: '200px', 
+                    height: '120px',
+                    width: '100%',
+                    minWidth: '200px',
                     bgcolor: 'section.light',
                     borderRadius: 3,
                     border: '1px solid',
@@ -233,9 +233,9 @@ export default function ProfilePage({ handleLogout }) {
                       borderColor: 'text.secondary',
                     },
                     display: 'flex',
-                    alignItems: 'flex-start', 
+                    alignItems: 'flex-start',
                     gap: 2,
-                    boxSizing: 'border-box', 
+                    boxSizing: 'border-box',
                   }}
                 >
                   <Box
@@ -245,35 +245,35 @@ export default function ProfilePage({ handleLogout }) {
                       justifyContent: 'flex-start',
                       fontSize: '24px',
                       flexShrink: 0,
-                      mt: 1, 
+                      mt: 1,
                     }}
                   >
                     {stat.icon}
                   </Box>
-                  
-                  <Box sx={{ 
+
+                  <Box sx={{
                     flex: 1,
                     textAlign: 'left',
-                    overflow: 'hidden', 
+                    overflow: 'hidden',
                   }}>
-                    <Typography 
-                      variant="h4" 
-                      sx={{ 
-                        color: 'text.primary', 
+                    <Typography
+                      variant="h4"
+                      sx={{
+                        color: 'text.primary',
                         fontWeight: 'bold',
                         mb: 0.5,
                         fontSize: '36px',
                         textAlign: 'left',
-                        whiteSpace: 'nowrap', 
+                        whiteSpace: 'nowrap',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
                       }}
                     >
                       {stat.value}
                     </Typography>
-                    <Typography 
-                      variant="body1" 
-                      sx={{ 
+                    <Typography
+                      variant="body1"
+                      sx={{
                         color: 'text.secondary',
                         fontSize: '16px',
                         textAlign: 'left',

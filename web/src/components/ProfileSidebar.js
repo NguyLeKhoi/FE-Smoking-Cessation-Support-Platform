@@ -31,7 +31,11 @@ const SidebarContainer = styled(Paper)(({ theme }) => ({
     flexDirection: 'column',
     color: theme.palette.text.primary,
     borderRight: `1px solid ${theme.palette.divider}`,
-    overflowY: 'auto',
+    position: 'sticky', // Make the sidebar sticky
+    top: 0, // Stick to the top of the viewport
+    left: 0, // Ensure it stays at the left
+    zIndex: 10, // Higher z-index to stay above content
+    overflowY: 'auto', // Allow scrolling within sidebar if content is too tall
 }));
 
 const StyledListItem = styled(ListItem)(({ theme, active }) => ({
