@@ -163,75 +163,295 @@ export default function ProfilePage({ handleLogout }) {
 
         {/* Achievements Section */}
         <Box sx={{ mt: 5 }}>
-          <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2, color: 'text.primary' }}>
-            Achievements
-          </Typography>
-          {/* Wildfire */}
-          <Paper
-            elevation={0}
-            sx={{
-              p: 2,
-              mb: 2,
-              bgcolor: 'section.light',
-              borderRadius: 3,
-              border: '1px solid',
-              borderColor: 'divider',
-            }}
-          >
-            <Typography variant="body1" sx={{ fontWeight: 'medium', color: 'text.primary' }}>
-              Wildfire (63/75)
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+            <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'text.primary' }}>
+              Achievements
             </Typography>
-            <Box
+            <Typography
+              variant="body2"
               sx={{
-                height: 10,
-                borderRadius: 5,
-                bgcolor: 'rgba(0, 0, 0, 0.1)',
-                mt: 1,
-                position: 'relative',
+                color: 'primary.main',
+                fontWeight: 'medium',
+                cursor: 'pointer',
+                '&:hover': { textDecoration: 'underline' }
               }}
             >
-              <Box
-                sx={{
-                  width: `${(63 / 75) * 100}%`,
-                  height: '100%',
-                  bgcolor: '#fbc02d',
-                  borderRadius: 5,
-                }}
-              />
-            </Box>
-          </Paper>
+              VIEW ALL
+            </Typography>
+          </Box>
 
-          {/* Sage */}
           <Paper
             elevation={0}
             sx={{
-              p: 2,
-              bgcolor: 'section.light',
+              p: 0,
+              bgcolor: 'background.paper',
               borderRadius: 3,
               border: '1px solid',
               borderColor: 'divider',
+              overflow: 'hidden'
             }}
           >
-            <Typography variant="body1" sx={{ fontWeight: 'medium', color: 'text.primary' }}>
-              Sage (18303/20000)
-            </Typography>
-            <Box
-              sx={{
-                height: 10,
-                borderRadius: 5,
-                bgcolor: 'rgba(0, 0, 0, 0.1)',
-                mt: 1,
-                position: 'relative',
-              }}
-            >
-              <Box
-                sx={{
-                  width: `${(18303 / 20000) * 100}%`,
-                  height: '100%',
-                  bgcolor: '#00e676',
-                  borderRadius: 5,
-                }}
-              />
+            {/* Wildfire Achievement */}
+            <Box sx={{ p: 3, borderBottom: '1px solid', borderColor: 'divider' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                {/* Icon */}
+                <Box
+                  sx={{
+                    width: 80,
+                    height: 80,
+                    borderRadius: 2,
+                    background: 'linear-gradient(135deg, #ff6b6b, #ff8e53)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    position: 'relative',
+                    flexShrink: 0
+                  }}
+                >
+                  <Box
+                    sx={{
+                      fontSize: '28px',
+                      color: 'white',
+                      filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))'
+                    }}
+                  >
+                    🔥
+                  </Box>
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      bottom: -5,
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                      bgcolor: '#ff6b6b',
+                      color: 'white',
+                      fontSize: '10px',
+                      fontWeight: 'bold',
+                      px: 1,
+                      py: 0.5,
+                      borderRadius: 1,
+                      border: '2px solid white',
+                      whiteSpace: 'nowrap',
+                      minWidth: 'fit-content',
+                      textAlign: 'center'
+                    }}
+                  >
+                    LEVEL 6
+                  </Box>
+                </Box>
+
+                {/* Content */}
+                <Box sx={{ flex: 1 }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                    <Typography variant="h6" sx={{ color: 'text.primary', fontWeight: 'bold' }}>
+                      Wildfire
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                      63/75
+                    </Typography>
+                  </Box>
+
+                  <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2 }}>
+                    Reach a 75 day streak
+                  </Typography>
+
+                  {/* Progress Bar */}
+                  <Box
+                    sx={{
+                      height: 8,
+                      borderRadius: 4,
+                      bgcolor: 'section.main',
+                      position: 'relative',
+                      overflow: 'hidden'
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        width: `${(63 / 75) * 100}%`,
+                        height: '100%',
+                        background: 'linear-gradient(90deg, #ff6b6b, #ff8e53)',
+                        borderRadius: 4,
+                      }}
+                    />
+                  </Box>
+                </Box>
+              </Box>
+            </Box>
+
+            {/* Sage Achievement */}
+            <Box sx={{ p: 3, borderBottom: '1px solid', borderColor: 'divider' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                {/* Icon */}
+                <Box
+                  sx={{
+                    width: 80,
+                    height: 80,
+                    borderRadius: 2,
+                    background: 'linear-gradient(135deg, #4ecdc4, #44a08d)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    position: 'relative',
+                    flexShrink: 0
+                  }}
+                >
+                  <Box
+                    sx={{
+                      fontSize: '28px',
+                      color: 'white',
+                      filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))'
+                    }}
+                  >
+                    🧙‍♂️
+                  </Box>
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      bottom: 1,
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                      bgcolor: '#4ecdc4',
+                      color: 'white',
+                      fontSize: '10px',
+                      fontWeight: 'bold',
+                      px: 1,
+                      py: 0.5,
+                      borderRadius: 1,
+                      border: '2px solid white',
+                      whiteSpace: 'nowrap',
+                      minWidth: 'fit-content',
+                      textAlign: 'center'
+                    }}
+                  >
+                    LEVEL 9
+                  </Box>
+                </Box>
+
+                {/* Content */}
+                <Box sx={{ flex: 1 }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                    <Typography variant="h6" sx={{ color: 'text.primary', fontWeight: 'bold' }}>
+                      Sage
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                      18303/20000
+                    </Typography>
+                  </Box>
+
+                  <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2 }}>
+                    Earn 20000 XP
+                  </Typography>
+
+                  {/* Progress Bar */}
+                  <Box
+                    sx={{
+                      height: 8,
+                      borderRadius: 4,
+                      bgcolor: 'section.main',
+                      position: 'relative',
+                      overflow: 'hidden'
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        width: `${(18303 / 20000) * 100}%`,
+                        height: '100%',
+                        background: 'linear-gradient(90deg, #4ecdc4, #44a08d)',
+                        borderRadius: 4,
+                      }}
+                    />
+                  </Box>
+                </Box>
+              </Box>
+            </Box>
+
+            {/* Scholar Achievement */}
+            <Box sx={{ p: 3 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                {/* Icon */}
+                <Box
+                  sx={{
+                    width: 80,
+                    height: 80,
+                    borderRadius: 2,
+                    background: 'linear-gradient(135deg, #f7b733, #fc4a1a)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    position: 'relative',
+                    flexShrink: 0
+                  }}
+                >
+                  <Box
+                    sx={{
+                      fontSize: '28px',
+                      color: 'white',
+                      filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))'
+                    }}
+                  >
+                    📚
+                  </Box>
+
+                  {/* Third achievement (Scholar) */}
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      bottom: -5,
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                      bgcolor: '#f7b733',
+                      color: 'white',
+                      fontSize: '10px',
+                      fontWeight: 'bold',
+                      px: 1,
+                      py: 0.5,
+                      borderRadius: 1,
+                      border: '2px solid white',
+                      whiteSpace: 'nowrap',
+                      minWidth: 'fit-content',
+                      textAlign: 'center'
+                    }}
+                  >
+                    LEVEL 10
+                  </Box>
+                </Box>
+
+                {/* Content */}
+                <Box sx={{ flex: 1 }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                    <Typography variant="h6" sx={{ color: 'text.primary', fontWeight: 'bold' }}>
+                      Scholar
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                      2000/2000
+                    </Typography>
+                  </Box>
+
+                  <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2 }}>
+                    You learned 2000 new words in a single course
+                  </Typography>
+
+                  {/* Progress Bar */}
+                  <Box
+                    sx={{
+                      height: 8,
+                      borderRadius: 4,
+                      bgcolor: 'section.main',
+                      position: 'relative',
+                      overflow: 'hidden'
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        width: '100%',
+                        height: '100%',
+                        background: 'linear-gradient(90deg, #f7b733, #fc4a1a)',
+                        borderRadius: 4,
+                      }}
+                    />
+                  </Box>
+                </Box>
+              </Box>
             </Box>
           </Paper>
         </Box>
