@@ -191,7 +191,7 @@ export default function ProfilePage({ handleLogout }) {
               overflow: 'hidden'
             }}
           >
-            {/* Wildfire Achievement */}
+            {/* Smoke-Free Streak Achievement */}
             <Box sx={{ p: 3, borderBottom: '1px solid', borderColor: 'divider' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
                 {/* Icon */}
@@ -210,12 +210,12 @@ export default function ProfilePage({ handleLogout }) {
                 >
                   <Box
                     sx={{
-                      fontSize: '28px',
+                      fontSize: '40px',
                       color: 'white',
                       filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))'
                     }}
                   >
-                    🔥
+                    🚭
                   </Box>
                   <Box
                     sx={{
@@ -228,7 +228,7 @@ export default function ProfilePage({ handleLogout }) {
                       fontSize: '10px',
                       fontWeight: 'bold',
                       px: 1,
-                      py: 0.5,
+                      py: 0,
                       borderRadius: 1,
                       border: '2px solid white',
                       whiteSpace: 'nowrap',
@@ -244,15 +244,15 @@ export default function ProfilePage({ handleLogout }) {
                 <Box sx={{ flex: 1 }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                     <Typography variant="h6" sx={{ color: 'text.primary', fontWeight: 'bold' }}>
-                      Wildfire
+                      Smoke-Free Streak
                     </Typography>
                     <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                      63/75
+                      63/75 days
                     </Typography>
                   </Box>
 
                   <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2 }}>
-                    Reach a 75 day streak
+                    Maintain a 75-day smoke-free streak
                   </Typography>
 
                   {/* Progress Bar */}
@@ -278,7 +278,7 @@ export default function ProfilePage({ handleLogout }) {
               </Box>
             </Box>
 
-            {/* Sage Achievement */}
+            {/* Health Recovery Achievement */}
             <Box sx={{ p: 3, borderBottom: '1px solid', borderColor: 'divider' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
                 {/* Icon */}
@@ -287,7 +287,7 @@ export default function ProfilePage({ handleLogout }) {
                     width: 80,
                     height: 80,
                     borderRadius: 2,
-                    background: 'linear-gradient(135deg, #4ecdc4, #44a08d)',
+                    background: 'linear-gradient(135deg, #e74c3c, #c0392b)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -297,25 +297,25 @@ export default function ProfilePage({ handleLogout }) {
                 >
                   <Box
                     sx={{
-                      fontSize: '28px',
+                      fontSize: '40px',
                       color: 'white',
                       filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))'
                     }}
                   >
-                    🧙‍♂️
+                    ❤️
                   </Box>
                   <Box
                     sx={{
                       position: 'absolute',
-                      bottom: 1,
+                      bottom: -5,
                       left: '50%',
                       transform: 'translateX(-50%)',
-                      bgcolor: '#4ecdc4',
+                      bgcolor: '#e74c3c',
                       color: 'white',
                       fontSize: '10px',
                       fontWeight: 'bold',
                       px: 1,
-                      py: 0.5,
+                      py: 0,
                       borderRadius: 1,
                       border: '2px solid white',
                       whiteSpace: 'nowrap',
@@ -331,15 +331,15 @@ export default function ProfilePage({ handleLogout }) {
                 <Box sx={{ flex: 1 }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                     <Typography variant="h6" sx={{ color: 'text.primary', fontWeight: 'bold' }}>
-                      Sage
+                      Health Recovery
                     </Typography>
                     <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                      18303/20000
+                      183/200 days
                     </Typography>
                   </Box>
 
                   <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2 }}>
-                    Earn 20000 XP
+                    Reach 200 days to restore lung function
                   </Typography>
 
                   {/* Progress Bar */}
@@ -354,9 +354,9 @@ export default function ProfilePage({ handleLogout }) {
                   >
                     <Box
                       sx={{
-                        width: `${(18303 / 20000) * 100}%`,
+                        width: `${(183 / 200) * 100}%`,
                         height: '100%',
-                        background: 'linear-gradient(90deg, #4ecdc4, #44a08d)',
+                        background: 'linear-gradient(90deg, #e74c3c, #c0392b)',
                         borderRadius: 4,
                       }}
                     />
@@ -365,7 +365,7 @@ export default function ProfilePage({ handleLogout }) {
               </Box>
             </Box>
 
-            {/* Scholar Achievement */}
+            {/* Money Saved Achievement */}
             <Box sx={{ p: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
                 {/* Icon */}
@@ -384,15 +384,15 @@ export default function ProfilePage({ handleLogout }) {
                 >
                   <Box
                     sx={{
-                      fontSize: '28px',
+                      fontSize: '40px',
                       color: 'white',
                       filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))'
                     }}
                   >
-                    📚
+                    💰
                   </Box>
 
-                  {/* Third achievement (Scholar) */}
+                  {/* Third achievement (Money Saved) */}
                   <Box
                     sx={{
                       position: 'absolute',
@@ -404,7 +404,7 @@ export default function ProfilePage({ handleLogout }) {
                       fontSize: '10px',
                       fontWeight: 'bold',
                       px: 1,
-                      py: 0.5,
+                      py: 0,
                       borderRadius: 1,
                       border: '2px solid white',
                       whiteSpace: 'nowrap',
@@ -420,15 +420,15 @@ export default function ProfilePage({ handleLogout }) {
                 <Box sx={{ flex: 1 }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                     <Typography variant="h6" sx={{ color: 'text.primary', fontWeight: 'bold' }}>
-                      Scholar
+                      Money Saved
                     </Typography>
                     <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                      2000/2000
+                      $1000/$1000
                     </Typography>
                   </Box>
 
                   <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2 }}>
-                    You learned 2000 new words in a single course
+                    You've saved $1000 by not buying cigarettes
                   </Typography>
 
                   {/* Progress Bar */}
