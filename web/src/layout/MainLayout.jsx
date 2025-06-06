@@ -55,9 +55,9 @@ export default function MainLayout({ children, showHeader = true, showFooter = t
             bottom: 20,
             right: 20, // Keep it at right: 20 when chatbox is closed
             zIndex: 1200, // Ensure button is above chatbox
-            bgcolor: '#F9F7F4', // Instagram blue
+            bgcolor: '#3f332b', // Instagram blue
             color: 'white',
-            '&:hover': { bgcolor: '#ffffff' },
+            '&:hover': { bgcolor: '#5f5349' },
             transition: 'right 0.3s ease-in-out', // Smooth transition for position change
           }}
         >
