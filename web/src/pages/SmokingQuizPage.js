@@ -48,25 +48,25 @@ const SmokingQuiz = () => {
     const [showForm, setShowForm] = useState(true);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    
+
     // Get questions from the extracted component
     const { questions } = SmokingHabitsQuestions();
-    
+
     // Fetch existing data when component mounts
     useEffect(() => {
         const fetchExistingData = async () => {
             try {
                 setLoading(true);
                 const response = await smokingService.getMySmokingHabits();
-                
+
                 // If data exists, use it to initialize the form
                 if (response && response.data && response.data.length > 0) {
                     // Use the most recent record (assuming sorted by date)
                     const latestRecord = response.data[0];
-                    
+
                     // Initialize form with existing data
-                    dispatch({ 
-                        type: 'INITIALIZE', 
+                    dispatch({
+                        type: 'INITIALIZE',
                         data: {
                             cigarettes_per_pack: latestRecord.cigarettes_per_pack || 20,
                             price_per_pack: latestRecord.price_per_pack || 5.99,
@@ -74,9 +74,9 @@ const SmokingQuiz = () => {
                             smoking_years: latestRecord.smoking_years || 0,
                             triggers: latestRecord.triggers || [],
                             health_issues: latestRecord.health_issues || ''
-                        } 
+                        }
                     });
-                    
+
                     // Also show the result if it exists
                     setResult(latestRecord);
                     setShowForm(false);
@@ -189,9 +189,9 @@ const SmokingQuiz = () => {
         }}>
             <Container maxWidth="md">
                 {error && (
-                    <Box sx={{ 
-                        p: 2, 
-                        mb: 3, 
+                    <Box sx={{
+                        p: 2,
+                        mb: 3,
                         bgcolor: 'error.light',
                         color: 'error.dark',
                         borderRadius: 2
@@ -199,7 +199,7 @@ const SmokingQuiz = () => {
                         <Typography>{error}</Typography>
                     </Box>
                 )}
-                
+
                 {showForm ? (
                     <Box
                         sx={{

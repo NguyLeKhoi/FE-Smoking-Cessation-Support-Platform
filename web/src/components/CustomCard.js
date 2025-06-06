@@ -11,48 +11,56 @@ const CustomCard = ({ image, title, subtitle, author, duration }) => {
     return (
         <motion.div
             whileHover={{
-                y: -15,
+                y: -10,
                 transition: { duration: 0.2 }
             }}
             style={{ height: '100%' }}
         >
             <Card sx={{
-                borderRadius: 0,
-                boxShadow: 'none',
+                borderRadius: 3,
+                boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.05)',
                 border: '1px solid',
-                borderColor: 'primary.main',
+                borderColor: 'divider',
                 height: '100%',
                 display: 'flex',
                 flexDirection: 'column',
-                // backgroundColor: 'background.default'
+                bgcolor: 'section.light',
+                transition: 'all 0.2s ease-in-out',
+                '&:hover': {
+                    borderColor: 'primary.main',
+                    boxShadow: '0px 6px 25px rgba(0, 0, 0, 0.1)',
+                },
+                overflow: 'hidden'
             }}>
                 <motion.div
-                    // whileHover={{ scale: 1.05 }}
                     transition={{ duration: 0.2 }}
                 >
                     <CardMedia
                         component="img"
-                        height="300"
+                        height="240"
                         image={image}
                         alt={title}
-                        sx={{ objectFit: 'cover' }}
+                        sx={{
+                            objectFit: 'cover',
+                            borderBottom: '1px solid',
+                            borderColor: 'divider'
+                        }}
                     />
                 </motion.div>
                 <CardContent sx={{
                     flexGrow: 1,
                     display: 'flex',
                     flexDirection: 'column',
-                    padding: 2,
+                    padding: 3,
                     height: '100%'
                 }}>
                     <Typography
-                        variant="h5"
+                        variant="h6"
                         sx={{
                             fontWeight: 700,
                             mb: 2,
-                            textTransform: 'uppercase',
+                            color: 'text.primary',
                             lineHeight: 1.2,
-                            color: 'primary.main'
                         }}
                     >
                         {title}
@@ -60,7 +68,7 @@ const CustomCard = ({ image, title, subtitle, author, duration }) => {
                     <Typography
                         variant="body2"
                         sx={{
-                            color: 'text.primary',
+                            color: 'text.secondary',
                             mb: 2,
                             lineHeight: 1.5,
                             flexGrow: 1
@@ -72,8 +80,9 @@ const CustomCard = ({ image, title, subtitle, author, duration }) => {
                         variant="caption"
                         sx={{
                             color: 'secondary.main',
-                            textTransform: 'uppercase',
-                            mt: 'auto'
+                            mt: 'auto',
+                            fontSize: '0.75rem',
+                            fontWeight: 'medium'
                         }}
                     >
                         {`Text: ${author} • Duration: ${duration}`}
