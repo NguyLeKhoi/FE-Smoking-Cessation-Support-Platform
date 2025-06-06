@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Box, TextField, IconButton, Typography, Avatar } from '@mui/material';
+import { Box, TextField, IconButton, Typography, Avatar, Paper } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import CloseIcon from '@mui/icons-material/Close';
-import FaceRetouchingNaturalOutlinedIcon from '@mui/icons-material/FaceRetouchingNaturalOutlined'; // Import AI icon
+import FaceRetouchingNaturalOutlinedIcon from '@mui/icons-material/FaceRetouchingNaturalOutlined';
+import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import motivationService from '../services/motivationService';
 
 const Chatbox = ({ onClose }) => {
@@ -39,21 +40,25 @@ const Chatbox = ({ onClose }) => {
   };
 
   return (
-    <Box
+    <Paper
+      elevation={3}
       sx={{
         position: 'fixed',
         bottom: 20,
         right: 20,
         width: 400,
         height: 500,
-        bgcolor: '#262626',
-        color: 'white',
-        borderRadius: 2,
-        boxShadow: 3,
+        bgcolor: 'background.paper',
+        color: 'text.primary',
+        borderRadius: 3,
+        boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.15)',
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
-        zIndex: 9999,  
+        zIndex: 9999,
+        border: '1px solid',
+        borderColor: 'divider',
+        transition: 'all 0.3s ease-in-out',
       }}
     >
       {/* Header */}
@@ -62,12 +67,16 @@ const Chatbox = ({ onClose }) => {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          p: 1.5, // Increased padding
-          borderBottom: '1px solid #3a3a3a', // Subtle separator
+          p: 2,
+          borderBottom: '1px solid',
+          borderColor: 'divider',
+          bgcolor: 'section.light',
         }}
       >
-        <Typography variant="h6">Chat with our AI coach</Typography>
-        <IconButton size="small" onClick={onClose} sx={{ color: '#aaa' }}>
+        <Typography variant="h6" sx={{ fontWeight: 600 }}>
+          Chat with our AI coach
+        </Typography>
+        <IconButton size="small" onClick={onClose} sx={{ color: 'secondary.main' }}>
           <CloseIcon />
         </IconButton>
       </Box>
@@ -77,40 +86,70 @@ const Chatbox = ({ onClose }) => {
         sx={{
           flexGrow: 1,
           overflowY: 'auto',
-          p: 1.5, // Increased padding
+          p: 2,
           display: 'flex',
           flexDirection: 'column',
-          gap: 1, // Space between messages
+          gap: 1.5,
+          bgcolor: 'background.default',
         }}
       >
+        {messages.length === 0 && (
+          <Box sx={{
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            opacity: 0.7
+          }}>
+            <FaceRetouchingNaturalOutlinedIcon sx={{ fontSize: 40, mb: 2, color: 'primary.main' }} />
+            <Typography variant="body1" sx={{ color: 'text.secondary', textAlign: 'center' }}>
+              Hello! I'm your AI coach. How can I help with your smoking cessation journey today?
+            </Typography>
+          </Box>
+        )}
+
         {messages.map((msg, index) => (
           <Box
             key={index}
             sx={{
               display: 'flex',
-              alignItems: 'flex-start', // Align items to the start (top) of the flex container
-              justifyContent: msg.sender === 'user' ? 'flex-end' : 'flex-start', // Align container based on sender
+              alignItems: 'flex-start',
+              justifyContent: msg.sender === 'user' ? 'flex-end' : 'flex-start',
+              mb: 1,
             }}
           >
             {msg.sender === 'ai' && (
-              <Avatar sx={{ bgcolor: '#1c1c1c', mr: 1 }}>
-                <FaceRetouchingNaturalOutlinedIcon sx={{ color: 'white' }} />
+              <Avatar sx={{ bgcolor: 'primary.main', mr: 1, width: 32, height: 32 }}>
+                <FaceRetouchingNaturalOutlinedIcon sx={{ color: 'white', fontSize: 18 }} />
               </Avatar>
             )}
-            <Box
+            <Paper
+              elevation={0}
               sx={{
-                bgcolor: msg.sender === 'user' ? '#0095f6' : '#3a3a3a', // Use Instagram blue for user, dark for AI
-                color: 'white',
-                borderRadius: 2, // Keep rounded corners
-                p: '8px 12px', // Adjust padding
+                bgcolor: msg.sender === 'user' ? 'primary.main' : 'section.light',
+                color: msg.sender === 'user' ? 'white' : 'text.primary',
+                borderRadius: 3,
+                p: '10px 16px',
                 maxWidth: '80%',
                 wordBreak: 'break-word',
+                boxShadow: msg.sender === 'user' ?
+                  '0 2px 5px rgba(0, 0, 0, 0.1)' :
+                  '0 2px 5px rgba(0, 0, 0, 0.05)',
+                border: '1px solid',
+                borderColor: msg.sender === 'user' ? 'primary.main' : 'divider',
               }}
             >
               <Typography variant="body2">{msg.text}</Typography>
-            </Box>
+            </Paper>
+            {msg.sender === 'user' && (
+              <Avatar sx={{ bgcolor: 'secondary.main', ml: 1, width: 32, height: 32 }}>
+                <PersonOutlineIcon sx={{ color: 'white', fontSize: 18 }} />
+              </Avatar>
+            )}
           </Box>
         ))}
+
         {/* Typing indicator */}
         {loading && (
           <Box
@@ -120,31 +159,92 @@ const Chatbox = ({ onClose }) => {
               alignSelf: 'flex-start',
             }}
           >
-            <Avatar sx={{ bgcolor: '#1c1c1c', mr: 1 }}>
-              <FaceRetouchingNaturalOutlinedIcon sx={{ color: 'white' }} />
+            <Avatar sx={{ bgcolor: 'primary.main', mr: 1, width: 32, height: 32 }}>
+              <FaceRetouchingNaturalOutlinedIcon sx={{ color: 'white', fontSize: 18 }} />
             </Avatar>
-            <Box
+            <Paper
+              elevation={0}
               sx={{
-                bgcolor: '#3a3a3a',
-                color: 'white',
-                borderRadius: 2,
-                p: '8px 12px',
+                bgcolor: 'section.light',
+                color: 'text.primary',
+                borderRadius: 3,
+                p: '10px 16px',
                 maxWidth: '80%',
                 wordBreak: 'break-word',
-                fontStyle: 'italic',
+                border: '1px solid',
+                borderColor: 'divider',
+                boxShadow: '0 2px 5px rgba(0, 0, 0, 0.05)',
               }}
             >
-              <Typography variant="body2">...</Typography>
-            </Box>
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 0.5
+                }}
+              >
+                <Box
+                  sx={{
+                    width: 6,
+                    height: 6,
+                    bgcolor: 'text.secondary',
+                    borderRadius: '50%',
+                    animation: 'pulse 1s infinite',
+                    '@keyframes pulse': {
+                      '0%': { opacity: 0.4 },
+                      '50%': { opacity: 1 },
+                      '100%': { opacity: 0.4 },
+                    },
+                  }}
+                />
+                <Box
+                  sx={{
+                    width: 6,
+                    height: 6,
+                    bgcolor: 'text.secondary',
+                    borderRadius: '50%',
+                    animation: 'pulse 1s infinite 0.2s',
+                    '@keyframes pulse': {
+                      '0%': { opacity: 0.4 },
+                      '50%': { opacity: 1 },
+                      '100%': { opacity: 0.4 },
+                    },
+                  }}
+                />
+                <Box
+                  sx={{
+                    width: 6,
+                    height: 6,
+                    bgcolor: 'text.secondary',
+                    borderRadius: '50%',
+                    animation: 'pulse 1s infinite 0.4s',
+                    '@keyframes pulse': {
+                      '0%': { opacity: 0.4 },
+                      '50%': { opacity: 1 },
+                      '100%': { opacity: 0.4 },
+                    },
+                  }}
+                />
+              </Box>
+            </Paper>
           </Box>
         )}
         <div ref={messagesEndRef} />
       </Box>
 
       {/* Input Area */}
-      <Box sx={{ display: 'flex', alignItems: 'center', p: 1.5, borderTop: '1px solid #3a3a3a' }}> {/* Subtle separator */}
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          p: 2,
+          borderTop: '1px solid',
+          borderColor: 'divider',
+          bgcolor: 'section.light',
+        }}
+      >
         <TextField
-          placeholder="Message..."
+          placeholder="Type a message..."
           variant="outlined"
           fullWidth
           value={message}
@@ -157,42 +257,54 @@ const Chatbox = ({ onClose }) => {
           disabled={loading}
           sx={{
             '& .MuiOutlinedInput-root': {
-              borderRadius: '25px',
+              borderRadius: 3,
               paddingRight: 0,
-              bgcolor: '#3a3a3a',
-              color: 'white',
+              bgcolor: 'background.default',
+              color: 'text.primary',
+              borderColor: 'divider',
             },
             '& .MuiOutlinedInput-notchedOutline': {
-              borderColor: 'transparent',
+              borderColor: 'divider',
             },
             '&:hover .MuiOutlinedInput-notchedOutline': {
-              borderColor: 'transparent',
+              borderColor: 'primary.main',
             },
             '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-              borderColor: 'transparent',
+              borderColor: 'primary.main',
             },
             '& input': {
-              padding: '10px 14px',
+              padding: '12px 14px',
+              fontSize: '0.875rem',
             }
-          }}
-          InputProps={{
-            style: { color: 'white' },
           }}
         />
         <IconButton
-          color="primary"
           onClick={handleSendMessage}
           disabled={!message.trim() || loading}
           sx={{
-            bgcolor: '#0095f6', // Instagram blue
-            '&:hover': { bgcolor: '#007ac1' },
-            ml: 1, // Add some margin to the left of the icon button
+            bgcolor: 'primary.main',
+            ml: 1,
+            borderRadius: 2,
+            p: '8px',
+            '&:hover': {
+              bgcolor: 'primary.dark',
+              transform: 'translateY(-2px)',
+              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+            },
+            '&:active': {
+              transform: 'translateY(0)',
+              boxShadow: 'none',
+            },
+            '&.Mui-disabled': {
+              bgcolor: 'action.disabledBackground',
+            },
+            transition: 'all 0.2s',
           }}
         >
-          <SendIcon sx={{ color: 'white' }} />
+          <SendIcon sx={{ color: 'white', fontSize: 20 }} />
         </IconButton>
       </Box>
-    </Box>
+    </Paper>
   );
 };
 
