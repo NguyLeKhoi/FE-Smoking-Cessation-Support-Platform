@@ -62,52 +62,42 @@ const SmokingQuiz = () => {
                 setLoading(true);
                 const response = await smokingService.getMySmokingHabits();
 
-                if (response && response.data && response.data.length > 0) {
+                // Only show results if the user has explicitly completed the quiz in this session
+                if (quizCompleted && response && response.data && response.data.length > 0) {
                     const latestRecord = response.data[0];
 
-                    // Only show result if ALL required fields are filled AND user explicitly completed quiz
-                    if (
-                        quizCompleted || // Show results if quiz was completed in this session
-                        (latestRecord.cigarettes_per_day &&
-                            latestRecord.smoking_years &&
-                            latestRecord.price_per_pack &&
-                            latestRecord.cigarettes_per_pack &&
-                            latestRecord.triggers &&
-                            latestRecord.triggers.length > 0)
-                    ) {
-                        dispatch({
-                            type: 'INITIALIZE',
-                            data: {
-                                cigarettes_per_pack: latestRecord.cigarettes_per_pack,
-                                price_per_pack: latestRecord.price_per_pack,
-                                cigarettes_per_day: latestRecord.cigarettes_per_day,
-                                smoking_years: latestRecord.smoking_years,
-                                triggers: latestRecord.triggers || [],
-                                health_issues: latestRecord.health_issues || ''
-                            }
-                        });
-
-                        // Only set result and hide form if user has completed the quiz in this session
-                        if (quizCompleted) {
-                            setResult(latestRecord);
-                            setShowForm(false);
-                        } else {
-                            setShowForm(true);
+                    // Initialize form data from fetched data
+                    dispatch({
+                        type: 'INITIALIZE',
+                        data: {
+                            cigarettes_per_pack: latestRecord.cigarettes_per_pack,
+                            price_per_pack: latestRecord.price_per_pack,
+                            cigarettes_per_day: latestRecord.cigarettes_per_day,
+                            smoking_years: latestRecord.smoking_years,
+                            triggers: latestRecord.triggers || [],
+                            health_issues: latestRecord.health_issues || ''
                         }
-                    } else {
-                        // If not all required fields are present, show the form
-                        setShowForm(true);
-                    }
+                    });
+
+                    // Only show result if quiz was completed in this session
+                    setResult(latestRecord);
+                    setShowForm(false);
+                } else {
+                    // Always reset to default state and show form when loading the page
+                    dispatch({ type: 'RESET' });
+                    setShowForm(true);
+                    setResult(null);
                 }
             } catch (err) {
                 console.error("Error fetching smoking habits:", err);
                 setError("Failed to load your previous data. Please complete the assessment.");
+                setShowForm(true);
             } finally {
                 setLoading(false);
             }
         };
         fetchExistingData();
-    }, [quizCompleted]); // Add quizCompleted to dependency array
+    }, [quizCompleted]); // Depend on quizCompleted state
 
     useEffect(() => {
         if (showForm) {
@@ -131,6 +121,34 @@ const SmokingQuiz = () => {
     };
 
     const handleNext = () => {
+        // Check if current field is filled before proceeding to next question
+        const currentField = questions[currentQuestion].field;
+
+        // Skip validation for health_issues field
+        if (currentField === 'health_issues') {
+            if (currentQuestion < questions.length - 1) {
+                setCurrentQuestion(currentQuestion + 1);
+            } else {
+                handleSubmit();
+            }
+            return;
+        }
+
+        // For triggers field, check if at least one is selected
+        if (currentField === 'triggers') {
+            if (formData.triggers.length === 0) {
+                setError(`Please select at least one smoking trigger before continuing.`);
+                return;
+            }
+        }
+        // For other fields, check if they have a value
+        else if (!formData[currentField]) {
+            setError(`Please fill in the required field before continuing.`);
+            return;
+        }
+
+        // Clear error and proceed to next question
+        setError(null);
         if (currentQuestion < questions.length - 1) {
             setCurrentQuestion(currentQuestion + 1);
         } else {
@@ -140,7 +158,7 @@ const SmokingQuiz = () => {
 
     const handleSubmit = async () => {
         try {
-            // Check if all required fields are filled
+            // Check if all required fields are filled (except health_issues)
             if (
                 !formData.cigarettes_per_day ||
                 !formData.smoking_years ||
@@ -158,7 +176,9 @@ const SmokingQuiz = () => {
                 cigarettes_per_day: Number(formData.cigarettes_per_day),
                 smoking_years: Number(formData.smoking_years),
                 price_per_pack: Number(formData.price_per_pack),
-                cigarettes_per_pack: Number(formData.cigarettes_per_pack)
+                cigarettes_per_pack: Number(formData.cigarettes_per_pack),
+                // Ensure health_issues is at least an empty string, not undefined
+                health_issues: formData.health_issues || ''
             };
 
             const data = await smokingService.createSmokingHabit(dataToSubmit);
@@ -239,7 +259,7 @@ const SmokingQuiz = () => {
                             mx: 'auto',
                             height: 'auto',
                             minHeight: { xs: 'auto', md: '500px' },
-                            maxHeight: 'calc(100vh - 160px)', // Adjusted to account for error message
+                            maxHeight: 'calc(100vh - 140px)', // Adjusted to account for error message
                             display: 'flex',
                             flexDirection: 'column',
                             position: 'relative',

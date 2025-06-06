@@ -142,7 +142,7 @@ export default function HomePage() {
       <QuotesCarousel />
 
       {/* Share the journey Section */}
-      <Box sx={{ bgcolor: 'section.main', py: { xs: 8, md: 10 } }}>
+      {/* <Box sx={{ bgcolor: 'section.main', py: { xs: 8, md: 10 } }}>
         <Container maxWidth="md">
           <Typography variant="h3" align="center" gutterBottom>
             Share the journey
@@ -169,10 +169,10 @@ export default function HomePage() {
             </Box>
           </Box>
         </Container>
-      </Box>
+      </Box> */}
 
       {/* Achievements Section */}
-      <Box sx={{ bgcolor: 'background.paper', py: { xs: 8, md: 10 }, px: 2 }}>
+      {/* <Box sx={{ bgcolor: 'background.paper', py: { xs: 8, md: 10 }, px: 2 }}>
         <Container maxWidth="md">
           <Typography variant="h3" align="center" gutterBottom>
             Small achievements, big goals
@@ -205,10 +205,10 @@ export default function HomePage() {
             />
           </Box>
         </Container>
-      </Box>
+      </Box> */}
 
       {/* Health Section */}
-      <Box sx={{ bgcolor: 'section.main', py: { xs: 8, md: 10 } }}>
+      {/* <Box sx={{ bgcolor: 'section.main', py: { xs: 8, md: 10 } }}>
         <Container maxWidth="md">
           <Typography variant="h3" align="center" gutterBottom>
             Recover your health
@@ -241,7 +241,7 @@ export default function HomePage() {
             />
           </Box>
         </Container>
-      </Box>
+      </Box> */}
     </Box>
   );
 }
