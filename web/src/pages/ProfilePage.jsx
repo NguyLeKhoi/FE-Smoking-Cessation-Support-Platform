@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Typography, Box, Paper, Divider, Grid } from '@mui/material';
+import { Button, Typography, Box, Paper, Grid } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import ProfileSidebar from '../components/ProfileSidebar';
 

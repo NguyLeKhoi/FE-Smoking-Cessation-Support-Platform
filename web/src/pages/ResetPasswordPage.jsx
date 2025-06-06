@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { Container, TextField, Button, Typography, Box, Alert, Link } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import { login } from '../services/authService';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { resetPassword } from '../services/authService';
 import GlowingDotsGrid from '../components/animated/GlowingDotsGrid';
 
-export default function LoginPage() {
+export default function ResetPasswordPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const token = queryParams.get('token');
   const [formData, setFormData] = useState({
-    email: '',
     password: '',
+    confirmPassword: '',
   });
+  const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -22,6 +26,12 @@ export default function LoginPage() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!token) {
+      setError('No reset token provided.');
+    }
+  }, [token]);
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -31,35 +41,43 @@ export default function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setMessage('');
     setError('');
+
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match.');
+      return;
+    }
+
+    if (!token) {
+      setError('Cannot reset password: No token provided.');
+      return;
+    }
+
     setLoading(true);
 
     try {
-      const response = await login(formData);
-      if (response && response.accessToken) {
-        navigate('/');
-      } else {
-        setError('Login failed: Invalid credentials or server response.');
-      }
+      await resetPassword({ token, password: formData.password, confirmPassword: formData.confirmPassword });
+      setMessage('Your password has been reset successfully. You can now sign in.');
+      setFormData({
+        password: '',
+        confirmPassword: '',
+      });
     } catch (error) {
-      console.error('Login error caught:', error);
-      if (error.response && error.response.data && error.response.data.message) {
-        console.error('Server error message:', error.response.data.message);
-        setError(`Login failed: ${error.response.data.message}`);
-      } else if (error.message) {
-        console.error('Error message:', error.message);
-        setError(`Login failed: ${error.message}`);
+      console.error('Reset password error caught:', error);
+      if (error.message) {
+        setError(`Error: ${error.message}`);
       } else {
-        console.error('Unknown error');
-        setError('Login failed: An unexpected error occurred.');
+        setError('An unexpected error occurred.');
       }
     } finally {
       setLoading(false);
     }
   };
 
+  // Common text field styling based on theme
   const textFieldStyle = {
-    '& .MuiOutlinedInput-root CVroot': {
+    '& .MuiOutlinedInput-root': {
       borderRadius: '12px',
       bgcolor: 'background.paper',
       '& fieldset': { borderColor: 'rgba(0, 0, 0, 0.12)' },
@@ -75,26 +93,22 @@ export default function LoginPage() {
   };
 
   return (
-    <Box
-      sx={{
-        height: '100vh',
-        width: '100vw',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        overflow: 'hidden',
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        bgcolor: '#f6f5f3',
-      }}
-    >
-      {/* Background Glowing Dots Grid */}
+    <Box sx={{
+      height: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      overflow: 'hidden',
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      bgcolor: '#f6f5f3',
+    }}>
       <GlowingDotsGrid
-        dotSize={12}     // Larger dots
-        dotGap={38}      // More space between dots
+        dotSize={12}
+        dotGap={38}
         threshold={150}
         speedThreshold={100}
         shockRadius={250}
@@ -104,12 +118,10 @@ export default function LoginPage() {
           left: 0,
           width: '100%',
           height: '100%',
-          zIndex: 1, // Behind the login form
-
+          zIndex: 1,
         }}
       />
 
-      {/* Login Form Container */}
       <Container maxWidth="sm" sx={{ zIndex: 2 }}>
         <Box
           sx={{
@@ -124,16 +136,21 @@ export default function LoginPage() {
             mx: 'auto',
             maxHeight: '90vh',
             overflowY: 'auto',
-            // Optional: Add slight transparency to see the background
-            bgcolor: '#ffffff',
+            backdropFilter: 'blur(5px)',
           }}
         >
           <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 700, color: 'text.primary', mb: 1 }}>
-            Sign in
+            Reset Password
           </Typography>
           <Typography variant="h6" gutterBottom sx={{ color: 'text.secondary', mb: 4, textAlign: 'center' }}>
-            Welcome to Zerotine!
+            Enter your new password below
           </Typography>
+
+          {message && (
+            <Alert severity="success" sx={{ width: '100%', mb: 3, borderRadius: 2 }}>
+              {message}
+            </Alert>
+          )}
 
           {error && (
             <Alert severity="error" sx={{ width: '100%', mb: 3, borderRadius: 2 }}>
@@ -144,40 +161,28 @@ export default function LoginPage() {
           <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%', mt: 2 }}>
             <TextField
               fullWidth
-              label="Email or username"
-              name="email"
-              type="text"
-              value={formData.email}
-              onChange={handleChange}
-              margin="normal"
-              required
-              autoComplete="email"
-              sx={textFieldStyle}
-            />
-
-            <TextField
-              fullWidth
-              label="Password"
+              label="New Password"
               name="password"
               type="password"
               value={formData.password}
               onChange={handleChange}
               margin="normal"
               required
-              autoComplete="current-password"
+              autoComplete="new-password"
               sx={textFieldStyle}
             />
-
-            <Box sx={{ textAlign: 'right', mt: 1 }}>
-              <Link
-                component="button"
-                variant="body2"
-                onClick={() => navigate('/forgot-password')}
-                sx={{ color: 'primary.main', fontWeight: 500 }}
-              >
-                Forgot password?
-              </Link>
-            </Box>
+            <TextField
+              fullWidth
+              label="Confirm New Password"
+              name="confirmPassword"
+              type="password"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              margin="normal"
+              required
+              autoComplete="new-password"
+              sx={textFieldStyle}
+            />
 
             <Button
               type="submit"
@@ -203,50 +208,16 @@ export default function LoginPage() {
                 },
               }}
             >
-              {loading ? 'Signing in...' : 'Sign in'}
+              {loading ? 'Resetting...' : 'Reset Password'}
             </Button>
 
-            <Box sx={{ display: 'flex', alignItems: 'center', my: 3 }}>
-              <Box sx={{ flexGrow: 1, height: '1px', bgcolor: 'rgba(0, 0, 0, 0.1)' }} />
-              <Typography variant="body2" sx={{ mx: 2, color: 'text.secondary' }}>OR</Typography>
-              <Box sx={{ flexGrow: 1, height: '1px', bgcolor: 'rgba(0, 0, 0, 0.1)' }} />
-            </Box>
-
-            <Button
-              fullWidth
-              variant="outlined"
-              onClick={() => window.location.href = process.env.REACT_APP_BACKEND_GOOGLE_AUTH_URL}
-              startIcon={<img src="https://img.icons8.com/color/16/000000/google-logo.png" alt="Google logo" style={{ width: 20, height: 20 }} />}
-              sx={{
-                mb: 3,
-                py: 1.5,
-                color: 'text.primary',
-                backgroundColor: 'background.paper',
-                borderColor: 'rgba(0, 0, 0, 0.23)',
-                borderRadius: '12px',
-                boxShadow: '0 4px 0 rgba(0, 0, 0, 0.1)',
-                '&:hover': {
-                  borderColor: 'text.primary',
-                  bgcolor: 'rgba(0, 0, 0, 0.04)',
-                  boxShadow: '0 2px 0 rgba(0, 0, 0, 0.1)',
-                  transform: 'translateY(2px)',
-                },
-                '&:active': {
-                  boxShadow: '0 0 0 rgba(0, 0, 0, 0.1)',
-                  transform: 'translateY(4px)',
-                },
-              }}
-            >
-              Sign in with Google
-            </Button>
-
-            <Box sx={{ textAlign: 'center', mt: 2 }}>
+            <Box sx={{ textAlign: 'center', mt: 3 }}>
               <Typography variant="body1" sx={{ color: 'text.secondary' }}>
-                Don't have an account?{' '}
+                Remember your password?{' '}
                 <Link
                   component="button"
                   variant="body1"
-                  onClick={() => navigate('/signup')}
+                  onClick={() => navigate('/login')}
                   sx={{
                     color: 'primary.main',
                     fontWeight: 600,
@@ -262,15 +233,15 @@ export default function LoginPage() {
                       left: 0,
                       backgroundColor: 'primary.main',
                       transformOrigin: 'bottom right',
-                      transition: 'transform 0.3s ease-out',
+                      transition: 'transform 0.3s ease-out'
                     },
                     '&:hover::after': {
                       transform: 'scaleX(1)',
-                      transformOrigin: 'bottom left',
-                    },
+                      transformOrigin: 'bottom left'
+                    }
                   }}
                 >
-                  Sign up
+                  Sign in
                 </Link>
               </Typography>
             </Box>
@@ -279,4 +250,4 @@ export default function LoginPage() {
       </Container>
     </Box>
   );
-}
+} 
