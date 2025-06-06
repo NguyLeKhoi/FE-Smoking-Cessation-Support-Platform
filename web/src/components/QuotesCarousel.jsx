@@ -11,8 +11,6 @@ import {
     alpha
 } from '@mui/material';
 import {
-    ChevronLeft,
-    ChevronRight,
     FormatQuote,
     Circle,
     RadioButtonUnchecked
@@ -80,19 +78,6 @@ const QuotesCarousel = () => {
         setTimeout(() => setIsAutoPlaying(true), 3000);
     };
 
-    const nextSlide = () => {
-        setCurrentSlide((prev) => (prev + 1) % quotes.length);
-        setIsAutoPlaying(false);
-        setProgress(0);
-        setTimeout(() => setIsAutoPlaying(true), 3000);
-    };
-
-    const prevSlide = () => {
-        setCurrentSlide((prev) => (prev - 1 + quotes.length) % quotes.length);
-        setIsAutoPlaying(false);
-        setProgress(0);
-        setTimeout(() => setIsAutoPlaying(true), 3000);
-    };
 
     return (
         <Box

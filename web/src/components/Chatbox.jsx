@@ -74,7 +74,7 @@ const Chatbox = ({ onClose }) => {
         }}
       >
         <Typography variant="h6" sx={{ fontWeight: 600 }}>
-          Chat with our AI coach
+          Zerotine AI coach
         </Typography>
         <IconButton size="small" onClick={onClose} sx={{ color: 'secondary.main' }}>
           <CloseIcon />
