@@ -4,13 +4,15 @@ import {
     Box,
     Button,
     Container,
-    CircularProgress
+    CircularProgress,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import HomeIcon from '@mui/icons-material/Home';
+import Lottie from 'lottie-react';
 import smokingService from '../services/smokingService';
 import SmokingHabitsResult from '../components/smokingQuiz/SmokingHabitsResult';
 import SmokingHabitsQuestions from '../components/smokingQuiz/SmokingHabitsQuestions';
+import typingCatAnimation from '../assets/animations/typing-cat-animation.json';
 
 // Default values to use if no existing data is found
 const defaultState = {
@@ -59,12 +61,8 @@ const SmokingQuiz = () => {
                 setLoading(true);
                 const response = await smokingService.getMySmokingHabits();
 
-                // If data exists, use it to initialize the form
                 if (response && response.data && response.data.length > 0) {
-                    // Use the most recent record (assuming sorted by date)
                     const latestRecord = response.data[0];
-
-                    // Initialize form with existing data
                     dispatch({
                         type: 'INITIALIZE',
                         data: {
@@ -76,34 +74,25 @@ const SmokingQuiz = () => {
                             health_issues: latestRecord.health_issues || ''
                         }
                     });
-
-                    // Also show the result if it exists
                     setResult(latestRecord);
                     setShowForm(false);
                 }
             } catch (err) {
                 console.error("Error fetching smoking habits:", err);
                 setError("Failed to load your previous data. Starting with default values.");
-                // Continue with default values if fetch fails
             } finally {
                 setLoading(false);
             }
         };
-
         fetchExistingData();
     }, []);
 
-    // Effect to disable scrolling when showing the quiz form
     useEffect(() => {
         if (showForm) {
-            // Disable scrolling
             document.body.style.overflow = 'hidden';
         } else {
-            // Re-enable scrolling
             document.body.style.overflow = 'auto';
         }
-
-        // Cleanup function to re-enable scrolling when component unmounts
         return () => {
             document.body.style.overflow = 'auto';
         };
@@ -133,7 +122,6 @@ const SmokingQuiz = () => {
                 console.error('Please fill in all required fields');
                 return;
             }
-
             const dataToSubmit = {
                 ...formData,
                 cigarettes_per_day: Number(formData.cigarettes_per_day),
@@ -141,20 +129,11 @@ const SmokingQuiz = () => {
                 price_per_pack: Number(formData.price_per_pack),
                 cigarettes_per_pack: Number(formData.cigarettes_per_pack)
             };
-
             const data = await smokingService.createSmokingHabit(dataToSubmit);
             setResult(data);
             setShowForm(false);
         } catch (error) {
             console.error('Error:', error);
-            if (error.response) {
-                console.error('Response data:', error.response.data);
-                console.error('Response status:', error.response.status);
-            } else if (error.request) {
-                console.error('No response received:', error.request);
-            } else {
-                console.error('Request setup error:', error.message);
-            }
         }
     };
 
@@ -179,23 +158,25 @@ const SmokingQuiz = () => {
         );
     }
 
+    // Get the current question's length to determine bubble size
+    const currentQuestionText = questions[currentQuestion].question;
+    const isLongQuestion = currentQuestionText.length > 50;
+    const isVeryLongQuestion = currentQuestionText.length > 100;
+
     return (
         <Box sx={{
             minHeight: '100vh',
             minWidth: '100%',
             bgcolor: 'background.default',
-            py: 5,
+            py: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
             overflow: showForm ? 'hidden' : 'auto',
         }}>
-            <Container maxWidth="md">
+            <Container maxWidth="md" sx={{ py: 4 }}>
                 {error && (
-                    <Box sx={{
-                        p: 2,
-                        mb: 3,
-                        bgcolor: 'error.light',
-                        color: 'error.dark',
-                        borderRadius: 2
-                    }}>
+                    <Box sx={{ p: 2, mb: 3, bgcolor: 'error.light', color: 'error.dark', borderRadius: 2 }}>
                         <Typography>{error}</Typography>
                     </Box>
                 )}
@@ -203,59 +184,115 @@ const SmokingQuiz = () => {
                 {showForm ? (
                     <Box
                         sx={{
-                            p: 4,
+                            p: { xs: 3, md: 5 },
                             borderRadius: 3,
                             bgcolor: '#ffffff',
                             boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.05)',
-                            mb: 4,
+                            width: '100%',
+                            maxWidth: '800px',
+                            mx: 'auto',
                             height: 'auto',
-                            maxHeight: 'calc(100vh - 80px)',
+                            minHeight: { xs: 'auto', md: '500px' },
+                            maxHeight: 'calc(100vh - 120px)',
                             display: 'flex',
-                            flexDirection: 'column'
+                            flexDirection: 'column',
+                            position: 'relative',
+                            top: '50%',
+                            transform: { xs: 'none', md: 'translateY(-10%)' },
                         }}
                     >
-                        <Typography
-                            variant="h3"
-                            component="h1"
-                            sx={{
-                                fontWeight: 700,
-                                mb: 2,
-                                color: 'text.primary'
-                            }}
-                        >
+                        <Typography variant="h3" component="h1" sx={{ fontWeight: 700, mb: 2, color: 'text.primary', fontSize: { xs: '1.75rem', md: '2.5rem' } }}>
                             Smoking Habit Assessment
                         </Typography>
-
-                        <Typography
-                            variant="h6"
-                            sx={{
-                                mb: 4,
-                                color: 'text.secondary'
-                            }}
-                        >
+                        <Typography variant="h6" sx={{ mb: 4, color: 'text.secondary', fontSize: { xs: '1rem', md: '1.25rem' } }}>
                             Question {currentQuestion + 1} of {questions.length}
                         </Typography>
 
-                        <Box sx={{ mt: 2, flexGrow: 1 }}>
-                            <Typography
-                                variant="subtitle1"
-                                sx={{
-                                    mb: 1,
-                                    fontWeight: 'medium',
-                                    color: 'text.primary'
-                                }}
-                            >
-                                {questions[currentQuestion].question}
-                            </Typography>
-                            {questions[currentQuestion].component(
-                                formData[questions[currentQuestion].field],
-                                questions[currentQuestion].field === 'triggers'
-                                    ? handleCheckboxChange
-                                    : (e) => handleChange(e)
-                            )}
+                        <Box sx={{ mt: 2, flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                            <Box sx={{ 
+                                display: 'flex', 
+                                alignItems: 'flex-start', 
+                                gap: 3, 
+                                mb: 3, 
+                                ml: { xs: '-10px', md: '-15px' },
+                                flexWrap: { xs: 'wrap', sm: 'nowrap' }
+                            }}>
+                                <Box sx={{ 
+                                    flexShrink: 0, 
+                                    width: { xs: '100px', md: '140px' }, 
+                                    height: { xs: '100px', md: '140px' },
+                                    position: 'relative',
+                                    left: { xs: '-5px', md: '-10px' }
+                                }}>
+                                    <Lottie
+                                        animationData={typingCatAnimation}
+                                        loop={true}
+                                        style={{ 
+                                            width: '100%', 
+                                            height: '100%', 
+                                            marginBottom: '-10px' 
+                                        }}
+                                    />
+                                </Box>
+                                
+                                {/* Chat Bubble that grows based on content */}
+                                <Box
+                                    sx={{
+                                        position: 'relative',
+                                        backgroundColor: '#f5f5f5',
+                                        padding: '15px 20px',
+                                        borderRadius: '16px',
+                                        maxWidth: { xs: '100%', sm: isVeryLongQuestion ? '70%' : isLongQuestion ? '60%' : '50%' },
+                                        width: { xs: 'calc(100% - 20px)', sm: 'auto' },
+                                        minWidth: { xs: 'auto', sm: '300px' },
+                                        boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+                                        alignSelf: 'flex-start',
+                                        mt: { xs: 0, sm: 2 }, // Add margin top on desktop
+                                        transition: 'all 0.3s ease',
+                                        '&:before': {
+                                            content: '""',
+                                            position: 'absolute',
+                                            left: '-10px',
+                                            top: '30px',
+                                            width: 0,
+                                            height: 0,
+                                            borderTop: '10px solid transparent',
+                                            borderBottom: '10px solid transparent',
+                                            borderRight: '10px solid #f5f5f5',
+                                        },
+                                    }}
+                                >
+                                    <Typography 
+                                        variant="body1" 
+                                        sx={{ 
+                                            color: 'text.primary',
+                                            mb: 2,
+                                            fontWeight: 500
+                                        }}
+                                    >
+                                        {currentQuestionText}
+                                    </Typography>
+                                    
+                                    {/* Input field inside the chat bubble */}
+                                    <Box sx={{ mt: 2 }}>
+                                        {questions[currentQuestion].component(
+                                            formData[questions[currentQuestion].field],
+                                            questions[currentQuestion].field === 'triggers'
+                                                ? handleCheckboxChange
+                                                : (e) => handleChange(e)
+                                        )}
+                                    </Box>
+                                </Box>
+                            </Box>
                         </Box>
 
-                        <Box sx={{ mt: 4, display: 'flex', justifyContent: 'space-between' }}>
+                        <Box sx={{ 
+                            mt: 4, 
+                            display: 'flex', 
+                            justifyContent: 'space-between', 
+                            gap: 2, 
+                            flexDirection: { xs: currentQuestion > 0 ? 'column' : 'row', sm: 'row' } 
+                        }}>
                             {currentQuestion > 0 && (
                                 <Button
                                     onClick={() => setCurrentQuestion(currentQuestion - 1)}
@@ -264,11 +301,12 @@ const SmokingQuiz = () => {
                                         py: 1.5,
                                         px: 4,
                                         borderRadius: '12px',
-                                        borderColor: '#000000',
-                                        color: '#000000',
+                                        borderColor: '#3f332b',
+                                        color: '#3f332b',
+                                        flex: { xs: '1', sm: '0 0 auto' },
                                         '&:hover': {
-                                            borderColor: '#000000',
-                                            bgcolor: 'rgba(0, 0, 0, 0.04)',
+                                            borderColor: '#3f332b',
+                                            bgcolor: 'rgba(63, 51, 43, 0.04)',
                                         },
                                     }}
                                 >
@@ -281,17 +319,19 @@ const SmokingQuiz = () => {
                                 sx={{
                                     py: 1.5,
                                     px: 4,
-                                    bgcolor: '#000000',
+                                    bgcolor: '#3f332b',
                                     color: 'white',
                                     borderRadius: '12px',
-                                    boxShadow: '0 4px 0 #00000080',
+                                    boxShadow: '0 4px 0 rgba(63, 51, 43, 0.5)',
+                                    ml: 'auto',
+                                    flex: { xs: '1', sm: '0 0 auto' },
                                     '&:hover': {
-                                        bgcolor: '#000000cd',
-                                        boxShadow: '0 2px 0 #00000080',
+                                        bgcolor: 'rgba(63, 51, 43, 0.9)',
+                                        boxShadow: '0 2px 0 rgba(63, 51, 43, 0.5)',
                                         transform: 'translateY(2px)',
                                     },
                                     '&:active': {
-                                        boxShadow: '0 0 0 #00000080',
+                                        boxShadow: '0 0 0 rgba(63, 51, 43, 0.5)',
                                         transform: 'translateY(4px)',
                                     },
                                 }}
@@ -306,12 +346,14 @@ const SmokingQuiz = () => {
                             p: 4,
                             borderRadius: 3,
                             bgcolor: '#ffffff',
-                            boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.05)'
+                            boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.05)',
+                            width: '100%',
+                            maxWidth: '800px',
+                            mx: 'auto',
                         }}
                     >
                         <SmokingHabitsResult data={result} />
-
-                        <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center', gap: 2, flexDirection: 'column', alignItems: 'center' }}>
+                        <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center', gap: 2, flexDirection: { xs: 'column', sm: 'row' }, alignItems: 'center' }}>
                             <Button
                                 onClick={handleRetakeQuiz}
                                 variant="outlined"
@@ -319,17 +361,17 @@ const SmokingQuiz = () => {
                                     py: 1.5,
                                     px: 4,
                                     borderRadius: '12px',
-                                    borderColor: '#000000',
-                                    color: '#000000',
+                                    borderColor: '#3f332b',
+                                    color: '#3f332b',
+                                    width: { xs: '100%', sm: 'auto' },
                                     '&:hover': {
-                                        borderColor: '#000000',
-                                        bgcolor: 'rgba(0, 0, 0, 0.04)',
+                                        borderColor: '#3f332b',
+                                        bgcolor: 'rgba(63, 51, 43, 0.04)',
                                     },
                                 }}
                             >
                                 Retake Assessment
                             </Button>
-
                             <Button
                                 variant="contained"
                                 startIcon={<HomeIcon />}
@@ -337,17 +379,18 @@ const SmokingQuiz = () => {
                                 sx={{
                                     py: 1.5,
                                     px: 4,
-                                    bgcolor: '#000000',
+                                    bgcolor: '#3f332b',
                                     color: 'white',
                                     borderRadius: '12px',
-                                    boxShadow: '0 4px 0 #00000080',
+                                    boxShadow: '0 4px 0 rgba(63, 51, 43, 0.5)',
+                                    width: { xs: '100%', sm: 'auto' },
                                     '&:hover': {
-                                        bgcolor: '#000000cd',
-                                        boxShadow: '0 2px 0 #00000080',
+                                        bgcolor: 'rgba(63, 51, 43, 0.9)',
+                                        boxShadow: '0 2px 0 rgba(63, 51, 43, 0.5)',
                                         transform: 'translateY(2px)',
                                     },
                                     '&:active': {
-                                        boxShadow: '0 0 0 #00000080',
+                                        boxShadow: '0 0 0 rgba(63, 51, 43, 0.5)',
                                         transform: 'translateY(4px)',
                                     },
                                 }}
