@@ -9,7 +9,7 @@ export default function AuthLayout({ children }) {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        bgcolor: '#FBD4BF', // Changed background color
+        bgcolor: '#F9F7F4', // Changed background color
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         py: 4,

@@ -24,11 +24,15 @@ const SidebarContainer = styled(Paper)(({ theme }) => ({
     height: '100vh',
     backgroundColor: theme.palette.background.paper,
     boxShadow: '4px 0px 10px rgba(0, 0, 0, 0.03)',
-    padding: '24px 16px',
+    padding: '50px 16px',
     display: 'flex',
     flexDirection: 'column',
     color: theme.palette.text.primary,
     borderRight: `1px solid ${theme.palette.divider}`,
+    position: 'sticky',
+    top: 0,
+    left: 0,
+    zIndex: 10,
     overflowY: 'auto',
 }));
 
@@ -54,11 +58,6 @@ const IconText = styled(Typography)(({ theme }) => ({
     color: theme.palette.text.primary,
 }));
 
-// Logo component
-const Logo = () => (
-    <Box sx={{ display: 'flex', alignItems: 'center', mb: 4, pl: 1 }}>
-    </Box>
-);
 
 // User profile section
 const UserProfileSection = () => (
@@ -72,11 +71,11 @@ const UserProfileSection = () => (
                 color: 'black',
             }}
         >
-            U
+            J
         </Avatar>
         <Box sx={{ ml: 2 }}>
             <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                User Name
+                johnsmith
             </Typography>
             <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                 Basic Level
@@ -88,23 +87,18 @@ const UserProfileSection = () => (
 const ProfileSidebar = () => {
     const location = useLocation();
     const [activeItem, setActiveItem] = useState(() => {
-        // Set initial active item based on current path
         const currentPath = location.pathname;
         const foundItem = menuItems.findIndex(item => currentPath.includes(item.path));
-        return foundItem >= 0 ? foundItem : 5; // Default to profile if no match
+        return foundItem >= 0 ? foundItem : 5;
     });
 
     const handleItemClick = (index) => {
-        // Just update the active item without navigation
         setActiveItem(index);
-
-        // Optional: Add a console log to show which page would be navigated to
         console.log(`Selected: ${menuItems[index].label} (${menuItems[index].path})`);
     };
 
     return (
         <SidebarContainer elevation={0}>
-            <Logo />
             <UserProfileSection />
 
             <Typography
@@ -155,11 +149,6 @@ const ProfileSidebar = () => {
                 ))}
             </List>
 
-            <Box sx={{ mt: 'auto', pt: 4, pb: 2, textAlign: 'center' }}>
-                <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                    © 2025 Zerotine App
-                </Typography>
-            </Box>
         </SidebarContainer>
     );
 };
