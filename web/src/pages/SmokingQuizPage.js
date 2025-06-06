@@ -14,12 +14,12 @@ import SmokingHabitsResult from '../components/smokingQuiz/SmokingHabitsResult';
 import SmokingHabitsQuestions from '../components/smokingQuiz/SmokingHabitsQuestions';
 import typingCatAnimation from '../assets/animations/typing-cat-animation.json';
 
-// Default values to use if no existing data is found
+// Initialize with empty values to require user input
 const defaultState = {
-    cigarettes_per_pack: 20,
-    price_per_pack: 5.99,
-    cigarettes_per_day: 0,
-    smoking_years: 0,
+    cigarettes_per_pack: '',
+    price_per_pack: '',
+    cigarettes_per_day: '',
+    smoking_years: '',
     triggers: [],
     health_issues: ''
 };
@@ -50,6 +50,7 @@ const SmokingQuiz = () => {
     const [showForm, setShowForm] = useState(true);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [quizCompleted, setQuizCompleted] = useState(false); // Add this new state
 
     // Get questions from the extracted component
     const { questions } = SmokingHabitsQuestions();
@@ -63,29 +64,50 @@ const SmokingQuiz = () => {
 
                 if (response && response.data && response.data.length > 0) {
                     const latestRecord = response.data[0];
-                    dispatch({
-                        type: 'INITIALIZE',
-                        data: {
-                            cigarettes_per_pack: latestRecord.cigarettes_per_pack || 20,
-                            price_per_pack: latestRecord.price_per_pack || 5.99,
-                            cigarettes_per_day: latestRecord.cigarettes_per_day || 0,
-                            smoking_years: latestRecord.smoking_years || 0,
-                            triggers: latestRecord.triggers || [],
-                            health_issues: latestRecord.health_issues || ''
+
+                    // Only show result if ALL required fields are filled AND user explicitly completed quiz
+                    if (
+                        quizCompleted || // Show results if quiz was completed in this session
+                        (latestRecord.cigarettes_per_day &&
+                            latestRecord.smoking_years &&
+                            latestRecord.price_per_pack &&
+                            latestRecord.cigarettes_per_pack &&
+                            latestRecord.triggers &&
+                            latestRecord.triggers.length > 0)
+                    ) {
+                        dispatch({
+                            type: 'INITIALIZE',
+                            data: {
+                                cigarettes_per_pack: latestRecord.cigarettes_per_pack,
+                                price_per_pack: latestRecord.price_per_pack,
+                                cigarettes_per_day: latestRecord.cigarettes_per_day,
+                                smoking_years: latestRecord.smoking_years,
+                                triggers: latestRecord.triggers || [],
+                                health_issues: latestRecord.health_issues || ''
+                            }
+                        });
+
+                        // Only set result and hide form if user has completed the quiz in this session
+                        if (quizCompleted) {
+                            setResult(latestRecord);
+                            setShowForm(false);
+                        } else {
+                            setShowForm(true);
                         }
-                    });
-                    setResult(latestRecord);
-                    setShowForm(false);
+                    } else {
+                        // If not all required fields are present, show the form
+                        setShowForm(true);
+                    }
                 }
             } catch (err) {
                 console.error("Error fetching smoking habits:", err);
-                setError("Failed to load your previous data. Starting with default values.");
+                setError("Failed to load your previous data. Please complete the assessment.");
             } finally {
                 setLoading(false);
             }
         };
         fetchExistingData();
-    }, []);
+    }, [quizCompleted]); // Add quizCompleted to dependency array
 
     useEffect(() => {
         if (showForm) {
@@ -118,10 +140,19 @@ const SmokingQuiz = () => {
 
     const handleSubmit = async () => {
         try {
-            if (!formData.cigarettes_per_day || !formData.smoking_years) {
-                console.error('Please fill in all required fields');
+            // Check if all required fields are filled
+            if (
+                !formData.cigarettes_per_day ||
+                !formData.smoking_years ||
+                !formData.price_per_pack ||
+                !formData.cigarettes_per_pack ||
+                !formData.triggers ||
+                formData.triggers.length === 0
+            ) {
+                setError('Please fill in all required fields before submitting the assessment.');
                 return;
             }
+
             const dataToSubmit = {
                 ...formData,
                 cigarettes_per_day: Number(formData.cigarettes_per_day),
@@ -129,11 +160,15 @@ const SmokingQuiz = () => {
                 price_per_pack: Number(formData.price_per_pack),
                 cigarettes_per_pack: Number(formData.cigarettes_per_pack)
             };
+
             const data = await smokingService.createSmokingHabit(dataToSubmit);
             setResult(data);
             setShowForm(false);
+            setQuizCompleted(true); // Set quiz as completed
+            setError(null); // Clear any previous errors
         } catch (error) {
             console.error('Error:', error);
+            setError('There was an error submitting your assessment. Please try again.');
         }
     };
 
@@ -176,7 +211,18 @@ const SmokingQuiz = () => {
         }}>
             <Container maxWidth="md" sx={{ py: 4 }}>
                 {error && (
-                    <Box sx={{ p: 2, mb: 3, bgcolor: 'error.light', color: 'error.dark', borderRadius: 2 }}>
+                    <Box sx={{
+                        p: 2,
+                        mb: 4,
+                        bgcolor: 'error.light',
+                        color: '#ffffff',
+                        borderRadius: 2,
+                        position: 'relative',
+                        zIndex: 2,
+                        boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.1)',
+                        maxWidth: '800px',
+                        left: '3%',
+                    }}>
                         <Typography>{error}</Typography>
                     </Box>
                 )}
@@ -193,12 +239,13 @@ const SmokingQuiz = () => {
                             mx: 'auto',
                             height: 'auto',
                             minHeight: { xs: 'auto', md: '500px' },
-                            maxHeight: 'calc(100vh - 120px)',
+                            maxHeight: 'calc(100vh - 160px)', // Adjusted to account for error message
                             display: 'flex',
                             flexDirection: 'column',
                             position: 'relative',
-                            top: '50%',
-                            transform: { xs: 'none', md: 'translateY(-10%)' },
+                            zIndex: 1,
+                            top: { xs: 0, md: '10px' },
+                            transform: { xs: 'none', md: 'translateY(-5%)' },
                         }}
                     >
                         <Typography variant="h3" component="h1" sx={{ fontWeight: 700, mb: 2, color: 'text.primary', fontSize: { xs: '1.75rem', md: '2.5rem' } }}>
@@ -209,42 +256,42 @@ const SmokingQuiz = () => {
                         </Typography>
 
                         <Box sx={{ mt: 2, flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                            <Box sx={{ 
-                                display: 'flex', 
-                                alignItems: 'flex-start', 
-                                gap: 3, 
-                                mb: 3, 
-                                ml: { xs: '-10px', md: '-15px' },
+                            <Box sx={{
+                                display: 'flex',
+                                alignItems: 'flex-start',
+                                gap: 3,
+                                mb: 3,
+                                ml: { xs: '-10px', md: '0px' },
                                 flexWrap: { xs: 'wrap', sm: 'nowrap' }
                             }}>
-                                <Box sx={{ 
-                                    flexShrink: 0, 
-                                    width: { xs: '100px', md: '140px' }, 
-                                    height: { xs: '100px', md: '140px' },
+                                <Box sx={{
+                                    flexShrink: 0,
+                                    width: { xs: '100px', md: '160px' },
+                                    height: { xs: '100px', md: '160px' },
                                     position: 'relative',
-                                    left: { xs: '-5px', md: '-10px' }
+                                    left: { xs: '-5px', md: '-3px' }
                                 }}>
                                     <Lottie
                                         animationData={typingCatAnimation}
                                         loop={true}
-                                        style={{ 
-                                            width: '100%', 
-                                            height: '100%', 
-                                            marginBottom: '-10px' 
+                                        style={{
+                                            width: '100%',
+                                            height: '100%',
+                                            marginBottom: '-10px'
                                         }}
                                     />
                                 </Box>
-                                
+
                                 {/* Chat Bubble that grows based on content */}
                                 <Box
                                     sx={{
                                         position: 'relative',
                                         backgroundColor: '#f5f5f5',
-                                        padding: '15px 20px',
+                                        padding: '25px 20px',
                                         borderRadius: '16px',
                                         maxWidth: { xs: '100%', sm: isVeryLongQuestion ? '70%' : isLongQuestion ? '60%' : '50%' },
                                         width: { xs: 'calc(100% - 20px)', sm: 'auto' },
-                                        minWidth: { xs: 'auto', sm: '300px' },
+                                        minWidth: { xs: 'auto', sm: '500px' },
                                         boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
                                         alignSelf: 'flex-start',
                                         mt: { xs: 0, sm: 2 }, // Add margin top on desktop
@@ -262,17 +309,17 @@ const SmokingQuiz = () => {
                                         },
                                     }}
                                 >
-                                    <Typography 
-                                        variant="body1" 
-                                        sx={{ 
+                                    <Typography
+                                        variant="body1"
+                                        sx={{
                                             color: 'text.primary',
                                             mb: 2,
-                                            fontWeight: 500
+                                            fontWeight: 520
                                         }}
                                     >
                                         {currentQuestionText}
                                     </Typography>
-                                    
+
                                     {/* Input field inside the chat bubble */}
                                     <Box sx={{ mt: 2 }}>
                                         {questions[currentQuestion].component(
@@ -286,12 +333,12 @@ const SmokingQuiz = () => {
                             </Box>
                         </Box>
 
-                        <Box sx={{ 
-                            mt: 4, 
-                            display: 'flex', 
-                            justifyContent: 'space-between', 
-                            gap: 2, 
-                            flexDirection: { xs: currentQuestion > 0 ? 'column' : 'row', sm: 'row' } 
+                        <Box sx={{
+                            mt: 4,
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            gap: 2,
+                            flexDirection: { xs: currentQuestion > 0 ? 'column' : 'row', sm: 'row' }
                         }}>
                             {currentQuestion > 0 && (
                                 <Button
