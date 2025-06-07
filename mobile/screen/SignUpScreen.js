@@ -43,11 +43,11 @@ const SignUpScreen = ({ navigation }) => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Sign Up</Text>
+      <Text style={styles.title}>Create your account</Text>
       <TextInput
         style={styles.input}
         placeholder="Username"
-        placeholderTextColor="white"
+        placeholderTextColor="#999"
         value={form.username}
         onChangeText={text => handleChange('username', text)}
         autoCapitalize="none"
@@ -55,7 +55,7 @@ const SignUpScreen = ({ navigation }) => {
       <TextInput
         style={styles.input}
         placeholder="Email"
-        placeholderTextColor="white"
+        placeholderTextColor="#999"
         value={form.email}
         onChangeText={text => handleChange('email', text)}
         keyboardType="email-address"
@@ -64,7 +64,7 @@ const SignUpScreen = ({ navigation }) => {
       <TextInput
         style={styles.input}
         placeholder="Password"
-        placeholderTextColor="white"
+        placeholderTextColor="#999"
         value={form.password}
         onChangeText={text => handleChange('password', text)}
         secureTextEntry
@@ -72,21 +72,21 @@ const SignUpScreen = ({ navigation }) => {
       <TextInput
         style={styles.input}
         placeholder="First Name"
-        placeholderTextColor="white"
+        placeholderTextColor="#999"
         value={form.first_name}
         onChangeText={text => handleChange('first_name', text)}
       />
       <TextInput
         style={styles.input}
         placeholder="Last Name"
-        placeholderTextColor="white"
+        placeholderTextColor="#999"
         value={form.last_name}
         onChangeText={text => handleChange('last_name', text)}
       />
       <TextInput
         style={styles.input}
         placeholder="Birth Date (yyyy-mm-dd)"
-        placeholderTextColor="white"
+        placeholderTextColor="#999"
         value={form.birth_date}
         onChangeText={text => handleChange('birth_date', text)}
         keyboardType="numbers-and-punctuation"
@@ -95,7 +95,7 @@ const SignUpScreen = ({ navigation }) => {
       <TextInput
         style={styles.input}
         placeholder="Phone Number"
-        placeholderTextColor="white"
+        placeholderTextColor="#999"
         value={form.phone_number}
         onChangeText={text => handleChange('phone_number', text)}
         keyboardType="phone-pad"
@@ -115,36 +115,36 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: 'center',
     padding: 24,
-    backgroundColor: '#2c3e50',
+    backgroundColor: '#fff',
   },
   title: {
-    fontSize: 32,
+    fontSize: 28,
     fontWeight: 'bold',
-    color: 'white',
+    color: '#000',
     marginBottom: 24,
     textAlign: 'center',
   },
   input: {
-    backgroundColor: '#1c2833',
+    backgroundColor: '#F2F2F7',
     padding: 15,
-    borderRadius: 4,
+    borderRadius: 8,
     marginBottom: 15,
     fontSize: 16,
-    color: 'white',
-    borderWidth: 0,
-    borderColor: 'transparent',
+    color: '#000',
+    borderWidth: 1,
+    borderColor: '#E5E5EA',
   },
   button: {
-    backgroundColor: '#00b0ff',
+    backgroundColor: 'black',
     padding: 15,
     borderRadius: 8,
     alignItems: 'center',
     marginBottom: 20,
-    shadowColor: '#007ac1',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 1,
-    shadowRadius: 0,
-    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   buttonText: {
     color: 'white',
@@ -152,27 +152,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   loginLink: {
-    color: '#00b0ff',
+    color: '#007AFF',
     fontSize: 14,
     textAlign: 'center',
     marginTop: 10,
-  },
-  googleButton: {
-    backgroundColor: 'white',
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginBottom: 20,
-    shadowColor: '#212121',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 1,
-    shadowRadius: 0,
-    elevation: 5,
-  },
-  googleButtonText: {
-    color: 'black',
-    fontSize: 16,
-    fontWeight: 'bold',
   },
 });
 

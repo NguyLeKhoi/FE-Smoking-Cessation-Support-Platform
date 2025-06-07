@@ -4,12 +4,12 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
-import HomeScreen from '../screen/HomeScreen';
+import BlogScreen from '../screen/BlogScreen';
 import ProfileScreen from '../screen/ProfileScreen';
 import LoginScreen from '../screen/LoginScreen';
 import SignUpScreen from '../screen/SignUpScreen';
 import ForgotPasswordScreen from '../screen/ForgotPasswordScreen';
-import ResetPasswordScreen from '../screen/ResetPasswordScreen';
+import AiChatbox from '../screen/AiChatbox';
 import { isAuthenticated } from '../service/authService';
 
 const Drawer = createDrawerNavigator();
@@ -23,21 +23,25 @@ const TabNavigator = () => {
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
 
-          if (route.name === 'HomeTab') {
-            iconName = focused ? 'home' : 'home-outline';
+          if (route.name === 'BlogTab') {
+            iconName = focused ? 'newspaper' : 'newspaper-outline';
           } else if (route.name === 'ProfileTab') {
             iconName = focused ? 'person' : 'person-outline';
+          } else if (route.name === 'AiChatboxTab') {
+            iconName = focused ? 'chatbubble' : 'chatbubble-outline';
           }
 
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: '#00b0ff',
-        tabBarInactiveTintColor: '#b0b3b8',
-        tabBarStyle: { backgroundColor: '#1c2833', borderTopWidth: 0, elevation: 0 },
+        tabBarActiveTintColor: '#000000',
+        tabBarInactiveTintColor: 'rgba(0, 0, 0, 0.6)',
+        tabBarStyle: { backgroundColor: '#ffffff', borderTopWidth: 0, elevation: 0 },
+        tabBarLabelStyle: { textAlign: 'center' },
         headerShown: false,
       })}
     >
-      <Tab.Screen name="HomeTab" component={HomeScreen} options={{ title: 'Home' }} />
+      <Tab.Screen name="BlogTab" component={BlogScreen} options={{ title: 'Blog' }} />
+      <Tab.Screen name="AiChatboxTab" component={AiChatbox} options={{ title: 'AI Coach' }} />
       <Tab.Screen name="ProfileTab" component={ProfileScreen} options={{ title: 'Profile' }} />
     </Tab.Navigator>
   );
@@ -49,21 +53,21 @@ const DrawerNavigator = () => {
       initialRouteName="TabNavigator"
       screenOptions={{
         headerStyle: {
-          backgroundColor: '#2c3e50',
+          backgroundColor: '#ffffff',
         },
-        headerTintColor: 'white',
+        headerTintColor: '#000000',
         headerTitleStyle: {
           fontWeight: 'bold',
-          color: 'white',
+          color: '#000000',
         },
         drawerStyle: {
-          backgroundColor: '#2c3e50',
+          backgroundColor: '#ffffff',
           width: 240,
         },
-        drawerInactiveTintColor: '#b0b3b8',
-        drawerActiveTintColor: '#00b0ff',
+        drawerInactiveTintColor: 'rgba(0, 0, 0, 0.6)',
+        drawerActiveTintColor: '#000000',
         drawerLabelStyle: {
-          color: 'white',
+          color: '#000000',
         },
       }}
     >
@@ -71,8 +75,8 @@ const DrawerNavigator = () => {
         name="TabNavigator"
         component={TabNavigator}
         options={{
-          title: 'Quitify',
-          drawerLabel: 'Main Menu',
+          title: 'Zerotine',
+          drawerLabel: 'Blog',
         }}
       />
     </Drawer.Navigator>
@@ -114,7 +118,6 @@ const Navigator = () => {
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="SignUp" component={SignUpScreen} />
         <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
-        <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
         <Stack.Screen name="MainApp" component={DrawerNavigator} />
       </Stack.Navigator>
     </NavigationContainer>
