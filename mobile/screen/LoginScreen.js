@@ -2,197 +2,277 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
+  StyleSheet,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
+  SafeAreaView,
   KeyboardAvoidingView,
   Platform,
-  Alert,
+  ScrollView,
+  ActivityIndicator,
+  Image,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { login } from '../service/authService';
 import { startAsync } from 'expo-auth-session';
 import { getGoogleLoginUrl } from '../service/authService';
 
-const LoginScreen = ({ navigation }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+const LoginScreen = () => {
+  const navigation = useNavigation();
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  });
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = async () => {
-    if (email && password) {
-      try {
-        const response = await login(email, password);
-        navigation.replace('MainApp');
-      } catch (error) {
-        console.log('Login error:', error);
-        let message = 'Login failed. Please check your credentials.';
-        if (error.response && error.response.data && error.response.data.message) {
-          message = error.response.data.message;
-        }
-        Alert.alert('Error', message);
-      }
-    } else {
-      Alert.alert('Error', 'Please fill in all fields');
+  const handleChange = (name, value) => {
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+  const handleSubmit = async () => {
+    setError('');
+    setLoading(true);
+
+    try {
+      const response = await login(formData);
+      navigation.navigate('MainApp');
+    } catch (error) {
+      setError('Login failed: Invalid credentials or server response.');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}
-    >
-      <View style={styles.formContainer}>
-        <Text style={styles.title}>Sign in </Text>
-        <Text style={styles.subtitle}>Welcome to Quitify</Text>
+    <SafeAreaView style={styles.container}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.keyboardAvoidingView}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.formContainer}>
+            <Text style={styles.title}>Sign in</Text>
+            <Text style={styles.subtitle}>Welcome to Zerotine!</Text>
 
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            placeholderTextColor="white"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Password"
-            placeholderTextColor="white"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-          />
-        </View>
+            {error ? (
+              <View style={styles.errorContainer}>
+                <Text style={styles.errorText}>{error}</Text>
+              </View>
+            ) : null}
 
-        <TouchableOpacity style={styles.forgotPassword} onPress={() => navigation.navigate('ForgotPassword')}>
-          <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-        </TouchableOpacity>
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.input}
+                placeholder="Email or username"
+                placeholderTextColor="rgba(0, 0, 0, 0.6)"
+                value={formData.email}
+                onChangeText={(value) => handleChange('email', value)}
+                autoCapitalize="none"
+                keyboardType="email-address"
+              />
+            </View>
 
-        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-          <Text style={styles.loginButtonText}>Login</Text>
-        </TouchableOpacity>
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.input}
+                placeholder="Password"
+                placeholderTextColor="rgba(0, 0, 0, 0.6)"
+                value={formData.password}
+                onChangeText={(value) => handleChange('password', value)}
+                secureTextEntry
+              />
+            </View>
 
-        <TouchableOpacity style={styles.googleButton} onPress={async () => {
-          try {
-            const url = await getGoogleLoginUrl();
-            const result = await startAsync({ authUrl: url });
-            if (result.type === 'success') {
-              Alert.alert('Google Login Success', 'You have logged in with Google!');
-              navigation.replace('MainApp');
-            }
-          } catch (error) {
-            Alert.alert('Google Login Failed', error.message);
-          }
-        }}>
-          <Text style={styles.googleButtonText}>Login with Google</Text>
-        </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.forgotPasswordButton}
+              onPress={() => navigation.navigate('ForgotPassword')}
+            >
+              <Text style={styles.forgotPasswordText}>Forgot password?</Text>
+            </TouchableOpacity>
 
-        <View style={styles.registerContainer}>
-          <Text style={styles.registerText}>Don't have an account? </Text>
-          <TouchableOpacity onPress={() => navigation.replace('SignUp')}>
-            <Text style={styles.registerLink}>Register</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </KeyboardAvoidingView>
+            <TouchableOpacity
+              style={[styles.submitButton, loading && styles.submitButtonDisabled]}
+              onPress={handleSubmit}
+              disabled={loading}
+            >
+              {loading ? (
+                <ActivityIndicator color="white" />
+              ) : (
+                <Text style={styles.submitButtonText}>Sign in</Text>
+              )}
+            </TouchableOpacity>
+
+            <View style={styles.signupContainer}>
+              <Text style={styles.signupText}>Don't have an account? </Text>
+              <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+                <Text style={styles.signupLink}>Sign up</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#2c3e50',
+    backgroundColor: '#f6f5f3',
+  },
+  keyboardAvoidingView: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
   },
   formContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    paddingHorizontal: 20,
-    padding: 40,
+    padding: 20,
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
     margin: 20,
-    borderRadius: 8,
-    backgroundColor: '#2c3e50',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 20,
+    elevation: 3,
   },
   title: {
     fontSize: 32,
-    fontWeight: 'bold',
-    color: 'white',
-    marginBottom: 10,
+    fontWeight: '700',
+    color: '#000000',
+    marginBottom: 8,
     textAlign: 'center',
   },
   subtitle: {
     fontSize: 16,
-    color: '#b0b3b8',
-    marginBottom: 30,
+    color: 'rgba(0, 0, 0, 0.6)',
+    marginBottom: 24,
     textAlign: 'center',
+    lineHeight: 24,
+  },
+  errorContainer: {
+    backgroundColor: '#ffebee',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 16,
+  },
+  errorText: {
+    color: '#d32f2f',
+    fontSize: 14,
   },
   inputContainer: {
-    marginBottom: 20,
+    marginBottom: 16,
   },
   input: {
-    backgroundColor: '#1c2833',
-    padding: 15,
-    borderRadius: 4,
-    marginBottom: 15,
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: 'rgba(0, 0, 0, 0.12)',
+    borderRadius: 12,
+    padding: 16,
     fontSize: 16,
-    color: 'white',
-    borderWidth: 0,
-    borderColor: 'transparent',
+    color: '#000000',
   },
-  forgotPassword: {
+  forgotPasswordButton: {
     alignSelf: 'flex-end',
-    marginBottom: 20,
+    marginBottom: 24,
   },
   forgotPasswordText: {
-    color: '#00b0ff',
+    color: '#1976d2',
     fontSize: 14,
+    fontWeight: '500',
   },
-  loginButton: {
-    backgroundColor: '#00b0ff',
-    padding: 15,
-    borderRadius: 8,
+  submitButton: {
+    backgroundColor: '#000000',
+    borderRadius: 12,
+    padding: 16,
     alignItems: 'center',
-    marginBottom: 20,
-    shadowColor: '#007ac1',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 1,
+    marginBottom: 24,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.5,
     shadowRadius: 0,
-    elevation: 5,
+    elevation: 4,
   },
-  loginButtonText: {
-    color: 'white',
+  submitButtonDisabled: {
+    opacity: 0.7,
+  },
+  submitButtonText: {
+    color: '#ffffff',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '600',
   },
-  registerContainer: {
+  dividerContainer: {
     flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 20,
+    alignItems: 'center',
+    marginBottom: 24,
   },
-  registerText: {
-    color: '#b0b3b8',
-    fontSize: 14,
+  divider: {
+    flex: 1,
+    height: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
   },
-  registerLink: {
-    color: '#00b0ff',
+  dividerText: {
+    marginHorizontal: 16,
+    color: 'rgba(0, 0, 0, 0.6)',
     fontSize: 14,
-    fontWeight: 'bold',
   },
   googleButton: {
-    backgroundColor: 'white',
-    padding: 15,
-    borderRadius: 8,
+    flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
-    shadowColor: '#212121',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 1,
+    justifyContent: 'center',
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: 'rgba(0, 0, 0, 0.23)',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 24,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.1,
     shadowRadius: 0,
-    elevation: 5,
+    elevation: 4,
+  },
+  googleIcon: {
+    width: 20,
+    height: 20,
+    marginRight: 12,
   },
   googleButtonText: {
-    color: 'black',
+    color: '#000000',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '500',
+  },
+  signupContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  signupText: {
+    color: 'rgba(0, 0, 0, 0.6)',
+    fontSize: 16,
+  },
+  signupLink: {
+    color: '#1976d2',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
 

@@ -1,269 +1,298 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Alert, ScrollView } from 'react-native';
+import React from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  SafeAreaView,
+  ScrollView,
+  Image,
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { logout } from '../service/authService';
 
-const mockSmokingHabits = {
-  cigarettes_per_pack: 20,
-  price_per_pack: 5.5,
-  cigarettes_per_day: 10,
-  smoking_years: 3,
-  triggers: ['stress', 'social'],
-};
+const ProfileScreen = () => {
+  const navigation = useNavigation();
 
-const mockAchievements = [
-  { id: 1, title: '1 Day Smoke Free', completed: true },
-  { id: 2, title: '1 Week Smoke Free', completed: false },
-  { id: 3, title: 'Money Saved: $100', completed: true },
-  { id: 4, title: '1 Month Smoke Free', completed: false },
-];
-
-const ProfileScreen = ({ navigation }) => {
-  const [smokingHabits, setSmokingHabits] = useState(null);
-
-  const handleLogout = () => {
-    Alert.alert(
-      'Logout',
-      'Are you sure you want to logout?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Logout', onPress: async () => {
-            try {
-              await logout();
-              navigation.replace('Login');
-            } catch (error) {
-              Alert.alert('Logout Failed', error.message || 'Failed to logout');
-            }
-          }, style: 'destructive' },
-      ],
-      { cancelable: true }
-    );
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigation.navigate('Login'); // Navigate to Login screen after logout
+    } catch (error) {
+      console.error('Logout failed:', error);
+      // Optionally, show an error message to the user
+    }
   };
 
-  const handleTakeQuiz = () => {
-    setSmokingHabits(mockSmokingHabits);
-    Alert.alert('Quiz', 'Pretend you took the quiz and filled your smoking habits!');
+  const userData = {
+    username: "johnsmith",
+    role: "MEMBER",
+    email: "john.smith@example.com",
+    phone_number: "+84 (555) 123-4567",
+    dob: "1990-05-15",
+    joined: "June 2023"
   };
+
+  const statisticsData = [
+    {
+      icon: '💧',
+      value: '63',
+      label: 'Day streak',
+      iconColor: '#64748b'
+    },
+    {
+      icon: '⚡',
+      value: '18303',
+      label: 'Total XP',
+      iconColor: '#f59e0b'
+    },
+    {
+      icon: '🏅',
+      value: 'Gold',
+      label: 'Current league',
+      iconColor: '#f59e0b'
+    },
+    {
+      icon: '🏆',
+      value: '3',
+      label: 'Top 3 finishes',
+      iconColor: '#f59e0b'
+    }
+  ];
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ flexGrow: 1 }}>
-      <View style={styles.profileHeader}>
-        <View style={styles.avatarContainer}>
-          <Image
-            source={{ uri: 'https://via.placeholder.com/150' }}
-            style={styles.avatar}
-          />
-        </View>
-        <Text style={styles.name}>John Doe</Text>
-        <Text style={styles.email}>john.doe@example.com</Text>
-      </View>
-      <View style={styles.infoContainer}>
-        <Text style={styles.sectionTitle}>Habits</Text>
-        {smokingHabits ? (
-          <>
-            <View style={styles.infoRow}>
-              <View style={styles.infoItemHalf}>
-                <InfoItem label="Cigarettes per Pack" value={smokingHabits.cigarettes_per_pack} />
+    <SafeAreaView style={styles.container}>
+      <ScrollView style={styles.scrollView}>
+        <View style={styles.scrollContent}>
+          {/* User Information Section */}
+          <View style={styles.userInfoCard}>
+            <View style={styles.userInfoContent}>
+              {/* Avatar Section - Left Side */}
+              <View style={styles.avatarSection}>
+                <View style={styles.avatarContainer}>
+                  <Text style={styles.avatarText}>
+                    {userData.username.charAt(0).toUpperCase()}
+                  </Text>
+                </View>
+                <Text style={styles.username}>{userData.username}</Text>
+                <Text style={styles.joinDate}>Member since {userData.joined}</Text>
+                <TouchableOpacity style={styles.editButton}>
+                  <Text style={styles.editButtonText}>Edit Profile</Text>
+                </TouchableOpacity>
               </View>
-              <View style={styles.infoItemHalf}>
-                <InfoItem label="Price per Pack" value={smokingHabits.price_per_pack} />
-              </View>
-            </View>
-            <View style={styles.infoRow}>
-              <View style={styles.infoItemHalf}>
-                <InfoItem label="Cigarettes per Day" value={smokingHabits.cigarettes_per_day} />
-              </View>
-              <View style={styles.infoItemHalf}>
-                <InfoItem label="Smoking Years" value={smokingHabits.smoking_years} />
-              </View>
-            </View>
-            <View style={styles.infoItem}>
-              <InfoItem label="Triggers" value={smokingHabits.triggers?.join(', ')} />
-            </View>
-          </>
-        ) : (
-          <TouchableOpacity style={styles.quizButton} onPress={handleTakeQuiz}>
-            <Text style={styles.quizButtonText}>Take Quiz to Fill Smoking Habits</Text>
-          </TouchableOpacity>
-        )}
-      </View>
 
-      <View style={styles.divider} />
-
-      <View style={styles.infoContainer}>
-        <Text style={styles.sectionTitle}>Achievements</Text>
-        {mockAchievements.map((achievement) => (
-          <View key={achievement.id} style={styles.infoItem}>
-            <InfoItem 
-              label={achievement.title} 
-              value={achievement.completed ? '✓ Completed' : '✗ Incomplete'}
-            />
+              {/* User Information - Right Side */}
+              <View style={styles.infoSection}>
+                <Text style={styles.sectionTitle}>Personal Information</Text>
+                <View style={styles.infoGrid}>
+                  <View style={styles.infoColumn}>
+                    <View style={styles.infoItem}>
+                      <Text style={styles.infoLabel}>Email</Text>
+                      <Text style={styles.infoValue}>{userData.email}</Text>
+                    </View>
+                    <View style={styles.infoItem}>
+                      <Text style={styles.infoLabel}>Phone Number</Text>
+                      <Text style={styles.infoValue}>{userData.phone_number}</Text>
+                    </View>
+                  </View>
+                  <View style={styles.infoColumn}>
+                    <View style={styles.infoItem}>
+                      <Text style={styles.infoLabel}>Role</Text>
+                      <Text style={styles.infoValue}>{userData.role}</Text>
+                    </View>
+                    <View style={styles.infoItem}>
+                      <Text style={styles.infoLabel}>Date of Birth</Text>
+                      <Text style={styles.infoValue}>{userData.dob}</Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            </View>
           </View>
-        ))}
-      </View>
-      
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutButtonText}>Logout</Text>
-      </TouchableOpacity>
-    </ScrollView>
+
+          {/* Statistics Section */}
+          <View style={styles.statisticsSection}>
+            <Text style={styles.statisticsTitle}>Statistics</Text>
+            <View style={styles.statisticsGrid}>
+              {statisticsData.map((stat, index) => (
+                <View key={index} style={styles.statCard}>
+                  <Text style={[styles.statIcon, { color: stat.iconColor }]}>
+                    {stat.icon}
+                  </Text>
+                  <View style={styles.statContent}>
+                    <Text style={styles.statValue}>{stat.value}</Text>
+                    <Text style={styles.statLabel}>{stat.label}</Text>
+                  </View>
+                </View>
+              ))}
+            </View>
+          </View>
+
+          {/* Logout Button */}
+          <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+            <Text style={styles.logoutButtonText}>Log Out</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
-
-const InfoItem = ({ label, value }) => (
-  <View style={styles.infoItem}>
-    <Text style={styles.infoLabel}>{label}</Text>
-    <Text style={styles.infoValue}>{value ?? '-'}</Text>
-  </View>
-);
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#2c3e50',
+    backgroundColor: '#f6f5f3',
   },
-  profileHeader: {
+  scrollView: {
+    flex: 1,
+    width: '100%',
+  },
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
+  },
+  userInfoCard: {
+    margin: 16,
+    padding: 24,
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(0, 0, 0, 0.12)',
+  },
+  userInfoContent: {
+    flexDirection: 'row',
+    gap: 32,
+    flexWrap: 'wrap',
+  },
+  avatarSection: {
     alignItems: 'center',
-    padding: 30,
-    backgroundColor: '#2c3e50',
-    borderBottomWidth: 0,
-    marginBottom: 16,
-    shadowColor: 'transparent',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0,
-    shadowRadius: 0,
-    elevation: 0,
+    width: 160,
   },
   avatarContainer: {
-    marginBottom: 15,
-  },
-  avatar: {
-    width: 110,
-    height: 110,
-    borderRadius: 55,
-    borderWidth: 3,
-    borderColor: '#00b0ff',
+    width: 160,
+    height: 160,
+    borderRadius: 80,
+    backgroundColor: '#f0f0f0',
+    borderWidth: 4,
+    borderColor: '#1976d2',
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 16,
   },
-  name: {
-    fontSize: 26,
-    fontWeight: 'bold',
-    color: 'white',
-    marginBottom: 4,
+  avatarText: {
+    fontSize: 64,
+    color: '#000000',
   },
-  email: {
-    fontSize: 16,
-    color: '#b0b3b8',
+  username: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#000000',
+    marginBottom: 8,
   },
-  infoContainer: {
-    padding: 24,
+  joinDate: {
+    fontSize: 14,
+    color: 'rgba(0, 0, 0, 0.6)',
+    marginBottom: 16,
+  },
+  editButton: {
+    borderWidth: 1,
+    borderColor: 'rgba(0, 0, 0, 0.23)',
+    borderRadius: 8,
+    paddingHorizontal: 24,
+    paddingVertical: 8,
+  },
+  editButtonText: {
+    fontSize: 14,
+    color: '#000000',
+  },
+  infoSection: {
+    flex: 1,
+    minWidth: 250,
   },
   sectionTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
-    color: 'white',
-    marginBottom: 16,
+    fontWeight: '700',
+    color: '#000000',
+    marginBottom: 24,
   },
-  infoRow: {
+  infoGrid: {
     flexDirection: 'row',
+    gap: 24,
     justifyContent: 'space-between',
-    marginBottom: 12,
+  },
+  infoColumn: {
+    flex: 1,
   },
   infoItem: {
-    backgroundColor: '#1c2833',
-    padding: 18,
-    borderRadius: 8,
-    marginBottom: 12,
-  },
-  infoItemHalf: {
-    backgroundColor: '#1c2833',
-    padding: 18,
-    borderRadius: 8,
-    width: '48%',
+    marginBottom: 16,
   },
   infoLabel: {
     fontSize: 14,
-    color: '#b0b3b8',
-    marginBottom: 5,
+    color: 'rgba(0, 0, 0, 0.6)',
+    marginBottom: 4,
   },
   infoValue: {
     fontSize: 16,
-    color: 'white',
+    color: '#000000',
     fontWeight: '500',
+    flexWrap: 'wrap',
   },
-  quizButton: {
-    backgroundColor: '#00b0ff',
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginBottom: 10,
-    shadowColor: '#007ac1',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 1,
-    shadowRadius: 0,
-    elevation: 5,
+  statisticsSection: {
+    margin: 16,
   },
-  quizButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
+  statisticsTitle: {
+    fontSize: 32,
+    fontWeight: '700',
+    color: '#000000',
+    marginBottom: 24,
+  },
+  statisticsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 16,
+    justifyContent: 'center',
+  },
+  statCard: {
+    flex: 1,
+    minWidth: '45%',
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    padding: 24,
+    borderWidth: 1,
+    borderColor: 'rgba(0, 0, 0, 0.12)',
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 16,
+  },
+  statIcon: {
+    fontSize: 24,
+  },
+  statContent: {
+    flex: 1,
+  },
+  statValue: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#000000',
+    marginBottom: 4,
+  },
+  statLabel: {
+    fontSize: 14,
+    color: 'rgba(0, 0, 0, 0.6)',
   },
   logoutButton: {
-    backgroundColor: '#00b0ff',
-    margin: 20,
-    padding: 15,
+    backgroundColor: 'black', // Red color for logout
     borderRadius: 8,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
     alignItems: 'center',
-    shadowColor: '#007ac1',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 1,
-    shadowRadius: 0,
-    elevation: 5,
+    margin: 16,
+    marginTop: 32,
   },
   logoutButtonText: {
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
-  },
-  resetPasswordButton: {
-    backgroundColor: '#00b0ff',
-    marginHorizontal: 20,
-    marginBottom: 20,
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    shadowColor: '#007ac1',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 1,
-    shadowRadius: 0,
-    elevation: 5,
-  },
-  resetPasswordButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  achievementsContainer: {
-    padding: 20,
-    backgroundColor: '#1c2833',
-    borderRadius: 8,
-    marginBottom: 16,
-  },
-  achievementContent: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  achievementTitle: {
-    fontSize: 16,
-    color: 'white',
-  },
-  achievementStatus: {
-    fontSize: 16,
-    color: '#00b0ff',
-  },
-  divider: {
-    height: 1,
-    backgroundColor: '#3a3a3a',
-    marginVertical: 16,
   },
 });
 

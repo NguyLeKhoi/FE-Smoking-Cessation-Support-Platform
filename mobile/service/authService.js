@@ -1,38 +1,36 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from './api';
 
-export const signup = async ({ username, email, password, first_name, last_name, birth_date, phone_number }) => {
+export const signup = async (userData) => {
   try {
-    const response = await api.post('/auth/signup', {
-      username,
-      email,
-      password,
-      first_name,
-      last_name,
-      birth_date,
-      phone_number
-    });
+    const response = await api.post('/auth/signup', userData);
     return response.data;
   } catch (error) {
-    console.error('Signup error:', error.response?.data || error);
-    throw error;
+    if (error.response) {
+      throw error;
+    }
+    throw new Error('Network error');
   }
 };
 
-export const login = async (email, password) => {
-    try {
-        console.log('Login attempt:', email, password);
-        const response = await api.post('/auth/login', { email, password });
-        const { accessToken, refreshToken } = response.data.data;
-        await AsyncStorage.setItem('accessToken', accessToken);
-        if (refreshToken) {
-            await AsyncStorage.setItem('refreshToken', refreshToken);
-        }
-        return { accessToken, refreshToken };
-    } catch (error) {
-        console.log('Login error:', error.response?.data || error);
-        throw new Error('Failed to log in');
+export const login = async (credentials) => {
+  try {
+    const response = await api.post('/auth/login', {
+      email: credentials.email,
+      password: credentials.password,
+    });
+    const { accessToken, refreshToken } = response.data.data;
+    await AsyncStorage.setItem('accessToken', accessToken);
+    if (refreshToken) {
+      await AsyncStorage.setItem('refreshToken', refreshToken);
     }
+    return response.data.data;
+  } catch (error) {
+    if (error.response) {
+      throw new Error(error.response.data.message || 'Login failed');
+    }
+    throw new Error('Network error');
+  }
 };
 
 export const refreshToken = async () => {
@@ -50,58 +48,55 @@ export const refreshToken = async () => {
 };
 
 export const logout = async () => {
-    try {
-        // Just clear the tokens without calling the API
-        await AsyncStorage.multiRemove(['accessToken', 'refreshToken']);
-        return true;
-    } catch (error) {
-        console.error('Error logging out:', error);
-        throw new Error('Failed to logout');
+  try {
+    // Attempt to call the backend logout API
+    await api.post('/auth/logout');
+  } catch (error) {
+    // Log the error but continue to clear local tokens
+    console.error('Error calling backend logout API:', error);
+    // Re-throw the error to allow calling components to handle it if necessary
+    throw error;
+  } finally {
+    // Clear frontend tokens regardless of backend call success or failure
+    await AsyncStorage.removeItem('accessToken');
+    await AsyncStorage.removeItem('refreshToken');
+  }
+};
+
+export const forgotPassword = async (emailData) => {
+  try {
+    const response = await api.post('/auth/forgot-password', emailData);
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      throw error.response.data.message || 'Forgot password request failed';
     }
-};
-
-export const forgotPassword = async (email) => {
-  try {
-    console.log('Requesting password reset link for email:', email);
-    const response = await api.post('/auth/forgot-password', { email });
-    console.log('Forgot password response:', response.data);
-    return response.data;
-  } catch (error) {
-    console.error('Forgot password error:', error.response?.data || error.message);
-    throw new Error(error.response?.data?.message || 'Failed to request password reset link');
+    throw new Error('Network error');
   }
 };
 
-export const resetPassword = async (token, newPassword, confirmPassword) => {
+export const resetPassword = async (resetData) => {
   try {
-    console.log('Resetting password with token:', token);
-    const response = await api.post('/auth/reset-password', { token, newPassword, confirmPassword });
-    console.log('Reset password response:', response.data);
+    const response = await api.post('/auth/reset-password', resetData);
     return response.data;
   } catch (error) {
-    console.error('Reset password error:', error.response?.data || error.message);
-    throw new Error(error.response?.data?.message || 'Failed to reset password');
-  }
-};
-
-export const getGoogleLoginUrl = async () => {
-  try {
-    console.log("Attempting to get Google login URL from backend");
-    const response = await api.get('/auth/google');
-    console.log("Received response from Google login URL endpoint:", response.data);
-    return response.data.url || response.data;
-  } catch (error) {
-    console.error('Error fetching Google login URL:', error.response?.data || error.message);
-    throw new Error('Failed to get Google login URL');
+    if (error.response) {
+      throw error.response.data.message || 'Password reset failed';
+    }
+    throw new Error('Network error');
   }
 };
 
 export const isAuthenticated = async () => {
+  const token = await AsyncStorage.getItem('accessToken');
+  return !!token;
+};
+
+export const getCurrentUser = async () => {
   try {
-    const token = await AsyncStorage.getItem('accessToken');
-    return !!token;
+    const response = await api.get('/auth/me');
+    return response.data;
   } catch (error) {
-    console.error('Error checking authentication:', error);
-    return false;
+    throw new Error('Failed to get user data');
   }
 };
