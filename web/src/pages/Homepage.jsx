@@ -1,7 +1,6 @@
 import React from 'react';
 import { Container, Box, Typography, Grid } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import homepageImage from '../assets/homepage.jpg';
 import Lottie from 'lottie-react';
 import quitSignAnimation from '../assets/animations/quit-sign.json';
 import QuotesCarousel from '../components/QuotesCarousel';
@@ -23,7 +22,7 @@ export default function HomePage() {
       }}>
         <Container maxWidth="lg">
           <Grid container alignItems="center" justifyContent="center" spacing={4}>
-            <Grid item xs={12} md={6}>
+            <Grid sx={{ gridColumn: { xs: 'span 12', md: 'span 6' } }}>
               <Box sx={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -84,7 +83,7 @@ export default function HomePage() {
               </Box>
             </Grid>
 
-            <Grid item xs={12} md={6} sx={{ display: 'flex', justifyContent: 'center', position: 'relative' }}>
+            <Grid sx={{ gridColumn: { xs: 'span 12', md: 'span 6' }, display: 'flex', justifyContent: 'center', position: 'relative' }}>
               <Box sx={{ position: 'relative', width: '100%', maxWidth: 500, height: 400 }}>
 
                 {/* Main image */}

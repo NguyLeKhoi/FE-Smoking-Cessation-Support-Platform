@@ -6,12 +6,27 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import { AnimatedUnderline } from './animated/AnimatedUnderline';
 import motivationService from '../services/motivationService';
 import toast from 'react-hot-toast';
+import NotificationsDropdown from './NotificationsDropdown';
 
 const Header = ({ authStatus }) => {
   const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(0);
-  const [unreadCount, setUnreadCount] = useState(0);
+  const [notifications, setNotifications] = useState([]);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const toastShownRef = useRef(false);
+
+  const handleNotificationClick = () => {
+    setIsDropdownOpen((prev) => !prev);
+    if (!isDropdownOpen) {
+      markAllNotificationsAsRead();
+    }
+  };
+
+  const markAllNotificationsAsRead = () => {
+    setNotifications((prevNotifications) =>
+      prevNotifications.map((n) => ({ ...n, read: true }))
+    );
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -25,14 +40,33 @@ const Header = ({ authStatus }) => {
     window.addEventListener('scroll', handleScroll);
 
     const fetchMotivationMessage = async () => {
-      // Removed sessionStorage check to allow recurring notifications
       try {
         const data = await motivationService.getMotivationMessage();
         if (data && data.data && data.data.message) {
-          // The useRef check still prevents double-render in Strict Mode on initial mount
           if (!toastShownRef.current) {
-            console.log('New motivation message received:', data.data.message);
-            toast.success(data.data.message, {
+            const fullMessage = data.data.message;
+            let messageText = fullMessage;
+            let timestampText = ''; // Set timestamp to empty as user wants it removed
+
+            // Regex to find and extract the timestamp pattern at the very end,
+            // optionally preceded by "and", "at", or spaces.
+            const timestampExtractionRegex = /(?:\s*(?:and|at)?\s*)?(\d{1,2}:\d{2}:\d{2}\s\d{1,2}\/\d{1,2}\/\d{4})$/;
+            const match = fullMessage.match(timestampExtractionRegex);
+
+            console.log('Regex match object:', match);
+
+            if (match) {
+              // Replace the entire matched part (including "and" or "at" and spaces) with an empty string
+              messageText = fullMessage.replace(match[0], '').trim();
+              timestampText = ''; // Set timestamp to empty as user wants it removed
+            }
+
+            setNotifications((prevNotifications) => [
+              { id: Date.now(), message: messageText, timestamp: timestampText, read: false },
+              ...prevNotifications,
+            ]);
+
+            toast.success(messageText, {
               duration: 7000,
               position: 'top-center',
               style: {
@@ -45,9 +79,7 @@ const Header = ({ authStatus }) => {
               },
               icon: '🎯',
             });
-            setUnreadCount(1);
-            toastShownRef.current = true; // Mark as shown for the current component instance
-            // Removed sessionStorage.setItem as messages will recur
+            toastShownRef.current = true;
           }
         }
       } catch (error) {
@@ -61,7 +93,7 @@ const Header = ({ authStatus }) => {
 
     fetchMotivationMessage();
 
-    const intervalId = setInterval(fetchMotivationMessage, 7200000); // Re-enabled 2-hour interval
+    const intervalId = setInterval(fetchMotivationMessage, 7200000);
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
@@ -105,10 +137,8 @@ const Header = ({ authStatus }) => {
             </Typography>
           </Box>
 
-          {/* Added spacer */}
           <Box sx={{ flexGrow: 0.5 }} />
 
-          {/* Home link with AnimatedUnderline */}
           <Box component={RouterLink} to="/" sx={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
             <AnimatedUnderline>
               <Typography
@@ -138,7 +168,6 @@ const Header = ({ authStatus }) => {
             </AnimatedUnderline>
           </Box>
 
-          {/* Blog link with AnimatedUnderline */}
           <Box component={RouterLink} to="/blog" sx={{ textDecoration: 'none', display: 'flex', alignItems: 'center', ml: 3 }}>
             <AnimatedUnderline>
               <Typography
@@ -168,22 +197,27 @@ const Header = ({ authStatus }) => {
             </AnimatedUnderline>
           </Box>
 
-          {/* Flexible space to push login to the right */}
           <Box sx={{ flexGrow: 1 }} />
 
-          {/* Login button area */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
             {authStatus ? (
               <>
                 <IconButton
                   color="inherit"
-                  onClick={() => setUnreadCount(0)} // Clear badge on click
+                  onClick={handleNotificationClick}
                   sx={{ color: '#3f332b', fontSize: '2rem' }}
                 >
-                  <Badge badgeContent={unreadCount} color="error">
+                  <Badge badgeContent={notifications.filter(n => !n.read).length} color="error">
                     <NotificationsIcon />
                   </Badge>
                 </IconButton>
+                {isDropdownOpen && (
+                  <NotificationsDropdown
+                    notifications={notifications}
+                    onClose={() => setIsDropdownOpen(false)}
+                    onMarkAllAsRead={markAllNotificationsAsRead}
+                  />
+                )}
                 <IconButton color="inherit" component={RouterLink} to="/profile" sx={{ color: '#3f332b', fontSize: '2rem' }}>
                   <AccountCircle />
                 </IconButton>
