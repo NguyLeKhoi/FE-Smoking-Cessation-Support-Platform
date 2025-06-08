@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AppBar, Toolbar, Typography, Button, IconButton, Box, Badge } from '@mui/material';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import AccountCircle from '@mui/icons-material/AccountCircle';
@@ -13,7 +13,6 @@ const Header = ({ authStatus }) => {
   const [scrolled, setScrolled] = useState(0);
   const [notifications, setNotifications] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const toastShownRef = useRef(false);
 
   const handleNotificationClick = () => {
     setIsDropdownOpen((prev) => !prev);
@@ -40,54 +39,80 @@ const Header = ({ authStatus }) => {
     window.addEventListener('scroll', handleScroll);
 
     const fetchMotivationMessage = async () => {
-      try {
-        const data = await motivationService.getMotivationMessage();
-        if (data && data.data && data.data.message) {
-          if (!toastShownRef.current) {
+      const lastMotivationToastTimestamp = sessionStorage.getItem('lastMotivationToastTimestamp');
+      const twoHoursInMs = 7200000; // 2 hours
+      const currentTime = new Date().getTime();
+
+      let shouldShowToast = true;
+
+      if (lastMotivationToastTimestamp) {
+        const timeElapsed = currentTime - parseInt(lastMotivationToastTimestamp, 10);
+        if (timeElapsed < twoHoursInMs) {
+          shouldShowToast = false; // Less than 2 hours, don't show toast
+        }
+      }
+
+      if (shouldShowToast) {
+        try {
+          const data = await motivationService.getMotivationMessage();
+          if (data && data.data && data.data.message) {
             const fullMessage = data.data.message;
             let messageText = fullMessage;
-            let timestampText = ''; // Set timestamp to empty as user wants it removed
+            let timestampText = ''; // Set timestamp to empty as per previous request
 
-            // Regex to find and extract the timestamp pattern at the very end,
-            // optionally preceded by "and", "at", or spaces.
+            // Regex to find and extract the timestamp pattern at the very end
+            // This regex will now handle the common case of HH:MM:SS MM/DD/YYYY and remove the preceding 'and' or 'at' if present
             const timestampExtractionRegex = /(?:\s*(?:and|at)?\s*)?(\d{1,2}:\d{2}:\d{2}\s\d{1,2}\/\d{1,2}\/\d{4})$/;
             const match = fullMessage.match(timestampExtractionRegex);
 
-            console.log('Regex match object:', match);
-
             if (match) {
-              // Replace the entire matched part (including "and" or "at" and spaces) with an empty string
               messageText = fullMessage.replace(match[0], '').trim();
-              timestampText = ''; // Set timestamp to empty as user wants it removed
+              // timestampText remains empty as per user's request to remove it from display
             }
 
+            // Add to notifications state for the dropdown
             setNotifications((prevNotifications) => [
               { id: Date.now(), message: messageText, timestamp: timestampText, read: false },
               ...prevNotifications,
             ]);
 
-            toast.success(messageText, {
+            toast.custom((t) => (
+              <div
+                onClick={() => toast.dismiss(t.id)}
+                style={{
+                  background: '#333',
+                  color: '#fff',
+                  padding: '16px',
+                  borderRadius: '8px',
+                  fontSize: '16px',
+                  maxWidth: '500px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  boxShadow: '0 3px 10px rgba(0, 0, 0, 0.1)',
+                  cursor: 'pointer',
+                }}
+              >
+                <div style={{ fontWeight: 'bold', fontSize: '1.2em', marginBottom: '8px', textAlign: 'center' }}>
+                  Zerotine Motivation Message
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <span>{messageText}</span>
+                </div>
+              </div>
+            ), {
               duration: 7000,
               position: 'top-center',
-              style: {
-                background: '#333',
-                color: '#fff',
-                padding: '16px',
-                borderRadius: '8px',
-                fontSize: '16px',
-                maxWidth: '500px',
-              },
-              icon: '🎯',
             });
-            toastShownRef.current = true;
+            sessionStorage.setItem('lastMotivationToastTimestamp', currentTime.toString());
           }
+        } catch (error) {
+          console.error('Failed to fetch motivation message:', error);
+          toast.error('Failed to load motivation message', {
+            duration: 4000,
+            position: 'top-center',
+          });
         }
-      } catch (error) {
-        console.error('Failed to fetch motivation message:', error);
-        toast.error('Failed to load motivation message', {
-          duration: 4000,
-          position: 'top-center',
-        });
       }
     };
 
