@@ -5,6 +5,7 @@ import Chatbox from '../components/Chatbox';
 import { Box, IconButton } from '@mui/material';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import { isAuthenticated, logout } from '../services/authService'; // Import isAuthenticated and logout
+import { Toaster } from 'react-hot-toast';
 
 export default function MainLayout({ children, showHeader = true, showFooter = true }) {
   const [isChatboxOpen, setIsChatboxOpen] = useState(false);
@@ -22,6 +23,7 @@ export default function MainLayout({ children, showHeader = true, showFooter = t
 
   return (
     <Box sx={{ position: 'relative', display: 'flex', flexDirection: 'column', minHeight: '100vh' }}> {/* Ensure relative positioning for fixed children */}
+      <Toaster />
       {showHeader && (
         <Box style={{
           position: 'fixed',

@@ -10,6 +10,15 @@ const motivationService = {
       throw error;
     }
   },
+  getMotivationMessage: async () => {
+    try {
+      const response = await api.get('/motivation/message');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching motivation message:', error);
+      throw error;
+    }
+  },
 };
 
 export default motivationService; 
