@@ -39,6 +39,9 @@ const FeatureSection = () => {
         { id: 'health-benefits', label: 'Health Benefits' },
     ], []);
 
+    // Extract just the IDs for slide ordering
+    const slideOrder = useMemo(() => navigationItems.map(item => item.id), [navigationItems]);
+
     // Determine slide direction based on index
     useEffect(() => {
         if (previousSlide === activeSlide) return;
@@ -103,7 +106,7 @@ const FeatureSection = () => {
     const currentSlide = slideContent[activeSlide];
 
     return (
-        <Box sx={{ py: { xs: 8, md: 12 }, bgcolor: 'background.paper' }}>
+        <Box sx={{ py: { xs: 8, md: 12 }, bgcolor: 'section.main' }}>
             <Container maxWidth="lg">
                 <Typography
                     variant="h2"
@@ -111,11 +114,11 @@ const FeatureSection = () => {
                     sx={{
                         mb: 6,
                         fontWeight: 700,
-                        color: 'primary.main',
+                        color: 'text.primary',
                         fontSize: { xs: '2rem', md: '3.5rem' }
                     }}
                 >
-                    Why choose Zerotine
+                    Your journey to quit smoking
                 </Typography>
 
                 {/* Navigation Buttons */}
@@ -124,8 +127,7 @@ const FeatureSection = () => {
                     justifyContent: 'center',
                     flexWrap: 'wrap',
                     mb: 4,
-                    px: 2,
-                    gap: 2
+                    px: 2
                 }}>
                     {navigationItems.map((item) => (
                         <StyledNavButton
@@ -139,11 +141,21 @@ const FeatureSection = () => {
                 </Box>
 
                 {/* Slide Content with animation */}
-                <Box sx={{ position: 'relative', overflow: 'hidden' }}>
+                <Box sx={{
+                    position: 'relative',
+                    overflow: 'visible',
+                    width: '100%',
+                    pl: { xs: 0, md: 1 },
+                    pr: { xs: 0, md: 1 },
+                    mt: 4,
+                    mb: 2
+                }}>
                     <FeatureSlide
                         slideContent={currentSlide}
                         activeSlide={activeSlide}
                         direction={direction}
+                        allSlides={slideContent}
+                        slideOrder={slideOrder}
                     />
                 </Box>
             </Container>
