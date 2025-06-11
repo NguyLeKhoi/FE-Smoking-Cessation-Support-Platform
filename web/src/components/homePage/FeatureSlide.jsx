@@ -74,8 +74,8 @@ const MockContentBlock = styled(Box)(({ theme }) => ({
 }));
 
 const CTAButton = styled(Box)(({ theme }) => ({
-    backgroundColor: '#fff',
-    color: theme.palette.grey[800],
+    backgroundColor: theme.palette.primary.main,
+    color: '#fff',
     padding: theme.spacing(1.5, 4),
     borderRadius: '50px',
     fontSize: '18px',
@@ -85,7 +85,7 @@ const CTAButton = styled(Box)(({ theme }) => ({
     display: 'inline-block',
     cursor: 'pointer',
     '&:hover': {
-        backgroundColor: 'rgba(255,255,255,0.9)',
+        backgroundColor: theme.palette.primary.dark,
         transform: 'scale(1.05)',
         boxShadow: theme.shadows[8],
     },
@@ -136,135 +136,148 @@ const FeatureSlide = ({ slideContent, activeSlide, direction }) => {
                         bgGradient={slideContent.bgGradient}
                     >
                         <ContentBox>
-                            <Grid container spacing={4} alignItems="center">
-                                {/* Content */}
-                                <Grid item xs={12} lg={6}>
-                                    <Box sx={{ textAlign: { xs: 'center', lg: 'left' } }}>
-                                        <Typography
-                                            variant="h3"
-                                            sx={{
-                                                mb: 2,
-                                                fontWeight: 700,
-                                                fontSize: { xs: '2rem', md: '2.5rem' }
-                                            }}
-                                        >
-                                            {slideContent.title}
-                                        </Typography>
-                                        <Typography
-                                            variant="h6"
-                                            sx={{
-                                                mb: 3,
-                                                opacity: 0.9,
-                                                fontSize: '1.25rem',
-                                                fontWeight: 400
-                                            }}
-                                        >
-                                            {slideContent.subtitle}
-                                        </Typography>
-                                        <Typography
-                                            variant="body1"
-                                            sx={{
-                                                mb: 4,
-                                                fontSize: '1.1rem',
-                                                lineHeight: 1.6,
-                                                opacity: 0.9
-                                            }}
-                                        >
-                                            {slideContent.description}
-                                        </Typography>
+                            {/* Use display flex instead of Grid for more reliable layout */}
+                            <Box sx={{
+                                display: 'flex',
+                                flexDirection: { xs: 'column', md: 'row' },
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                gap: 4
+                            }}>
+                                {/* Phone Mockup - Left side */}
+                                <Box sx={{
+                                    flex: { xs: '1 1 100%', md: '0 0 40%' },
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    py: { xs: 3, md: 0 },
+                                    order: { xs: 2, md: 1 }
+                                }}>
+                                    <PhoneFrame>
+                                        <PhoneScreen>
+                                            <Typography
+                                                variant="body2"
+                                                sx={{
+                                                    opacity: 0.7,
+                                                    textAlign: 'center',
+                                                    mb: 3,
+                                                    fontSize: '0.875rem'
+                                                }}
+                                            >
+                                                {slideContent.title}
+                                            </Typography>
 
-                                        {/* Features */}
-                                        <Box sx={{
-                                            display: 'flex',
-                                            flexWrap: 'wrap',
-                                            gap: 1,
-                                            justifyContent: { xs: 'center', lg: 'flex-start' },
-                                            mb: 2
-                                        }}>
-                                            {slideContent.features.map((feature, index) => (
-                                                <Chip
-                                                    key={index}
-                                                    label={feature}
-                                                    sx={{
-                                                        backgroundColor: 'rgba(255,255,255,0.2)',
-                                                        color: 'white',
-                                                        backdropFilter: 'blur(10px)',
-                                                        border: '1px solid rgba(255,255,255,0.3)',
-                                                        fontWeight: 500,
-                                                        '& .MuiChip-label': {
-                                                            fontSize: '0.875rem'
+                                            {/* Mock content blocks */}
+                                            <MockContentBlock />
+                                            <MockContentBlock />
+                                            <MockContentBlock />
+                                            <MockContentBlock />
+
+                                            {/* Play button for specific slides if needed */}
+                                            {activeSlide === 'expert-coaching' && (
+                                                <Box sx={{
+                                                    display: 'flex',
+                                                    justifyContent: 'center',
+                                                    alignItems: 'center',
+                                                    mt: 3
+                                                }}>
+                                                    <Box sx={{
+                                                        width: 48,
+                                                        height: 48,
+                                                        backgroundColor: 'rgba(255,255,255,0.3)',
+                                                        borderRadius: '50%',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        cursor: 'pointer',
+                                                        transition: 'all 0.3s ease',
+                                                        '&:hover': {
+                                                            backgroundColor: 'rgba(255,255,255,0.4)',
+                                                            transform: 'scale(1.1)'
                                                         }
-                                                    }}
-                                                />
-                                            ))}
-                                        </Box>
+                                                    }}>
+                                                        <PlayArrow sx={{ color: 'white', fontSize: 24 }} />
+                                                    </Box>
+                                                </Box>
+                                            )}
+                                        </PhoneScreen>
+                                    </PhoneFrame>
+                                </Box>
 
-                                        {/* CTA Button */}
-                                        <CTAButton>
-                                            Try Now
-                                        </CTAButton>
-                                    </Box>
-                                </Grid>
+                                {/* Content - Right side */}
+                                <Box sx={{
+                                    flex: { xs: '1 1 100%', md: '0 0 60%' },
+                                    textAlign: { xs: 'center', md: 'left' },
+                                    order: { xs: 1, md: 2 }
+                                }}>
+                                    <Typography
+                                        variant="h3"
+                                        sx={{
+                                            mb: 2,
+                                            fontWeight: 700,
+                                            fontSize: { xs: '2rem', md: '2.5rem' },
+                                            color: 'primary.main'
+                                        }}
+                                    >
+                                        {slideContent.title}
+                                    </Typography>
+                                    <Typography
+                                        variant="h6"
+                                        sx={{
+                                            mb: 3,
+                                            opacity: 0.9,
+                                            fontSize: '1.25rem',
+                                            fontWeight: 400,
+                                            color: 'primary.main'
+                                        }}
+                                    >
+                                        {slideContent.subtitle}
+                                    </Typography>
+                                    <Typography
+                                        variant="body1"
+                                        sx={{
+                                            mb: 4,
+                                            fontSize: '1.1rem',
+                                            lineHeight: 1.6,
+                                            opacity: 0.9,
+                                            color: 'primary.main'
+                                        }}
+                                    >
+                                        {slideContent.description}
+                                    </Typography>
 
-                                {/* Phone Mockup */}
-                                <Grid item xs={12} lg={6}>
+                                    {/* Features */}
                                     <Box sx={{
                                         display: 'flex',
-                                        justifyContent: 'center',
-                                        alignItems: 'center'
+                                        flexWrap: 'wrap',
+                                        gap: 1,
+                                        justifyContent: { xs: 'center', md: 'flex-start' },
+                                        mb: 2
                                     }}>
-                                        <PhoneFrame>
-                                            <PhoneScreen>
-                                                <Typography
-                                                    variant="body2"
-                                                    sx={{
-                                                        opacity: 0.7,
-                                                        textAlign: 'center',
-                                                        mb: 3,
+                                        {slideContent.features.map((feature, index) => (
+                                            <Chip
+                                                key={index}
+                                                label={feature}
+                                                sx={{
+                                                    backgroundColor: 'rgba(255,255,255,0.2)',
+                                                    color: 'white',
+                                                    backdropFilter: 'blur(10px)',
+                                                    border: '1px solid rgba(255,255,255,0.3)',
+                                                    fontWeight: 500,
+                                                    '& .MuiChip-label': {
                                                         fontSize: '0.875rem'
-                                                    }}
-                                                >
-                                                    {slideContent.title}
-                                                </Typography>
-
-                                                {/* Mock content blocks */}
-                                                <MockContentBlock />
-                                                <MockContentBlock />
-                                                <MockContentBlock />
-                                                <MockContentBlock />
-
-                                                {/* Play button for meditations */}
-                                                {activeSlide === 'guided-meditations' && (
-                                                    <Box sx={{
-                                                        display: 'flex',
-                                                        justifyContent: 'center',
-                                                        alignItems: 'center',
-                                                        mt: 3
-                                                    }}>
-                                                        <Box sx={{
-                                                            width: 48,
-                                                            height: 48,
-                                                            backgroundColor: 'rgba(255,255,255,0.3)',
-                                                            borderRadius: '50%',
-                                                            display: 'flex',
-                                                            alignItems: 'center',
-                                                            justifyContent: 'center',
-                                                            cursor: 'pointer',
-                                                            transition: 'all 0.3s ease',
-                                                            '&:hover': {
-                                                                backgroundColor: 'rgba(255,255,255,0.4)',
-                                                                transform: 'scale(1.1)'
-                                                            }
-                                                        }}>
-                                                            <PlayArrow sx={{ color: 'white', fontSize: 24 }} />
-                                                        </Box>
-                                                    </Box>
-                                                )}
-                                            </PhoneScreen>
-                                        </PhoneFrame>
+                                                    }
+                                                }}
+                                            />
+                                        ))}
                                     </Box>
-                                </Grid>
-                            </Grid>
+
+                                    {/* CTA Button */}
+                                    <CTAButton>
+                                        Try Now
+                                    </CTAButton>
+                                </Box>
+                            </Box>
                         </ContentBox>
                     </SlideContainer>
                 </motion.div>

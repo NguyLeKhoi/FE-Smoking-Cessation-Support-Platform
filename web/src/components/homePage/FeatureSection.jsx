@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
     Container,
     Box,
@@ -16,28 +16,28 @@ const StyledNavButton = styled(Button)(({ theme, active }) => ({
     fontWeight: 500,
     margin: theme.spacing(0, 1, 1, 0),
     transition: 'all 0.3s ease',
-    backgroundColor: active ? theme.palette.grey[800] : '#fff',
-    color: active ? '#fff' : theme.palette.grey[600],
+    backgroundColor: active ? theme.palette.primary.main : '#fff',
+    color: active ? '#fff' : theme.palette.primary.main,
     boxShadow: active ? theme.shadows[4] : theme.shadows[2],
     '&:hover': {
-        backgroundColor: active ? theme.palette.grey[700] : theme.palette.grey[100],
+        backgroundColor: active ? theme.palette.primary.dark : theme.palette.grey[100],
         transform: 'scale(1.05)',
         boxShadow: theme.shadows[6],
     },
 }));
 
 const FeatureSection = () => {
-    const [activeSlide, setActiveSlide] = useState('guided-meditations');
+    const [activeSlide, setActiveSlide] = useState('personalized-plans');
     const [direction, setDirection] = useState(0);
-    const [previousSlide, setPreviousSlide] = useState('guided-meditations');
+    const [previousSlide, setPreviousSlide] = useState('personalized-plans');
 
-    const navigationItems = [
-        { id: 'online-therapy', label: 'Online therapy' },
-        { id: 'guided-meditations', label: 'Guided meditations' },
-        { id: 'ai-guidance', label: 'AI guidance' },
-        { id: 'sleep-resources', label: 'Sleep resources' },
-        { id: 'expert-programs', label: 'Expert-led programs' },
-    ];
+    const navigationItems = useMemo(() => [
+        { id: 'personalized-plans', label: 'Personalized Plans' },
+        { id: 'expert-coaching', label: 'Expert Coaching' },
+        { id: 'community-support', label: 'Community Support' },
+        { id: 'track-progress', label: 'Track Progress' },
+        { id: 'health-benefits', label: 'Health Benefits' },
+    ], []);
 
     // Determine slide direction based on index
     useEffect(() => {
@@ -63,40 +63,40 @@ const FeatureSection = () => {
     };
 
     const slideContent = {
-        'online-therapy': {
-            title: 'Professional Online Therapy',
-            subtitle: 'Connect with licensed therapists',
-            description: 'Get personalized support from certified mental health professionals through secure video sessions, messaging, and phone calls.',
+        'personalized-plans': {
+            title: 'Personalized Quit Plans',
+            subtitle: 'Custom strategies for your smoking habits',
+            description: 'Get a personalized quit plan based on your smoking history, triggers, and lifestyle. Our step-by-step approach helps you gradually reduce smoking in a way that works for you.',
             bgGradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            features: ['Licensed therapists', '24/7 availability', 'Secure sessions', 'Personalized treatment']
+            features: ['Custom reduction schedule', 'Trigger identification', 'Alternative strategies', 'Personalized milestones']
         },
-        'guided-meditations': {
-            title: 'Feel-good library',
-            subtitle: 'Explore 1,000+ guided meditations',
-            description: 'Explore 1,000+ guided meditations for feeling more relaxed — ad-free and always there. Try one for yourself.',
+        'expert-coaching': {
+            title: 'Expert Coaching',
+            subtitle: 'One-on-one support from cessation specialists',
+            description: 'Connect with certified smoking cessation coaches who provide personalized guidance throughout your quitting journey. Access professional advice whenever you need extra support.',
             bgGradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-            features: ['1,000+ meditations', 'Ad-free experience', 'Always available', 'Expert-guided']
+            features: ['Certified coaches', 'Video consultations', '24/7 messaging', 'Evidence-based strategies']
         },
-        'ai-guidance': {
-            title: 'AI-Powered Support',
-            subtitle: 'Intelligent mental health assistance',
-            description: 'Get instant support with our AI-powered chatbot that provides personalized recommendations and coping strategies.',
+        'community-support': {
+            title: 'Community Support',
+            subtitle: 'Connect with others on the same journey',
+            description: 'Join a supportive community of people who understand exactly what you\'re going through. Share experiences, celebrate milestones, and get motivation when you need it most.',
             bgGradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-            features: ['24/7 AI support', 'Personalized tips', 'Instant responses', 'Evidence-based']
+            features: ['Group forums', 'Success stories', 'Accountability partners', 'Live group sessions']
         },
-        'sleep-resources': {
-            title: 'Better Sleep Solutions',
-            subtitle: 'Improve your sleep quality',
-            description: 'Access sleep stories, soundscapes, and bedtime routines designed to help you fall asleep faster and sleep better.',
+        'track-progress': {
+            title: 'Progress Tracking',
+            subtitle: 'Visualize your journey to becoming smoke-free',
+            description: 'Track your progress with our intuitive tools that show health improvements, money saved, and cigarettes avoided. Earn badges and rewards that keep you motivated.',
             bgGradient: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
-            features: ['Sleep stories', 'Calming sounds', 'Sleep tracking', 'Bedtime routines']
+            features: ['Health timeline', 'Money saved calculator', 'Achievement badges', 'Streak tracking']
         },
-        'expert-programs': {
-            title: 'Expert-Led Programs',
-            subtitle: 'Structured mental health courses',
-            description: 'Join comprehensive programs designed by mental health experts to address specific challenges and build resilience.',
+        'health-benefits': {
+            title: 'Your Health Timeline',
+            subtitle: 'Watch your body recover in real-time',
+            description: 'See how your body heals day by day after quitting smoking. Our health timeline shows you exactly what\'s improving, from circulation and lung function to reduced risk of disease.',
             bgGradient: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
-            features: ['Expert-designed', 'Structured courses', 'Progress tracking', 'Community support']
+            features: ['Daily health updates', 'Scientific explanations', 'Body system improvements', 'Long-term outlooks']
         }
     };
 
@@ -111,7 +111,7 @@ const FeatureSection = () => {
                     sx={{
                         mb: 6,
                         fontWeight: 700,
-                        color: 'text.primary',
+                        color: 'primary.main',
                         fontSize: { xs: '2rem', md: '3.5rem' }
                     }}
                 >
@@ -124,7 +124,8 @@ const FeatureSection = () => {
                     justifyContent: 'center',
                     flexWrap: 'wrap',
                     mb: 4,
-                    px: 2
+                    px: 2,
+                    gap: 2
                 }}>
                     {navigationItems.map((item) => (
                         <StyledNavButton
