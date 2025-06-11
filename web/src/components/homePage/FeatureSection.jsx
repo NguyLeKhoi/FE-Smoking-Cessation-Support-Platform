@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Container,
     Box,
@@ -6,7 +6,7 @@ import {
     Button
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import FeatureSlide from './FeatureSlide'; // Assuming FeatureSlide is in the same directory
+import FeatureSlide from './FeatureSlide';
 
 const StyledNavButton = styled(Button)(({ theme, active }) => ({
     borderRadius: '50px',
@@ -28,6 +28,8 @@ const StyledNavButton = styled(Button)(({ theme, active }) => ({
 
 const FeatureSection = () => {
     const [activeSlide, setActiveSlide] = useState('guided-meditations');
+    const [direction, setDirection] = useState(0);
+    const [previousSlide, setPreviousSlide] = useState('guided-meditations');
 
     const navigationItems = [
         { id: 'online-therapy', label: 'Online therapy' },
@@ -36,6 +38,29 @@ const FeatureSection = () => {
         { id: 'sleep-resources', label: 'Sleep resources' },
         { id: 'expert-programs', label: 'Expert-led programs' },
     ];
+
+    // Determine slide direction based on index
+    useEffect(() => {
+        if (previousSlide === activeSlide) return;
+
+        const prevIndex = navigationItems.findIndex(item => item.id === previousSlide);
+        const currIndex = navigationItems.findIndex(item => item.id === activeSlide);
+
+        // Ensure direction is always exactly -1 or 1
+        setDirection(prevIndex < currIndex ? 1 : -1);
+        setPreviousSlide(activeSlide);
+    }, [activeSlide, previousSlide, navigationItems]);
+
+    const handleSlideChange = (slideId) => {
+        if (slideId === activeSlide) return;
+
+        const currentIndex = navigationItems.findIndex(item => item.id === activeSlide);
+        const newIndex = navigationItems.findIndex(item => item.id === slideId);
+
+        // Explicitly set direction based on navigation direction
+        setDirection(currentIndex < newIndex ? 1 : -1);
+        setActiveSlide(slideId);
+    };
 
     const slideContent = {
         'online-therapy': {
@@ -78,7 +103,7 @@ const FeatureSection = () => {
     const currentSlide = slideContent[activeSlide];
 
     return (
-        <Box sx={{ py: { xs: 8, md: 12 }, bgcolor: 'section.main' }}>
+        <Box sx={{ py: { xs: 8, md: 12 }, bgcolor: 'background.paper' }}>
             <Container maxWidth="lg">
                 <Typography
                     variant="h2"
@@ -90,7 +115,7 @@ const FeatureSection = () => {
                         fontSize: { xs: '2rem', md: '3.5rem' }
                     }}
                 >
-                    The mental health app for every moment
+                    Why choose Zerotine
                 </Typography>
 
                 {/* Navigation Buttons */}
@@ -105,15 +130,21 @@ const FeatureSection = () => {
                         <StyledNavButton
                             key={item.id}
                             active={activeSlide === item.id}
-                            onClick={() => setActiveSlide(item.id)}
+                            onClick={() => handleSlideChange(item.id)}
                         >
                             {item.label}
                         </StyledNavButton>
                     ))}
                 </Box>
 
-                {/* Slide Content - now using the extracted component */}
-                <FeatureSlide slideContent={currentSlide} activeSlide={activeSlide} />
+                {/* Slide Content with animation */}
+                <Box sx={{ position: 'relative', overflow: 'hidden' }}>
+                    <FeatureSlide
+                        slideContent={currentSlide}
+                        activeSlide={activeSlide}
+                        direction={direction}
+                    />
+                </Box>
             </Container>
         </Box>
     );
