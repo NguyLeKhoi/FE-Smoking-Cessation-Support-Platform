@@ -106,7 +106,7 @@ const FeatureSection = () => {
     const currentSlide = slideContent[activeSlide];
 
     return (
-        <Box sx={{ py: { xs: 8, md: 12 }, bgcolor: 'section.main' }}>
+        <Box sx={{ py: { xs: 8, md: 12 }, bgcolor: 'background.paper' }}>
             <Container maxWidth="lg">
                 <Typography
                     variant="h2"
@@ -118,7 +118,7 @@ const FeatureSection = () => {
                         fontSize: { xs: '2rem', md: '3.5rem' }
                     }}
                 >
-                    Your journey to quit smoking
+                    Why choose Zerotine
                 </Typography>
 
                 {/* Navigation Buttons */}
@@ -127,7 +127,8 @@ const FeatureSection = () => {
                     justifyContent: 'center',
                     flexWrap: 'wrap',
                     mb: 4,
-                    px: 2
+                    px: 2,
+                    gap: 2
                 }}>
                     {navigationItems.map((item) => (
                         <StyledNavButton
