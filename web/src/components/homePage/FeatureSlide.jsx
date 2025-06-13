@@ -281,7 +281,7 @@ const FeatureSlide = ({ slideContent, activeSlide, direction, allSlides, slideOr
                                         <Box sx={{
                                             display: 'flex',
                                             flexWrap: 'wrap',
-                                            gap: 1,
+                                            gap: 1.5, // Increased gap for better spacing
                                             justifyContent: { xs: 'center', md: 'flex-start' },
                                             mb: 2
                                         }}>
@@ -290,13 +290,26 @@ const FeatureSlide = ({ slideContent, activeSlide, direction, allSlides, slideOr
                                                     key={index}
                                                     label={feature}
                                                     sx={{
-                                                        backgroundColor: 'rgba(255,255,255,0.2)',
-                                                        color: 'white',
+                                                        backgroundColor: 'rgba(0,0,0,0.08)', // Lighter background color
+                                                        color: 'text.primary', // Using theme text color
                                                         backdropFilter: 'blur(10px)',
-                                                        border: '1px solid rgba(255,255,255,0.3)',
+                                                        border: '1px solid rgba(0,0,0,0.12)', // Subtle border
                                                         fontWeight: 500,
+                                                        fontSize: '0.875rem',
+                                                        py: 0.75, // More vertical padding
+                                                        height: 'auto', // Allow multi-line if needed
                                                         '& .MuiChip-label': {
-                                                            fontSize: '0.875rem'
+                                                            px: 1.5, // More horizontal padding
+                                                            py: 0.5, // Vertical padding inside chip
+                                                            fontSize: '0.875rem',
+                                                            lineHeight: 1.4,
+                                                            whiteSpace: 'normal', // Allow text wrapping
+                                                        },
+                                                        transition: 'all 0.2s ease',
+                                                        '&:hover': {
+                                                            backgroundColor: 'rgba(0,0,0,0.12)',
+                                                            transform: 'translateY(-2px)',
+                                                            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
                                                         }
                                                     }}
                                                 />
