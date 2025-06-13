@@ -3,7 +3,8 @@ import { Container, Box, Typography, Grid } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import Lottie from 'lottie-react';
 import quitSignAnimation from '../assets/animations/quit-sign.json';
-import QuotesCarousel from '../components/QuotesCarousel';
+import QuotesCarousel from '../components/homePage/QuotesCarousel';
+import FeatureSection from '../components/homePage/FeatureSection';
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -52,7 +53,7 @@ export default function HomePage() {
                 textAlign: { xs: 'center', md: 'center' },
                 mx: { xs: 'auto', md: 0 }
               }}>
-                Zerotine's virtual clinic offers personalized substance use care for members wanting to cut back, stop or otherwise manage their tobacco use.
+                Personalized plans, expert coaching, and a supportive community to help you quit for good.
               </Typography>
 
               <Box sx={{
@@ -61,7 +62,7 @@ export default function HomePage() {
                 justifyContent: { xs: 'center', md: 'center' },
                 width: '100%'
               }}>
-                <Box 
+                <Box
                   onClick={() => navigate('/smoking-quiz')}
                   sx={{
                     bgcolor: 'primary.main',
@@ -139,6 +140,8 @@ export default function HomePage() {
 
       {/* Quotes Carousel Section */}
       <QuotesCarousel />
+
+      <FeatureSection />
 
       {/* Share the journey Section */}
       {/* <Box sx={{ bgcolor: 'section.main', py: { xs: 8, md: 10 } }}>

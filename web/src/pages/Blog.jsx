@@ -16,7 +16,7 @@ import {
 import EmailIcon from '@mui/icons-material/Email';
 import Banner1 from '../assets/banner1.gif';
 import Banner2 from '../assets/banner2.jpg';
-import CustomCard from '../components/CustomCard';
+import CustomCard from '../components/blog/CustomCard';
 
 const Blog = () => {
     const articleTemplate = {

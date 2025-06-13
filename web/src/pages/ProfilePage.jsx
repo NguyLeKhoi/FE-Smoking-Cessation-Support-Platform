@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Typography, Box, Paper, Grid } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import ProfileSidebar from '../components/ProfileSidebar';
+import ProfileSidebar from '../components/profilePage/ProfileSidebar';
 
 export default function ProfilePage({ handleLogout }) {
   const navigate = useNavigate();
@@ -48,11 +48,11 @@ export default function ProfilePage({ handleLogout }) {
   ];
 
   return (
-    <Box sx={{ 
+    <Box sx={{
       display: 'flex',
-      minHeight: '100vh', 
+      minHeight: '100vh',
       bgcolor: 'background.default',
-      overflow: 'visible' 
+      overflow: 'visible'
     }}>
       <ProfileSidebar />
 
