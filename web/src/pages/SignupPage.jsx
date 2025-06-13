@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Container, TextField, Button, Typography, Box, Alert, Link, Grid } from '@mui/material';
+import { Container, TextField, Button, Typography, Box, Alert, Link, Grid, IconButton } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { signup } from '../services/authService';
-import GlowingDotsGrid from '../components/animated/GlowingDotsGrid'; // Add this import
+import GlowingDotsGrid from '../components/animated/GlowingDotsGrid';
+import HomeIcon from '@mui/icons-material/Home'; // Import the home icon
 
 export default function SignupPage() {
   const navigate = useNavigate();
@@ -154,10 +155,10 @@ export default function SignupPage() {
       bottom: 0,
       bgcolor: '#f6f5f3',
     }}>
-      {/* Add GlowingDotsGrid */}
+      {/* GlowingDotsGrid remains the same */}
       <GlowingDotsGrid
-        dotSize={12}     // Larger dots
-        dotGap={38}      // More space between dots
+        dotSize={12}
+        dotGap={38}
         threshold={150}
         speedThreshold={100}
         shockRadius={250}
@@ -167,11 +168,11 @@ export default function SignupPage() {
           left: 0,
           width: '100%',
           height: '100%',
-          zIndex: 1, // Behind the signup form
+          zIndex: 1,
         }}
       />
 
-      <Container maxWidth="md" sx={{ zIndex: 2 }}> {/* Add zIndex to ensure form is above grid */}
+      <Container maxWidth="md" sx={{ zIndex: 2 }}>
         <Box
           sx={{
             display: 'flex',
@@ -184,10 +185,32 @@ export default function SignupPage() {
             maxWidth: 800,
             mx: 'auto',
             maxHeight: '90vh',
-            overflowY: 'auto', // Allow scrolling within the form
-            backdropFilter: 'blur(5px)', // Add slight blur for better text contrast
+            overflowY: 'auto',
+            backdropFilter: 'blur(5px)',
+            position: 'relative', // Add this for absolute positioning of the home button
           }}
         >
+          {/* Home Icon Button - Added to top left */}
+          <IconButton
+            onClick={() => navigate('/')}
+            sx={{
+              position: 'absolute',
+              top: 16,
+              left: 16,
+              color: 'text.secondary',
+              '&:hover': {
+                bgcolor: 'rgba(0, 0, 0, 0.08)',
+                color: 'primary.main',
+                transform: 'scale(1.1)',
+              },
+              transition: 'all 0.2s ease',
+              zIndex: 3,
+            }}
+            aria-label="Go to home page"
+          >
+            <HomeIcon />
+          </IconButton>
+
           <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 700, color: 'text.primary', mb: 1 }}>
             Create Account
           </Typography>
