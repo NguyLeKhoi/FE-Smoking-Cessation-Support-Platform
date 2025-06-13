@@ -3,7 +3,8 @@ import {
     Container,
     Box,
     Typography,
-    Button
+    Button,
+    useTheme
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import FeatureSlide from './FeatureSlide';
@@ -27,6 +28,7 @@ const StyledNavButton = styled(Button)(({ theme, active }) => ({
 }));
 
 const FeatureSection = () => {
+    const theme = useTheme();
     const [activeSlide, setActiveSlide] = useState('personalized-plans');
     const [direction, setDirection] = useState(0);
     const [previousSlide, setPreviousSlide] = useState('personalized-plans');
@@ -109,16 +111,17 @@ const FeatureSection = () => {
         <Box sx={{ py: { xs: 8, md: 12 }, bgcolor: 'background.paper' }}>
             <Container maxWidth="lg">
                 <Typography
-                    variant="h2"
+                    variant="h3"
+                    component="h2"
+                    gutterBottom
                     align="center"
                     sx={{
-                        mb: 6,
-                        fontWeight: 700,
-                        color: 'text.primary',
-                        fontSize: { xs: '2rem', md: '3.5rem' }
+                        fontWeight: 500,
+                        color: theme.palette.text.primary,
+                        mb: 5
                     }}
                 >
-                    Why choose Zerotine
+                    Why you should choose Zerotine
                 </Typography>
 
                 {/* Navigation Buttons */}
