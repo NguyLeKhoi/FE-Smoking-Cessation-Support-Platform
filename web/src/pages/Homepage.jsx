@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Box, Typography, Grid } from '@mui/material';
+import { Container, Box, Typography, Grid, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import Lottie from 'lottie-react';
 import quitSignAnimation from '../assets/animations/quit-sign.json';
@@ -62,25 +62,30 @@ export default function HomePage() {
                 justifyContent: { xs: 'center', md: 'center' },
                 width: '100%'
               }}>
-                <Box
+                <Button
                   onClick={() => navigate('/smoking-quiz')}
+                  variant="contained"
+                  disableElevation
                   sx={{
-                    bgcolor: 'primary.main',
+                    mt: 2,
+                    py: 1.5,
+                    bgcolor: '#000000',
                     color: 'white',
-                    px: 4,
-                    py: 2,
-                    borderRadius: 4,
-                    display: 'inline-block',
-                    fontSize: '1.1rem',
-                    fontWeight: 500,
-                    cursor: 'pointer',
+                    borderRadius: '12px',
+                    boxShadow: '0 4px 0 #00000080',
                     '&:hover': {
-                      bgcolor: 'primary.dark'
-                    }
+                      bgcolor: '#000000cd',
+                      boxShadow: '0 2px 0 #00000080',
+                      transform: 'translateY(2px)',
+                    },
+                    '&:active': {
+                      boxShadow: '0 0 0 #00000080',
+                      transform: 'translateY(4px)',
+                    },
                   }}
                 >
                   Take a Quiz
-                </Box>
+                </Button>
               </Box>
             </Grid>
 

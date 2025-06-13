@@ -252,19 +252,18 @@ const Header = ({ authStatus }) => {
                 onClick={() => navigate('/login')}
                 variant="contained"
                 sx={{
-                  bgcolor: 'black',
+                  py: 0.8,
+                  bgcolor: '#000000',
                   color: 'white',
-                  borderRadius: '8px',
-                  px: 3,
-                  py: 1,
-                  boxShadow: '0 4px 0 ',
+                  borderRadius: '12px',
+                  boxShadow: '0 4px 0 #00000080',
                   '&:hover': {
-                    bgcolor: 'black',
-                    boxShadow: '0 2px 0 #000000',
+                    bgcolor: '#000000cd',
+                    boxShadow: '0 2px 0 #00000080',
                     transform: 'translateY(2px)',
                   },
                   '&:active': {
-                    boxShadow: '0 0 0 #000000',
+                    boxShadow: '0 0 0 #00000080',
                     transform: 'translateY(4px)',
                   },
                 }}
