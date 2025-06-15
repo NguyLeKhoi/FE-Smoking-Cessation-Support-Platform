@@ -10,7 +10,7 @@ import { styled } from '@mui/material/styles';
 import FeatureSlide from './FeatureSlide';
 
 const StyledNavButton = styled(Button)(({ theme, active }) => ({
-    borderRadius: '50px',
+    borderRadius: '12px',
     padding: '12px 24px',
     textTransform: 'none',
     fontSize: '16px',
@@ -67,7 +67,6 @@ const FeatureSection = () => {
         setActiveSlide(slideId);
     };
 
-    // Updated slide content with backgroundColor instead of backgroundColor
     const slideContent = {
         'personalized-plans': {
             title: 'Personalized Quit Plans',
@@ -89,7 +88,7 @@ const FeatureSection = () => {
             title: 'Community Support',
             subtitle: 'Connect with others on the same journey',
             description: 'Join a supportive community of people who understand exactly what you\'re going through. Share experiences, celebrate milestones, and get motivation when you need it most.',
-            backgroundColor: ' #dcf7d4',
+            backgroundColor: ' #DDF6D2',
             features: ['Group forums', 'Success stories', 'Accountability partners', 'Live group sessions'],
             customAnimation: 'community-support'
         },

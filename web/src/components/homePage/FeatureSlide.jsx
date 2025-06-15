@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, Chip, Paper } from '@mui/material';
+import { Box, Typography, Chip, Paper, Button } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { motion, AnimatePresence } from 'framer-motion';
 import Lottie from 'lottie-react';
@@ -21,6 +21,7 @@ const SlideContainer = styled(Paper)(({ theme, backgroundColor }) => ({
     position: 'relative',
     overflow: 'hidden',
     background: backgroundColor,
+   
     '&::before': {
         content: '""',
         position: 'absolute',
@@ -39,21 +40,24 @@ const ContentBox = styled(Box)({
     zIndex: 1,
 });
 
-const CTAButton = styled(Box)(({ theme }) => ({
-    backgroundColor: theme.palette.primary.main,
-    color: '#fff',
+const CTAButton = styled(Button)(({ theme }) => ({
+    marginTop: theme.spacing(2),
     padding: theme.spacing(1.5, 4),
-    borderRadius: '50px',
-    fontSize: '18px',
-    fontWeight: 600,
+    backgroundColor: '#000000',
+    color: 'white',
+    borderRadius: '12px',
+    boxShadow: '0 4px 0 #00000080',
     textTransform: 'none',
-    marginTop: theme.spacing(4),
-    display: 'inline-block',
-    cursor: 'pointer',
+    fontWeight: 600,
+    fontSize: '1.2rem',
     '&:hover': {
-        backgroundColor: theme.palette.primary.dark,
-        transform: 'scale(1.05)',
-        boxShadow: theme.shadows[8],
+        backgroundColor: '#000000cd',
+        boxShadow: '0 2px 0 #00000080',
+        transform: 'translateY(2px)',
+    },
+    '&:active': {
+        boxShadow: '0 0 0 #00000080',
+        transform: 'translateY(4px)',
     },
 }));
 
@@ -279,7 +283,7 @@ const FeatureSlide = ({ slideContent, activeSlide, direction, allSlides, slideOr
                                         <Box sx={{
                                             display: 'flex',
                                             flexWrap: 'wrap',
-                                            gap: 1.5, 
+                                            gap: 1.5,
                                             justifyContent: { xs: 'center', md: 'flex-start' },
                                             mb: 2
                                         }}>
@@ -288,20 +292,21 @@ const FeatureSlide = ({ slideContent, activeSlide, direction, allSlides, slideOr
                                                     key={index}
                                                     label={feature}
                                                     sx={{
-                                                        backgroundColor: 'rgba(0,0,0,0.08)', 
-                                                        color: 'text.primary', 
+                                                        backgroundColor: 'rgba(0,0,0,0.08)',
+                                                        color: 'text.primary',
                                                         backdropFilter: 'blur(10px)',
-                                                        border: '1px solid rgba(0,0,0,0.12)', 
+                                                        border: '1px solid rgba(0,0,0,0.12)',
                                                         fontWeight: 500,
                                                         fontSize: '0.875rem',
-                                                        py: 0.75, 
-                                                        height: 'auto', 
+                                                        py: 0.75,
+                                                        height: 'auto',
+                                                        borderRadius: '12px',
                                                         '& .MuiChip-label': {
-                                                            px: 1.5, 
-                                                            py: 0.5, 
+                                                            px: 1.5,
+                                                            py: 0.5,
                                                             fontSize: '0.875rem',
                                                             lineHeight: 1.4,
-                                                            whiteSpace: 'normal', 
+                                                            whiteSpace: 'normal',
                                                         },
                                                         transition: 'all 0.2s ease',
                                                         '&:hover': {
