@@ -5,14 +5,14 @@ import { PlayArrow } from '@mui/icons-material';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // Styled components
-const SlideContainer = styled(Paper)(({ theme, bgGradient }) => ({
+const SlideContainer = styled(Paper)(({ theme, backgroundColor }) => ({
     minHeight: '500px',
     padding: theme.spacing(6, 4),
     borderRadius: '24px',
     color: 'white',
     position: 'relative',
     overflow: 'hidden',
-    background: bgGradient,
+    background: backgroundColor, // Changed from bgGradient to backgroundColor
     '&::before': {
         content: '""',
         position: 'absolute',
@@ -168,7 +168,7 @@ const FeatureSlide = ({ slideContent, activeSlide, direction, allSlides, slideOr
                     >
                         <SlideContainer
                             elevation={0}
-                            bgGradient={slideContent.bgGradient}
+                            backgroundColor={slideContent.backgroundColor} // Changed from
                         >
                             <ContentBox>
                                 <Box sx={{
