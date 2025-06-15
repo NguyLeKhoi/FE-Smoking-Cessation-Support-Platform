@@ -1,8 +1,16 @@
 import React from 'react';
 import { Box, Typography, Chip, Paper } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { PlayArrow } from '@mui/icons-material';
 import { motion, AnimatePresence } from 'framer-motion';
+import Lottie from 'lottie-react';
+
+// Import all animations
+import personalizedPlanAnimation from '../../assets/animations/personalized-plan.json';
+import coachingAnimation from '../../assets/animations/coaching.json';
+import communityAnimation from '../../assets/animations/community.json';
+import progressAnimation from '../../assets/animations/progress.json';
+import healthBenefitsAnimation from '../../assets/animations/health.json';
+
 
 // Styled components
 const SlideContainer = styled(Paper)(({ theme, backgroundColor }) => ({
@@ -12,7 +20,7 @@ const SlideContainer = styled(Paper)(({ theme, backgroundColor }) => ({
     color: 'white',
     position: 'relative',
     overflow: 'hidden',
-    background: backgroundColor, // Changed from bgGradient to backgroundColor
+    background: backgroundColor,
     '&::before': {
         content: '""',
         position: 'absolute',
@@ -91,7 +99,7 @@ const CTAButton = styled(Box)(({ theme }) => ({
     },
 }));
 
-// Animation variants - Simplified without preview
+// Animation 
 const slideVariants = {
     enter: (direction) => ({
         x: direction > 0 ? '95%' : '-95%',
@@ -128,6 +136,85 @@ const slideVariants = {
 const FeatureSlide = ({ slideContent, activeSlide, direction, allSlides, slideOrder }) => {
     // Force direction to be exactly -1 or 1 to ensure consistent animation behavior
     const animationDirection = direction > 0 ? 1 : -1;
+    const renderLeftSideContent = (slideData, slideId) => {
+        console.log("Rendering slide:", slideId, "customAnimation:", slideData.customAnimation);
+
+        // Check if this slide has a custom animation
+        if (slideData.customAnimation) {
+            // Get the appropriate animation data based on the customAnimation property
+            let animationData;
+            switch (slideData.customAnimation) {
+                case 'personalized-plan':
+                    animationData = personalizedPlanAnimation;
+                    break;
+                case 'expert-coaching':
+                    animationData = coachingAnimation;
+                    break;
+                case 'community-support':
+                    animationData = communityAnimation;
+                    break;
+                case 'progress-tracking':
+                    animationData = progressAnimation;
+                    break;
+                case 'health-benefits':
+                    animationData = healthBenefitsAnimation;
+                    break;
+                default:
+                    console.warn("No animation found for:", slideData.customAnimation);
+                    animationData = null;
+            }
+
+            // If we have animation data, render the animation
+            if (animationData) {
+                return (
+                    <Box sx={{
+                        width: { xs: '280px', md: '320px' },
+                        height: { xs: '280px', md: '320px' },
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        position: 'relative',
+                        borderRadius: '16px',
+                        overflow: 'hidden',
+                    }}>
+                        <Lottie
+                            animationData={animationData}
+                            style={{
+                                width: '100%',
+                                height: '100%',
+                            }}
+                            loop={true}
+                            rendererSettings={{
+                                preserveAspectRatio: 'xMidYMid slice',
+                                clearCanvas: false,
+                                progressiveLoad: true,
+                                hideOnTransparent: false
+                            }}
+                        />
+                    </Box>
+                );
+            }
+        }
+
+        // Fallback for slides without animation
+        return (
+            <Box sx={{
+                width: { xs: '280px', md: '320px' },
+                height: { xs: '280px', md: '320px' },
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: 'rgba(0,0,0,0.05)',
+                borderRadius: '16px',
+                color: 'text.secondary',
+                fontSize: '1rem',
+                textAlign: 'center',
+                padding: 2,
+            }}>
+                {slideData.title} visualization
+            </Box>
+        );
+    };
 
     return (
         <Box sx={{
@@ -168,7 +255,7 @@ const FeatureSlide = ({ slideContent, activeSlide, direction, allSlides, slideOr
                     >
                         <SlideContainer
                             elevation={0}
-                            backgroundColor={slideContent.backgroundColor} // Changed from
+                            backgroundColor={slideContent.backgroundColor}
                         >
                             <ContentBox>
                                 <Box sx={{
@@ -178,7 +265,7 @@ const FeatureSlide = ({ slideContent, activeSlide, direction, allSlides, slideOr
                                     justifyContent: 'space-between',
                                     gap: 4
                                 }}>
-                                    {/* Phone Mockup - Left side */}
+                                    {/* Phone Mockup - Left side - Now with conditional rendering */}
                                     <Box sx={{
                                         flex: { xs: '1 1 100%', md: '0 0 40%' },
                                         display: 'flex',
@@ -187,53 +274,7 @@ const FeatureSlide = ({ slideContent, activeSlide, direction, allSlides, slideOr
                                         py: { xs: 3, md: 0 },
                                         order: { xs: 2, md: 1 }
                                     }}>
-                                        <PhoneFrame>
-                                            <PhoneScreen>
-                                                <Typography
-                                                    variant="body2"
-                                                    sx={{
-                                                        opacity: 0.7,
-                                                        textAlign: 'center',
-                                                        mb: 3,
-                                                        fontSize: '0.875rem'
-                                                    }}
-                                                >
-                                                    {slideContent.title}
-                                                </Typography>
-
-                                                <MockContentBlock />
-                                                <MockContentBlock />
-                                                <MockContentBlock />
-                                                <MockContentBlock />
-
-                                                {activeSlide === 'expert-coaching' && (
-                                                    <Box sx={{
-                                                        display: 'flex',
-                                                        justifyContent: 'center',
-                                                        alignItems: 'center',
-                                                        mt: 3
-                                                    }}>
-                                                        <Box sx={{
-                                                            width: 48,
-                                                            height: 48,
-                                                            backgroundColor: 'rgba(255,255,255,0.3)',
-                                                            borderRadius: '50%',
-                                                            display: 'flex',
-                                                            alignItems: 'center',
-                                                            justifyContent: 'center',
-                                                            cursor: 'pointer',
-                                                            transition: 'all 0.3s ease',
-                                                            '&:hover': {
-                                                                backgroundColor: 'rgba(255,255,255,0.4)',
-                                                                transform: 'scale(1.1)'
-                                                            }
-                                                        }}>
-                                                            <PlayArrow sx={{ color: 'white', fontSize: 24 }} />
-                                                        </Box>
-                                                    </Box>
-                                                )}
-                                            </PhoneScreen>
-                                        </PhoneFrame>
+                                        {renderLeftSideContent(slideContent, activeSlide)}
                                     </Box>
 
                                     {/* Content - Right side */}
