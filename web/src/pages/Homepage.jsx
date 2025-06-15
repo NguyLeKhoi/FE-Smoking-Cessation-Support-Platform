@@ -73,6 +73,7 @@ export default function HomePage() {
                     color: 'white',
                     borderRadius: '12px',
                     boxShadow: '0 4px 0 #00000080',
+                    fontSize: '1.2rem',
                     '&:hover': {
                       bgcolor: '#000000cd',
                       boxShadow: '0 2px 0 #00000080',

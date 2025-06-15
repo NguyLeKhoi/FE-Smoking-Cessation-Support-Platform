@@ -1,16 +1,17 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Typography, Chip, Paper, Button } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { motion, AnimatePresence } from 'framer-motion';
 import Lottie from 'lottie-react';
 
-// Import all animations
-import personalizedPlanAnimation from '../../assets/animations/personalized-plan.json';
-import coachingAnimation from '../../assets/animations/coaching.json';
-import communityAnimation from '../../assets/animations/community.json';
-import progressAnimation from '../../assets/animations/progress.json';
-import healthBenefitsAnimation from '../../assets/animations/health.json';
-
+// import animations
+const animationMap = {
+    'personalized-plan': () => import('../../assets/animations/personalized-plan.json'),
+    'expert-coaching': () => import('../../assets/animations/coaching.json'),
+    'community-support': () => import('../../assets/animations/community.json'),
+    'progress-tracking': () => import('../../assets/animations/progress.json'),
+    'health-benefits': () => import('../../assets/animations/health.json')
+};
 
 // Styled components
 const SlideContainer = styled(Paper)(({ theme, backgroundColor }) => ({
@@ -21,7 +22,7 @@ const SlideContainer = styled(Paper)(({ theme, backgroundColor }) => ({
     position: 'relative',
     overflow: 'hidden',
     background: backgroundColor,
-   
+
     '&::before': {
         content: '""',
         position: 'absolute',
@@ -95,67 +96,112 @@ const slideVariants = {
     })
 };
 
+// Animation component with lazy loading
+const LazyAnimation = ({ animationType }) => {
+    const [animationData, setAnimationData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        let isMounted = true;
+        setLoading(true);
+
+        // Only load animation if the component is mounted 
+        if (animationType && animationMap[animationType]) {
+            animationMap[animationType]()
+                .then(module => {
+                    if (isMounted) {
+                        setAnimationData(module.default || module);
+                        setLoading(false);
+                    }
+                })
+                .catch(err => {
+                    console.error(`Error loading animation: ${animationType}`, err);
+                    if (isMounted) {
+                        setError(err);
+                        setLoading(false);
+                    }
+                });
+        }
+
+        // Cleanup function to prevent memory leaks
+        return () => {
+            isMounted = false;
+        };
+    }, [animationType]);
+
+    if (loading) {
+        return (
+            <Box sx={{
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: 'rgba(255,255,255,0.05)',
+            }}>
+                <Typography variant="body2" color="text.secondary">
+                    Loading...
+                </Typography>
+            </Box>
+        );
+    }
+
+    if (error || !animationData) {
+        return (
+            <Box sx={{
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: 'rgba(0,0,0,0.05)',
+            }}>
+                <Typography variant="body2" color="error">
+                    {error ? 'Failed to load animation' : 'Animation not found'}
+                </Typography>
+            </Box>
+        );
+    }
+
+    return (
+        <Lottie
+            animationData={animationData}
+            style={{
+                width: '100%',
+                height: '100%',
+            }}
+            loop={true}
+            rendererSettings={{
+                preserveAspectRatio: 'xMidYMid slice',
+                clearCanvas: false,
+                progressiveLoad: true,
+                hideOnTransparent: false
+            }}
+        />
+    );
+};
+
 const FeatureSlide = ({ slideContent, activeSlide, direction, allSlides, slideOrder }) => {
-    // Force direction to be exactly -1 or 1 to ensure consistent animation behavior
     const animationDirection = direction > 0 ? 1 : -1;
+
     const renderLeftSideContent = (slideData, slideId) => {
-        console.log("Rendering slide:", slideId, "customAnimation:", slideData.customAnimation);
-
-        // Check if this slide has a custom animation
+        // Only proceed if this slide has a custom animation defined
         if (slideData.customAnimation) {
-            // Get the appropriate animation data based on the customAnimation property
-            let animationData;
-            switch (slideData.customAnimation) {
-                case 'personalized-plan':
-                    animationData = personalizedPlanAnimation;
-                    break;
-                case 'expert-coaching':
-                    animationData = coachingAnimation;
-                    break;
-                case 'community-support':
-                    animationData = communityAnimation;
-                    break;
-                case 'progress-tracking':
-                    animationData = progressAnimation;
-                    break;
-                case 'health-benefits':
-                    animationData = healthBenefitsAnimation;
-                    break;
-                default:
-                    console.warn("No animation found for:", slideData.customAnimation);
-                    animationData = null;
-            }
-
-            // If we have animation data, render the animation
-            if (animationData) {
-                return (
-                    <Box sx={{
-                        width: { xs: '280px', md: '400px' },
-                        height: { xs: '280px', md: '400px' },
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        position: 'relative',
-                        borderRadius: '16px',
-                        overflow: 'hidden',
-                    }}>
-                        <Lottie
-                            animationData={animationData}
-                            style={{
-                                width: '100%',
-                                height: '100%',
-                            }}
-                            loop={true}
-                            rendererSettings={{
-                                preserveAspectRatio: 'xMidYMid slice',
-                                clearCanvas: false,
-                                progressiveLoad: true,
-                                hideOnTransparent: false
-                            }}
-                        />
-                    </Box>
-                );
-            }
+            return (
+                <Box sx={{
+                    width: { xs: '280px', md: '400px' },
+                    height: { xs: '280px', md: '400px' },
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    position: 'relative',
+                    borderRadius: '16px',
+                    overflow: 'hidden',
+                }}>
+                    <LazyAnimation animationType={slideData.customAnimation} />
+                </Box>
+            );
         }
 
         // Fallback for slides without animation
@@ -181,7 +227,7 @@ const FeatureSlide = ({ slideContent, activeSlide, direction, allSlides, slideOr
     return (
         <Box sx={{
             position: 'relative',
-            overflow: 'hidden', // Change from 'visible' to 'hidden'
+            overflow: 'hidden',
             width: '100%',
             height: { xs: '800px', md: '600px' },
             backgroundColor: slideContent.bgGradient,
@@ -195,7 +241,7 @@ const FeatureSlide = ({ slideContent, activeSlide, direction, allSlides, slideOr
                 justifyContent: 'center',
                 alignItems: 'center',
                 px: { xs: 2, md: 4 },
-                overflow: 'hidden', //prevent inner content overflow
+                overflow: 'hidden',
             }}>
                 <AnimatePresence initial={false} custom={animationDirection}>
                     <motion.div
