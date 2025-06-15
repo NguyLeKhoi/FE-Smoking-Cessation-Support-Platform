@@ -39,48 +39,6 @@ const ContentBox = styled(Box)({
     zIndex: 1,
 });
 
-const PhoneFrame = styled(Box)(({ theme }) => ({
-    width: '250px',
-    height: '450px',
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    borderRadius: '30px',
-    backdropFilter: 'blur(20px)',
-    border: '2px solid rgba(255,255,255,0.3)',
-    padding: theme.spacing(1),
-    boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
-    position: 'relative',
-    '&::before': {
-        content: '""',
-        position: 'absolute',
-        top: '8px',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        width: '60px',
-        height: '6px',
-        backgroundColor: 'rgba(255,255,255,0.5)',
-        borderRadius: '3px',
-        zIndex: 2,
-    }
-}));
-
-const PhoneScreen = styled(Box)(({ theme }) => ({
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    borderRadius: '24px',
-    padding: theme.spacing(3, 2),
-    paddingTop: theme.spacing(4),
-    overflow: 'hidden',
-    position: 'relative',
-}));
-
-const MockContentBlock = styled(Box)(({ theme }) => ({
-    height: '48px',
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    borderRadius: '8px',
-    marginBottom: theme.spacing(1.5),
-}));
-
 const CTAButton = styled(Box)(({ theme }) => ({
     backgroundColor: theme.palette.primary.main,
     color: '#fff',
@@ -168,8 +126,8 @@ const FeatureSlide = ({ slideContent, activeSlide, direction, allSlides, slideOr
             if (animationData) {
                 return (
                     <Box sx={{
-                        width: { xs: '280px', md: '320px' },
-                        height: { xs: '280px', md: '320px' },
+                        width: { xs: '280px', md: '400px' },
+                        height: { xs: '280px', md: '400px' },
                         display: 'flex',
                         justifyContent: 'center',
                         alignItems: 'center',
@@ -233,7 +191,7 @@ const FeatureSlide = ({ slideContent, activeSlide, direction, allSlides, slideOr
                 justifyContent: 'center',
                 alignItems: 'center',
                 px: { xs: 2, md: 4 },
-                overflow: 'hidden', // Add this to prevent inner content overflow
+                overflow: 'hidden', //prevent inner content overflow
             }}>
                 <AnimatePresence initial={false} custom={animationDirection}>
                     <motion.div
@@ -249,7 +207,6 @@ const FeatureSlide = ({ slideContent, activeSlide, direction, allSlides, slideOr
                             height: '100%',
                             position: 'absolute',
                             willChange: 'transform, opacity',
-                            // Ensure content doesn't trigger scrollbars
                             overflowX: 'hidden',
                         }}
                     >
@@ -265,7 +222,7 @@ const FeatureSlide = ({ slideContent, activeSlide, direction, allSlides, slideOr
                                     justifyContent: 'space-between',
                                     gap: 4
                                 }}>
-                                    {/* Phone Mockup - Left side - Now with conditional rendering */}
+                                    {/* Left side */}
                                     <Box sx={{
                                         flex: { xs: '1 1 100%', md: '0 0 40%' },
                                         display: 'flex',
@@ -322,7 +279,7 @@ const FeatureSlide = ({ slideContent, activeSlide, direction, allSlides, slideOr
                                         <Box sx={{
                                             display: 'flex',
                                             flexWrap: 'wrap',
-                                            gap: 1.5, // Increased gap for better spacing
+                                            gap: 1.5, 
                                             justifyContent: { xs: 'center', md: 'flex-start' },
                                             mb: 2
                                         }}>
@@ -331,20 +288,20 @@ const FeatureSlide = ({ slideContent, activeSlide, direction, allSlides, slideOr
                                                     key={index}
                                                     label={feature}
                                                     sx={{
-                                                        backgroundColor: 'rgba(0,0,0,0.08)', // Lighter background color
-                                                        color: 'text.primary', // Using theme text color
+                                                        backgroundColor: 'rgba(0,0,0,0.08)', 
+                                                        color: 'text.primary', 
                                                         backdropFilter: 'blur(10px)',
-                                                        border: '1px solid rgba(0,0,0,0.12)', // Subtle border
+                                                        border: '1px solid rgba(0,0,0,0.12)', 
                                                         fontWeight: 500,
                                                         fontSize: '0.875rem',
-                                                        py: 0.75, // More vertical padding
-                                                        height: 'auto', // Allow multi-line if needed
+                                                        py: 0.75, 
+                                                        height: 'auto', 
                                                         '& .MuiChip-label': {
-                                                            px: 1.5, // More horizontal padding
-                                                            py: 0.5, // Vertical padding inside chip
+                                                            px: 1.5, 
+                                                            py: 0.5, 
                                                             fontSize: '0.875rem',
                                                             lineHeight: 1.4,
-                                                            whiteSpace: 'normal', // Allow text wrapping
+                                                            whiteSpace: 'normal', 
                                                         },
                                                         transition: 'all 0.2s ease',
                                                         '&:hover': {

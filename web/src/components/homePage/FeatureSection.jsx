@@ -73,7 +73,7 @@ const FeatureSection = () => {
             title: 'Personalized Quit Plans',
             subtitle: 'Custom strategies for your smoking habits',
             description: 'Get a personalized quit plan based on your smoking history, triggers, and lifestyle. Our step-by-step approach helps you gradually reduce smoking in a way that works for you.',
-            backgroundColor: ' #fbd4bf',
+            backgroundColor: ' #ffd3b2',
             features: ['Custom reduction schedule', 'Trigger identification', 'Alternative strategies', 'Personalized milestones'],
             customAnimation: 'personalized-plan'
         },
@@ -89,7 +89,7 @@ const FeatureSection = () => {
             title: 'Community Support',
             subtitle: 'Connect with others on the same journey',
             description: 'Join a supportive community of people who understand exactly what you\'re going through. Share experiences, celebrate milestones, and get motivation when you need it most.',
-            backgroundColor: ' #CAE8BD',
+            backgroundColor: ' #dcf7d4',
             features: ['Group forums', 'Success stories', 'Accountability partners', 'Live group sessions'],
             customAnimation: 'community-support'
         },
@@ -97,7 +97,7 @@ const FeatureSection = () => {
             title: 'Progress Tracking',
             subtitle: 'Visualize your journey to becoming smoke-free',
             description: 'Track your progress with our intuitive tools that show health improvements, money saved, and cigarettes avoided. Earn badges and rewards that keep you motivated.',
-            backgroundColor: ' #C6E7FF',
+            backgroundColor: ' #b0e7fd',
             features: ['Health timeline', 'Money saved calculator', 'Achievement badges', 'Streak tracking'],
             customAnimation: 'progress-tracking'
         },
@@ -105,7 +105,7 @@ const FeatureSection = () => {
             title: 'Your Health Timeline',
             subtitle: 'Watch your body recover in real-time',
             description: 'See how your body heals day by day after quitting smoking. Our health timeline shows you exactly what\'s improving, from circulation and lung function to reduced risk of disease.',
-            backgroundColor: ' #CDC1FF',
+            backgroundColor: ' #e3d6ff',
             features: ['Daily health updates', 'Scientific explanations', 'Body system improvements', 'Long-term outlooks'],
             customAnimation: 'health-benefits'
         }
