@@ -1,18 +1,28 @@
-import React from 'react';
-import { Box, Typography, Chip, Paper } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Box, Typography, Chip, Paper, Button } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { PlayArrow } from '@mui/icons-material';
 import { motion, AnimatePresence } from 'framer-motion';
+import Lottie from 'lottie-react';
+
+// import animations
+const animationMap = {
+    'personalized-plan': () => import('../../assets/animations/personalized-plan.json'),
+    'expert-coaching': () => import('../../assets/animations/coaching.json'),
+    'community-support': () => import('../../assets/animations/community.json'),
+    'progress-tracking': () => import('../../assets/animations/progress.json'),
+    'health-benefits': () => import('../../assets/animations/health.json')
+};
 
 // Styled components
-const SlideContainer = styled(Paper)(({ theme, bgGradient }) => ({
+const SlideContainer = styled(Paper)(({ theme, backgroundColor }) => ({
     minHeight: '500px',
     padding: theme.spacing(6, 4),
     borderRadius: '24px',
     color: 'white',
     position: 'relative',
     overflow: 'hidden',
-    background: bgGradient,
+    background: backgroundColor,
+
     '&::before': {
         content: '""',
         position: 'absolute',
@@ -31,67 +41,28 @@ const ContentBox = styled(Box)({
     zIndex: 1,
 });
 
-const PhoneFrame = styled(Box)(({ theme }) => ({
-    width: '250px',
-    height: '450px',
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    borderRadius: '30px',
-    backdropFilter: 'blur(20px)',
-    border: '2px solid rgba(255,255,255,0.3)',
-    padding: theme.spacing(1),
-    boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
-    position: 'relative',
-    '&::before': {
-        content: '""',
-        position: 'absolute',
-        top: '8px',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        width: '60px',
-        height: '6px',
-        backgroundColor: 'rgba(255,255,255,0.5)',
-        borderRadius: '3px',
-        zIndex: 2,
-    }
-}));
-
-const PhoneScreen = styled(Box)(({ theme }) => ({
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    borderRadius: '24px',
-    padding: theme.spacing(3, 2),
-    paddingTop: theme.spacing(4),
-    overflow: 'hidden',
-    position: 'relative',
-}));
-
-const MockContentBlock = styled(Box)(({ theme }) => ({
-    height: '48px',
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    borderRadius: '8px',
-    marginBottom: theme.spacing(1.5),
-}));
-
-const CTAButton = styled(Box)(({ theme }) => ({
-    backgroundColor: theme.palette.primary.main,
-    color: '#fff',
+const CTAButton = styled(Button)(({ theme }) => ({
+    marginTop: theme.spacing(2),
     padding: theme.spacing(1.5, 4),
-    borderRadius: '50px',
-    fontSize: '18px',
-    fontWeight: 600,
+    backgroundColor: '#000000',
+    color: 'white',
+    borderRadius: '12px',
+    boxShadow: '0 4px 0 #00000080',
     textTransform: 'none',
-    marginTop: theme.spacing(4),
-    display: 'inline-block',
-    cursor: 'pointer',
+    fontWeight: 600,
+    fontSize: '1.2rem',
     '&:hover': {
-        backgroundColor: theme.palette.primary.dark,
-        transform: 'scale(1.05)',
-        boxShadow: theme.shadows[8],
+        backgroundColor: '#000000cd',
+        boxShadow: '0 2px 0 #00000080',
+        transform: 'translateY(2px)',
+    },
+    '&:active': {
+        boxShadow: '0 0 0 #00000080',
+        transform: 'translateY(4px)',
     },
 }));
 
-// Animation variants - Simplified without preview
+// Animation 
 const slideVariants = {
     enter: (direction) => ({
         x: direction > 0 ? '95%' : '-95%',
@@ -125,14 +96,138 @@ const slideVariants = {
     })
 };
 
+// Animation component with lazy loading
+const LazyAnimation = ({ animationType }) => {
+    const [animationData, setAnimationData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        let isMounted = true;
+        setLoading(true);
+
+        // Only load animation if the component is mounted 
+        if (animationType && animationMap[animationType]) {
+            animationMap[animationType]()
+                .then(module => {
+                    if (isMounted) {
+                        setAnimationData(module.default || module);
+                        setLoading(false);
+                    }
+                })
+                .catch(err => {
+                    console.error(`Error loading animation: ${animationType}`, err);
+                    if (isMounted) {
+                        setError(err);
+                        setLoading(false);
+                    }
+                });
+        }
+
+        // Cleanup function to prevent memory leaks
+        return () => {
+            isMounted = false;
+        };
+    }, [animationType]);
+
+    if (loading) {
+        return (
+            <Box sx={{
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: 'rgba(255,255,255,0.05)',
+            }}>
+                <Typography variant="body2" color="text.secondary">
+                    Loading...
+                </Typography>
+            </Box>
+        );
+    }
+
+    if (error || !animationData) {
+        return (
+            <Box sx={{
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: 'rgba(0,0,0,0.05)',
+            }}>
+                <Typography variant="body2" color="error">
+                    {error ? 'Failed to load animation' : 'Animation not found'}
+                </Typography>
+            </Box>
+        );
+    }
+
+    return (
+        <Lottie
+            animationData={animationData}
+            style={{
+                width: '100%',
+                height: '100%',
+            }}
+            loop={true}
+            rendererSettings={{
+                preserveAspectRatio: 'xMidYMid slice',
+                clearCanvas: false,
+                progressiveLoad: true,
+                hideOnTransparent: false
+            }}
+        />
+    );
+};
+
 const FeatureSlide = ({ slideContent, activeSlide, direction, allSlides, slideOrder }) => {
-    // Force direction to be exactly -1 or 1 to ensure consistent animation behavior
     const animationDirection = direction > 0 ? 1 : -1;
+
+    const renderLeftSideContent = (slideData, slideId) => {
+        // Only proceed if this slide has a custom animation defined
+        if (slideData.customAnimation) {
+            return (
+                <Box sx={{
+                    width: { xs: '280px', md: '400px' },
+                    height: { xs: '280px', md: '400px' },
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    position: 'relative',
+                    borderRadius: '16px',
+                    overflow: 'hidden',
+                }}>
+                    <LazyAnimation animationType={slideData.customAnimation} />
+                </Box>
+            );
+        }
+
+        // Fallback for slides without animation
+        return (
+            <Box sx={{
+                width: { xs: '280px', md: '320px' },
+                height: { xs: '280px', md: '320px' },
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: 'rgba(0,0,0,0.05)',
+                borderRadius: '16px',
+                color: 'text.secondary',
+                fontSize: '1rem',
+                textAlign: 'center',
+                padding: 2,
+            }}>
+                {slideData.title} visualization
+            </Box>
+        );
+    };
 
     return (
         <Box sx={{
             position: 'relative',
-            overflow: 'hidden', // Change from 'visible' to 'hidden'
+            overflow: 'hidden',
             width: '100%',
             height: { xs: '800px', md: '600px' },
             backgroundColor: slideContent.bgGradient,
@@ -146,7 +241,7 @@ const FeatureSlide = ({ slideContent, activeSlide, direction, allSlides, slideOr
                 justifyContent: 'center',
                 alignItems: 'center',
                 px: { xs: 2, md: 4 },
-                overflow: 'hidden', // Add this to prevent inner content overflow
+                overflow: 'hidden',
             }}>
                 <AnimatePresence initial={false} custom={animationDirection}>
                     <motion.div
@@ -162,13 +257,12 @@ const FeatureSlide = ({ slideContent, activeSlide, direction, allSlides, slideOr
                             height: '100%',
                             position: 'absolute',
                             willChange: 'transform, opacity',
-                            // Ensure content doesn't trigger scrollbars
                             overflowX: 'hidden',
                         }}
                     >
                         <SlideContainer
                             elevation={0}
-                            bgGradient={slideContent.bgGradient}
+                            backgroundColor={slideContent.backgroundColor}
                         >
                             <ContentBox>
                                 <Box sx={{
@@ -178,7 +272,7 @@ const FeatureSlide = ({ slideContent, activeSlide, direction, allSlides, slideOr
                                     justifyContent: 'space-between',
                                     gap: 4
                                 }}>
-                                    {/* Phone Mockup - Left side */}
+                                    {/* Left side */}
                                     <Box sx={{
                                         flex: { xs: '1 1 100%', md: '0 0 40%' },
                                         display: 'flex',
@@ -187,53 +281,7 @@ const FeatureSlide = ({ slideContent, activeSlide, direction, allSlides, slideOr
                                         py: { xs: 3, md: 0 },
                                         order: { xs: 2, md: 1 }
                                     }}>
-                                        <PhoneFrame>
-                                            <PhoneScreen>
-                                                <Typography
-                                                    variant="body2"
-                                                    sx={{
-                                                        opacity: 0.7,
-                                                        textAlign: 'center',
-                                                        mb: 3,
-                                                        fontSize: '0.875rem'
-                                                    }}
-                                                >
-                                                    {slideContent.title}
-                                                </Typography>
-
-                                                <MockContentBlock />
-                                                <MockContentBlock />
-                                                <MockContentBlock />
-                                                <MockContentBlock />
-
-                                                {activeSlide === 'expert-coaching' && (
-                                                    <Box sx={{
-                                                        display: 'flex',
-                                                        justifyContent: 'center',
-                                                        alignItems: 'center',
-                                                        mt: 3
-                                                    }}>
-                                                        <Box sx={{
-                                                            width: 48,
-                                                            height: 48,
-                                                            backgroundColor: 'rgba(255,255,255,0.3)',
-                                                            borderRadius: '50%',
-                                                            display: 'flex',
-                                                            alignItems: 'center',
-                                                            justifyContent: 'center',
-                                                            cursor: 'pointer',
-                                                            transition: 'all 0.3s ease',
-                                                            '&:hover': {
-                                                                backgroundColor: 'rgba(255,255,255,0.4)',
-                                                                transform: 'scale(1.1)'
-                                                            }
-                                                        }}>
-                                                            <PlayArrow sx={{ color: 'white', fontSize: 24 }} />
-                                                        </Box>
-                                                    </Box>
-                                                )}
-                                            </PhoneScreen>
-                                        </PhoneFrame>
+                                        {renderLeftSideContent(slideContent, activeSlide)}
                                     </Box>
 
                                     {/* Content - Right side */}
@@ -281,7 +329,7 @@ const FeatureSlide = ({ slideContent, activeSlide, direction, allSlides, slideOr
                                         <Box sx={{
                                             display: 'flex',
                                             flexWrap: 'wrap',
-                                            gap: 1,
+                                            gap: 1.5,
                                             justifyContent: { xs: 'center', md: 'flex-start' },
                                             mb: 2
                                         }}>
@@ -290,13 +338,27 @@ const FeatureSlide = ({ slideContent, activeSlide, direction, allSlides, slideOr
                                                     key={index}
                                                     label={feature}
                                                     sx={{
-                                                        backgroundColor: 'rgba(255,255,255,0.2)',
-                                                        color: 'white',
+                                                        backgroundColor: 'rgba(0,0,0,0.08)',
+                                                        color: 'text.primary',
                                                         backdropFilter: 'blur(10px)',
-                                                        border: '1px solid rgba(255,255,255,0.3)',
+                                                        border: '1px solid rgba(0,0,0,0.12)',
                                                         fontWeight: 500,
+                                                        fontSize: '0.875rem',
+                                                        py: 0.75,
+                                                        height: 'auto',
+                                                        borderRadius: '12px',
                                                         '& .MuiChip-label': {
-                                                            fontSize: '0.875rem'
+                                                            px: 1.5,
+                                                            py: 0.5,
+                                                            fontSize: '0.875rem',
+                                                            lineHeight: 1.4,
+                                                            whiteSpace: 'normal',
+                                                        },
+                                                        transition: 'all 0.2s ease',
+                                                        '&:hover': {
+                                                            backgroundColor: 'rgba(0,0,0,0.12)',
+                                                            transform: 'translateY(-2px)',
+                                                            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
                                                         }
                                                     }}
                                                 />

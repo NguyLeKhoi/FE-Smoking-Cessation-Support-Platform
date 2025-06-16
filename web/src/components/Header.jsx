@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AppBar, Toolbar, Typography, Button, IconButton, Box, Badge } from '@mui/material';
+import { AppBar, Toolbar, Typography, Button, IconButton, Box, Badge, Avatar } from '@mui/material';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import NotificationsIcon from '@mui/icons-material/Notifications';
@@ -7,12 +7,35 @@ import { AnimatedUnderline } from './animated/AnimatedUnderline';
 import motivationService from '../services/motivationService';
 import toast from 'react-hot-toast';
 import NotificationsDropdown from './NotificationsDropdown';
+import { fetchCurrentUser } from '../services/userService';
 
 const Header = ({ authStatus }) => {
   const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(0);
   const [notifications, setNotifications] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Only fetch user data if authenticated
+    if (authStatus) {
+      const fetchUserData = async () => {
+        try {
+          setLoading(true);
+          const response = await fetchCurrentUser();
+          console.log('User data in header:', response.data);
+          setUserData(response.data);
+        } catch (error) {
+          console.error('Error fetching user data for header:', error);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchUserData();
+    }
+  }, [authStatus]);
 
   const handleNotificationClick = () => {
     setIsDropdownOpen((prev) => !prev);
@@ -117,7 +140,6 @@ const Header = ({ authStatus }) => {
     };
 
     fetchMotivationMessage();
-
     const intervalId = setInterval(fetchMotivationMessage, 7200000);
 
     return () => {
@@ -243,8 +265,31 @@ const Header = ({ authStatus }) => {
                     onMarkAllAsRead={markAllNotificationsAsRead}
                   />
                 )}
-                <IconButton color="inherit" component={RouterLink} to="/profile" sx={{ color: '#3f332b', fontSize: '2rem' }}>
-                  <AccountCircle />
+
+                {/* User Avatar - Updated to use fetched avatar */}
+                <IconButton
+                  component={RouterLink}
+                  to="/profile"
+                  sx={{
+                    color: '#3f332b',
+                    padding: 0
+                  }}
+                >
+                  {!loading && userData?.avatar ? (
+                    <Avatar
+                      src={userData.avatar}
+                      alt={userData.username || 'User'}
+                      sx={{
+                        width: 40,
+                        height: 40,
+                        border: '0.5px solid',
+                        borderColor: 'divider',
+                        borderRadius: '15%',
+                      }}
+                    />
+                  ) : (
+                    <AccountCircle sx={{ fontSize: '2rem' }} />
+                  )}
                 </IconButton>
               </>
             ) : (
@@ -252,19 +297,18 @@ const Header = ({ authStatus }) => {
                 onClick={() => navigate('/login')}
                 variant="contained"
                 sx={{
-                  bgcolor: 'black',
+                  py: 0.8,
+                  bgcolor: '#000000',
                   color: 'white',
-                  borderRadius: '8px',
-                  px: 3,
-                  py: 1,
-                  boxShadow: '0 4px 0 ',
+                  borderRadius: '12px',
+                  boxShadow: '0 4px 0 #00000080',
                   '&:hover': {
-                    bgcolor: 'black',
-                    boxShadow: '0 2px 0 #000000',
+                    bgcolor: '#000000cd',
+                    boxShadow: '0 2px 0 #00000080',
                     transform: 'translateY(2px)',
                   },
                   '&:active': {
-                    boxShadow: '0 0 0 #000000',
+                    boxShadow: '0 0 0 #00000080',
                     transform: 'translateY(4px)',
                   },
                 }}

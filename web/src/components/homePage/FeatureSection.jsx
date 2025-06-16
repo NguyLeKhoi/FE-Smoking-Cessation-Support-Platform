@@ -3,13 +3,14 @@ import {
     Container,
     Box,
     Typography,
-    Button
+    Button,
+    useTheme
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import FeatureSlide from './FeatureSlide';
 
 const StyledNavButton = styled(Button)(({ theme, active }) => ({
-    borderRadius: '50px',
+    borderRadius: '12px',
     padding: '12px 24px',
     textTransform: 'none',
     fontSize: '16px',
@@ -27,6 +28,7 @@ const StyledNavButton = styled(Button)(({ theme, active }) => ({
 }));
 
 const FeatureSection = () => {
+    const theme = useTheme();
     const [activeSlide, setActiveSlide] = useState('personalized-plans');
     const [direction, setDirection] = useState(0);
     const [previousSlide, setPreviousSlide] = useState('personalized-plans');
@@ -70,36 +72,41 @@ const FeatureSection = () => {
             title: 'Personalized Quit Plans',
             subtitle: 'Custom strategies for your smoking habits',
             description: 'Get a personalized quit plan based on your smoking history, triggers, and lifestyle. Our step-by-step approach helps you gradually reduce smoking in a way that works for you.',
-            bgGradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            features: ['Custom reduction schedule', 'Trigger identification', 'Alternative strategies', 'Personalized milestones']
+            backgroundColor: ' #ffd3b2',
+            features: ['Custom reduction schedule', 'Trigger identification', 'Alternative strategies', 'Personalized milestones'],
+            customAnimation: 'personalized-plan'
         },
         'expert-coaching': {
             title: 'Expert Coaching',
             subtitle: 'One-on-one support from cessation specialists',
             description: 'Connect with certified smoking cessation coaches who provide personalized guidance throughout your quitting journey. Access professional advice whenever you need extra support.',
-            bgGradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-            features: ['Certified coaches', 'Video consultations', '24/7 messaging', 'Evidence-based strategies']
+            backgroundColor: ' #FFCFDF',
+            features: ['Certified coaches', 'Video consultations', '24/7 messaging', 'Evidence-based strategies'],
+            customAnimation: 'expert-coaching'
         },
         'community-support': {
             title: 'Community Support',
             subtitle: 'Connect with others on the same journey',
             description: 'Join a supportive community of people who understand exactly what you\'re going through. Share experiences, celebrate milestones, and get motivation when you need it most.',
-            bgGradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-            features: ['Group forums', 'Success stories', 'Accountability partners', 'Live group sessions']
+            backgroundColor: ' #DDF6D2',
+            features: ['Group forums', 'Success stories', 'Accountability partners', 'Live group sessions'],
+            customAnimation: 'community-support'
         },
         'track-progress': {
             title: 'Progress Tracking',
             subtitle: 'Visualize your journey to becoming smoke-free',
             description: 'Track your progress with our intuitive tools that show health improvements, money saved, and cigarettes avoided. Earn badges and rewards that keep you motivated.',
-            bgGradient: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
-            features: ['Health timeline', 'Money saved calculator', 'Achievement badges', 'Streak tracking']
+            backgroundColor: ' #b0e7fd',
+            features: ['Health timeline', 'Money saved calculator', 'Achievement badges', 'Streak tracking'],
+            customAnimation: 'progress-tracking'
         },
         'health-benefits': {
             title: 'Your Health Timeline',
             subtitle: 'Watch your body recover in real-time',
             description: 'See how your body heals day by day after quitting smoking. Our health timeline shows you exactly what\'s improving, from circulation and lung function to reduced risk of disease.',
-            bgGradient: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
-            features: ['Daily health updates', 'Scientific explanations', 'Body system improvements', 'Long-term outlooks']
+            backgroundColor: ' #e3d6ff',
+            features: ['Daily health updates', 'Scientific explanations', 'Body system improvements', 'Long-term outlooks'],
+            customAnimation: 'health-benefits'
         }
     };
 
@@ -109,16 +116,17 @@ const FeatureSection = () => {
         <Box sx={{ py: { xs: 8, md: 12 }, bgcolor: 'background.paper' }}>
             <Container maxWidth="lg">
                 <Typography
-                    variant="h2"
+                    variant="h3"
+                    component="h2"
+                    gutterBottom
                     align="center"
                     sx={{
-                        mb: 6,
-                        fontWeight: 700,
-                        color: 'text.primary',
-                        fontSize: { xs: '2rem', md: '3.5rem' }
+                        fontWeight: 500,
+                        color: theme.palette.text.primary,
+                        mb: 5
                     }}
                 >
-                    Why choose Zerotine
+                    Why you should choose Zerotine
                 </Typography>
 
                 {/* Navigation Buttons */}

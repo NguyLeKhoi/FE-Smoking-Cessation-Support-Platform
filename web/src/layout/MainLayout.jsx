@@ -30,10 +30,10 @@ export default function MainLayout({ children, showHeader = true, showFooter = t
           top: 0,
           left: 0,
           width: '100%',
-          zIndex: 1100, // Ensure header is above other content, adjust as needed
-          backgroundColor: '#F9F7F4', // Semi-transparent white
-          backdropFilter: 'blur(5px)', // Apply a blur effect
-          WebkitBackdropFilter: 'blur(5px)', // For Safari support
+          zIndex: 1100, 
+          backgroundColor: '#F9F7F4', 
+          backdropFilter: 'blur(5px)', 
+          WebkitBackdropFilter: 'blur(5px)', 
         }}>
           <Header authStatus={authStatus} onLogout={handleLogout} />
         </Box>

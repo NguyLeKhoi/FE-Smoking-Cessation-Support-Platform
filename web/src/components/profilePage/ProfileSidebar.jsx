@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Box, Typography, List, ListItem, ListItemIcon, ListItemText, Badge, Avatar, Paper, Tooltip } from '@mui/material';
 import { styled } from '@mui/system';
-import { useLocation } from 'react-router-dom'; // Remove useNavigate
+import { useLocation } from 'react-router-dom';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import PersonIcon from '@mui/icons-material/Person';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
@@ -9,8 +10,6 @@ import ExploreIcon from '@mui/icons-material/Explore';
 import StorefrontIcon from '@mui/icons-material/Storefront';
 
 const menuItems = [
-    // { label: 'LEARN', icon: <HomeIcon fontSize="medium" />, path: '/learn' },
-    // { label: 'LETTERS', icon: <TranslateIcon fontSize="medium" />, path: '/letters' },
     { label: 'LEADERBOARDS', icon: <EmojiEventsIcon fontSize="medium" />, path: '/leaderboards' },
     { label: 'QUESTS', icon: <ExploreIcon fontSize="medium" />, hasNotification: true, path: '/quests' },
     { label: 'SHOP', icon: <StorefrontIcon fontSize="medium" />, path: '/shop' },
@@ -58,38 +57,12 @@ const IconText = styled(Typography)(({ theme }) => ({
     color: theme.palette.text.primary,
 }));
 
-
-// User profile section
-const UserProfileSection = () => (
-    <Box sx={{ display: 'flex', alignItems: 'center', mb: 4, pl: 1 }}>
-        <Avatar
-            sx={{
-                width: 40,
-                height: 40,
-                bgcolor: 'section.main',
-                border: '2px solid #000',
-                color: 'black',
-            }}
-        >
-            J
-        </Avatar>
-        <Box sx={{ ml: 2 }}>
-            <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                johnsmith
-            </Typography>
-            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                Basic Level
-            </Typography>
-        </Box>
-    </Box>
-);
-
-const ProfileSidebar = () => {
+const ProfileSidebar = ({ userData }) => {
     const location = useLocation();
     const [activeItem, setActiveItem] = useState(() => {
         const currentPath = location.pathname;
         const foundItem = menuItems.findIndex(item => currentPath.includes(item.path));
-        return foundItem >= 0 ? foundItem : 5;
+        return foundItem >= 0 ? foundItem : 3; // Default to PROFILE (index 3)
     });
 
     const handleItemClick = (index) => {
@@ -99,7 +72,30 @@ const ProfileSidebar = () => {
 
     return (
         <SidebarContainer elevation={0}>
-            <UserProfileSection />
+
+            <Box
+                component={RouterLink}
+                to="/"
+                sx={{
+                    textDecoration: 'none',
+                    display: 'flex',
+                    alignItems: 'center'
+                }}
+            >
+                <Typography
+                    variant="h4"
+                    sx={{
+                        color: '#000000',
+                        fontWeight: 800,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1
+                    }}
+                >
+                    Zerotine
+                </Typography>
+            </Box>
+
 
             <Typography
                 variant="overline"
@@ -117,7 +113,7 @@ const ProfileSidebar = () => {
                 {menuItems.map((item, index) => (
                     <Tooltip
                         key={index}
-                        title={index !== 5 ? "Coming soon" : ""}
+                        title={index !== 3 ? "Coming soon" : ""}
                         placement="right"
                     >
                         <StyledListItem
@@ -148,7 +144,6 @@ const ProfileSidebar = () => {
                     </Tooltip>
                 ))}
             </List>
-
         </SidebarContainer>
     );
 };
