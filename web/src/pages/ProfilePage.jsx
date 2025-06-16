@@ -1,23 +1,36 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Typography, Box, Paper, Grid } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { fetchCurrentUser } from '../services/userService';
+import { format } from 'date-fns';
 import ProfileSidebar from '../components/profilePage/ProfileSidebar';
 
 export default function ProfilePage({ handleLogout }) {
   const navigate = useNavigate();
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const loadUserProfile = async () => {
+      try {
+        setLoading(true);
+        const response = await fetchCurrentUser();
+        setUserData(response.data);
+      } catch (err) {
+        setError('Failed to load user profile. Please try again later.');
+        console.error('Error loading profile:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadUserProfile();
+  }, []);
 
   const onLogoutClick = () => {
     handleLogout();
     navigate('/login');
-  };
-
-  const userData = {
-    username: "johnsmith",
-    role: "MEMBER",
-    email: "john.smith@example.com",
-    phone_number: "+84 (555) 123-4567",
-    dob: "1990-05-15",
-    joined: "June 2023"
   };
 
   const statisticsData = [
@@ -46,6 +59,23 @@ export default function ProfilePage({ handleLogout }) {
       iconColor: '#f59e0b'
     }
   ];
+
+  if (loading) {
+    return <div className="profile-loading">Loading profile...</div>;
+  }
+
+  if (error) {
+    return <div className="profile-error">{error}</div>;
+  }
+
+  if (!userData) {
+    return <div className="profile-error">No profile data available</div>;
+  }
+
+  // Format date of birth if available
+  const formattedDob = userData.dob
+    ? format(new Date(userData.dob), 'MMMM dd, yyyy')
+    : 'Not provided';
 
   return (
     <Box sx={{
@@ -182,19 +212,10 @@ export default function ProfilePage({ handleLogout }) {
                 <Grid item xs={12} sm={6}>
                   <Box sx={{ mb: 2 }}>
                     <Typography variant="subtitle2" sx={{ color: 'text.secondary', mb: 0.5 }}>
-                      Role
-                    </Typography>
-                    <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
-                      {userData.role}
-                    </Typography>
-                  </Box>
-
-                  <Box sx={{ mb: 2 }}>
-                    <Typography variant="subtitle2" sx={{ color: 'text.secondary', mb: 0.5 }}>
                       Date of Birth
                     </Typography>
                     <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
-                      {userData.dob}
+                      {formattedDob}
                     </Typography>
                   </Box>
                 </Grid>
