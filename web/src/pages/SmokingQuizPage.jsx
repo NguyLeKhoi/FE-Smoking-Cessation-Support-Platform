@@ -65,7 +65,7 @@ const SmokingQuiz = () => {
     // Handle form submission logic in useCallback to prevent recreation on each render
     const handleSubmit = useCallback(async () => {
         try {
-            // validation
+            // Basic validation
             if (
                 !formData.cigarettes_per_day ||
                 !formData.smoking_years ||
@@ -80,18 +80,19 @@ const SmokingQuiz = () => {
 
             setLoading(true);
 
-            console.log("Form data before submission:", formData);
+            console.log("Original form data:", formData);
 
+            // Format data properly for submission, ensuring smoking_years is an integer
             const dataToSubmit = {
                 cigarettes_per_pack: Number(formData.cigarettes_per_pack),
                 price_per_pack: Number(formData.price_per_pack),
                 cigarettes_per_day: Number(formData.cigarettes_per_day),
-                smoking_years: Number(formData.smoking_years),
-                triggers: Array.isArray(formData.triggers) ? formData.triggers : [],
-                health_issues: typeof formData.health_issues === 'string' ? formData.health_issues : ''
+                smoking_years: Math.round(Number(formData.smoking_years)), // Round to integer
+                triggers: formData.triggers,
+                health_issues: formData.health_issues || ''
             };
 
-            console.log("Data to submit:", dataToSubmit);
+            console.log("Data to be submitted:", dataToSubmit);
 
             const data = await smokingService.createSmokingHabit(dataToSubmit);
             setResult(data);
@@ -100,14 +101,26 @@ const SmokingQuiz = () => {
             setError(null);
         } catch (error) {
             console.error('Error submitting smoking assessment:', error);
+
+            // Enhanced error handling
             if (error.response && error.response.data) {
-                console.error('Server response:', error.response.data);
-                // Display a more specific error if available
-                if (error.response.data.message) {
-                    setError(`Error: ${error.response.data.message}`);
-                } else {
-                    setError('There was an error submitting your assessment. Please try again.');
+                const errorData = error.response.data;
+                let errorMessage = 'Server validation error. Please check your inputs.';
+
+                if (errorData.message && Array.isArray(errorData.message) && errorData.message.length > 0) {
+                    // Format the error messages nicely
+                    const messages = errorData.message.map(item => {
+                        if (item.path && item.message) {
+                            return `${item.path}: ${item.message}`;
+                        }
+                        return JSON.stringify(item);
+                    });
+                    errorMessage = messages.join('; ');
+                } else if (typeof errorData.message === 'string') {
+                    errorMessage = errorData.message;
                 }
+
+                setError(errorMessage);
             } else {
                 setError('There was an error submitting your assessment. Please try again.');
             }
