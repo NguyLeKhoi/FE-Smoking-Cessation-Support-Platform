@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AppBar, Toolbar, Typography, Button, IconButton, Box, Badge, Avatar } from '@mui/material';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
-import AccountCircle from '@mui/icons-material/AccountCircle';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import { AnimatedUnderline } from './animated/AnimatedUnderline';
 import motivationService from '../services/motivationService';
@@ -249,6 +248,21 @@ const Header = ({ authStatus }) => {
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
             {authStatus ? (
               <>
+                {/* Welcome message - New addition */}
+                {!loading && userData && userData.username && (
+                  <Typography
+                    variant="subtitle1"
+                    sx={{
+                      display: { xs: 'none', md: 'block' },
+                      color: '#3f332b',
+                      fontWeight: 500,
+                      mr: 1,
+                    }}
+                  >
+                    Welcome back, {userData.username}!
+                  </Typography>
+                )}
+
                 <IconButton
                   color="inherit"
                   onClick={handleNotificationClick}
@@ -275,20 +289,49 @@ const Header = ({ authStatus }) => {
                     padding: 0
                   }}
                 >
-                  {!loading && userData?.avatar ? (
+                  {!loading && userData ? (
+                    userData.avatar ? (
+                      <Avatar
+                        src={userData.avatar}
+                        alt={userData.username || 'User'}
+                        sx={{
+                          width: 40,
+                          height: 40,
+                          border: '0.5px solid',
+                          borderColor: 'divider',
+                          borderRadius: '15%',
+                        }}
+                      />
+                    ) : (
+                      <Avatar
+                        sx={{
+                          width: 40,
+                          height: 40,
+                          bgcolor: '#f0f0f0',
+                          border: '0.5px solid',
+                          borderColor: 'divider',
+                          color: 'text.primary',
+                          fontWeight: 'bold',
+                          borderRadius: '15%',
+                        }}
+                      >
+                        {userData.username ? userData.username.charAt(0).toUpperCase() : 'U'}
+                      </Avatar>
+                    )
+                  ) : (
                     <Avatar
-                      src={userData.avatar}
-                      alt={userData.username || 'User'}
                       sx={{
                         width: 40,
                         height: 40,
+                        bgcolor: '#f0f0f0',
                         border: '0.5px solid',
                         borderColor: 'divider',
+                        color: 'text.primary',
                         borderRadius: '15%',
                       }}
-                    />
-                  ) : (
-                    <AccountCircle sx={{ fontSize: '2rem' }} />
+                    >
+                      U
+                    </Avatar>
                   )}
                 </IconButton>
               </>

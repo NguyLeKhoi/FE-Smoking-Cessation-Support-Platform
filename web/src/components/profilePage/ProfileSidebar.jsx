@@ -23,7 +23,7 @@ const SidebarContainer = styled(Paper)(({ theme }) => ({
     height: '100vh',
     backgroundColor: theme.palette.background.paper,
     boxShadow: '4px 0px 10px rgba(0, 0, 0, 0.03)',
-    padding: '50px 16px',
+    padding: '0', // Removed top padding
     display: 'flex',
     flexDirection: 'column',
     color: theme.palette.text.primary,
@@ -72,14 +72,17 @@ const ProfileSidebar = ({ userData }) => {
 
     return (
         <SidebarContainer elevation={0}>
-
+            {/* Logo Section - Now at the very top */}
             <Box
                 component={RouterLink}
                 to="/"
                 sx={{
                     textDecoration: 'none',
                     display: 'flex',
-                    alignItems: 'center'
+                    alignItems: 'center',
+                    backgroundColor: '#FFFFFF',
+                    pt: 3, // Add padding to the top and bottom
+                    ml: 2,
                 }}
             >
                 <Typography
@@ -89,61 +92,65 @@ const ProfileSidebar = ({ userData }) => {
                         fontWeight: 800,
                         display: 'flex',
                         alignItems: 'center',
-                        gap: 1
+                        gap: 1,
+                        ml: 2,
+             
                     }}
                 >
                     Zerotine
                 </Typography>
             </Box>
 
+            {/* Menu Section */}
+            <Box sx={{ p: 2, pt: 3 }}> {/* Add padding to the content container */}
+                <Typography
+                    variant="overline"
+                    sx={{
+                        pl: 2,
+                        mb: 1,
+                        color: 'text.secondary',
+                        fontWeight: 600
+                    }}
+                >
+                    MENU
+                </Typography>
 
-            <Typography
-                variant="overline"
-                sx={{
-                    pl: 2,
-                    mb: 1,
-                    color: 'text.secondary',
-                    fontWeight: 600
-                }}
-            >
-                MENU
-            </Typography>
-
-            <List sx={{ display: 'flex', flexDirection: 'column', width: '100%', p: 0 }}>
-                {menuItems.map((item, index) => (
-                    <Tooltip
-                        key={index}
-                        title={index !== 3 ? "Coming soon" : ""}
-                        placement="right"
-                    >
-                        <StyledListItem
-                            active={activeItem === index ? 1 : 0}
-                            onClick={() => handleItemClick(index)}
+                <List sx={{ display: 'flex', flexDirection: 'column', width: '100%', p: 0 }}>
+                    {menuItems.map((item, index) => (
+                        <Tooltip
+                            key={index}
+                            title={index !== 3 ? "Coming soon" : ""}
+                            placement="right"
                         >
-                            <ListItemIcon sx={{
-                                color: activeItem === index ? 'primary.main' : 'text.secondary',
-                                minWidth: 36
-                            }}>
-                                {item.hasNotification ? (
-                                    <Badge
-                                        color="error"
-                                        variant="dot"
-                                        overlap="circular"
-                                        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                                    >
-                                        {item.icon}
-                                    </Badge>
-                                ) : (
-                                    item.icon
-                                )}
-                            </ListItemIcon>
-                            <ListItemText
-                                primary={<IconText>{item.label}</IconText>}
-                            />
-                        </StyledListItem>
-                    </Tooltip>
-                ))}
-            </List>
+                            <StyledListItem
+                                active={activeItem === index ? 1 : 0}
+                                onClick={() => handleItemClick(index)}
+                            >
+                                <ListItemIcon sx={{
+                                    color: activeItem === index ? 'primary.main' : 'text.secondary',
+                                    minWidth: 36
+                                }}>
+                                    {item.hasNotification ? (
+                                        <Badge
+                                            color="error"
+                                            variant="dot"
+                                            overlap="circular"
+                                            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                                        >
+                                            {item.icon}
+                                        </Badge>
+                                    ) : (
+                                        item.icon
+                                    )}
+                                </ListItemIcon>
+                                <ListItemText
+                                    primary={<IconText>{item.label}</IconText>}
+                                />
+                            </StyledListItem>
+                        </Tooltip>
+                    ))}
+                </List>
+            </Box>
         </SidebarContainer>
     );
 };
