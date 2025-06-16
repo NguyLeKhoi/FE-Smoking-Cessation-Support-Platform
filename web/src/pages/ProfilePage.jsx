@@ -154,7 +154,8 @@ export default function ProfilePage({ handleLogout }) {
         bgcolor: 'background.default',
         overflow: 'visible'
       }}>
-        <ProfileSidebar />
+        {/* Pass userData to the ProfileSidebar */}
+        <ProfileSidebar userData={userData} />
 
         {/* Main content */}
         <Box sx={{

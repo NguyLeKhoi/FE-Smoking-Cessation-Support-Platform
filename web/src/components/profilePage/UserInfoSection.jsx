@@ -56,8 +56,9 @@ const UserInfoSection = ({
                             sx={{
                                 width: 160,
                                 height: 160,
-                                border: '4px solid',
-                                borderColor: 'primary.main',
+                                border: '0.5px solid',
+                                borderColor: 'divider',
+                                borderRadius: '10%',
                                 mb: 2,
                             }}
                         />
