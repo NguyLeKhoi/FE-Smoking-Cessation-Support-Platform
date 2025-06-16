@@ -5,11 +5,109 @@ import {
     FormGroup,
     FormControlLabel,
     Checkbox,
-    Box
+    Box,
+    Typography
 } from '@mui/material';
-import { Typography } from '@mui/material';
+
+// Extract common styles to reuse across components
+const optionBoxStyles = (isSelected) => ({
+    display: 'flex',
+    alignItems: 'center',
+    p: 2,
+    mb: 1.5,
+    borderRadius: '12px',
+    border: '1px solid',
+    borderColor: isSelected ? 'primary.main' : 'rgba(0, 0, 0, 0.12)',
+    bgcolor: isSelected ? 'rgba(0, 0, 0, 0.03)' : 'background.paper',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+    '&:hover': {
+        borderColor: isSelected ? 'primary.main' : 'rgba(0, 0, 0, 0.24)',
+        bgcolor: isSelected ? 'rgba(0, 0, 0, 0.05)' : 'rgba(0, 0, 0, 0.02)',
+    }
+});
+
+const circleIndicatorStyles = (isSelected) => ({
+    width: 30,
+    height: 30,
+    borderRadius: '50%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    mr: 2,
+    bgcolor: isSelected ? '#3f332b' : 'rgba(0, 0, 0, 0.08)',
+    color: isSelected ? '#ffffff' : 'text.secondary',
+    fontWeight: 'bold'
+});
+
+// Create reusable option selection component
+const SelectableOption = ({ option, index, value, field, onChange }) => (
+    <Box
+        key={index}
+        onClick={() => {
+            const event = { target: { name: field, value: option.value } };
+            onChange(event);
+        }}
+        sx={optionBoxStyles(value === option.value)}
+    >
+        <Box sx={circleIndicatorStyles(value === option.value)}>
+            {String.fromCharCode(65 + index)}
+        </Box>
+        <Typography variant="body1" sx={{ fontWeight: value === option.value ? 600 : 400 }}>
+            {option.label}
+        </Typography>
+    </Box>
+);
 
 const SmokingHabitsQuestions = () => {
+    // Define common option sets for reuse
+    const cigarettesPerDayOptions = [
+        { label: '1–5 cigarettes', value: '3' },
+        { label: '6–10 cigarettes', value: '8' },
+        { label: '11–15 cigarettes', value: '12' },
+        { label: 'More than 15 cigarettes', value: '18' },
+    ];
+
+    const cigarettesPerPackOptions = [
+        { label: '10 cigarettes (small pack)', value: '10' },
+        { label: '20 cigarettes (regular pack)', value: '20' },
+        { label: '25 or more cigarettes (large pack)', value: '25' },
+        { label: 'I don\'t pay attention / I  don\'t buy cigarettes', value: '15' }
+    ];
+
+    const pricePerPackOptions = [
+        { label: 'Less than $3', value: '2' },
+        { label: '$3 – $5', value: '4' },
+        { label: '$6 – $8', value: '7' },
+        { label: 'More than $8', value: '10' }
+    ];
+
+    const smokingYearsOptions = [
+        { label: 'Less than 1 year', value: '0.5' },
+        { label: '1–5 years', value: '3' },
+        { label: '6–10 years', value: '8' },
+        { label: 'More than 10 years', value: '15' }
+    ];
+
+    const smokingTriggers = [
+        'Stress',
+        'After meals',
+        'Social situations',
+        'Boredom',
+        'Alcohol consumption'
+    ];
+
+    const healthIssuesList = [
+        'Persistent cough',
+        'Shortness of breath',
+        'Chest pain',
+        'Frequent respiratory infections',
+        'Gum disease or tooth loss',
+        'Reduced sense of taste or smell',
+        'Fatigue or low energy',
+        'No, I haven\'t experienced any health issues'
+    ];
+
     const questions = [
         {
             id: 1,
@@ -17,55 +115,15 @@ const SmokingHabitsQuestions = () => {
             field: 'cigarettes_per_day',
             component: (value, onChange) => (
                 <Box sx={{ mt: 1 }}>
-                    {[
-                        { label: '1–5 cigarettes', value: '3' },
-                        { label: '6–10 cigarettes', value: '8' },
-                        { label: '11–15 cigarettes', value: '12' },
-                        { label: 'More than 15 cigarettes', value: '18' },
-                    ].map((option, index) => (
-                        <Box
-                            key={index}
-                            onClick={() => {
-                                const event = { target: { name: 'cigarettes_per_day', value: option.value } };
-                                onChange(event);
-                            }}
-                            sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                p: 2,
-                                mb: 1.5,
-                                borderRadius: '12px',
-                                border: '1px solid',
-                                borderColor: value === option.value ? 'primary.main' : 'rgba(0, 0, 0, 0.12)',
-                                bgcolor: value === option.value ? 'rgba(0, 0, 0, 0.03)' : 'background.paper',
-                                cursor: 'pointer',
-                                transition: 'all 0.2s ease',
-                                '&:hover': {
-                                    borderColor: value === option.value ? 'primary.main' : 'rgba(0, 0, 0, 0.24)',
-                                    bgcolor: value === option.value ? 'rgba(0, 0, 0, 0.05)' : 'rgba(0, 0, 0, 0.02)',
-                                }
-                            }}
-                        >
-                            <Box
-                                sx={{
-                                    width: 30,
-                                    height: 30,
-                                    borderRadius: '50%',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    mr: 2,
-                                    bgcolor: value === option.value ? '#3f332b' : 'rgba(0, 0, 0, 0.08)',
-                                    color: value === option.value ? '#ffffff' : 'text.secondary',
-                                    fontWeight: 'bold'
-                                }}
-                            >
-                                {String.fromCharCode(65 + index)}
-                            </Box>
-                            <Typography variant="body1" sx={{ fontWeight: value === option.value ? 600 : 400 }}>
-                                {option.label}
-                            </Typography>
-                        </Box>
+                    {cigarettesPerDayOptions.map((option, index) => (
+                        <SelectableOption
+                            key={option.value}
+                            option={option}
+                            index={index}
+                            value={value}
+                            field="cigarettes_per_day"
+                            onChange={onChange}
+                        />
                     ))}
                 </Box>
             )
@@ -76,55 +134,15 @@ const SmokingHabitsQuestions = () => {
             field: 'cigarettes_per_pack',
             component: (value, onChange) => (
                 <Box sx={{ mt: 1 }}>
-                    {[
-                        { label: '10 cigarettes (small pack)', value: '10' },
-                        { label: '20 cigarettes (regular pack)', value: '20' },
-                        { label: '25 or more cigarettes (large pack)', value: '25' },
-                        { label: 'I don\'t pay attention / I  don\'t buy cigarettes', value: '15' } // Default to 20 for calculation purposes
-                    ].map((option, index) => (
-                        <Box
-                            key={index}
-                            onClick={() => {
-                                const event = { target: { name: 'cigarettes_per_pack', value: option.value } };
-                                onChange(event);
-                            }}
-                            sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                p: 2,
-                                mb: 1.5,
-                                borderRadius: '12px',
-                                border: '1px solid',
-                                borderColor: value === option.value ? 'primary.main' : 'rgba(0, 0, 0, 0.12)',
-                                bgcolor: value === option.value ? 'rgba(0, 0, 0, 0.03)' : 'background.paper',
-                                cursor: 'pointer',
-                                transition: 'all 0.2s ease',
-                                '&:hover': {
-                                    borderColor: value === option.value ? 'primary.main' : 'rgba(0, 0, 0, 0.24)',
-                                    bgcolor: value === option.value ? 'rgba(0, 0, 0, 0.05)' : 'rgba(0, 0, 0, 0.02)',
-                                }
-                            }}
-                        >
-                            <Box
-                                sx={{
-                                    width: 30,
-                                    height: 30,
-                                    borderRadius: '50%',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    mr: 2,
-                                    bgcolor: value === option.value ? '#3f332b' : 'rgba(0, 0, 0, 0.08)',
-                                    color: value === option.value ? '#ffffff' : 'text.secondary',
-                                    fontWeight: 'bold'
-                                }}
-                            >
-                                {String.fromCharCode(65 + index)}
-                            </Box>
-                            <Typography variant="body1" sx={{ fontWeight: value === option.value ? 600 : 400 }}>
-                                {option.label}
-                            </Typography>
-                        </Box>
+                    {cigarettesPerPackOptions.map((option, index) => (
+                        <SelectableOption
+                            key={option.value}
+                            option={option}
+                            index={index}
+                            value={value}
+                            field="cigarettes_per_pack"
+                            onChange={onChange}
+                        />
                     ))}
                 </Box>
             )
@@ -135,55 +153,15 @@ const SmokingHabitsQuestions = () => {
             field: 'price_per_pack',
             component: (value, onChange) => (
                 <Box sx={{ mt: 1 }}>
-                    {[
-                        { label: 'Less than $3', value: '2' },
-                        { label: '$3 – $5', value: '4' },
-                        { label: '$6 – $8', value: '7' },
-                        { label: 'More than $8', value: '10' }
-                    ].map((option, index) => (
-                        <Box
-                            key={index}
-                            onClick={() => {
-                                const event = { target: { name: 'price_per_pack', value: option.value } };
-                                onChange(event);
-                            }}
-                            sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                p: 2,
-                                mb: 1.5,
-                                borderRadius: '12px',
-                                border: '1px solid',
-                                borderColor: value === option.value ? 'primary.main' : 'rgba(0, 0, 0, 0.12)',
-                                bgcolor: value === option.value ? 'rgba(0, 0, 0, 0.03)' : 'background.paper',
-                                cursor: 'pointer',
-                                transition: 'all 0.2s ease',
-                                '&:hover': {
-                                    borderColor: value === option.value ? 'primary.main' : 'rgba(0, 0, 0, 0.24)',
-                                    bgcolor: value === option.value ? 'rgba(0, 0, 0, 0.05)' : 'rgba(0, 0, 0, 0.02)',
-                                }
-                            }}
-                        >
-                            <Box
-                                sx={{
-                                    width: 30,
-                                    height: 30,
-                                    borderRadius: '50%',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    mr: 2,
-                                    bgcolor: value === option.value ? '#3f332b' : 'rgba(0, 0, 0, 0.08)',
-                                    color: value === option.value ? '#ffffff' : 'text.secondary',
-                                    fontWeight: 'bold'
-                                }}
-                            >
-                                {String.fromCharCode(65 + index)}
-                            </Box>
-                            <Typography variant="body1" sx={{ fontWeight: value === option.value ? 600 : 400 }}>
-                                {option.label}
-                            </Typography>
-                        </Box>
+                    {pricePerPackOptions.map((option, index) => (
+                        <SelectableOption
+                            key={option.value}
+                            option={option}
+                            index={index}
+                            value={value}
+                            field="price_per_pack"
+                            onChange={onChange}
+                        />
                     ))}
                 </Box>
             )
@@ -194,55 +172,15 @@ const SmokingHabitsQuestions = () => {
             field: 'smoking_years',
             component: (value, onChange) => (
                 <Box sx={{ mt: 1 }}>
-                    {[
-                        { label: 'Less than 1 year', value: '0.5' },
-                        { label: '1–5 years', value: '3' },
-                        { label: '6–10 years', value: '8' },
-                        { label: 'More than 10 years', value: '15' }
-                    ].map((option, index) => (
-                        <Box
-                            key={index}
-                            onClick={() => {
-                                const event = { target: { name: 'smoking_years', value: option.value } };
-                                onChange(event);
-                            }}
-                            sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                p: 2,
-                                mb: 1.5,
-                                borderRadius: '12px',
-                                border: '1px solid',
-                                borderColor: value === option.value ? 'primary.main' : 'rgba(0, 0, 0, 0.12)',
-                                bgcolor: value === option.value ? 'rgba(0, 0, 0, 0.03)' : 'background.paper',
-                                cursor: 'pointer',
-                                transition: 'all 0.2s ease',
-                                '&:hover': {
-                                    borderColor: value === option.value ? 'primary.main' : 'rgba(0, 0, 0, 0.24)',
-                                    bgcolor: value === option.value ? 'rgba(0, 0, 0, 0.05)' : 'rgba(0, 0, 0, 0.02)',
-                                }
-                            }}
-                        >
-                            <Box
-                                sx={{
-                                    width: 30,
-                                    height: 30,
-                                    borderRadius: '50%',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    mr: 2,
-                                    bgcolor: value === option.value ? '#3f332b' : 'rgba(0, 0, 0, 0.08)',
-                                    color: value === option.value ? '#ffffff' : 'text.secondary',
-                                    fontWeight: 'bold'
-                                }}
-                            >
-                                {String.fromCharCode(65 + index)}
-                            </Box>
-                            <Typography variant="body1" sx={{ fontWeight: value === option.value ? 600 : 400 }}>
-                                {option.label}
-                            </Typography>
-                        </Box>
+                    {smokingYearsOptions.map((option, index) => (
+                        <SelectableOption
+                            key={option.value}
+                            option={option}
+                            index={index}
+                            value={value}
+                            field="smoking_years"
+                            onChange={onChange}
+                        />
                     ))}
                 </Box>
             )
@@ -252,14 +190,14 @@ const SmokingHabitsQuestions = () => {
             question: 'When are you most likely to smoke? (Select all that apply)',
             field: 'triggers',
             component: (value, onChange) => (
-                <FormControl component="fieldset">
-                    <FormGroup>
-                        {['Stress', 'After meals', 'Social situations', 'Boredom', 'Alcohol consumption'].map((trigger) => (
+                <FormControl component="fieldset" fullWidth>
+                    <FormGroup data-field="triggers">
+                        {smokingTriggers.map((trigger) => (
                             <FormControlLabel
                                 key={trigger}
                                 control={
                                     <Checkbox
-                                        checked={value.includes(trigger)}
+                                        checked={Array.isArray(value) && value.includes(trigger)}
                                         onChange={onChange}
                                         value={trigger}
                                         sx={{
@@ -293,24 +231,18 @@ const SmokingHabitsQuestions = () => {
                     multiline
                     rows={4}
                     name="health_issues"
-                    value={value}
+                    value={value || ''}
                     onChange={onChange}
-                    placeholder="e.g. coughing, shortness of breath"
+                    placeholder="e.g. coughing, shortness of breath, reduced stamina"
                     variant="outlined"
                     sx={{
                         '& .MuiOutlinedInput-root': {
                             borderRadius: '12px',
-                            bgcolor: 'background.paper',
+                            bgcolor: 'rgba(0, 0, 0, 0.02)',
                             '& fieldset': { borderColor: 'rgba(0, 0, 0, 0.12)' },
                             '&:hover fieldset': { borderColor: 'rgba(0, 0, 0, 0.24)' },
                             '&.Mui-focused fieldset': { borderColor: 'primary.main' },
-                        },
-                        '& .MuiInputLabel-root': {
-                            color: 'text.secondary',
-                        },
-                        '& .MuiOutlinedInput-input': {
-                            color: 'text.primary',
-                        },
+                        }
                     }}
                 />
             )
