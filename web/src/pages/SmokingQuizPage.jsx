@@ -4,7 +4,6 @@ import {
     Box,
     Button,
     Container,
-    CircularProgress,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import HomeIcon from '@mui/icons-material/Home';
@@ -13,6 +12,7 @@ import smokingService from '../services/smokingService';
 import SmokingHabitsResult from '../components/smokingQuiz/SmokingHabitsResult';
 import SmokingHabitsQuestions from '../components/smokingQuiz/SmokingHabitsQuestions';
 import typingCatAnimation from '../assets/animations/typing-cat-animation.json';
+import LoadingPage from './LoadingPage';
 
 // Initialize with empty values to require user input
 const defaultState = {
@@ -158,6 +158,7 @@ const SmokingQuiz = () => {
 
     const handleSubmit = async () => {
         try {
+            setLoading(true);
             // Check if all required fields are filled (except health_issues)
             if (
                 !formData.cigarettes_per_day ||
@@ -189,6 +190,8 @@ const SmokingQuiz = () => {
         } catch (error) {
             console.error('Error:', error);
             setError('There was an error submitting your assessment. Please try again.');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -199,18 +202,7 @@ const SmokingQuiz = () => {
     };
 
     if (loading) {
-        return (
-            <Box sx={{
-                minHeight: '100vh',
-                width: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                bgcolor: 'background.default'
-            }}>
-                <CircularProgress />
-            </Box>
-        );
+        return <LoadingPage />;
     }
 
     // Get the current question's length to determine bubble size

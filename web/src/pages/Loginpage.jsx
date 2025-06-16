@@ -3,6 +3,7 @@ import { Container, TextField, Button, Typography, Box, Alert, Link } from '@mui
 import { useNavigate } from 'react-router-dom';
 import { login } from '../services/authService';
 import GlowingDotsGrid from '../components/animated/GlowingDotsGrid';
+import LoadingPage from './LoadingPage';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -73,6 +74,10 @@ export default function LoginPage() {
       color: 'text.primary',
     },
   };
+
+  if (loading) {
+    return <LoadingPage />;
+  }
 
   return (
     <Box

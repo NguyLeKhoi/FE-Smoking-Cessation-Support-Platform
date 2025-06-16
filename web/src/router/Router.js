@@ -14,6 +14,8 @@ import ForgotPasswordPage from '../pages/ForgotPasswordPage';
 import ResetPasswordPage from '../pages/ResetPasswordPage';
 import SmokingQuizPage from '../pages/SmokingQuizPage';
 import MembershipPlansPage from '../pages/MembershipPlansPage';
+import NotFoundPage from '../pages/NotFoundPage';
+import LoadingPage from '../pages/LoadingPage';
 
 export const routes = createBrowserRouter([
   {
@@ -99,10 +101,18 @@ export const routes = createBrowserRouter([
     ),
   },
   {
+    path: '/loading-test',
+    element: (
+      <AuthLayout>
+        <LoadingPage />
+      </AuthLayout>
+    ),
+  },
+  {
     path: '*',
     element: (
       <MainLayout showHeader={false}>
-        <div>404 Not Found</div>
+        <NotFoundPage />
       </MainLayout>
     ),
   },

@@ -3,6 +3,7 @@ import { Container, TextField, Button, Typography, Box, Alert, Link } from '@mui
 import { useNavigate } from 'react-router-dom';
 import { forgotPassword } from '../services/authService';
 import GlowingDotsGrid from '../components/animated/GlowingDotsGrid'; // Add this import
+import LoadingPage from './LoadingPage'; // Import LoadingPage
 
 export default function ForgotPasswordPage() {
   const navigate = useNavigate();
@@ -62,6 +63,10 @@ export default function ForgotPasswordPage() {
       color: 'text.primary',
     },
   };
+
+  if (loading) {
+    return <LoadingPage />;
+  }
 
   return (
     <Box sx={{

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AppBar, Toolbar, Typography, Button, IconButton, Box, Badge } from '@mui/material';
+import { AppBar, Toolbar, Typography, Button, IconButton, Box, Badge, CircularProgress } from '@mui/material';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import NotificationsIcon from '@mui/icons-material/Notifications';
@@ -13,6 +13,7 @@ const Header = ({ authStatus }) => {
   const [scrolled, setScrolled] = useState(0);
   const [notifications, setNotifications] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [loadingMotivation, setLoadingMotivation] = useState(false);
 
   const handleNotificationClick = () => {
     setIsDropdownOpen((prev) => !prev);
@@ -53,6 +54,7 @@ const Header = ({ authStatus }) => {
       }
 
       if (shouldShowToast) {
+        setLoadingMotivation(true);
         try {
           const data = await motivationService.getMotivationMessage();
           if (data && data.data && data.data.message) {
@@ -112,6 +114,8 @@ const Header = ({ authStatus }) => {
             duration: 4000,
             position: 'top-center',
           });
+        } finally {
+          setLoadingMotivation(false);
         }
       }
     };
@@ -237,7 +241,7 @@ const Header = ({ authStatus }) => {
                 }}
               >
                 <img
-                  src="icon/icons8-membership-64.png"
+                  src="icon/icons8-premium-subscription-24.png"
                   alt="Membership Icon"
                   style={{
                     width: '30px',
@@ -256,6 +260,7 @@ const Header = ({ authStatus }) => {
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
             {authStatus ? (
               <>
+                {loadingMotivation && <CircularProgress size={20} sx={{ color: '#3f332b', mr: 1 }} />}
                 <IconButton
                   color="inherit"
                   onClick={handleNotificationClick}

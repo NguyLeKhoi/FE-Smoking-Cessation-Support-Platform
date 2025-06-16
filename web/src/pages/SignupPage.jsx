@@ -3,6 +3,7 @@ import { Container, TextField, Button, Typography, Box, Alert, Link, Grid } from
 import { useNavigate } from 'react-router-dom';
 import { signup } from '../services/authService';
 import GlowingDotsGrid from '../components/animated/GlowingDotsGrid'; // Add this import
+import LoadingPage from './LoadingPage'; // Import LoadingPage
 
 export default function SignupPage() {
   const navigate = useNavigate();
@@ -139,6 +140,10 @@ export default function SignupPage() {
       color: 'text.primary',
     },
   };
+
+  if (loading) {
+    return <LoadingPage />;
+  }
 
   return (
     <Box sx={{

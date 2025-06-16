@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, Typography, List, ListItem, ListItemText, ListItemIcon } from '@mui/material';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import membershipService from '../services/membershipService';
+import LoadingPage from './LoadingPage';
 
 const MembershipPlansPage = () => {
   const [plans, setPlans] = useState([]);
@@ -24,7 +25,7 @@ const MembershipPlansPage = () => {
   }, []);
 
   if (loading) {
-    return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 'calc(100vh - 64px)' }}><Typography>Loading membership plans...</Typography></Box>;
+    return <LoadingPage />;
   }
 
   if (error) {
