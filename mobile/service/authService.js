@@ -54,8 +54,6 @@ export const logout = async () => {
   } catch (error) {
     // Log the error but continue to clear local tokens
     console.error('Error calling backend logout API:', error);
-    // Re-throw the error to allow calling components to handle it if necessary
-    throw error;
   } finally {
     // Clear frontend tokens regardless of backend call success or failure
     await AsyncStorage.removeItem('accessToken');
