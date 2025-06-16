@@ -29,6 +29,12 @@ const UserInfoSection = ({
         }
     }, [userData.dob]);
 
+    // Determine if email and dob should be editable (only if they're empty)
+    const isEmailEditable = !userData.email;
+
+    // Preview the avatar URL when editing
+    const avatarPreview = isEditing ? formData.avatar || userData.avatar : userData.avatar;
+
     return (
         <Paper
             elevation={0}
@@ -49,9 +55,9 @@ const UserInfoSection = ({
                     alignItems: 'center',
                     minWidth: '200px'
                 }}>
-                    {userData.avatar ? (
+                    {avatarPreview ? (
                         <Avatar
-                            src={userData.avatar}
+                            src={avatarPreview}
                             alt={userData.username || 'User'}
                             sx={{
                                 width: 160,
@@ -67,22 +73,40 @@ const UserInfoSection = ({
                             sx={{
                                 width: 160,
                                 height: 160,
-                                borderRadius: '50%',
                                 bgcolor: '#f0f0f0',
-                                border: '4px solid',
-                                borderColor: 'primary.main',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 fontSize: '64px',
                                 mb: 2,
                                 position: 'relative',
-                                overflow: 'hidden'
+                                overflow: 'hidden',
+                                border: '0.5px solid',
+                                borderColor: 'divider',
+                                borderRadius: '10%',
                             }}
                         >
                             {userData.username ? userData.username.charAt(0).toUpperCase() : '?'}
                         </Box>
                     )}
+
+                    {/* Avatar URL input field - only shown when editing */}
+                    {isEditing && (
+                        <TextField
+                            id="avatar-field"
+                            label="Avatar URL"
+                            name="avatar"
+                            variant="outlined"
+                            size="small"
+                            value={formData.avatar}
+                            onChange={handleInputChange}
+                            fullWidth
+                            placeholder="Enter image URL for avatar"
+                            sx={{ mb: 2 }}
+                            helperText="Enter a valid image URL to update your avatar"
+                        />
+                    )}
+
                     <Typography
                         variant="h6"
                         sx={{
@@ -202,6 +226,18 @@ const UserInfoSection = ({
                         <Grid item xs={12} sm={6}>
                             <Box sx={{ mb: 2 }}>
                                 <TextField
+                                    id="first-name-field"
+                                    label="First Name"
+                                    name="first_name"
+                                    variant="standard"
+                                    value={formData.first_name}
+                                    onChange={handleInputChange}
+                                    fullWidth
+                                    InputProps={{ readOnly: !isEditing }}
+                                />
+                            </Box>
+                            <Box sx={{ mb: 2 }}>
+                                <TextField
                                     id="email-field"
                                     label="Email"
                                     name="email"
@@ -210,9 +246,54 @@ const UserInfoSection = ({
                                     onChange={handleInputChange}
                                     fullWidth
                                     InputProps={{
-                                        readOnly: true
+                                        readOnly: !isEditing || !isEmailEditable
+                                    }}
+                                    disabled={isEditing && !isEmailEditable}
+                                />
+                            </Box>
+                            <Box sx={{ mb: 2 }}>
+                                <TextField
+                                    id="dob-field"
+                                    label="Date of Birth"
+                                    name="dob"
+                                    variant="standard"
+                                    value={formattedDob}
+                                    onChange={handleInputChange}
+                                    fullWidth
+                                    InputProps={{
+                                        readOnly: true,
+                                        // Apply styling for greyed out appearance when in edit mode
+                                        sx: isEditing ? {
+                                            color: 'text.disabled',
+                                            '& .MuiInput-underline:before': {
+                                                borderBottomColor: 'rgba(0, 0, 0, 0.12)'
+                                            },
+                                            '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
+                                                borderBottomColor: 'rgba(0, 0, 0, 0.12)'
+                                            }
+                                        } : {}
                                     }}
                                     disabled={isEditing}
+                                    sx={{
+                                        // Ensure label color matches disabled state in edit mode
+                                        '& .MuiInputLabel-root': isEditing ? {
+                                            color: 'text.disabled'
+                                        } : {}
+                                    }}
+                                />
+                            </Box>
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Box sx={{ mb: 2 }}>
+                                <TextField
+                                    id="last-name-field"
+                                    label="Last Name"
+                                    name="last_name"
+                                    variant="standard"
+                                    value={formData.last_name}
+                                    onChange={handleInputChange}
+                                    fullWidth
+                                    InputProps={{ readOnly: !isEditing }}
                                 />
                             </Box>
                             <Box sx={{ mb: 2 }}>
@@ -227,51 +308,8 @@ const UserInfoSection = ({
                                     InputProps={{ readOnly: !isEditing }}
                                 />
                             </Box>
-                            <Box sx={{ mb: 2 }}>
-                                <TextField
-                                    id="first-name-field"
-                                    label="First Name"
-                                    name="first_name"
-                                    variant="standard"
-                                    value={formData.first_name}
-                                    onChange={handleInputChange}
-                                    fullWidth
-                                    InputProps={{ readOnly: !isEditing }}
-                                />
-                            </Box>
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <Box sx={{ mb: 2 }}>
-                                <TextField
-                                    id="dob-field"
-                                    label="Date of Birth"
-                                    name="dob"
-                                    variant="standard"
-                                    value={formattedDob}
-                                    onChange={handleInputChange}
-                                    fullWidth
-                                    InputProps={{
-                                        readOnly: true
-                                    }}
-                                    disabled={isEditing}
-                                />
-                            </Box>
-                            <Box sx={{ mb: 2 }}>
-                                <TextField
-                                    id="last-name-field"
-                                    label="Last Name"
-                                    name="last_name"
-                                    variant="standard"
-                                    value={formData.last_name}
-                                    onChange={handleInputChange}
-                                    fullWidth
-                                    InputProps={{ readOnly: !isEditing }}
-                                />
-                            </Box>
                         </Grid>
                     </Grid>
-
-
                 </Box>
             </Box>
         </Paper>

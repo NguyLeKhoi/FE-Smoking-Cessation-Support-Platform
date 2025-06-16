@@ -7,6 +7,7 @@ import api from './api';
 export const fetchCurrentUser = async () => {
     try {
         const response = await api.get('/users/me');
+        console.log('User data received:', response.data);
         return response.data;
     } catch (error) {
         console.error('Error fetching user profile:', error);

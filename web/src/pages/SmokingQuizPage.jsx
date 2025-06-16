@@ -1,13 +1,16 @@
-import React, { useState, useReducer, useEffect } from 'react';
+import React, { useState, useReducer, useEffect, useCallback, useMemo } from 'react';
 import {
     Typography,
     Box,
     Button,
     Container,
     CircularProgress,
+    useTheme
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import HomeIcon from '@mui/icons-material/Home';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import Lottie from 'lottie-react';
 import smokingService from '../services/smokingService';
 import SmokingHabitsResult from '../components/smokingQuiz/SmokingHabitsResult';
@@ -44,16 +47,85 @@ const formReducer = (state, action) => {
 
 const SmokingQuiz = () => {
     const navigate = useNavigate();
+    const theme = useTheme();
+
     const [currentQuestion, setCurrentQuestion] = useState(0);
     const [formData, dispatch] = useReducer(formReducer, defaultState);
     const [result, setResult] = useState(null);
     const [showForm, setShowForm] = useState(true);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [quizCompleted, setQuizCompleted] = useState(false); // Add this new state
+    const [quizCompleted, setQuizCompleted] = useState(false);
 
-    // Get questions from the extracted component
-    const { questions } = SmokingHabitsQuestions();
+    // Get questions from the extracted component using useMemo to prevent unnecessary rerenders
+    const { questions } = useMemo(() => SmokingHabitsQuestions(), []);
+
+    // Handle form submission logic in useCallback to prevent recreation on each render
+    const handleSubmit = useCallback(async () => {
+        try {
+            // Basic validation
+            if (
+                !formData.cigarettes_per_day ||
+                !formData.smoking_years ||
+                !formData.price_per_pack ||
+                !formData.cigarettes_per_pack ||
+                !formData.triggers ||
+                formData.triggers.length === 0
+            ) {
+                setError('Please fill in all required fields before submitting the assessment.');
+                return;
+            }
+
+            setLoading(true);
+
+            console.log("Original form data:", formData);
+
+            // Format data properly for submission, ensuring smoking_years is an integer
+            const dataToSubmit = {
+                cigarettes_per_pack: Number(formData.cigarettes_per_pack),
+                price_per_pack: Number(formData.price_per_pack),
+                cigarettes_per_day: Number(formData.cigarettes_per_day),
+                smoking_years: Math.round(Number(formData.smoking_years)), // Round to integer
+                triggers: formData.triggers,
+                health_issues: formData.health_issues || ''
+            };
+
+            console.log("Data to be submitted:", dataToSubmit);
+
+            const data = await smokingService.createSmokingHabit(dataToSubmit);
+            setResult(data);
+            setShowForm(false);
+            setQuizCompleted(true);
+            setError(null);
+        } catch (error) {
+            console.error('Error submitting smoking assessment:', error);
+
+            // Enhanced error handling
+            if (error.response && error.response.data) {
+                const errorData = error.response.data;
+                let errorMessage = 'Server validation error. Please check your inputs.';
+
+                if (errorData.message && Array.isArray(errorData.message) && errorData.message.length > 0) {
+                    // Format the error messages nicely
+                    const messages = errorData.message.map(item => {
+                        if (item.path && item.message) {
+                            return `${item.path}: ${item.message}`;
+                        }
+                        return JSON.stringify(item);
+                    });
+                    errorMessage = messages.join('; ');
+                } else if (typeof errorData.message === 'string') {
+                    errorMessage = errorData.message;
+                }
+
+                setError(errorMessage);
+            } else {
+                setError('There was an error submitting your assessment. Please try again.');
+            }
+        } finally {
+            setLoading(false);
+        }
+    }, [formData]);
 
     // Fetch existing data when component mounts
     useEffect(() => {
@@ -62,8 +134,7 @@ const SmokingQuiz = () => {
                 setLoading(true);
                 const response = await smokingService.getMySmokingHabits();
 
-                // Only show results if the user has explicitly completed the quiz in this session
-                if (quizCompleted && response && response.data && response.data.length > 0) {
+                if (quizCompleted && response?.data?.length > 0) {
                     const latestRecord = response.data[0];
 
                     // Initialize form data from fetched data
@@ -74,16 +145,14 @@ const SmokingQuiz = () => {
                             price_per_pack: latestRecord.price_per_pack,
                             cigarettes_per_day: latestRecord.cigarettes_per_day,
                             smoking_years: latestRecord.smoking_years,
-                            triggers: latestRecord.triggers || [],
+                            triggers: Array.isArray(latestRecord.triggers) ? latestRecord.triggers : [],
                             health_issues: latestRecord.health_issues || ''
                         }
                     });
 
-                    // Only show result if quiz was completed in this session
                     setResult(latestRecord);
                     setShowForm(false);
                 } else {
-                    // Always reset to default state and show form when loading the page
                     dispatch({ type: 'RESET' });
                     setShowForm(true);
                     setResult(null);
@@ -97,37 +166,35 @@ const SmokingQuiz = () => {
             }
         };
         fetchExistingData();
-    }, [quizCompleted]); // Depend on quizCompleted state
+    }, [quizCompleted]);
 
+    // Control body overflow based on form visibility
     useEffect(() => {
-        if (showForm) {
-            document.body.style.overflow = 'hidden';
-        } else {
-            document.body.style.overflow = 'auto';
-        }
+        document.body.style.overflow = showForm ? 'hidden' : 'auto';
         return () => {
             document.body.style.overflow = 'auto';
         };
     }, [showForm]);
 
-    const handleChange = (e) => {
+    const handleChange = useCallback((e) => {
         const { name, value } = e.target;
+        console.log(`Updating field ${name} with value:`, value);
         dispatch({ type: 'UPDATE_FIELD', field: name, value });
-    };
+    }, []);
 
-    const handleCheckboxChange = (e) => {
+    const handleCheckboxChange = useCallback((e) => {
         const { value, checked } = e.target;
         dispatch({ type: 'UPDATE_TRIGGERS', value, checked });
-    };
+    }, []);
 
-    const handleNext = () => {
+    const handleNext = useCallback(() => {
         // Check if current field is filled before proceeding to next question
         const currentField = questions[currentQuestion].field;
 
         // Skip validation for health_issues field
         if (currentField === 'health_issues') {
             if (currentQuestion < questions.length - 1) {
-                setCurrentQuestion(currentQuestion + 1);
+                setCurrentQuestion(prev => prev + 1);
             } else {
                 handleSubmit();
             }
@@ -150,55 +217,23 @@ const SmokingQuiz = () => {
         // Clear error and proceed to next question
         setError(null);
         if (currentQuestion < questions.length - 1) {
-            setCurrentQuestion(currentQuestion + 1);
+            setCurrentQuestion(prev => prev + 1);
         } else {
             handleSubmit();
         }
-    };
+    }, [currentQuestion, formData, questions, handleSubmit]);
 
-    const handleSubmit = async () => {
-        try {
-            // Check if all required fields are filled (except health_issues)
-            if (
-                !formData.cigarettes_per_day ||
-                !formData.smoking_years ||
-                !formData.price_per_pack ||
-                !formData.cigarettes_per_pack ||
-                !formData.triggers ||
-                formData.triggers.length === 0
-            ) {
-                setError('Please fill in all required fields before submitting the assessment.');
-                return;
-            }
+    const handlePrevious = useCallback(() => {
+        setCurrentQuestion(prev => prev - 1);
+    }, []);
 
-            const dataToSubmit = {
-                ...formData,
-                cigarettes_per_day: Number(formData.cigarettes_per_day),
-                smoking_years: Number(formData.smoking_years),
-                price_per_pack: Number(formData.price_per_pack),
-                cigarettes_per_pack: Number(formData.cigarettes_per_pack),
-                // Ensure health_issues is at least an empty string, not undefined
-                health_issues: formData.health_issues || ''
-            };
-
-            const data = await smokingService.createSmokingHabit(dataToSubmit);
-            setResult(data);
-            setShowForm(false);
-            setQuizCompleted(true); // Set quiz as completed
-            setError(null); // Clear any previous errors
-        } catch (error) {
-            console.error('Error:', error);
-            setError('There was an error submitting your assessment. Please try again.');
-        }
-    };
-
-    const handleRetakeQuiz = () => {
+    const handleRetakeQuiz = useCallback(() => {
         setShowForm(true);
         setCurrentQuestion(0);
         dispatch({ type: 'RESET' });
-    };
+    }, []);
 
-    if (loading) {
+    if (loading && !showForm) {
         return (
             <Box sx={{
                 minHeight: '100vh',
@@ -214,7 +249,7 @@ const SmokingQuiz = () => {
     }
 
     // Get the current question's length to determine bubble size
-    const currentQuestionText = questions[currentQuestion].question;
+    const currentQuestionText = questions[currentQuestion]?.question || '';
     const isLongQuestion = currentQuestionText.length > 50;
     const isVeryLongQuestion = currentQuestionText.length > 100;
 
@@ -223,7 +258,7 @@ const SmokingQuiz = () => {
             minHeight: '100vh',
             minWidth: '100%',
             bgcolor: 'background.default',
-            py: 0,
+            pt: 0,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -251,6 +286,7 @@ const SmokingQuiz = () => {
                     <Box
                         sx={{
                             p: { xs: 3, md: 5 },
+                            pt: { xs: 3, md: 4 },
                             borderRadius: 3,
                             bgcolor: '#ffffff',
                             boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.05)',
@@ -259,7 +295,7 @@ const SmokingQuiz = () => {
                             mx: 'auto',
                             height: 'auto',
                             minHeight: { xs: 'auto', md: '500px' },
-                            maxHeight: 'calc(100vh - 140px)', // Adjusted to account for error message
+                            maxHeight: 'calc(100vh - 140px)',
                             display: 'flex',
                             flexDirection: 'column',
                             position: 'relative',
@@ -268,14 +304,20 @@ const SmokingQuiz = () => {
                             transform: { xs: 'none', md: 'translateY(-5%)' },
                         }}
                     >
-                        <Typography variant="h3" component="h1" sx={{ fontWeight: 700, mb: 2, color: 'text.primary', fontSize: { xs: '1.75rem', md: '2.5rem' } }}>
-                            Smoking Habit Assessment
+                        <Typography variant="h3" component="h1" sx={{ fontWeight: 700, mb: 1, color: 'text.primary', fontSize: { xs: '1.75rem', md: '2.5rem' } }}>
+                            Assessing Your Smoking Habit...
                         </Typography>
-                        <Typography variant="h6" sx={{ mb: 4, color: 'text.secondary', fontSize: { xs: '1rem', md: '1.25rem' } }}>
+                        <Typography variant="h6" sx={{ mb: 2, color: 'text.secondary', fontSize: { xs: '1rem', md: '1.25rem' } }}>
                             Question {currentQuestion + 1} of {questions.length}
                         </Typography>
 
-                        <Box sx={{ mt: 2, flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                        <Box sx={{
+                            mt: 1,
+                            flexGrow: 1,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'flex-start'
+                        }}>
                             <Box sx={{
                                 display: 'flex',
                                 alignItems: 'flex-start',
@@ -286,8 +328,8 @@ const SmokingQuiz = () => {
                             }}>
                                 <Box sx={{
                                     flexShrink: 0,
-                                    width: { xs: '100px', md: '160px' },
-                                    height: { xs: '100px', md: '160px' },
+                                    width: { xs: '90px', md: '150px' },
+                                    height: { xs: '90px', md: '150px' },
                                     position: 'relative',
                                     left: { xs: '-5px', md: '-3px' }
                                 }}>
@@ -297,7 +339,7 @@ const SmokingQuiz = () => {
                                         style={{
                                             width: '100%',
                                             height: '100%',
-                                            marginBottom: '-10px'
+                                            marginTop: '-20px'
                                         }}
                                     />
                                 </Box>
@@ -307,14 +349,14 @@ const SmokingQuiz = () => {
                                     sx={{
                                         position: 'relative',
                                         backgroundColor: '#f5f5f5',
-                                        padding: '25px 20px',
+                                        padding: '20px 18px',
                                         borderRadius: '16px',
                                         maxWidth: { xs: '100%', sm: isVeryLongQuestion ? '70%' : isLongQuestion ? '60%' : '50%' },
                                         width: { xs: 'calc(100% - 20px)', sm: 'auto' },
                                         minWidth: { xs: 'auto', sm: '500px' },
                                         boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
                                         alignSelf: 'flex-start',
-                                        mt: { xs: 0, sm: 2 }, // Add margin top on desktop
+                                        mt: { xs: 0, sm: 1 },
                                         transition: 'all 0.3s ease',
                                         '&:before': {
                                             content: '""',
@@ -333,7 +375,7 @@ const SmokingQuiz = () => {
                                         variant="body1"
                                         sx={{
                                             color: 'text.primary',
-                                            mb: 2,
+                                            mb: 1.5,
                                             fontWeight: 520
                                         }}
                                     >
@@ -341,7 +383,7 @@ const SmokingQuiz = () => {
                                     </Typography>
 
                                     {/* Input field inside the chat bubble */}
-                                    <Box sx={{ mt: 2 }}>
+                                    <Box sx={{ mt: 1.5 }}>
                                         {questions[currentQuestion].component(
                                             formData[questions[currentQuestion].field],
                                             questions[currentQuestion].field === 'triggers'
@@ -354,7 +396,8 @@ const SmokingQuiz = () => {
                         </Box>
 
                         <Box sx={{
-                            mt: 4,
+                            mt: 'auto',
+                            pt: 2,
                             display: 'flex',
                             justifyContent: 'space-between',
                             gap: 2,
@@ -362,8 +405,9 @@ const SmokingQuiz = () => {
                         }}>
                             {currentQuestion > 0 && (
                                 <Button
-                                    onClick={() => setCurrentQuestion(currentQuestion - 1)}
+                                    onClick={handlePrevious}
                                     variant="outlined"
+                                    startIcon={<ArrowBackIcon />}
                                     sx={{
                                         py: 1.5,
                                         px: 4,
@@ -383,6 +427,7 @@ const SmokingQuiz = () => {
                             <Button
                                 onClick={handleNext}
                                 variant="contained"
+                                endIcon={currentQuestion < questions.length - 1 ? <ArrowForwardIcon /> : null}
                                 sx={{
                                     py: 1.5,
                                     px: 4,

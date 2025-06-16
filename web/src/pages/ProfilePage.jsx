@@ -19,6 +19,7 @@ export default function ProfilePage({ handleLogout }) {
     last_name: '',
     dob: '',
     phone_number: '',
+    avatar: '',
   });
 
   useEffect(() => {
@@ -33,6 +34,7 @@ export default function ProfilePage({ handleLogout }) {
           last_name: response.data.last_name || '',
           dob: response.data.dob || '',
           phone_number: response.data.phone_number || '',
+          avatar: response.data.avatar || '', 
         });
       } catch (err) {
         setError('Failed to load user profile. Please try again later.');
@@ -62,34 +64,28 @@ export default function ProfilePage({ handleLogout }) {
       const updatedUserData = {
         first_name: formData.first_name,
         last_name: formData.last_name,
-        phone_number: formData.phone_number
+        phone_number: formData.phone_number,
+        avatar: formData.avatar,
+        dob: formData.dob 
       };
 
       setLoading(true);
       const response = await updateCurrentUser(updatedUserData);
 
-      setUserData(prevData => {
-        const mergedData = {
-          ...prevData,
-          ...response.data
-        };
-
-        // Explicitly ensure DOB is preserved if not in the response
-        if (!response.data.dob && prevData.dob) {
-          mergedData.dob = prevData.dob;
-        }
-
-        return mergedData;
-      });
+      setUserData(prevData => ({
+        ...prevData,
+        ...response.data,
+        dob: response.data.dob || prevData.dob 
+      }));
 
       setFormData(prevFormData => ({
         ...prevFormData,
         first_name: response.data.first_name || prevFormData.first_name,
         last_name: response.data.last_name || prevFormData.last_name,
         phone_number: response.data.phone_number || prevFormData.phone_number,
-        // Keep the existing email and DOB
+        avatar: response.data.avatar || prevFormData.avatar,
         email: prevFormData.email,
-        dob: prevFormData.dob
+        dob: response.data.dob || prevFormData.dob 
       }));
 
       setIsEditing(false);
