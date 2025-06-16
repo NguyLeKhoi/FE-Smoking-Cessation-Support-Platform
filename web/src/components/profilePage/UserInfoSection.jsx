@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Typography, Box, Paper, Grid, TextField } from '@mui/material';
+import { Button, Typography, Box, Paper, Grid, TextField, Avatar } from '@mui/material';
 import { format } from 'date-fns';
 
 const UserInfoSection = ({
@@ -35,25 +35,39 @@ const UserInfoSection = ({
                     alignItems: 'center',
                     minWidth: '200px'
                 }}>
-                    <Box
-                        sx={{
-                            width: 160,
-                            height: 160,
-                            borderRadius: '50%',
-                            bgcolor: '#f0f0f0',
-                            border: '4px solid',
-                            borderColor: 'primary.main',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontSize: '64px',
-                            mb: 2,
-                            position: 'relative',
-                            overflow: 'hidden'
-                        }}
-                    >
-                        {userData.username ? userData.username.charAt(0).toUpperCase() : '?'}
-                    </Box>
+                    {userData.avatar ? (
+                        <Avatar
+                            src={userData.avatar}
+                            alt={userData.username || 'User'}
+                            sx={{
+                                width: 160,
+                                height: 160,
+                                border: '4px solid',
+                                borderColor: 'primary.main',
+                                mb: 2,
+                            }}
+                        />
+                    ) : (
+                        <Box
+                            sx={{
+                                width: 160,
+                                height: 160,
+                                borderRadius: '50%',
+                                bgcolor: '#f0f0f0',
+                                border: '4px solid',
+                                borderColor: 'primary.main',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: '64px',
+                                mb: 2,
+                                position: 'relative',
+                                overflow: 'hidden'
+                            }}
+                        >
+                            {userData.username ? userData.username.charAt(0).toUpperCase() : '?'}
+                        </Box>
+                    )}
                     <Typography
                         variant="h6"
                         sx={{
