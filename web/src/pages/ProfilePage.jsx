@@ -66,10 +66,34 @@ export default function ProfilePage({ handleLogout }) {
       };
 
       setLoading(true);
-      const updatedData = await updateCurrentUser(updatedUserData);
-      setUserData(updatedData);
+      const response = await updateCurrentUser(updatedUserData);
+
+      setUserData(prevData => {
+        const mergedData = {
+          ...prevData,
+          ...response.data
+        };
+
+        // Explicitly ensure DOB is preserved if not in the response
+        if (!response.data.dob && prevData.dob) {
+          mergedData.dob = prevData.dob;
+        }
+
+        return mergedData;
+      });
+
+      setFormData(prevFormData => ({
+        ...prevFormData,
+        first_name: response.data.first_name || prevFormData.first_name,
+        last_name: response.data.last_name || prevFormData.last_name,
+        phone_number: response.data.phone_number || prevFormData.phone_number,
+        // Keep the existing email and DOB
+        email: prevFormData.email,
+        dob: prevFormData.dob
+      }));
+
       setIsEditing(false);
-      setError(null); 
+      setError(null);
     } catch (err) {
       setError('Failed to update profile. Please try again.');
       console.error('Error updating profile:', err);

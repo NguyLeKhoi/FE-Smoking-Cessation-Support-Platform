@@ -10,10 +10,23 @@ const UserInfoSection = ({
     handleInputChange,
     handleSave
 }) => {
-    // Format date of birth if available
-    const formattedDob = userData.dob
-        ? format(new Date(userData.dob), 'MMMM dd, yyyy')
-        : 'Not provided';
+    // Format date of birth if available with additional checks
+    const formattedDob = React.useMemo(() => {
+        if (!userData.dob) return 'Not provided';
+        
+        try {
+            // Make sure the date is valid before formatting
+            const date = new Date(userData.dob);
+            if (isNaN(date.getTime())) {
+                console.warn('Invalid date format in userData.dob:', userData.dob);
+                return 'Not provided';
+            }
+            return format(date, 'MMMM dd, yyyy');
+        } catch (err) {
+            console.error('Error formatting date:', err);
+            return 'Not provided';
+        }
+    }, [userData.dob]);
 
     return (
         <Paper
@@ -199,14 +212,13 @@ const UserInfoSection = ({
                                     label="Date of Birth"
                                     name="dob"
                                     variant="standard"
-                                    value={isEditing ? formData.dob : formattedDob}
+                                    value={formattedDob}
                                     onChange={handleInputChange}
                                     fullWidth
                                     InputProps={{
-                                        readOnly: true // Always read-only regardless of edit mode
+                                        readOnly: true 
                                     }}
-                                    disabled={isEditing} // Only visually disable when in edit mode
-                                    type={isEditing ? 'date' : 'text'}
+                                    disabled={isEditing}
                                 />
                             </Box>
                             <Box sx={{ mb: 2 }}>
