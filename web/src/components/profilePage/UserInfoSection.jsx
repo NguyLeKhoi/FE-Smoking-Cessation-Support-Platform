@@ -1,6 +1,7 @@
 import React from 'react';
-import { Button, Typography, Box, Paper, Grid, TextField, Avatar } from '@mui/material';
+import { Button, Typography, Box, Paper, Grid, TextField, Avatar, IconButton } from '@mui/material';
 import { format } from 'date-fns';
+import EditIcon from '@mui/icons-material/Edit';
 
 const UserInfoSection = ({
     userData,
@@ -13,7 +14,7 @@ const UserInfoSection = ({
     // Format date of birth if available with additional checks
     const formattedDob = React.useMemo(() => {
         if (!userData.dob) return 'Not provided';
-        
+
         try {
             // Make sure the date is valid before formatting
             const date = new Date(userData.dob);
@@ -100,69 +101,102 @@ const UserInfoSection = ({
                     >
                         Member since {userData.joined}
                     </Typography>
-                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                </Box>
+
+                {/* User Information - Right Side */}
+                <Box sx={{ flex: 1 }}>
+                    {/* Personal Information */}
+                    <Box sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        mb: 3
+                    }}>
+                        <Typography
+                            variant="h6"
+                            sx={{
+                                fontWeight: 'bold',
+                                color: 'text.primary'
+                            }}
+                        >
+                            Personal Information
+                        </Typography>
+
                         {!isEditing ? (
-                            <Button
-                                variant="outlined"
-                                size="small"
+                            <IconButton
                                 onClick={handleEditToggle}
+                                size="small"
+                                color="primary"
                                 sx={{
-                                    mt: 1,
-                                    borderRadius: 2,
-                                    textTransform: 'none',
-                                    px: 3,
+                                    py: 0.8,
+                                    px: 1,
+                                    bgcolor: '#000000',
+                                    color: 'white',
+                                    borderRadius: '12px',
+                                    boxShadow: '0 4px 0 #00000080',
+                                    '&:hover': {
+                                        bgcolor: '#000000cd',
+                                        boxShadow: '0 2px 0 #00000080',
+                                        transform: 'translateY(2px)',
+                                    },
+                                    '&:active': {
+                                        boxShadow: '0 0 0 #00000080',
+                                        transform: 'translateY(4px)',
+                                    },
                                 }}
                             >
-                                Edit Profile
-                            </Button>
+                                <EditIcon fontSize="small" />
+                            </IconButton>
                         ) : (
-                            <>
-                                <Button
-                                    variant="contained"
-                                    size="small"
-                                    onClick={handleSave}
-                                    sx={{
-                                        mt: 1,
-                                        borderRadius: 2,
-                                        textTransform: 'none',
-                                        px: 3,
-                                        bgcolor: 'primary.main',
-                                        '&:hover': { bgcolor: 'primary.dark' }
-                                    }}
-                                >
-                                    Save Changes
-                                </Button>
+                            <Box sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 1
+                            }}>
                                 <Button
                                     variant="outlined"
                                     size="small"
                                     onClick={handleEditToggle}
                                     sx={{
-                                        mt: 1,
                                         borderRadius: 2,
                                         textTransform: 'none',
-                                        px: 3,
-                                        width: '100%',
+                                        py: 0.5,
+                                        px: 2,
+                                        fontSize: '0.8rem',
                                     }}
                                 >
                                     Cancel
                                 </Button>
-                            </>
+                                <Button
+                                    variant="contained"
+                                    size="small"
+                                    onClick={handleSave}
+                                    sx={{
+                                        py: 0.5,
+                                        px: 2,
+                                        fontSize: '0.8rem',
+                                        bgcolor: '#000000',
+                                        color: 'white',
+                                        borderRadius: '12px',
+                                        boxShadow: '0 4px 0 #00000080',
+                                        textTransform: 'none',
+                                        '&:hover': {
+                                            bgcolor: '#000000cd',
+                                            boxShadow: '0 2px 0 #00000080',
+                                            transform: 'translateY(2px)',
+                                        },
+                                        '&:active': {
+                                            boxShadow: '0 0 0 #00000080',
+                                            transform: 'translateY(4px)',
+                                        },
+                                    }}
+                                >
+                                    Save
+                                </Button>
+                            </Box>
                         )}
                     </Box>
-                </Box>
 
-                {/* User Information - Right Side */}
-                <Box sx={{ flex: 1 }}>
-                    <Typography
-                        variant="h6"
-                        sx={{
-                            fontWeight: 'bold',
-                            mb: 3,
-                            color: 'text.primary'
-                        }}
-                    >
-                        Personal Information
-                    </Typography>
                     <Grid container spacing={3}>
                         <Grid item xs={12} sm={6}>
                             <Box sx={{ mb: 2 }}>
@@ -216,7 +250,7 @@ const UserInfoSection = ({
                                     onChange={handleInputChange}
                                     fullWidth
                                     InputProps={{
-                                        readOnly: true 
+                                        readOnly: true
                                     }}
                                     disabled={isEditing}
                                 />
@@ -235,6 +269,8 @@ const UserInfoSection = ({
                             </Box>
                         </Grid>
                     </Grid>
+
+
                 </Box>
             </Box>
         </Paper>
