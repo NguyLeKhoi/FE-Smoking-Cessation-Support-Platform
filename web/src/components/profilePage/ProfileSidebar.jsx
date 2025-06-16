@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Box, Typography, List, ListItem, ListItemIcon, ListItemText, Badge, Avatar, Paper, Tooltip } from '@mui/material';
+import { Box, Typography, List, ListItem, ListItemIcon, ListItemText, Badge, Paper, Tooltip } from '@mui/material';
 import { styled } from '@mui/system';
 import { useLocation } from 'react-router-dom';
-import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import PersonIcon from '@mui/icons-material/Person';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
@@ -94,7 +94,7 @@ const ProfileSidebar = ({ userData }) => {
                         alignItems: 'center',
                         gap: 1,
                         ml: 2,
-             
+
                     }}
                 >
                     Zerotine

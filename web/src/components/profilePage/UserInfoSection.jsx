@@ -31,7 +31,6 @@ const UserInfoSection = ({
 
     // Determine if email and dob should be editable (only if they're empty)
     const isEmailEditable = !userData.email;
-    const isDobEditable = !userData.dob;
 
     // Preview the avatar URL when editing
     const avatarPreview = isEditing ? formData.avatar || userData.avatar : userData.avatar;

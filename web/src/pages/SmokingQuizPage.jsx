@@ -5,7 +5,6 @@ import {
     Button,
     Container,
     CircularProgress,
-    useMediaQuery,
     useTheme
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
@@ -49,7 +48,6 @@ const formReducer = (state, action) => {
 const SmokingQuiz = () => {
     const navigate = useNavigate();
     const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
     const [currentQuestion, setCurrentQuestion] = useState(0);
     const [formData, dispatch] = useReducer(formReducer, defaultState);
