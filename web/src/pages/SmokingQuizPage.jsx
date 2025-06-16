@@ -251,6 +251,7 @@ const SmokingQuiz = () => {
                     <Box
                         sx={{
                             p: { xs: 3, md: 5 },
+                            pt: { xs: 3, md: 4 }, // Reduce top padding
                             borderRadius: 3,
                             bgcolor: '#ffffff',
                             boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.05)',
@@ -259,7 +260,7 @@ const SmokingQuiz = () => {
                             mx: 'auto',
                             height: 'auto',
                             minHeight: { xs: 'auto', md: '500px' },
-                            maxHeight: 'calc(100vh - 140px)', // Adjusted to account for error message
+                            maxHeight: 'calc(100vh - 140px)',
                             display: 'flex',
                             flexDirection: 'column',
                             position: 'relative',
@@ -268,14 +269,20 @@ const SmokingQuiz = () => {
                             transform: { xs: 'none', md: 'translateY(-5%)' },
                         }}
                     >
-                        <Typography variant="h3" component="h1" sx={{ fontWeight: 700, mb: 2, color: 'text.primary', fontSize: { xs: '1.75rem', md: '2.5rem' } }}>
+                        <Typography variant="h3" component="h1" sx={{ fontWeight: 700, mb: 1, color: 'text.primary', fontSize: { xs: '1.75rem', md: '2.5rem' } }}>
                             Smoking Habit Assessment
                         </Typography>
-                        <Typography variant="h6" sx={{ mb: 4, color: 'text.secondary', fontSize: { xs: '1rem', md: '1.25rem' } }}>
+                        <Typography variant="h6" sx={{ mb: 2, color: 'text.secondary', fontSize: { xs: '1rem', md: '1.25rem' } }}>
                             Question {currentQuestion + 1} of {questions.length}
                         </Typography>
 
-                        <Box sx={{ mt: 2, flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                        <Box sx={{
+                            mt: 1, // Reduced margin top
+                            flexGrow: 1,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'flex-start' // Changed from 'center' to 'flex-start'
+                        }}>
                             <Box sx={{
                                 display: 'flex',
                                 alignItems: 'flex-start',
@@ -286,8 +293,8 @@ const SmokingQuiz = () => {
                             }}>
                                 <Box sx={{
                                     flexShrink: 0,
-                                    width: { xs: '100px', md: '160px' },
-                                    height: { xs: '100px', md: '160px' },
+                                    width: { xs: '90px', md: '150px' }, // Slightly reduced size
+                                    height: { xs: '90px', md: '150px' }, // Slightly reduced size
                                     position: 'relative',
                                     left: { xs: '-5px', md: '-3px' }
                                 }}>
@@ -297,7 +304,7 @@ const SmokingQuiz = () => {
                                         style={{
                                             width: '100%',
                                             height: '100%',
-                                            marginBottom: '-10px'
+                                            marginTop: '-20px'
                                         }}
                                     />
                                 </Box>
@@ -307,14 +314,14 @@ const SmokingQuiz = () => {
                                     sx={{
                                         position: 'relative',
                                         backgroundColor: '#f5f5f5',
-                                        padding: '25px 20px',
+                                        padding: '20px 18px', // Reduced padding
                                         borderRadius: '16px',
                                         maxWidth: { xs: '100%', sm: isVeryLongQuestion ? '70%' : isLongQuestion ? '60%' : '50%' },
                                         width: { xs: 'calc(100% - 20px)', sm: 'auto' },
                                         minWidth: { xs: 'auto', sm: '500px' },
                                         boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
                                         alignSelf: 'flex-start',
-                                        mt: { xs: 0, sm: 2 }, // Add margin top on desktop
+                                        mt: { xs: 0, sm: 1 }, // Reduced margin top
                                         transition: 'all 0.3s ease',
                                         '&:before': {
                                             content: '""',
@@ -333,7 +340,7 @@ const SmokingQuiz = () => {
                                         variant="body1"
                                         sx={{
                                             color: 'text.primary',
-                                            mb: 2,
+                                            mb: 1.5, // Reduced margin bottom
                                             fontWeight: 520
                                         }}
                                     >
@@ -341,7 +348,7 @@ const SmokingQuiz = () => {
                                     </Typography>
 
                                     {/* Input field inside the chat bubble */}
-                                    <Box sx={{ mt: 2 }}>
+                                    <Box sx={{ mt: 1.5 }}> {/* Reduced margin top */}
                                         {questions[currentQuestion].component(
                                             formData[questions[currentQuestion].field],
                                             questions[currentQuestion].field === 'triggers'
@@ -354,7 +361,8 @@ const SmokingQuiz = () => {
                         </Box>
 
                         <Box sx={{
-                            mt: 4,
+                            mt: 'auto', // This pushes the button to the bottom of the container
+                            pt: 2, // Add padding top to create some space
                             display: 'flex',
                             justifyContent: 'space-between',
                             gap: 2,
