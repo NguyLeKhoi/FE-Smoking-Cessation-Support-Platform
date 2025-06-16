@@ -13,6 +13,7 @@ import LoginSuccessPage from '../pages/LoginSuccessPage';
 import ForgotPasswordPage from '../pages/ForgotPasswordPage';
 import ResetPasswordPage from '../pages/ResetPasswordPage';
 import SmokingQuizPage from '../pages/SmokingQuizPage';
+import MembershipPlansPage from '../pages/MembershipPlansPage';
 
 export const routes = createBrowserRouter([
   {
@@ -87,6 +88,14 @@ export const routes = createBrowserRouter([
       <AuthLayout>
         <SmokingQuizPage />
       </AuthLayout>
+    ),
+  },
+  {
+    path: '/membership-plans',
+    element: (
+      <MainLayout showFooter={false}>
+        <MembershipPlansPage />
+      </MainLayout>
     ),
   },
   {

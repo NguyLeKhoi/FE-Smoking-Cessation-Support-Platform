@@ -222,6 +222,35 @@ const Header = ({ authStatus }) => {
             </AnimatedUnderline>
           </Box>
 
+          <Box component={RouterLink} to="/membership-plans" sx={{ textDecoration: 'none', display: 'flex', alignItems: 'center', ml: 3 }}>
+            <AnimatedUnderline>
+              <Typography
+                variant="h6"
+                sx={{
+                  color: '#000000',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                  '&:hover img': {
+                    transform: 'translateY(-5px)'
+                  }
+                }}
+              >
+                <img
+                  src="icon/icons8-membership-64.png"
+                  alt="Membership Icon"
+                  style={{
+                    width: '30px',
+                    height: '30px',
+                    verticalAlign: 'middle',
+                    transition: 'transform 0.3s ease-in-out'
+                  }}
+                />
+                Membership
+              </Typography>
+            </AnimatedUnderline>
+          </Box>
+
           <Box sx={{ flexGrow: 1 }} />
 
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
