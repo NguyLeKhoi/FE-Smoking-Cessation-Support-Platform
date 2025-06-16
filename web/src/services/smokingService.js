@@ -4,10 +4,28 @@ const smokingService = {
     // Create user's smoking habits
     createSmokingHabit: async (habitData) => {
         try {
-            const response = await api.post('/smoking-habits', habitData);
+            const formattedData = {
+                cigarettes_per_pack: Number(habitData.cigarettes_per_pack),
+                price_per_pack: Number(habitData.price_per_pack),
+                cigarettes_per_day: Number(habitData.cigarettes_per_day),
+                smoking_years: Number(habitData.smoking_years),
+                triggers: Array.isArray(habitData.triggers) ? habitData.triggers : [],
+                health_issues: habitData.health_issues || ''
+            };
+
+            console.log('Formatted data being sent to API:', formattedData);
+
+            const response = await api.post('/smoking-habits', formattedData);
             return response.data;
         } catch (error) {
             console.error('Error creating smoking habit:', error);
+
+            // Log detailed error information
+            if (error.response) {
+                console.error('Response data:', error.response.data);
+                console.error('Response status:', error.response.status);
+            }
+
             throw error;
         }
     },

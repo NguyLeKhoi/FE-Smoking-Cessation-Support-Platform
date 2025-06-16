@@ -232,7 +232,16 @@ const SmokingHabitsQuestions = () => {
                     rows={4}
                     name="health_issues"
                     value={value || ''}
-                    onChange={onChange}
+                    onChange={(e) => {
+                        // Ensure we pass a properly formatted event object
+                        const event = {
+                            target: {
+                                name: 'health_issues',
+                                value: e.target.value
+                            }
+                        };
+                        onChange(event);
+                    }}
                     placeholder="e.g. coughing, shortness of breath, reduced stamina"
                     variant="outlined"
                     sx={{
@@ -244,7 +253,7 @@ const SmokingHabitsQuestions = () => {
                             '&.Mui-focused fieldset': { borderColor: 'primary.main' },
                         }
                     }}
-                />
+            />
             )
         }
     ];

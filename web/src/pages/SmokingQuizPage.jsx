@@ -65,7 +65,7 @@ const SmokingQuiz = () => {
     // Handle form submission logic in useCallback to prevent recreation on each render
     const handleSubmit = useCallback(async () => {
         try {
-            // Validation check
+            // validation
             if (
                 !formData.cigarettes_per_day ||
                 !formData.smoking_years ||
@@ -80,14 +80,18 @@ const SmokingQuiz = () => {
 
             setLoading(true);
 
+            console.log("Form data before submission:", formData);
+
             const dataToSubmit = {
-                ...formData,
+                cigarettes_per_pack: Number(formData.cigarettes_per_pack),
+                price_per_pack: Number(formData.price_per_pack),
                 cigarettes_per_day: Number(formData.cigarettes_per_day),
                 smoking_years: Number(formData.smoking_years),
-                price_per_pack: Number(formData.price_per_pack),
-                cigarettes_per_pack: Number(formData.cigarettes_per_pack),
-                health_issues: formData.health_issues || ''
+                triggers: Array.isArray(formData.triggers) ? formData.triggers : [],
+                health_issues: typeof formData.health_issues === 'string' ? formData.health_issues : ''
             };
+
+            console.log("Data to submit:", dataToSubmit);
 
             const data = await smokingService.createSmokingHabit(dataToSubmit);
             setResult(data);
@@ -96,7 +100,17 @@ const SmokingQuiz = () => {
             setError(null);
         } catch (error) {
             console.error('Error submitting smoking assessment:', error);
-            setError('There was an error submitting your assessment. Please try again.');
+            if (error.response && error.response.data) {
+                console.error('Server response:', error.response.data);
+                // Display a more specific error if available
+                if (error.response.data.message) {
+                    setError(`Error: ${error.response.data.message}`);
+                } else {
+                    setError('There was an error submitting your assessment. Please try again.');
+                }
+            } else {
+                setError('There was an error submitting your assessment. Please try again.');
+            }
         } finally {
             setLoading(false);
         }
@@ -153,6 +167,7 @@ const SmokingQuiz = () => {
 
     const handleChange = useCallback((e) => {
         const { name, value } = e.target;
+        console.log(`Updating field ${name} with value:`, value);
         dispatch({ type: 'UPDATE_FIELD', field: name, value });
     }, []);
 
