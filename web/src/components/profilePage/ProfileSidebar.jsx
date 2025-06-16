@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Box, Typography, List, ListItem, ListItemIcon, ListItemText, Badge, Avatar, Paper, Tooltip } from '@mui/material';
 import { styled } from '@mui/system';
 import { useLocation } from 'react-router-dom';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import PersonIcon from '@mui/icons-material/Person';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
@@ -56,46 +57,6 @@ const IconText = styled(Typography)(({ theme }) => ({
     color: theme.palette.text.primary,
 }));
 
-// User profile section - updated to accept userData and use avatar if available
-const UserProfileSection = ({ userData }) => (
-    <Box sx={{ display: 'flex', alignItems: 'center', mb: 4, pl: 1 }}>
-        {userData?.avatar ? (
-            <Avatar
-                src={userData.avatar}
-                alt={userData.username || 'User'}
-                sx={{
-                    width: 40,
-                    height: 40,
-                    border: '0.5px solid',
-                    borderColor: 'divider',
-                    borderRadius: '15%',
-                }}
-            />
-        ) : (
-            <Avatar
-                sx={{
-                    width: 40,
-                    height: 40,
-                    bgcolor: 'section.main',
-                    border: '0.5px solid',
-                    borderColor: 'divider',
-                    borderRadius: '15%',
-                }}
-            >
-                {userData?.username ? userData.username.charAt(0).toUpperCase() : 'U'}
-            </Avatar>
-        )}
-        <Box sx={{ ml: 2 }}>
-            <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                {userData?.username || 'User'}
-            </Typography>
-            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                Basic Level
-            </Typography>
-        </Box>
-    </Box>
-);
-
 const ProfileSidebar = ({ userData }) => {
     const location = useLocation();
     const [activeItem, setActiveItem] = useState(() => {
@@ -111,7 +72,30 @@ const ProfileSidebar = ({ userData }) => {
 
     return (
         <SidebarContainer elevation={0}>
-            <UserProfileSection userData={userData} />
+
+            <Box
+                component={RouterLink}
+                to="/"
+                sx={{
+                    textDecoration: 'none',
+                    display: 'flex',
+                    alignItems: 'center'
+                }}
+            >
+                <Typography
+                    variant="h4"
+                    sx={{
+                        color: '#000000',
+                        fontWeight: 800,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1
+                    }}
+                >
+                    Zerotine
+                </Typography>
+            </Box>
+
 
             <Typography
                 variant="overline"
