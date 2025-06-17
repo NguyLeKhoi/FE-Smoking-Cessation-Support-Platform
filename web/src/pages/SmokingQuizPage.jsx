@@ -56,6 +56,7 @@ const SmokingQuiz = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [quizCompleted, setQuizCompleted] = useState(false);
+    const [submitting, setSubmitting] = useState(false); 
 
     // Get questions from the extracted component using useMemo to prevent unnecessary rerenders
     const { questions } = useMemo(() => SmokingHabitsQuestions(), []);
@@ -76,6 +77,8 @@ const SmokingQuiz = () => {
                 return;
             }
 
+            // Set submitting state to true to show the loading message
+            setSubmitting(true);
             setLoading(true);
 
             console.log("Original form data:", formData);
@@ -91,6 +94,9 @@ const SmokingQuiz = () => {
             };
 
             console.log("Data to be submitted:", dataToSubmit);
+
+            // Add a small delay to ensure the loading state is visible (optional)
+            await new Promise(resolve => setTimeout(resolve, 1000));
 
             const data = await smokingService.createSmokingHabit(dataToSubmit);
             setResult(data);
@@ -123,6 +129,7 @@ const SmokingQuiz = () => {
                 setError('There was an error submitting your assessment. Please try again.');
             }
         } finally {
+            setSubmitting(false);
             setLoading(false);
         }
     }, [formData]);
@@ -351,7 +358,7 @@ const SmokingQuiz = () => {
                                         backgroundColor: '#f5f5f5',
                                         padding: '20px 18px',
                                         borderRadius: '16px',
-                                        maxWidth: { xs: '100%', sm: isVeryLongQuestion ? '70%' : isLongQuestion ? '60%' : '50%' },
+                                        maxWidth: { xs: '100%', sm: submitting ? '60%' : isVeryLongQuestion ? '70%' : isLongQuestion ? '60%' : '50%' },
                                         width: { xs: 'calc(100% - 20px)', sm: 'auto' },
                                         minWidth: { xs: 'auto', sm: '500px' },
                                         boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
@@ -371,26 +378,62 @@ const SmokingQuiz = () => {
                                         },
                                     }}
                                 >
-                                    <Typography
-                                        variant="body1"
-                                        sx={{
-                                            color: 'text.primary',
-                                            mb: 1.5,
-                                            fontWeight: 520
-                                        }}
-                                    >
-                                        {currentQuestionText}
-                                    </Typography>
+                                    {submitting ? (
+                                        // Show loading message when submitting
+                                        <Box sx={{
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            py: 3
+                                        }}>
+                                            <CircularProgress size={40} sx={{ mb: 2, color: '#3f332b' }} />
+                                            <Typography
+                                                variant="body1"
+                                                sx={{
+                                                    color: 'text.primary',
+                                                    fontWeight: 600,
+                                                    textAlign: 'center'
+                                                }}
+                                            >
+                                                Assessment In Progress...
+                                            </Typography>
+                                            <Typography
+                                                variant="body2"
+                                                sx={{
+                                                    color: 'text.secondary',
+                                                    textAlign: 'center',
+                                                    mt: 1
+                                                }}
+                                            >
+                                                Analyzing your smoking habits
+                                            </Typography>
+                                        </Box>
+                                    ) : (
+                                        // Show normal question content when not submitting
+                                        <>
+                                            <Typography
+                                                variant="body1"
+                                                sx={{
+                                                    color: 'text.primary',
+                                                    mb: 1.5,
+                                                    fontWeight: 520
+                                                }}
+                                            >
+                                                {currentQuestionText}
+                                            </Typography>
 
-                                    {/* Input field inside the chat bubble */}
-                                    <Box sx={{ mt: 1.5 }}>
-                                        {questions[currentQuestion].component(
-                                            formData[questions[currentQuestion].field],
-                                            questions[currentQuestion].field === 'triggers'
-                                                ? handleCheckboxChange
-                                                : (e) => handleChange(e)
-                                        )}
-                                    </Box>
+                                            {/* Input field inside the chat bubble */}
+                                            <Box sx={{ mt: 1.5 }}>
+                                                {questions[currentQuestion].component(
+                                                    formData[questions[currentQuestion].field],
+                                                    questions[currentQuestion].field === 'triggers'
+                                                        ? handleCheckboxChange
+                                                        : (e) => handleChange(e)
+                                                )}
+                                            </Box>
+                                        </>
+                                    )}
                                 </Box>
                             </Box>
                         </Box>
@@ -427,28 +470,29 @@ const SmokingQuiz = () => {
                             <Button
                                 onClick={handleNext}
                                 variant="contained"
+                                disabled={submitting}
                                 endIcon={currentQuestion < questions.length - 1 ? <ArrowForwardIcon /> : null}
                                 sx={{
                                     py: 1.5,
                                     px: 4,
-                                    bgcolor: '#3f332b',
+                                    bgcolor: submitting ? 'rgba(63, 51, 43, 0.7)' : '#3f332b',
                                     color: 'white',
                                     borderRadius: '12px',
                                     boxShadow: '0 4px 0 rgba(63, 51, 43, 0.5)',
                                     ml: 'auto',
                                     flex: { xs: '1', sm: '0 0 auto' },
                                     '&:hover': {
-                                        bgcolor: 'rgba(63, 51, 43, 0.9)',
-                                        boxShadow: '0 2px 0 rgba(63, 51, 43, 0.5)',
-                                        transform: 'translateY(2px)',
+                                        bgcolor: submitting ? 'rgba(63, 51, 43, 0.7)' : 'rgba(63, 51, 43, 0.9)',
+                                        boxShadow: submitting ? '0 4px 0 rgba(63, 51, 43, 0.5)' : '0 2px 0 rgba(63, 51, 43, 0.5)',
+                                        transform: submitting ? 'none' : 'translateY(2px)',
                                     },
                                     '&:active': {
-                                        boxShadow: '0 0 0 rgba(63, 51, 43, 0.5)',
-                                        transform: 'translateY(4px)',
+                                        boxShadow: submitting ? '0 4px 0 rgba(63, 51, 43, 0.5)' : '0 0 0 rgba(63, 51, 43, 0.5)',
+                                        transform: submitting ? 'none' : 'translateY(4px)',
                                     },
                                 }}
                             >
-                                {currentQuestion === questions.length - 1 ? 'Submit Assessment' : 'Next'}
+                                {submitting ? 'Processing...' : (currentQuestion === questions.length - 1 ? 'Submit Assessment' : 'Next')}
                             </Button>
                         </Box>
                     </Box>
