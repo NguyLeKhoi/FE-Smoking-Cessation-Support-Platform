@@ -1,19 +1,18 @@
 import React, { useState } from 'react';
-import { 
-    Box, 
-    Typography, 
-    Grid, 
-    Paper, 
-    Accordion, 
-    AccordionSummary, 
-    AccordionDetails 
+import {
+    Box,
+    Typography,
+    Grid,
+    Paper,
+    Accordion,
+    AccordionSummary,
+    AccordionDetails
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SavingsIcon from '@mui/icons-material/Savings';
 import HealthAndSafetyIcon from '@mui/icons-material/HealthAndSafety';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
-import SmartToyIcon from '@mui/icons-material/SmartToy';
 import SmokingHabitsQuestions from './SmokingHabitsQuestions';
 
 const SmokingHabitsResult = ({ data }) => {
@@ -34,7 +33,9 @@ const SmokingHabitsResult = ({ data }) => {
     const pricePerPack = parseFloat(smokingData.price_per_pack);
     const cigarettesPerPack = parseFloat(smokingData.cigarettes_per_pack);
     const triggers = Array.isArray(smokingData.triggers) ? smokingData.triggers : [];
-    const healthIssues = smokingData.health_issues || "";
+    const healthIssues = Array.isArray(smokingData.health_issues)
+        ? smokingData.health_issues
+        : (smokingData.health_issues ? [smokingData.health_issues] : []);
     const aiFeedback = smokingData.ai_feedback || "";
 
     // Calculate lifetime cigarettes
@@ -74,7 +75,7 @@ const SmokingHabitsResult = ({ data }) => {
 
             {aiFeedback && (
                 <Box sx={{ mb: 5, width: '100%' }}>
-                    <Accordion 
+                    <Accordion
                         defaultExpanded={true} // Start expanded to show the important feedback
                         elevation={0}
                         sx={{
@@ -158,7 +159,7 @@ const SmokingHabitsResult = ({ data }) => {
                             p: 3,
                             height: '100%',
                             minHeight: '240px',
-                            width: '100%', // Ensure paper takes full width of grid item
+                            width: '100%',
                             borderRadius: 3,
                             border: '1px solid',
                             borderColor: 'divider',
@@ -167,7 +168,7 @@ const SmokingHabitsResult = ({ data }) => {
                             alignItems: 'center',
                             justifyContent: 'center',
                             textAlign: 'center',
-                            boxSizing: 'border-box' // Include padding in element's dimensions
+                            boxSizing: 'border-box',
                         }}
                     >
                         <LocalFireDepartmentIcon
@@ -202,7 +203,7 @@ const SmokingHabitsResult = ({ data }) => {
                             alignItems: 'center',
                             justifyContent: 'center',
                             textAlign: 'center',
-                            boxSizing: 'border-box' // Include padding in element's dimensions
+                            boxSizing: 'border-box'
                         }}
                     >
                         <SavingsIcon
@@ -263,7 +264,7 @@ const SmokingHabitsResult = ({ data }) => {
                             p: 3,
                             height: '100%',
                             minHeight: '240px',
-                            width: '100%', // Ensure paper takes full width of grid item
+                            width: '100%',
                             borderRadius: 3,
                             border: '1px solid',
                             borderColor: 'divider',
@@ -272,7 +273,7 @@ const SmokingHabitsResult = ({ data }) => {
                             alignItems: 'center',
                             justifyContent: 'center',
                             textAlign: 'center',
-                            boxSizing: 'border-box' // Include padding in element's dimensions
+                            boxSizing: 'border-box'
                         }}
                     >
                         <HealthAndSafetyIcon
@@ -348,7 +349,7 @@ const SmokingHabitsResult = ({ data }) => {
                 </Paper>
             </Box>
 
-            {healthIssues && (
+            {healthIssues.length > 0 && (
                 <Box sx={{ mb: 4 }}>
                     <Typography
                         variant="h5"
@@ -371,7 +372,7 @@ const SmokingHabitsResult = ({ data }) => {
                         }}
                     >
                         <Typography variant="body1">
-                            {healthIssues}
+                            {healthIssues.join(', ')}
                         </Typography>
                     </Paper>
                 </Box>
@@ -429,7 +430,7 @@ const SmokingHabitsResult = ({ data }) => {
 
             {/* shows the original answers */}
             <Box sx={{ mt: 6, mb: 4 }}>
-                <Accordion 
+                <Accordion
                     elevation={0}
                     sx={{
                         borderRadius: '12px',
@@ -467,7 +468,7 @@ const SmokingHabitsResult = ({ data }) => {
                     </AccordionSummary>
                     <AccordionDetails sx={{ p: 3 }}>
                         {questions.map(question => (
-                            <Box key={question.id} sx={{ 
+                            <Box key={question.id} sx={{
                                 mb: 2,
                                 pb: 2,
                                 borderBottom: question.id !== questions.length ? '1px solid rgba(0, 0, 0, 0.08)' : 'none'

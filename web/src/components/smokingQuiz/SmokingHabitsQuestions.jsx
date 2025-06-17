@@ -6,7 +6,8 @@ import {
     FormControlLabel,
     Checkbox,
     Box,
-    Typography
+    Typography,
+    Grid
 } from '@mui/material';
 
 // Extract common styles to reuse across components
@@ -105,7 +106,7 @@ const SmokingHabitsQuestions = () => {
         'Gum disease or tooth loss',
         'Reduced sense of taste or smell',
         'Fatigue or low energy',
-        'No, I haven\'t experienced any health issues'
+        'No health issues'
     ];
 
     const questions = [
@@ -223,37 +224,74 @@ const SmokingHabitsQuestions = () => {
         },
         {
             id: 6,
-            question: 'Have you experienced any health issues due to smoking?',
+            question: 'Have you experienced any health issues due to smoking? (Select all that apply)',
             field: 'health_issues',
             component: (value, onChange) => (
-                <TextField
-                    fullWidth
-                    multiline
-                    rows={4}
-                    name="health_issues"
-                    value={value || ''}
-                    onChange={(e) => {
-                        // Ensure we pass a properly formatted event object
-                        const event = {
-                            target: {
-                                name: 'health_issues',
-                                value: e.target.value
-                            }
-                        };
-                        onChange(event);
-                    }}
-                    placeholder="e.g. coughing, shortness of breath, reduced stamina"
-                    variant="outlined"
-                    sx={{
-                        '& .MuiOutlinedInput-root': {
-                            borderRadius: '12px',
-                            bgcolor: 'rgba(0, 0, 0, 0.02)',
-                            '& fieldset': { borderColor: 'rgba(0, 0, 0, 0.12)' },
-                            '&:hover fieldset': { borderColor: 'rgba(0, 0, 0, 0.24)' },
-                            '&.Mui-focused fieldset': { borderColor: 'primary.main' },
-                        }
-                    }}
-            />
+                <FormControl component="fieldset" fullWidth>
+                    <Box sx={{ display: 'flex', flexDirection: 'row', width: '100%' }}>
+                        {/* First column - first 4 issues */}
+                        <Box sx={{ flex: 1, pr: 2 }}>
+                            {healthIssuesList.slice(0, 4).map((issue) => (
+                                <FormControlLabel
+                                    key={issue}
+                                    control={
+                                        <Checkbox
+                                            checked={Array.isArray(value) && value.includes(issue)}
+                                            onChange={onChange}
+                                            value={issue}
+                                            sx={{
+                                                color: 'rgba(0, 0, 0, 0.6)',
+                                                '&.Mui-checked': {
+                                                    color: '#000000',
+                                                },
+                                            }}
+                                        />
+                                    }
+                                    label={issue}
+                                    sx={{
+                                        color: 'text.secondary',
+                                        display: 'flex',
+                                        marginBottom: 1,
+                                        '& .MuiFormControlLabel-label': {
+                                            fontSize: '0.95rem',
+                                        }
+                                    }}
+                                />
+                            ))}
+                        </Box>
+
+                        {/* Second column - last 4 issues */}
+                        <Box sx={{ flex: 1, pl: 2 }}>
+                            {healthIssuesList.slice(4, 8).map((issue) => (
+                                <FormControlLabel
+                                    key={issue}
+                                    control={
+                                        <Checkbox
+                                            checked={Array.isArray(value) && value.includes(issue)}
+                                            onChange={onChange}
+                                            value={issue}
+                                            sx={{
+                                                color: 'rgba(0, 0, 0, 0.6)',
+                                                '&.Mui-checked': {
+                                                    color: '#000000',
+                                                },
+                                            }}
+                                        />
+                                    }
+                                    label={issue}
+                                    sx={{
+                                        color: 'text.secondary',
+                                        display: 'flex',
+                                        marginBottom: 1,
+                                        '& .MuiFormControlLabel-label': {
+                                            fontSize: '0.95rem',
+                                        }
+                                    }}
+                                />
+                            ))}
+                        </Box>
+                    </Box>
+                </FormControl>
             )
         }
     ];

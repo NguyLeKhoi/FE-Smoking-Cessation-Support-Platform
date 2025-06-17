@@ -28,7 +28,7 @@ const defaultState = {
     cigarettes_per_day: '',
     smoking_years: '',
     triggers: [],
-    health_issues: ''
+    health_issues: []
 };
 
 // Form state reducer
@@ -41,6 +41,11 @@ const formReducer = (state, action) => {
                 ? [...state.triggers, action.value]
                 : state.triggers.filter((t) => t !== action.value);
             return { ...state, triggers: updatedTriggers };
+        case 'UPDATE_HEALTH_ISSUES':
+            const updatedHealthIssues = action.checked
+                ? [...state.health_issues, action.value]
+                : state.health_issues.filter((issue) => issue !== action.value);
+            return { ...state, health_issues: updatedHealthIssues };
         case 'RESET':
             return defaultState;
         case 'INITIALIZE':
@@ -88,6 +93,14 @@ const SmokingQuiz = () => {
     }, []);
 
     /**
+     * Handles checkbox changes for health issues
+     */
+    const handleHealthIssuesChange = useCallback((e) => {
+        const { value, checked } = e.target;
+        dispatch({ type: 'UPDATE_HEALTH_ISSUES', value, checked });
+    }, []);
+
+    /**
      * Validates the current question's field
      */
     const validateCurrentField = useCallback(() => {
@@ -102,6 +115,15 @@ const SmokingQuiz = () => {
         if (currentField === 'triggers') {
             if (!formData.triggers?.length) {
                 setError(`Please select at least one smoking trigger before continuing.`);
+                return false;
+            }
+            return true;
+        }
+
+        // Validate health issues field (array)
+        if (currentField === 'health_issues') {
+            if (!formData.health_issues?.length) {
+                setError(`Please select at least one option before continuing.`);
                 return false;
             }
             return true;
@@ -128,7 +150,9 @@ const SmokingQuiz = () => {
                 !formData.price_per_pack ||
                 !formData.cigarettes_per_pack ||
                 !formData.triggers ||
-                formData.triggers.length === 0
+                formData.triggers.length === 0 ||
+                !formData.health_issues ||
+                formData.health_issues.length === 0
             ) {
                 setError('Please fill in all required fields before submitting the assessment.');
                 return;
@@ -146,7 +170,7 @@ const SmokingQuiz = () => {
                 cigarettes_per_day: Number(formData.cigarettes_per_day),
                 smoking_years: Math.round(Number(formData.smoking_years)), // Round to integer per API requirement
                 triggers: formData.triggers,
-                health_issues: formData.health_issues || ''
+                health_issues: formData.health_issues // This will now be an array
             };
 
             console.log('Formatted data being sent to API:', dataToSubmit);
@@ -254,6 +278,24 @@ const SmokingQuiz = () => {
                 if (quizCompleted && response?.data?.length > 0) {
                     const latestRecord = response.data[0];
 
+                    // Format health_issues as an array if it's a string
+                    let healthIssues = [];
+                    if (latestRecord.health_issues) {
+                        if (Array.isArray(latestRecord.health_issues)) {
+                            healthIssues = latestRecord.health_issues;
+                        } else if (typeof latestRecord.health_issues === 'string') {
+                            // If it's a string, try to parse it or use it as a single item
+                            try {
+                                healthIssues = JSON.parse(latestRecord.health_issues);
+                                if (!Array.isArray(healthIssues)) {
+                                    healthIssues = [latestRecord.health_issues];
+                                }
+                            } catch (e) {
+                                healthIssues = [latestRecord.health_issues];
+                            }
+                        }
+                    }
+
                     // Initialize form with fetched data
                     dispatch({
                         type: 'INITIALIZE',
@@ -263,7 +305,7 @@ const SmokingQuiz = () => {
                             cigarettes_per_day: latestRecord.cigarettes_per_day,
                             smoking_years: latestRecord.smoking_years,
                             triggers: Array.isArray(latestRecord.triggers) ? latestRecord.triggers : [],
-                            health_issues: latestRecord.health_issues || ''
+                            health_issues: healthIssues
                         }
                     });
 
@@ -442,9 +484,9 @@ const SmokingQuiz = () => {
                             <Box mb={4} sx={{ textAlign: 'center', width: '100%' }}>
                                 <Typography variant="h4" component="h1" sx={{
                                     fontWeight: 600,
-                                    mb: -3,
+                                    mb: -2,
                                     color: 'text.primary',
-                                    fontSize: { xs: '1.75rem', md: '2.5rem' }
+                                    fontSize: { xs: '1.75rem', md: '2rem' }
                                 }}>
                                     Assessing Your Smoking Habit...
                                 </Typography>
@@ -453,24 +495,35 @@ const SmokingQuiz = () => {
                             {/* Question content - centered */}
                             <Box sx={{
                                 mt: 2,
-                                mb: 4,
+                                mb: 2,
                                 width: '100%',
                                 display: 'flex',
                                 flexDirection: 'column',
-                                alignItems: 'center' // Center content
+                                alignItems: 'center'
                             }}>
-                                {/* Chat Bubble component */}
+                                {/* Chat Bubble with question only */}
                                 <QuizChatBubble
                                     questionText={currentQuestionText}
                                     submitting={submitting}
-                                    questionComponent={questions[currentQuestion].component}
-                                    formValue={formData[questions[currentQuestion].field]}
-                                    onInputChange={{
-                                        handleChange,
-                                        handleCheckboxChange
-                                    }}
-                                    isTriggerQuestion={questions[currentQuestion].field === 'triggers'}
                                 />
+
+                                {/* Options below the chat bubble */}
+                                {!submitting && (
+                                    <Box sx={{
+                                        width: '100%',
+                                        px: { xs: 0, sm: 2 },
+                                        mt: -6,
+                                    }}>
+                                        {questions[currentQuestion].component(
+                                            formData[questions[currentQuestion].field],
+                                            questions[currentQuestion].field === 'triggers'
+                                                ? handleCheckboxChange
+                                                : questions[currentQuestion].field === 'health_issues'
+                                                    ? handleHealthIssuesChange
+                                                    : handleChange
+                                        )}
+                                    </Box>
+                                )}
                             </Box>
 
                             {/* Navigation Buttons */}

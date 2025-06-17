@@ -5,11 +5,7 @@ import typingCatAnimation from '../../assets/animations/typing-cat-animation.jso
 
 const QuizChatBubble = ({
     questionText,
-    submitting,
-    questionComponent,
-    formValue,
-    onInputChange,
-    isTriggerQuestion
+    submitting
 }) => {
     const isLongQuestion = questionText.length > 50;
     const isVeryLongQuestion = questionText.length > 100;
@@ -26,8 +22,8 @@ const QuizChatBubble = ({
             {/* Cat animation */}
             <Box sx={{
                 flexShrink: 0,
-                width: { xs: '90px', md: '150px' },
-                height: { xs: '90px', md: '150px' },
+                width: { xs: '90px', md: '160px' },
+                height: { xs: '90px', md: '160px' },
                 position: 'relative',
                 left: { xs: '-5px', md: '-3px' }
             }}>
@@ -49,13 +45,25 @@ const QuizChatBubble = ({
                     backgroundColor: '#f5f5f5',
                     padding: '20px 18px',
                     borderRadius: '16px',
-                    maxWidth: { xs: '100%', sm: submitting ? '60%' : isVeryLongQuestion ? '70%' : isLongQuestion ? '60%' : '50%' },
+                    maxWidth: {
+                        xs: '100%',  // For extra small screens (mobile)
+                        sm: submitting
+                            ? '60%'               // If submitting is true
+                            : isVeryLongQuestion
+                                ? '80%'           // If question is very long
+                                : isLongQuestion
+                                    ? '70%'       // If question is somewhat long
+                                    : '40%'       // If question is short
+                    },
                     width: { xs: 'calc(100% - 20px)', sm: 'auto' },
                     minWidth: { xs: 'auto', sm: '500px' },
                     boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
                     alignSelf: 'flex-start',
                     mt: { xs: 0, sm: 1 },
                     transition: 'all 0.3s ease',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
                     '&:before': {
                         content: '""',
                         position: 'absolute',
@@ -78,7 +86,8 @@ const QuizChatBubble = ({
                             alignItems: 'center',
                             justifyContent: 'center',
                             py: 3,
-                            minHeight: '200px'
+                            minHeight: '100px',
+                            width: '100%'
                         }}>
                             <CircularProgress size={40} sx={{ mb: 2, color: '#3f332b' }} />
                             <Typography
@@ -104,27 +113,24 @@ const QuizChatBubble = ({
                         </Box>
                     </Fade>
                 ) : (
-                    // Question content
+                    // Question text only - centered
                     <Fade in={!submitting} timeout={300}>
-                        <Box>
+                        <Box sx={{
+                            width: '100%',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center'
+                        }}>
                             <Typography
                                 variant="body1"
                                 sx={{
                                     color: 'text.primary',
-                                    mb: 1.5,
-                                    fontWeight: 520
+                                    fontWeight: 520,
+                                    textAlign: 'center' // Center the text
                                 }}
                             >
                                 {questionText}
                             </Typography>
-
-                            {/* Input field */}
-                            <Box sx={{ mt: 1.5 }}>
-                                {questionComponent(
-                                    formValue,
-                                    isTriggerQuestion ? onInputChange.handleCheckboxChange : onInputChange.handleChange
-                                )}
-                            </Box>
                         </Box>
                     </Fade>
                 )}

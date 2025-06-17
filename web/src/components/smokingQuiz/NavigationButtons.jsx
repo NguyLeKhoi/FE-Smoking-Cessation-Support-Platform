@@ -13,10 +13,11 @@ const QuizNavigationButtons = ({
     return (
         <Box sx={{
             mt: 'auto',
-            pt: 2,
+            pt: 4,
             display: 'flex',
             justifyContent: 'space-between',
             gap: 2,
+            borderTop: '1px solid rgba(0, 0, 0, 0.12)',
             flexDirection: { xs: currentQuestion > 0 ? 'column' : 'row', sm: 'row' }
         }}>
             {currentQuestion > 0 && (
