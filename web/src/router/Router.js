@@ -16,6 +16,7 @@ import SmokingQuizPage from '../pages/SmokingQuizPage';
 import MembershipPlansPage from '../pages/MembershipPlansPage';
 import NotFoundPage from '../pages/NotFoundPage';
 import LoadingPage from '../pages/LoadingPage';
+import AdminDashboard from '../pages/AdminDashboard';
 
 export const routes = createBrowserRouter([
   {
@@ -106,6 +107,17 @@ export const routes = createBrowserRouter([
       <AuthLayout>
         <LoadingPage />
       </AuthLayout>
+    ),
+  },
+  // Admin Routes
+  {
+    path: '/admin/*',
+    element: (
+      <ProtectedRoute requireAdmin={true}>
+        <MainLayout>
+          <AdminDashboard />
+        </MainLayout>
+      </ProtectedRoute>
     ),
   },
   {

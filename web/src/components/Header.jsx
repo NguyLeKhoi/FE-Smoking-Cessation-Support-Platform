@@ -85,13 +85,11 @@ const Header = ({ authStatus }) => {
             let timestampText = ''; // Set timestamp to empty as per previous request
 
             // Regex to find and extract the timestamp pattern at the very end
-            // This regex will now handle the common case of HH:MM:SS MM/DD/YYYY and remove the preceding 'and' or 'at' if present
             const timestampExtractionRegex = /(?:\s*(?:and|at)?\s*)?(\d{1,2}:\d{2}:\d{2}\s\d{1,2}\/\d{1,2}\/\d{4})$/;
             const match = fullMessage.match(timestampExtractionRegex);
 
             if (match) {
               messageText = fullMessage.replace(match[0], '').trim();
-              // timestampText remains empty as per user's request to remove it from display
             }
 
             // Add to notifications state for the dropdown
@@ -142,7 +140,10 @@ const Header = ({ authStatus }) => {
       }
     };
 
+    // Initial fetch
     fetchMotivationMessage();
+    
+    // Set up interval for subsequent fetches
     const intervalId = setInterval(fetchMotivationMessage, 7200000);
 
     return () => {
@@ -295,6 +296,26 @@ const Header = ({ authStatus }) => {
                   >
                     Welcome back, {userData.username}!
                   </Typography>
+                )}
+
+                {/* Admin Link - New addition */}
+                {!loading && userData && userData.role === 'admin' && (
+                  <Button
+                    component={RouterLink}
+                    to="/admin"
+                    variant="outlined"
+                    sx={{
+                      mr: 1,
+                      color: '#3f332b',
+                      borderColor: '#3f332b',
+                      '&:hover': {
+                        borderColor: '#000000',
+                        backgroundColor: 'rgba(63, 51, 43, 0.04)',
+                      },
+                    }}
+                  >
+                    Admin Panel
+                  </Button>
                 )}
 
                 <IconButton

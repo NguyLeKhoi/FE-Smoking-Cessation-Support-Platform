@@ -3,26 +3,40 @@ import { Box, Typography, List, ListItem, ListItemText, ListItemIcon } from '@mu
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import membershipService from '../services/membershipService';
 import LoadingPage from './LoadingPage';
+import { useNavigate } from 'react-router-dom';
+import { isAuthenticated } from '../services/authService';
 
 const MembershipPlansPage = () => {
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPlans = async () => {
+      // Check authentication first
+      if (!isAuthenticated()) {
+        navigate('/login', { state: { from: '/membership-plans' } });
+        return;
+      }
+
       try {
         const response = await membershipService.getMembershipPlans();
         setPlans(response.data);
         setLoading(false);
       } catch (err) {
+        // Handle unauthorized error silently
+        if (err.response?.status === 401) {
+          navigate('/login', { state: { from: '/membership-plans' } });
+          return;
+        }
         setError(err);
         setLoading(false);
       }
     };
 
     fetchPlans();
-  }, []);
+  }, [navigate]);
 
   if (loading) {
     return <LoadingPage />;
