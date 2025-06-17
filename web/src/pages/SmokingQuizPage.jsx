@@ -150,9 +150,7 @@ const SmokingQuiz = () => {
                 !formData.price_per_pack ||
                 !formData.cigarettes_per_pack ||
                 !formData.triggers ||
-                formData.triggers.length === 0 ||
-                !formData.health_issues ||
-                formData.health_issues.length === 0
+                formData.triggers.length === 0
             ) {
                 setError('Please fill in all required fields before submitting the assessment.');
                 return;
@@ -168,34 +166,38 @@ const SmokingQuiz = () => {
                 cigarettes_per_pack: Number(formData.cigarettes_per_pack),
                 price_per_pack: Number(formData.price_per_pack),
                 cigarettes_per_day: Number(formData.cigarettes_per_day),
-                smoking_years: Math.round(Number(formData.smoking_years)), // Round to integer per API requirement
+                smoking_years: Math.round(Number(formData.smoking_years)),
                 triggers: formData.triggers,
-                health_issues: formData.health_issues // This will now be an array
+                health_issues: formData.health_issues || []
             };
 
-            console.log('Formatted data being sent to API:', dataToSubmit);
+            console.log('User data being submitted:', dataToSubmit);
 
             // Add a small delay for better UX
             await new Promise(resolve => setTimeout(resolve, 800));
 
             try {
-                // Submit data to API
-                const apiResponse = await smokingService.createSmokingHabit(dataToSubmit);
+                // Submit data to API and get result
+                const resultData = await smokingService.createSmokingHabit(dataToSubmit);
 
-                // IMPORTANT: Use the submitted data instead of the response
-                // But get the AI feedback from the response if available
-                const resultData = {
+                // Make sure we're using the user's submitted data as the base
+                setResult({
                     ...dataToSubmit,
-                    ai_feedback: apiResponse?.ai_feedback || ''
-                };
-
-                // Set the result to be the data we submitted, not what came back
-                setResult(resultData);
+                    ai_feedback: resultData?.ai_feedback || '',
+                    // Add any other fields from API that are needed but preserve user input
+                    created_at: resultData?.created_at || new Date().toISOString(),
+                    daily_cost: resultData?.daily_cost ||
+                        ((Number(dataToSubmit.cigarettes_per_day) / Number(dataToSubmit.cigarettes_per_pack)) *
+                            Number(dataToSubmit.price_per_pack))
+                });
 
             } catch (apiError) {
-                console.error('API error, but proceeding with submitted data:', apiError);
-                // Even if the API call fails, we'll show the result with the submitted data
-                setResult(dataToSubmit);
+                console.error('API error, proceeding with submitted data:', apiError);
+                // If API fails, still show results with user data
+                setResult({
+                    ...dataToSubmit,
+                    ai_feedback: "We couldn't generate personalized feedback at this time, but here's your smoking assessment based on the data you provided."
+                });
             }
 
             setShowForm(false);
@@ -276,7 +278,17 @@ const SmokingQuiz = () => {
                 const response = await smokingService.getMySmokingHabits();
 
                 if (quizCompleted && response?.data?.length > 0) {
-                    const latestRecord = response.data[0];
+                    // Sort data by created_at in descending order to get the most recent record
+                    const sortedRecords = [...response.data].sort((a, b) => {
+                        const dateA = new Date(a.created_at || 0);
+                        const dateB = new Date(b.created_at || 0);
+                        return dateB - dateA; // Most recent first
+                    });
+
+                    // Get the most recent record
+                    const latestRecord = sortedRecords[0];
+
+                    console.log("Selected most recent record:", latestRecord);
 
                     // Format health_issues as an array if it's a string
                     let healthIssues = [];

@@ -21,21 +21,32 @@ const SmokingHabitsResult = ({ data }) => {
 
     if (!data) return null;
 
-    // Ensure we're working with the correct data structure
+    // Ensure correct data structure
     console.log("Raw result data:", data);
 
     // Get data from the right location in the response
-    const smokingData = data.data || data; // Handle both {data: {...}} and direct object format
+    const smokingData = data.data || data;
 
     // Access fields with proper error handling
-    const cigarettesPerDay = parseFloat(smokingData.cigarettes_per_day);
-    const smokingYears = parseFloat(smokingData.smoking_years);
-    const pricePerPack = parseFloat(smokingData.price_per_pack);
-    const cigarettesPerPack = parseFloat(smokingData.cigarettes_per_pack);
-    const triggers = Array.isArray(smokingData.triggers) ? smokingData.triggers : [];
+    const cigarettesPerDay = Number(smokingData.cigarettes_per_day) || 0;
+    const smokingYears = Number(smokingData.smoking_years) || 0;
+    const pricePerPack = Number(smokingData.price_per_pack) || 0;
+    const cigarettesPerPack = Number(smokingData.cigarettes_per_pack) || 0;
+
+    // Ensure triggers is always an array
+    const triggers = Array.isArray(smokingData.triggers)
+        ? smokingData.triggers
+        : (typeof smokingData.triggers === 'string'
+            ? [smokingData.triggers]
+            : []);
+
+    // Ensure health_issues is always an array
     const healthIssues = Array.isArray(smokingData.health_issues)
         ? smokingData.health_issues
-        : (smokingData.health_issues ? [smokingData.health_issues] : []);
+        : (typeof smokingData.health_issues === 'string' && smokingData.health_issues
+            ? [smokingData.health_issues]
+            : []);
+
     const aiFeedback = smokingData.ai_feedback || "";
 
     // Calculate lifetime cigarettes
@@ -76,7 +87,7 @@ const SmokingHabitsResult = ({ data }) => {
             {aiFeedback && (
                 <Box sx={{ mb: 5, width: '100%' }}>
                     <Accordion
-                        defaultExpanded={true} // Start expanded to show the important feedback
+                        defaultExpanded={true}
                         elevation={0}
                         sx={{
                             borderRadius: '12px',
@@ -194,7 +205,7 @@ const SmokingHabitsResult = ({ data }) => {
                             p: 3,
                             height: '100%',
                             minHeight: '240px',
-                            width: '100%', // Ensure paper takes full width of grid item
+                            width: '100%',
                             borderRadius: 3,
                             border: '1px solid',
                             borderColor: 'divider',
@@ -229,7 +240,7 @@ const SmokingHabitsResult = ({ data }) => {
                             p: 3,
                             height: '100%',
                             minHeight: '240px',
-                            width: '100%', // Ensure paper takes full width of grid item
+                            width: '100%',
                             borderRadius: 3,
                             border: '1px solid',
                             borderColor: 'divider',
@@ -238,7 +249,7 @@ const SmokingHabitsResult = ({ data }) => {
                             alignItems: 'center',
                             justifyContent: 'center',
                             textAlign: 'center',
-                            boxSizing: 'border-box' // Include padding in element's dimensions
+                            boxSizing: 'border-box'
                         }}
                     >
                         <AccessTimeIcon
@@ -349,34 +360,26 @@ const SmokingHabitsResult = ({ data }) => {
                 </Paper>
             </Box>
 
-            {healthIssues.length > 0 && (
-                <Box sx={{ mb: 4 }}>
-                    <Typography
-                        variant="h5"
-                        sx={{
-                            fontWeight: 600,
-                            mb: 2,
-                            color: 'text.primary'
-                        }}
-                    >
-                        Health Concerns
+            {/* Health Issues */}
+            <Box sx={{ mb: 4 }}>
+                <Typography variant="subtitle1" sx={{
+                    fontWeight: 600,
+                    color: 'text.secondary',
+                    mb: 1
+                }}>
+                    Health Issues
+                </Typography>
+                {healthIssues && healthIssues.length > 0 ? (
+                    <Typography variant="body1">
+                        {/* Join the array elements with commas */}
+                        {healthIssues.join(', ')}
                     </Typography>
-
-                    <Paper
-                        elevation={0}
-                        sx={{
-                            p: 3,
-                            borderRadius: 3,
-                            border: '1px solid',
-                            borderColor: 'divider'
-                        }}
-                    >
-                        <Typography variant="body1">
-                            {healthIssues.join(', ')}
-                        </Typography>
-                    </Paper>
-                </Box>
-            )}
+                ) : (
+                    <Typography variant="body1" sx={{ fontStyle: 'italic', color: 'text.secondary' }}>
+                        No health issues reported
+                    </Typography>
+                )}
+            </Box>
 
             <Box sx={{ mt: 4 }}>
                 <Typography
