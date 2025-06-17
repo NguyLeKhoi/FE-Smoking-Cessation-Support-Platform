@@ -2,27 +2,22 @@ import React, { useState, useReducer, useEffect, useCallback, useMemo } from 're
 import {
     Typography,
     Box,
-    Button,
     Container,
     CircularProgress,
     useTheme,
     useMediaQuery,
     Fade,
-    Alert,
-    Stepper,
-    Step,
-    StepLabel
+    Alert
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import HomeIcon from '@mui/icons-material/Home';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import Lottie from 'lottie-react';
 import smokingService from '../services/smokingService';
 import SmokingHabitsResult from '../components/smokingQuiz/SmokingHabitsResult';
 import SmokingHabitsQuestions from '../components/smokingQuiz/SmokingHabitsQuestions';
-import typingCatAnimation from '../assets/animations/typing-cat-animation.json';
+import QuizProgressIndicator from '../components/smokingQuiz/ProgressIndicator';
+import QuizNavigationButtons from '../components/smokingQuiz/NavigationButtons';
+import QuizChatBubble from '../components/smokingQuiz/ChatBubble';
 
 // Default form state
 const defaultState = {
@@ -152,14 +147,31 @@ const SmokingQuiz = () => {
                 health_issues: formData.health_issues || ''
             };
 
+            console.log('Formatted data being sent to API:', dataToSubmit);
+
             // Add a small delay for better UX
             await new Promise(resolve => setTimeout(resolve, 800));
 
-            // Submit data to API
-            const data = await smokingService.createSmokingHabit(dataToSubmit);
+            try {
+                // Submit data to API
+                const apiResponse = await smokingService.createSmokingHabit(dataToSubmit);
 
-            // Update UI with result
-            setResult(data);
+                // IMPORTANT: Use the submitted data instead of the response
+                // But get the AI feedback from the response if available
+                const resultData = {
+                    ...dataToSubmit,
+                    ai_feedback: apiResponse?.ai_feedback || ''
+                };
+
+                // Set the result to be the data we submitted, not what came back
+                setResult(resultData);
+
+            } catch (apiError) {
+                console.error('API error, but proceeding with submitted data:', apiError);
+                // Even if the API call fails, we'll show the result with the submitted data
+                setResult(dataToSubmit);
+            }
+
             setShowForm(false);
             setQuizCompleted(true);
         } catch (error) {
@@ -298,10 +310,8 @@ const SmokingQuiz = () => {
         );
     }
 
-    // Get the current question text and determine layout
+    // Get the current question text
     const currentQuestionText = questions[currentQuestion]?.question || '';
-    const isLongQuestion = currentQuestionText.length > 50;
-    const isVeryLongQuestion = currentQuestionText.length > 100;
 
     return (
         <Box sx={{
@@ -372,27 +382,11 @@ const SmokingQuiz = () => {
                                 Assessing Your Smoking Habit
                             </Typography>
 
-                            {/* Progress indicator */}
-                            <Box sx={{ mb: 2 }}>
-                                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
-                                    <Typography variant="h6" sx={{ color: 'text.secondary', fontSize: { xs: '0.9rem', md: '1.1rem' } }}>
-                                        Question {currentQuestion + 1} of {questions.length}
-                                    </Typography>
-                                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                                        {Math.round((currentQuestion + 1) / questions.length * 100)}% complete
-                                    </Typography>
-                                </Box>
-                                <Box sx={{ width: '100%', bgcolor: 'rgba(0,0,0,0.08)', height: 8, borderRadius: 4, overflow: 'hidden' }}>
-                                    <Box
-                                        sx={{
-                                            height: '100%',
-                                            bgcolor: '#3f332b',
-                                            width: `${(currentQuestion + 1) / questions.length * 100}%`,
-                                            transition: 'width 0.3s ease-out'
-                                        }}
-                                    />
-                                </Box>
-                            </Box>
+                            {/* Use the Progress Indicator component */}
+                            <QuizProgressIndicator
+                                currentQuestion={currentQuestion}
+                                totalQuestions={questions.length}
+                            />
                         </Box>
 
                         {/* Question content */}
@@ -403,185 +397,28 @@ const SmokingQuiz = () => {
                             flexDirection: 'column',
                             justifyContent: 'flex-start'
                         }}>
-                            <Box sx={{
-                                display: 'flex',
-                                alignItems: 'flex-start',
-                                gap: 3,
-                                mb: 3,
-                                ml: { xs: '-10px', md: '0px' },
-                                flexWrap: { xs: 'wrap', sm: 'nowrap' }
-                            }}>
-                                {/* Cat animation */}
-                                <Box sx={{
-                                    flexShrink: 0,
-                                    width: { xs: '90px', md: '150px' },
-                                    height: { xs: '90px', md: '150px' },
-                                    position: 'relative',
-                                    left: { xs: '-5px', md: '-3px' }
-                                }}>
-                                    <Lottie
-                                        animationData={typingCatAnimation}
-                                        loop={true}
-                                        style={{
-                                            width: '100%',
-                                            height: '100%',
-                                            marginTop: '-20px'
-                                        }}
-                                    />
-                                </Box>
-
-                                {/* Chat Bubble */}
-                                <Box
-                                    sx={{
-                                        position: 'relative',
-                                        backgroundColor: '#f5f5f5',
-                                        padding: '20px 18px',
-                                        borderRadius: '16px',
-                                        maxWidth: { xs: '100%', sm: submitting ? '60%' : isVeryLongQuestion ? '70%' : isLongQuestion ? '60%' : '50%' },
-                                        width: { xs: 'calc(100% - 20px)', sm: 'auto' },
-                                        minWidth: { xs: 'auto', sm: '500px' },
-                                        boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
-                                        alignSelf: 'flex-start',
-                                        mt: { xs: 0, sm: 1 },
-                                        transition: 'all 0.3s ease',
-                                        '&:before': {
-                                            content: '""',
-                                            position: 'absolute',
-                                            left: '-10px',
-                                            top: '30px',
-                                            width: 0,
-                                            height: 0,
-                                            borderTop: '10px solid transparent',
-                                            borderBottom: '10px solid transparent',
-                                            borderRight: '10px solid #f5f5f5',
-                                        },
-                                    }}
-                                >
-                                    {submitting ? (
-                                        // Loading state during submission
-                                        <Fade in={submitting}>
-                                            <Box sx={{
-                                                display: 'flex',
-                                                flexDirection: 'column',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                py: 3,
-                                                minHeight: '200px'
-                                            }}>
-                                                <CircularProgress size={40} sx={{ mb: 2, color: '#3f332b' }} />
-                                                <Typography
-                                                    variant="body1"
-                                                    sx={{
-                                                        color: 'text.primary',
-                                                        fontWeight: 600,
-                                                        textAlign: 'center'
-                                                    }}
-                                                >
-                                                    Assessment In Progress...
-                                                </Typography>
-                                                <Typography
-                                                    variant="body2"
-                                                    sx={{
-                                                        color: 'text.secondary',
-                                                        textAlign: 'center',
-                                                        mt: 1
-                                                    }}
-                                                >
-                                                    Analyzing your smoking habits
-                                                </Typography>
-                                            </Box>
-                                        </Fade>
-                                    ) : (
-                                        // Question content
-                                        <Fade in={!submitting} timeout={300}>
-                                            <Box>
-                                                <Typography
-                                                    variant="body1"
-                                                    sx={{
-                                                        color: 'text.primary',
-                                                        mb: 1.5,
-                                                        fontWeight: 520
-                                                    }}
-                                                >
-                                                    {currentQuestionText}
-                                                </Typography>
-
-                                                {/* Input field */}
-                                                <Box sx={{ mt: 1.5 }}>
-                                                    {questions[currentQuestion].component(
-                                                        formData[questions[currentQuestion].field],
-                                                        questions[currentQuestion].field === 'triggers'
-                                                            ? handleCheckboxChange
-                                                            : (e) => handleChange(e)
-                                                    )}
-                                                </Box>
-                                            </Box>
-                                        </Fade>
-                                    )}
-                                </Box>
-                            </Box>
-                        </Box>
-
-                        {/* Navigation buttons */}
-                        <Box sx={{
-                            mt: 'auto',
-                            pt: 2,
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            gap: 2,
-                            flexDirection: { xs: currentQuestion > 0 ? 'column' : 'row', sm: 'row' }
-                        }}>
-                            {currentQuestion > 0 && (
-                                <Button
-                                    onClick={handlePrevious}
-                                    variant="outlined"
-                                    disabled={submitting}
-                                    startIcon={<ArrowBackIcon />}
-                                    sx={{
-                                        py: 1.5,
-                                        px: 4,
-                                        borderRadius: '12px',
-                                        borderColor: '#3f332b',
-                                        color: '#3f332b',
-                                        flex: { xs: '1', sm: '0 0 auto' },
-                                        '&:hover': {
-                                            borderColor: '#3f332b',
-                                            bgcolor: 'rgba(63, 51, 43, 0.04)',
-                                        },
-                                        opacity: submitting ? 0.6 : 1,
-                                    }}
-                                >
-                                    Back
-                                </Button>
-                            )}
-                            <Button
-                                onClick={handleNext}
-                                variant="contained"
-                                disabled={submitting}
-                                endIcon={currentQuestion < questions.length - 1 ? <ArrowForwardIcon /> : null}
-                                sx={{
-                                    py: 1.5,
-                                    px: 4,
-                                    bgcolor: submitting ? 'rgba(63, 51, 43, 0.7)' : '#3f332b',
-                                    color: 'white',
-                                    borderRadius: '12px',
-                                    boxShadow: '0 4px 0 rgba(63, 51, 43, 0.5)',
-                                    ml: 'auto',
-                                    flex: { xs: '1', sm: '0 0 auto' },
-                                    '&:hover': {
-                                        bgcolor: submitting ? 'rgba(63, 51, 43, 0.7)' : 'rgba(63, 51, 43, 0.9)',
-                                        boxShadow: submitting ? '0 4px 0 rgba(63, 51, 43, 0.5)' : '0 2px 0 rgba(63, 51, 43, 0.5)',
-                                        transform: submitting ? 'none' : 'translateY(2px)',
-                                    },
-                                    '&:active': {
-                                        boxShadow: submitting ? '0 4px 0 rgba(63, 51, 43, 0.5)' : '0 0 0 rgba(63, 51, 43, 0.5)',
-                                        transform: submitting ? 'none' : 'translateY(4px)',
-                                    },
+                            {/* Use the Chat Bubble component */}
+                            <QuizChatBubble
+                                questionText={currentQuestionText}
+                                submitting={submitting}
+                                questionComponent={questions[currentQuestion].component}
+                                formValue={formData[questions[currentQuestion].field]}
+                                onInputChange={{
+                                    handleChange,
+                                    handleCheckboxChange
                                 }}
-                            >
-                                {submitting ? 'Processing...' : (currentQuestion === questions.length - 1 ? 'Submit Assessment' : 'Next')}
-                            </Button>
+                                isTriggerQuestion={questions[currentQuestion].field === 'triggers'}
+                            />
                         </Box>
+
+                        {/* Use the Navigation Buttons component */}
+                        <QuizNavigationButtons
+                            currentQuestion={currentQuestion}
+                            questionsLength={questions.length}
+                            submitting={submitting}
+                            onPrevious={handlePrevious}
+                            onNext={handleNext}
+                        />
                     </Box>
                 ) : (
                     // Results display
@@ -606,50 +443,47 @@ const SmokingQuiz = () => {
                                 flexDirection: { xs: 'column', sm: 'row' },
                                 alignItems: 'center'
                             }}>
-                                <Button
+                                <button
                                     onClick={handleRetakeQuiz}
-                                    variant="outlined"
-                                    startIcon={<RefreshIcon />}
-                                    sx={{
-                                        py: 1.5,
-                                        px: 4,
+                                    className="btn btn-outline"
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        padding: '12px 16px',
                                         borderRadius: '12px',
-                                        borderColor: '#3f332b',
+                                        border: '1px solid #3f332b',
                                         color: '#3f332b',
-                                        width: { xs: '100%', sm: 'auto' },
-                                        '&:hover': {
-                                            borderColor: '#3f332b',
-                                            bgcolor: 'rgba(63, 51, 43, 0.04)',
-                                        },
+                                        background: 'transparent',
+                                        cursor: 'pointer',
+                                        fontWeight: 500,
+                                        width: isMobile ? '100%' : 'auto',
+                                        justifyContent: isMobile ? 'center' : 'flex-start'
                                     }}
                                 >
+                                    <RefreshIcon style={{ marginRight: '8px' }} />
                                     Retake Assessment
-                                </Button>
-                                <Button
-                                    variant="contained"
-                                    startIcon={<HomeIcon />}
+                                </button>
+                                <button
                                     onClick={() => navigate('/')}
-                                    sx={{
-                                        py: 1.5,
-                                        px: 4,
-                                        bgcolor: '#3f332b',
-                                        color: 'white',
+                                    className="btn btn-primary"
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        padding: '12px 16px',
                                         borderRadius: '12px',
+                                        border: 'none',
+                                        color: 'white',
+                                        background: '#3f332b',
+                                        cursor: 'pointer',
+                                        fontWeight: 500,
                                         boxShadow: '0 4px 0 rgba(63, 51, 43, 0.5)',
-                                        width: { xs: '100%', sm: 'auto' },
-                                        '&:hover': {
-                                            bgcolor: 'rgba(63, 51, 43, 0.9)',
-                                            boxShadow: '0 2px 0 rgba(63, 51, 43, 0.5)',
-                                            transform: 'translateY(2px)',
-                                        },
-                                        '&:active': {
-                                            boxShadow: '0 0 0 rgba(63, 51, 43, 0.5)',
-                                            transform: 'translateY(4px)',
-                                        },
+                                        width: isMobile ? '100%' : 'auto',
+                                        justifyContent: isMobile ? 'center' : 'flex-start'
                                     }}
                                 >
+                                    <HomeIcon style={{ marginRight: '8px' }} />
                                     Back to Homepage
-                                </Button>
+                                </button>
                             </Box>
                         </Box>
                     </Fade>
