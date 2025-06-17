@@ -12,6 +12,8 @@ import {
 import { useNavigate } from 'react-router-dom';
 import HomeIcon from '@mui/icons-material/Home';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import CloseIcon from '@mui/icons-material/Close';
+import IconButton from '@mui/material/IconButton';
 import smokingService from '../services/smokingService';
 import SmokingHabitsResult from '../components/smokingQuiz/SmokingHabitsResult';
 import SmokingHabitsQuestions from '../components/smokingQuiz/SmokingHabitsQuestions';
@@ -284,13 +286,38 @@ const SmokingQuiz = () => {
         fetchExistingData();
     }, [quizCompleted]);
 
-    /**
-     * Control body overflow based on form visibility
-     */
+    // Add or update the useEffect hook that controls body overflow
     useEffect(() => {
-        document.body.style.overflow = showForm ? 'hidden' : 'auto';
+        // Disable scrolling when the form is shown
+        if (showForm) {
+            document.body.style.overflow = 'hidden';
+            // For iOS Safari which might not respect overflow:hidden
+            document.body.style.position = 'fixed';
+            document.body.style.width = '100%';
+            document.body.style.height = '100%';
+            document.body.style.top = `-${window.scrollY}px`;
+        } else {
+            // Re-enable scrolling when showing results
+            const scrollY = document.body.style.top;
+            document.body.style.overflow = '';
+            document.body.style.position = '';
+            document.body.style.width = '';
+            document.body.style.height = '';
+            document.body.style.top = '';
+
+            // Restore scroll position
+            if (scrollY) {
+                window.scrollTo(0, parseInt(scrollY || '0', 10) * -1);
+            }
+        }
+
         return () => {
-            document.body.style.overflow = 'auto';
+            // Cleanup: always re-enable scrolling when component unmounts
+            document.body.style.overflow = '';
+            document.body.style.position = '';
+            document.body.style.width = '';
+            document.body.style.height = '';
+            document.body.style.top = '';
         };
     }, [showForm]);
 
@@ -315,180 +342,208 @@ const SmokingQuiz = () => {
 
     return (
         <Box sx={{
-            minHeight: '100vh',
-            minWidth: '100%',
-            bgcolor: 'background.default',
-            pt: 0,
+            height: '100vh',
+            width: '100%',
             display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            overflow: showForm ? 'hidden' : 'auto',
+            flexDirection: 'column',
+            overflow: 'hidden',
+            position: 'relative',
         }}>
-            <Container maxWidth="md" sx={{ py: 4 }}>
-                {/* Error message alert */}
-                <Fade in={!!error}>
-                    <Box sx={{
-                        position: 'relative',
-                        zIndex: 2,
-                        maxWidth: '800px',
-                        mx: 'auto',
-                        mb: 2
-                    }}>
-                        {error && (
-                            <Alert
-                                severity="error"
-                                onClose={() => setError(null)}
-                                sx={{
-                                    borderRadius: 2,
-                                    boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.1)',
-                                }}
-                            >
-                                {error}
-                            </Alert>
-                        )}
-                    </Box>
-                </Fade>
-
-                {showForm ? (
-                    <Box
+            {/* Progress bar section */}
+            {showForm && (
+                <Box sx={{
+                    width: '100%',
+                    top: 0,
+                    zIndex: 10,
+                    py: 1,
+                    position: 'relative',
+                }}>
+                    {/* Close button */}
+                    <IconButton
+                        aria-label="close"
+                        onClick={() => navigate('/')}
                         sx={{
-                            p: { xs: 3, md: 5 },
-                            pt: { xs: 3, md: 4 },
-                            borderRadius: 3,
-                            bgcolor: '#ffffff',
-                            boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.05)',
-                            width: '100%',
-                            maxWidth: '800px',
-                            mx: 'auto',
-                            height: 'auto',
-                            minHeight: { xs: 'auto', md: '500px' },
-                            maxHeight: 'calc(100vh - 140px)',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            position: 'relative',
-                            zIndex: 1,
-                            top: { xs: 0, md: '10px' },
-                            transform: { xs: 'none', md: 'translateY(-5%)' },
+                            position: 'absolute',
+                            left: '10%',
+                            top: '60%',
+                            transform: 'translateY(-50%)',
+                            color: 'text.secondary',
+                            '&:hover': {
+                                color: 'text.primary',
+                                bgcolor: 'rgba(0,0,0,0.04)'
+                            },
+                            zIndex: 11
                         }}
                     >
-                        {/* Quiz header */}
-                        <Box mb={3}>
-                            <Typography variant="h3" component="h1" sx={{
-                                fontWeight: 700,
-                                mb: 1,
-                                color: 'text.primary',
-                                fontSize: { xs: '1.75rem', md: '2.5rem' }
-                            }}>
-                                Assessing Your Smoking Habit
-                            </Typography>
+                        <CloseIcon />
+                    </IconButton>
 
-                            {/* Use the Progress Indicator component */}
-                            <QuizProgressIndicator
-                                currentQuestion={currentQuestion}
-                                totalQuestions={questions.length}
-                            />
-                        </Box>
-
-                        {/* Question content */}
-                        <Box sx={{
-                            mt: 1,
-                            flexGrow: 1,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            justifyContent: 'flex-start'
-                        }}>
-                            {/* Use the Chat Bubble component */}
-                            <QuizChatBubble
-                                questionText={currentQuestionText}
-                                submitting={submitting}
-                                questionComponent={questions[currentQuestion].component}
-                                formValue={formData[questions[currentQuestion].field]}
-                                onInputChange={{
-                                    handleChange,
-                                    handleCheckboxChange
-                                }}
-                                isTriggerQuestion={questions[currentQuestion].field === 'triggers'}
-                            />
-                        </Box>
-
-                        {/* Use the Navigation Buttons component */}
-                        <QuizNavigationButtons
+                    {/* Progress indicator centered in container */}
+                    <Container
+                        maxWidth="md"
+                        sx={{
+                            mx: 'auto',
+                            width: { xs: 'calc(100% - 80px)', sm: 'calc(100% - 120px)' },
+                            marginLeft: 'auto',
+                            marginRight: 'auto'
+                        }}
+                    >
+                        <QuizProgressIndicator
                             currentQuestion={currentQuestion}
-                            questionsLength={questions.length}
-                            submitting={submitting}
-                            onPrevious={handlePrevious}
-                            onNext={handleNext}
+                            totalQuestions={questions.length}
                         />
-                    </Box>
-                ) : (
-                    // Results display
-                    <Fade in={!showForm} timeout={500}>
-                        <Box
+                    </Container>
+                </Box>
+            )}
+
+            {/* Main content */}
+            <Box sx={{
+                flex: 1,
+                py: 2,
+                px: { xs: 2, md: 4 },
+                overflowY: showForm ? 'hidden' : 'auto',
+                overflowX: 'hidden',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'flex-start',
+                alignItems: 'center',
+            }}>
+                <Container
+                    maxWidth="md"
+                    sx={{
+                        height: showForm ? '100%' : 'auto',
+                        overflowY: showForm ? 'hidden' : 'visible',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        width: { xs: 'calc(100% - 80px)', sm: 'calc(100% - 120px)' },
+                        marginLeft: 'auto',
+                        marginRight: 'auto'
+                    }}
+                >
+                    {/* Error message alert */}
+                    {error && (
+                        <Alert
+                            severity="error"
+                            onClose={() => setError(null)}
                             sx={{
-                                p: 4,
-                                borderRadius: 3,
-                                bgcolor: '#ffffff',
-                                boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.05)',
-                                width: '100%',
-                                maxWidth: '800px',
-                                mx: 'auto',
+                                borderRadius: 2,
+                                boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.1)',
+                                mb: 3,
+                                width: '100%'
                             }}
                         >
-                            <SmokingHabitsResult data={result} />
-                            <Box sx={{
-                                mt: 4,
-                                display: 'flex',
-                                justifyContent: 'center',
-                                gap: 2,
-                                flexDirection: { xs: 'column', sm: 'row' },
-                                alignItems: 'center'
-                            }}>
-                                <button
-                                    onClick={handleRetakeQuiz}
-                                    className="btn btn-outline"
-                                    style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        padding: '12px 16px',
-                                        borderRadius: '12px',
-                                        border: '1px solid #3f332b',
-                                        color: '#3f332b',
-                                        background: 'transparent',
-                                        cursor: 'pointer',
-                                        fontWeight: 500,
-                                        width: isMobile ? '100%' : 'auto',
-                                        justifyContent: isMobile ? 'center' : 'flex-start'
-                                    }}
-                                >
-                                    <RefreshIcon style={{ marginRight: '8px' }} />
-                                    Retake Assessment
-                                </button>
-                                <button
-                                    onClick={() => navigate('/')}
-                                    className="btn btn-primary"
-                                    style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        padding: '12px 16px',
-                                        borderRadius: '12px',
-                                        border: 'none',
-                                        color: 'white',
-                                        background: '#3f332b',
-                                        cursor: 'pointer',
-                                        fontWeight: 500,
-                                        boxShadow: '0 4px 0 rgba(63, 51, 43, 0.5)',
-                                        width: isMobile ? '100%' : 'auto',
-                                        justifyContent: isMobile ? 'center' : 'flex-start'
-                                    }}
-                                >
-                                    <HomeIcon style={{ marginRight: '8px' }} />
-                                    Back to Homepage
-                                </button>
+                            {error}
+                        </Alert>
+                    )}
+
+                    {showForm ? (
+                        <>
+                            {/* Quiz header */}
+                            <Box mb={4} sx={{ textAlign: 'center', width: '100%' }}>
+                                <Typography variant="h4" component="h1" sx={{
+                                    fontWeight: 600,
+                                    mb: -3,
+                                    color: 'text.primary',
+                                    fontSize: { xs: '1.75rem', md: '2.5rem' }
+                                }}>
+                                    Assessing Your Smoking Habit...
+                                </Typography>
                             </Box>
-                        </Box>
-                    </Fade>
-                )}
-            </Container>
+
+                            {/* Question content - centered */}
+                            <Box sx={{
+                                mt: 2,
+                                mb: 4,
+                                width: '100%',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center' // Center content
+                            }}>
+                                {/* Chat Bubble component */}
+                                <QuizChatBubble
+                                    questionText={currentQuestionText}
+                                    submitting={submitting}
+                                    questionComponent={questions[currentQuestion].component}
+                                    formValue={formData[questions[currentQuestion].field]}
+                                    onInputChange={{
+                                        handleChange,
+                                        handleCheckboxChange
+                                    }}
+                                    isTriggerQuestion={questions[currentQuestion].field === 'triggers'}
+                                />
+                            </Box>
+
+                            {/* Navigation Buttons */}
+                            <Box sx={{ mt: 1 }}>
+                                <QuizNavigationButtons
+                                    currentQuestion={currentQuestion}
+                                    questionsLength={questions.length}
+                                    submitting={submitting}
+                                    onPrevious={handlePrevious}
+                                    onNext={handleNext}
+                                />
+                            </Box>
+                        </>
+                    ) : (
+                        // Results display
+                        <Fade in={!showForm} timeout={500}>
+                            <Box sx={{ width: '100%' }}>
+                                <SmokingHabitsResult data={result} />
+                                <Box sx={{
+                                    mt: 4,
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    gap: 2,
+                                    flexDirection: { xs: 'column', sm: 'row' },
+                                    alignItems: 'center'
+                                }}>
+                                    <button
+                                        onClick={handleRetakeQuiz}
+                                        className="btn btn-outline"
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            padding: '12px 16px',
+                                            borderRadius: '12px',
+                                            border: '1px solid #3f332b',
+                                            color: '#3f332b',
+                                            background: 'transparent',
+                                            cursor: 'pointer',
+                                            fontWeight: 500,
+                                            width: isMobile ? '100%' : 'auto',
+                                            justifyContent: isMobile ? 'center' : 'flex-start'
+                                        }}
+                                    >
+                                        <RefreshIcon style={{ marginRight: '8px' }} />
+                                        Retake Assessment
+                                    </button>
+                                    <button
+                                        onClick={() => navigate('/')}
+                                        className="btn btn-primary"
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            padding: '12px 16px',
+                                            borderRadius: '12px',
+                                            border: 'none',
+                                            color: 'white',
+                                            background: '#3f332b',
+                                            cursor: 'pointer',
+                                            fontWeight: 500,
+                                            boxShadow: '0 4px 0 rgba(63, 51, 43, 0.5)',
+                                            width: isMobile ? '100%' : 'auto',
+                                            justifyContent: isMobile ? 'center' : 'flex-start'
+                                        }}
+                                    >
+                                        <HomeIcon style={{ marginRight: '8px' }} />
+                                        Back to Homepage
+                                    </button>
+                                </Box>
+                            </Box>
+                        </Fade>
+                    )}
+                </Container>
+            </Box>
         </Box>
     );
 };
