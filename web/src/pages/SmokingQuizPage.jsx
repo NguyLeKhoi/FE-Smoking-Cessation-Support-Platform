@@ -5,19 +5,26 @@ import {
     Button,
     Container,
     CircularProgress,
-    useTheme
+    useTheme,
+    useMediaQuery,
+    Fade,
+    Alert,
+    Stepper,
+    Step,
+    StepLabel
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import HomeIcon from '@mui/icons-material/Home';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import Lottie from 'lottie-react';
 import smokingService from '../services/smokingService';
 import SmokingHabitsResult from '../components/smokingQuiz/SmokingHabitsResult';
 import SmokingHabitsQuestions from '../components/smokingQuiz/SmokingHabitsQuestions';
 import typingCatAnimation from '../assets/animations/typing-cat-animation.json';
 
-// Initialize with empty values to require user input
+// Default form state
 const defaultState = {
     cigarettes_per_pack: '',
     price_per_pack: '',
@@ -27,6 +34,7 @@ const defaultState = {
     health_issues: ''
 };
 
+// Form state reducer
 const formReducer = (state, action) => {
     switch (action.type) {
         case 'UPDATE_FIELD':
@@ -45,10 +53,15 @@ const formReducer = (state, action) => {
     }
 };
 
+/**
+ * SmokingQuiz component for assessing user's smoking habits
+ */
 const SmokingQuiz = () => {
     const navigate = useNavigate();
     const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
+    // State management
     const [currentQuestion, setCurrentQuestion] = useState(0);
     const [formData, dispatch] = useReducer(formReducer, defaultState);
     const [result, setResult] = useState(null);
@@ -56,15 +69,62 @@ const SmokingQuiz = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [quizCompleted, setQuizCompleted] = useState(false);
-    const [submitting, setSubmitting] = useState(false); 
+    const [submitting, setSubmitting] = useState(false);
 
-    // Get questions from the extracted component using useMemo to prevent unnecessary rerenders
+    // Get questions with memoization
     const { questions } = useMemo(() => SmokingHabitsQuestions(), []);
 
-    // Handle form submission logic in useCallback to prevent recreation on each render
+    /**
+     * Handles field value changes
+     */
+    const handleChange = useCallback((e) => {
+        const { name, value } = e.target;
+        dispatch({ type: 'UPDATE_FIELD', field: name, value });
+    }, []);
+
+    /**
+     * Handles checkbox changes for triggers
+     */
+    const handleCheckboxChange = useCallback((e) => {
+        const { value, checked } = e.target;
+        dispatch({ type: 'UPDATE_TRIGGERS', value, checked });
+    }, []);
+
+    /**
+     * Validates the current question's field
+     */
+    const validateCurrentField = useCallback(() => {
+        const currentField = questions[currentQuestion].field;
+
+        // Skip validation for optional fields
+        if (currentField === 'health_issues') {
+            return true;
+        }
+
+        // Validate triggers field (array)
+        if (currentField === 'triggers') {
+            if (!formData.triggers?.length) {
+                setError(`Please select at least one smoking trigger before continuing.`);
+                return false;
+            }
+            return true;
+        }
+
+        // Validate other fields
+        if (!formData[currentField]) {
+            setError(`Please fill in the required field before continuing.`);
+            return false;
+        }
+
+        return true;
+    }, [currentQuestion, formData, questions]);
+
+    /**
+     * Handles form submission
+     */
     const handleSubmit = useCallback(async () => {
         try {
-            // Basic validation
+            // Basic validation for all fields
             if (
                 !formData.cigarettes_per_day ||
                 !formData.smoking_years ||
@@ -77,42 +137,41 @@ const SmokingQuiz = () => {
                 return;
             }
 
-            // Set submitting state to true to show the loading message
+            // Set UI states for submission
             setSubmitting(true);
             setLoading(true);
+            setError(null);
 
-            console.log("Original form data:", formData);
-
-            // Format data properly for submission, ensuring smoking_years is an integer
+            // Format data for API submission
             const dataToSubmit = {
                 cigarettes_per_pack: Number(formData.cigarettes_per_pack),
                 price_per_pack: Number(formData.price_per_pack),
                 cigarettes_per_day: Number(formData.cigarettes_per_day),
-                smoking_years: Math.round(Number(formData.smoking_years)), // Round to integer
+                smoking_years: Math.round(Number(formData.smoking_years)), // Round to integer per API requirement
                 triggers: formData.triggers,
                 health_issues: formData.health_issues || ''
             };
 
-            console.log("Data to be submitted:", dataToSubmit);
+            // Add a small delay for better UX
+            await new Promise(resolve => setTimeout(resolve, 800));
 
-            // Add a small delay to ensure the loading state is visible (optional)
-            await new Promise(resolve => setTimeout(resolve, 1000));
-
+            // Submit data to API
             const data = await smokingService.createSmokingHabit(dataToSubmit);
+
+            // Update UI with result
             setResult(data);
             setShowForm(false);
             setQuizCompleted(true);
-            setError(null);
         } catch (error) {
             console.error('Error submitting smoking assessment:', error);
 
-            // Enhanced error handling
-            if (error.response && error.response.data) {
+            // Handle API error responses
+            if (error.response?.data) {
                 const errorData = error.response.data;
                 let errorMessage = 'Server validation error. Please check your inputs.';
 
+                // Format validation errors from different possible formats
                 if (errorData.message && Array.isArray(errorData.message) && errorData.message.length > 0) {
-                    // Format the error messages nicely
                     const messages = errorData.message.map(item => {
                         if (item.path && item.message) {
                             return `${item.path}: ${item.message}`;
@@ -134,7 +193,44 @@ const SmokingQuiz = () => {
         }
     }, [formData]);
 
-    // Fetch existing data when component mounts
+    /**
+     * Handles navigation to the next question
+     */
+    const handleNext = useCallback(() => {
+        if (!validateCurrentField()) {
+            return;
+        }
+
+        setError(null);
+
+        if (currentQuestion < questions.length - 1) {
+            setCurrentQuestion(prev => prev + 1);
+        } else {
+            handleSubmit();
+        }
+    }, [currentQuestion, questions.length, validateCurrentField, handleSubmit]);
+
+    /**
+     * Handles navigation to the previous question
+     */
+    const handlePrevious = useCallback(() => {
+        setCurrentQuestion(prev => prev - 1);
+        setError(null);
+    }, []);
+
+    /**
+     * Resets the quiz to start over
+     */
+    const handleRetakeQuiz = useCallback(() => {
+        setShowForm(true);
+        setCurrentQuestion(0);
+        setError(null);
+        dispatch({ type: 'RESET' });
+    }, []);
+
+    /**
+     * Fetch existing data when component mounts or quiz is completed
+     */
     useEffect(() => {
         const fetchExistingData = async () => {
             try {
@@ -144,7 +240,7 @@ const SmokingQuiz = () => {
                 if (quizCompleted && response?.data?.length > 0) {
                     const latestRecord = response.data[0];
 
-                    // Initialize form data from fetched data
+                    // Initialize form with fetched data
                     dispatch({
                         type: 'INITIALIZE',
                         data: {
@@ -172,10 +268,13 @@ const SmokingQuiz = () => {
                 setLoading(false);
             }
         };
+
         fetchExistingData();
     }, [quizCompleted]);
 
-    // Control body overflow based on form visibility
+    /**
+     * Control body overflow based on form visibility
+     */
     useEffect(() => {
         document.body.style.overflow = showForm ? 'hidden' : 'auto';
         return () => {
@@ -183,63 +282,7 @@ const SmokingQuiz = () => {
         };
     }, [showForm]);
 
-    const handleChange = useCallback((e) => {
-        const { name, value } = e.target;
-        console.log(`Updating field ${name} with value:`, value);
-        dispatch({ type: 'UPDATE_FIELD', field: name, value });
-    }, []);
-
-    const handleCheckboxChange = useCallback((e) => {
-        const { value, checked } = e.target;
-        dispatch({ type: 'UPDATE_TRIGGERS', value, checked });
-    }, []);
-
-    const handleNext = useCallback(() => {
-        // Check if current field is filled before proceeding to next question
-        const currentField = questions[currentQuestion].field;
-
-        // Skip validation for health_issues field
-        if (currentField === 'health_issues') {
-            if (currentQuestion < questions.length - 1) {
-                setCurrentQuestion(prev => prev + 1);
-            } else {
-                handleSubmit();
-            }
-            return;
-        }
-
-        // For triggers field, check if at least one is selected
-        if (currentField === 'triggers') {
-            if (formData.triggers.length === 0) {
-                setError(`Please select at least one smoking trigger before continuing.`);
-                return;
-            }
-        }
-        // For other fields, check if they have a value
-        else if (!formData[currentField]) {
-            setError(`Please fill in the required field before continuing.`);
-            return;
-        }
-
-        // Clear error and proceed to next question
-        setError(null);
-        if (currentQuestion < questions.length - 1) {
-            setCurrentQuestion(prev => prev + 1);
-        } else {
-            handleSubmit();
-        }
-    }, [currentQuestion, formData, questions, handleSubmit]);
-
-    const handlePrevious = useCallback(() => {
-        setCurrentQuestion(prev => prev - 1);
-    }, []);
-
-    const handleRetakeQuiz = useCallback(() => {
-        setShowForm(true);
-        setCurrentQuestion(0);
-        dispatch({ type: 'RESET' });
-    }, []);
-
+    // Show loading indicator while fetching initial data
     if (loading && !showForm) {
         return (
             <Box sx={{
@@ -250,12 +293,12 @@ const SmokingQuiz = () => {
                 justifyContent: 'center',
                 bgcolor: 'background.default'
             }}>
-                <CircularProgress />
+                <CircularProgress size={40} sx={{ color: '#3f332b' }} />
             </Box>
         );
     }
 
-    // Get the current question's length to determine bubble size
+    // Get the current question text and determine layout
     const currentQuestionText = questions[currentQuestion]?.question || '';
     const isLongQuestion = currentQuestionText.length > 50;
     const isVeryLongQuestion = currentQuestionText.length > 100;
@@ -272,22 +315,29 @@ const SmokingQuiz = () => {
             overflow: showForm ? 'hidden' : 'auto',
         }}>
             <Container maxWidth="md" sx={{ py: 4 }}>
-                {error && (
+                {/* Error message alert */}
+                <Fade in={!!error}>
                     <Box sx={{
-                        p: 2,
-                        mb: 4,
-                        bgcolor: 'error.light',
-                        color: '#ffffff',
-                        borderRadius: 2,
                         position: 'relative',
                         zIndex: 2,
-                        boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.1)',
                         maxWidth: '800px',
-                        left: '3%',
+                        mx: 'auto',
+                        mb: 2
                     }}>
-                        <Typography>{error}</Typography>
+                        {error && (
+                            <Alert
+                                severity="error"
+                                onClose={() => setError(null)}
+                                sx={{
+                                    borderRadius: 2,
+                                    boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.1)',
+                                }}
+                            >
+                                {error}
+                            </Alert>
+                        )}
                     </Box>
-                )}
+                </Fade>
 
                 {showForm ? (
                     <Box
@@ -311,13 +361,41 @@ const SmokingQuiz = () => {
                             transform: { xs: 'none', md: 'translateY(-5%)' },
                         }}
                     >
-                        <Typography variant="h3" component="h1" sx={{ fontWeight: 700, mb: 1, color: 'text.primary', fontSize: { xs: '1.75rem', md: '2.5rem' } }}>
-                            Assessing Your Smoking Habit...
-                        </Typography>
-                        <Typography variant="h6" sx={{ mb: 2, color: 'text.secondary', fontSize: { xs: '1rem', md: '1.25rem' } }}>
-                            Question {currentQuestion + 1} of {questions.length}
-                        </Typography>
+                        {/* Quiz header */}
+                        <Box mb={3}>
+                            <Typography variant="h3" component="h1" sx={{
+                                fontWeight: 700,
+                                mb: 1,
+                                color: 'text.primary',
+                                fontSize: { xs: '1.75rem', md: '2.5rem' }
+                            }}>
+                                Assessing Your Smoking Habit
+                            </Typography>
 
+                            {/* Progress indicator */}
+                            <Box sx={{ mb: 2 }}>
+                                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+                                    <Typography variant="h6" sx={{ color: 'text.secondary', fontSize: { xs: '0.9rem', md: '1.1rem' } }}>
+                                        Question {currentQuestion + 1} of {questions.length}
+                                    </Typography>
+                                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                                        {Math.round((currentQuestion + 1) / questions.length * 100)}% complete
+                                    </Typography>
+                                </Box>
+                                <Box sx={{ width: '100%', bgcolor: 'rgba(0,0,0,0.08)', height: 8, borderRadius: 4, overflow: 'hidden' }}>
+                                    <Box
+                                        sx={{
+                                            height: '100%',
+                                            bgcolor: '#3f332b',
+                                            width: `${(currentQuestion + 1) / questions.length * 100}%`,
+                                            transition: 'width 0.3s ease-out'
+                                        }}
+                                    />
+                                </Box>
+                            </Box>
+                        </Box>
+
+                        {/* Question content */}
                         <Box sx={{
                             mt: 1,
                             flexGrow: 1,
@@ -333,6 +411,7 @@ const SmokingQuiz = () => {
                                 ml: { xs: '-10px', md: '0px' },
                                 flexWrap: { xs: 'wrap', sm: 'nowrap' }
                             }}>
+                                {/* Cat animation */}
                                 <Box sx={{
                                     flexShrink: 0,
                                     width: { xs: '90px', md: '150px' },
@@ -351,7 +430,7 @@ const SmokingQuiz = () => {
                                     />
                                 </Box>
 
-                                {/* Chat Bubble that grows based on content */}
+                                {/* Chat Bubble */}
                                 <Box
                                     sx={{
                                         position: 'relative',
@@ -379,65 +458,71 @@ const SmokingQuiz = () => {
                                     }}
                                 >
                                     {submitting ? (
-                                        // Show loading message when submitting
-                                        <Box sx={{
-                                            display: 'flex',
-                                            flexDirection: 'column',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            py: 3
-                                        }}>
-                                            <CircularProgress size={40} sx={{ mb: 2, color: '#3f332b' }} />
-                                            <Typography
-                                                variant="body1"
-                                                sx={{
-                                                    color: 'text.primary',
-                                                    fontWeight: 600,
-                                                    textAlign: 'center'
-                                                }}
-                                            >
-                                                Assessment In Progress...
-                                            </Typography>
-                                            <Typography
-                                                variant="body2"
-                                                sx={{
-                                                    color: 'text.secondary',
-                                                    textAlign: 'center',
-                                                    mt: 1
-                                                }}
-                                            >
-                                                Analyzing your smoking habits
-                                            </Typography>
-                                        </Box>
-                                    ) : (
-                                        // Show normal question content when not submitting
-                                        <>
-                                            <Typography
-                                                variant="body1"
-                                                sx={{
-                                                    color: 'text.primary',
-                                                    mb: 1.5,
-                                                    fontWeight: 520
-                                                }}
-                                            >
-                                                {currentQuestionText}
-                                            </Typography>
-
-                                            {/* Input field inside the chat bubble */}
-                                            <Box sx={{ mt: 1.5 }}>
-                                                {questions[currentQuestion].component(
-                                                    formData[questions[currentQuestion].field],
-                                                    questions[currentQuestion].field === 'triggers'
-                                                        ? handleCheckboxChange
-                                                        : (e) => handleChange(e)
-                                                )}
+                                        // Loading state during submission
+                                        <Fade in={submitting}>
+                                            <Box sx={{
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                py: 3,
+                                                minHeight: '200px'
+                                            }}>
+                                                <CircularProgress size={40} sx={{ mb: 2, color: '#3f332b' }} />
+                                                <Typography
+                                                    variant="body1"
+                                                    sx={{
+                                                        color: 'text.primary',
+                                                        fontWeight: 600,
+                                                        textAlign: 'center'
+                                                    }}
+                                                >
+                                                    Assessment In Progress...
+                                                </Typography>
+                                                <Typography
+                                                    variant="body2"
+                                                    sx={{
+                                                        color: 'text.secondary',
+                                                        textAlign: 'center',
+                                                        mt: 1
+                                                    }}
+                                                >
+                                                    Analyzing your smoking habits
+                                                </Typography>
                                             </Box>
-                                        </>
+                                        </Fade>
+                                    ) : (
+                                        // Question content
+                                        <Fade in={!submitting} timeout={300}>
+                                            <Box>
+                                                <Typography
+                                                    variant="body1"
+                                                    sx={{
+                                                        color: 'text.primary',
+                                                        mb: 1.5,
+                                                        fontWeight: 520
+                                                    }}
+                                                >
+                                                    {currentQuestionText}
+                                                </Typography>
+
+                                                {/* Input field */}
+                                                <Box sx={{ mt: 1.5 }}>
+                                                    {questions[currentQuestion].component(
+                                                        formData[questions[currentQuestion].field],
+                                                        questions[currentQuestion].field === 'triggers'
+                                                            ? handleCheckboxChange
+                                                            : (e) => handleChange(e)
+                                                    )}
+                                                </Box>
+                                            </Box>
+                                        </Fade>
                                     )}
                                 </Box>
                             </Box>
                         </Box>
 
+                        {/* Navigation buttons */}
                         <Box sx={{
                             mt: 'auto',
                             pt: 2,
@@ -450,6 +535,7 @@ const SmokingQuiz = () => {
                                 <Button
                                     onClick={handlePrevious}
                                     variant="outlined"
+                                    disabled={submitting}
                                     startIcon={<ArrowBackIcon />}
                                     sx={{
                                         py: 1.5,
@@ -462,6 +548,7 @@ const SmokingQuiz = () => {
                                             borderColor: '#3f332b',
                                             bgcolor: 'rgba(63, 51, 43, 0.04)',
                                         },
+                                        opacity: submitting ? 0.6 : 1,
                                     }}
                                 >
                                     Back
@@ -497,64 +584,75 @@ const SmokingQuiz = () => {
                         </Box>
                     </Box>
                 ) : (
-                    <Box
-                        sx={{
-                            p: 4,
-                            borderRadius: 3,
-                            bgcolor: '#ffffff',
-                            boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.05)',
-                            width: '100%',
-                            maxWidth: '800px',
-                            mx: 'auto',
-                        }}
-                    >
-                        <SmokingHabitsResult data={result} />
-                        <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center', gap: 2, flexDirection: { xs: 'column', sm: 'row' }, alignItems: 'center' }}>
-                            <Button
-                                onClick={handleRetakeQuiz}
-                                variant="outlined"
-                                sx={{
-                                    py: 1.5,
-                                    px: 4,
-                                    borderRadius: '12px',
-                                    borderColor: '#3f332b',
-                                    color: '#3f332b',
-                                    width: { xs: '100%', sm: 'auto' },
-                                    '&:hover': {
+                    // Results display
+                    <Fade in={!showForm} timeout={500}>
+                        <Box
+                            sx={{
+                                p: 4,
+                                borderRadius: 3,
+                                bgcolor: '#ffffff',
+                                boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.05)',
+                                width: '100%',
+                                maxWidth: '800px',
+                                mx: 'auto',
+                            }}
+                        >
+                            <SmokingHabitsResult data={result} />
+                            <Box sx={{
+                                mt: 4,
+                                display: 'flex',
+                                justifyContent: 'center',
+                                gap: 2,
+                                flexDirection: { xs: 'column', sm: 'row' },
+                                alignItems: 'center'
+                            }}>
+                                <Button
+                                    onClick={handleRetakeQuiz}
+                                    variant="outlined"
+                                    startIcon={<RefreshIcon />}
+                                    sx={{
+                                        py: 1.5,
+                                        px: 4,
+                                        borderRadius: '12px',
                                         borderColor: '#3f332b',
-                                        bgcolor: 'rgba(63, 51, 43, 0.04)',
-                                    },
-                                }}
-                            >
-                                Retake Assessment
-                            </Button>
-                            <Button
-                                variant="contained"
-                                startIcon={<HomeIcon />}
-                                onClick={() => navigate('/')}
-                                sx={{
-                                    py: 1.5,
-                                    px: 4,
-                                    bgcolor: '#3f332b',
-                                    color: 'white',
-                                    borderRadius: '12px',
-                                    boxShadow: '0 4px 0 rgba(63, 51, 43, 0.5)',
-                                    width: { xs: '100%', sm: 'auto' },
-                                    '&:hover': {
-                                        bgcolor: 'rgba(63, 51, 43, 0.9)',
-                                        boxShadow: '0 2px 0 rgba(63, 51, 43, 0.5)',
-                                        transform: 'translateY(2px)',
-                                    },
-                                    '&:active': {
-                                        boxShadow: '0 0 0 rgba(63, 51, 43, 0.5)',
-                                        transform: 'translateY(4px)',
-                                    },
-                                }}
-                            >
-                                Back to Homepage
-                            </Button>
+                                        color: '#3f332b',
+                                        width: { xs: '100%', sm: 'auto' },
+                                        '&:hover': {
+                                            borderColor: '#3f332b',
+                                            bgcolor: 'rgba(63, 51, 43, 0.04)',
+                                        },
+                                    }}
+                                >
+                                    Retake Assessment
+                                </Button>
+                                <Button
+                                    variant="contained"
+                                    startIcon={<HomeIcon />}
+                                    onClick={() => navigate('/')}
+                                    sx={{
+                                        py: 1.5,
+                                        px: 4,
+                                        bgcolor: '#3f332b',
+                                        color: 'white',
+                                        borderRadius: '12px',
+                                        boxShadow: '0 4px 0 rgba(63, 51, 43, 0.5)',
+                                        width: { xs: '100%', sm: 'auto' },
+                                        '&:hover': {
+                                            bgcolor: 'rgba(63, 51, 43, 0.9)',
+                                            boxShadow: '0 2px 0 rgba(63, 51, 43, 0.5)',
+                                            transform: 'translateY(2px)',
+                                        },
+                                        '&:active': {
+                                            boxShadow: '0 0 0 rgba(63, 51, 43, 0.5)',
+                                            transform: 'translateY(4px)',
+                                        },
+                                    }}
+                                >
+                                    Back to Homepage
+                                </Button>
+                            </Box>
                         </Box>
-                    </Box>
+                    </Fade>
                 )}
             </Container>
         </Box>

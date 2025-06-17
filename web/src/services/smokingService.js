@@ -4,7 +4,6 @@ const smokingService = {
     // Create user's smoking habits
     createSmokingHabit: async (habitData) => {
         try {
-            // Format data for API, converting smoking_years to an integer
             const formattedData = {
                 cigarettes_per_pack: Number(habitData.cigarettes_per_pack),
                 price_per_pack: Number(habitData.price_per_pack),
@@ -16,11 +15,10 @@ const smokingService = {
 
             console.log('Formatted data being sent to API:', formattedData);
 
-            // Check for NaN values that might cause validation errors
             for (const [key, value] of Object.entries(formattedData)) {
                 if (typeof value === 'number' && isNaN(value)) {
                     console.error(`Warning: ${key} is NaN`);
-                    formattedData[key] = 0; // Default to zero if NaN
+                    formattedData[key] = 0; 
                 }
             }
 
