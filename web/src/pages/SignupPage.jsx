@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Container, TextField, Button, Typography, Box, Alert, Link, Grid, IconButton } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { signup } from '../services/authService';
-import GlowingDotsGrid from '../components/animated/GlowingDotsGrid';
+import GlowingDotsGrid from '../components/animated/GlowingDotsGrid'; // Add this import
+import LoadingPage from './LoadingPage'; // Import LoadingPage
 import HomeIcon from '@mui/icons-material/Home'; // Import the home icon
 
 export default function SignupPage() {
@@ -140,6 +141,10 @@ export default function SignupPage() {
       color: 'text.primary',
     },
   };
+
+  if (loading) {
+    return <LoadingPage />;
+  }
 
   return (
     <Box sx={{

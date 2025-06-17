@@ -3,6 +3,7 @@ import { Container, TextField, Button, Typography, Box, Alert, Link } from '@mui
 import { useNavigate, useLocation } from 'react-router-dom';
 import { resetPassword } from '../services/authService';
 import GlowingDotsGrid from '../components/animated/GlowingDotsGrid';
+import LoadingPage from './LoadingPage';
 
 export default function ResetPasswordPage() {
   const navigate = useNavigate();
@@ -91,6 +92,10 @@ export default function ResetPasswordPage() {
       color: 'text.primary',
     },
   };
+
+  if (loading) {
+    return <LoadingPage />;
+  }
 
   return (
     <Box sx={{

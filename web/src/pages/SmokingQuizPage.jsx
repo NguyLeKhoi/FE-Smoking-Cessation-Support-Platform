@@ -4,8 +4,6 @@ import {
     Box,
     Button,
     Container,
-    CircularProgress,
-    useTheme
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import HomeIcon from '@mui/icons-material/Home';
@@ -16,6 +14,7 @@ import smokingService from '../services/smokingService';
 import SmokingHabitsResult from '../components/smokingQuiz/SmokingHabitsResult';
 import SmokingHabitsQuestions from '../components/smokingQuiz/SmokingHabitsQuestions';
 import typingCatAnimation from '../assets/animations/typing-cat-animation.json';
+import LoadingPage from './LoadingPage';
 
 // Initialize with empty values to require user input
 const defaultState = {
@@ -47,8 +46,6 @@ const formReducer = (state, action) => {
 
 const SmokingQuiz = () => {
     const navigate = useNavigate();
-    const theme = useTheme();
-
     const [currentQuestion, setCurrentQuestion] = useState(0);
     const [formData, dispatch] = useReducer(formReducer, defaultState);
     const [result, setResult] = useState(null);
@@ -234,18 +231,7 @@ const SmokingQuiz = () => {
     }, []);
 
     if (loading && !showForm) {
-        return (
-            <Box sx={{
-                minHeight: '100vh',
-                width: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                bgcolor: 'background.default'
-            }}>
-                <CircularProgress />
-            </Box>
-        );
+        return <LoadingPage />;
     }
 
     // Get the current question's length to determine bubble size
