@@ -16,9 +16,11 @@ import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 import SmokingHabitsQuestions from './SmokingHabitsQuestions';
 
 const SmokingHabitsResult = ({ data }) => {
+    // ensures hooks are called in the same order every render
+    const [expanded, setExpanded] = useState(true);
+
     // Get questions to reference fields and labels
     const { questions } = SmokingHabitsQuestions();
-
     if (!data) return null;
 
     // Ensure correct data structure
@@ -32,15 +34,11 @@ const SmokingHabitsResult = ({ data }) => {
     const smokingYears = Number(smokingData.smoking_years) || 0;
     const pricePerPack = Number(smokingData.price_per_pack) || 0;
     const cigarettesPerPack = Number(smokingData.cigarettes_per_pack) || 0;
-
-    // Ensure triggers is always an array
     const triggers = Array.isArray(smokingData.triggers)
         ? smokingData.triggers
         : (typeof smokingData.triggers === 'string'
             ? [smokingData.triggers]
             : []);
-
-    // Get health_issues as a string
     const healthIssues = typeof smokingData.health_issues === 'string'
         ? smokingData.health_issues
         : 'No health issues reported';
@@ -60,7 +58,7 @@ const SmokingHabitsResult = ({ data }) => {
     const minutesPerDay = cigarettesPerDay * 5;
     const daysSpentSmoking = (minutesPerDay * 365 * smokingYears) / (60 * 24);
 
-    // Format AI feedback with paragraph breaks
+    // Format AI feedback into paragraphs
     const formattedAiFeedback = aiFeedback ?
         aiFeedback.split('\n\n').map((paragraph, index) => (
             <Typography key={index} variant="body1" paragraph>
@@ -69,7 +67,17 @@ const SmokingHabitsResult = ({ data }) => {
         )) : null;
 
     return (
-        <Box>
+        <Box sx={{
+            backgroundColor: '#ffffff',
+            borderRadius: '16px',
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+            p: { xs: 3, md: 4 },
+            width: '100%',
+            height: '100%',
+            minHeight: '100vh',
+            overflow: 'visible',
+            mb: 4
+        }}>
             <Typography
                 variant="h4"
                 component="h2"
@@ -85,7 +93,8 @@ const SmokingHabitsResult = ({ data }) => {
             {aiFeedback && (
                 <Box sx={{ mb: 5, width: '100%' }}>
                     <Accordion
-                        defaultExpanded={true}
+                        expanded={expanded}
+                        onChange={() => setExpanded(!expanded)}
                         elevation={0}
                         sx={{
                             borderRadius: '12px',
@@ -95,7 +104,7 @@ const SmokingHabitsResult = ({ data }) => {
                             '&:before': {
                                 display: 'none',
                             },
-                            overflow: 'hidden'
+                            overflow: 'visible'
                         }}
                     >
                         <AccordionSummary
@@ -122,14 +131,14 @@ const SmokingHabitsResult = ({ data }) => {
                                 Personalized Feedback
                             </Typography>
                         </AccordionSummary>
-                        <AccordionDetails sx={{ p: { xs: 3, md: 4 } }}>
+                        <AccordionDetails sx={{ p: { xs: 3, md: 4 }, overflow: 'visible' }}>
                             <Box sx={{
                                 pl: 1,
                                 wordBreak: 'break-word',
                                 whiteSpace: 'pre-wrap',
                                 width: '100%',
-                                height: 'auto',
-                                overflow: 'visible'
+                                overflow: 'visible',
+                                height: 'auto'
                             }}>
                                 {aiFeedback.split('\n\n').map((paragraph, index) => (
                                     <Typography
@@ -160,7 +169,6 @@ const SmokingHabitsResult = ({ data }) => {
             </Typography>
 
             <Grid container spacing={3} sx={{ mb: 4 }} justifyContent="center">
-                {/* Each grid item will have exactly the same width */}
                 <Grid item xs={12} sm={6} md={3} sx={{ width: { xs: '100%', sm: '50%', md: '40%' } }}>
                     <Paper
                         elevation={0}

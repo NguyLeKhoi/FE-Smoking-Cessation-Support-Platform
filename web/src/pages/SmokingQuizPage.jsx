@@ -8,13 +8,12 @@ import {
     useMediaQuery,
     Fade,
     Alert,
-    TextField
+    IconButton
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import HomeIcon from '@mui/icons-material/Home';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import CloseIcon from '@mui/icons-material/Close';
-import IconButton from '@mui/material/IconButton';
 import smokingService from '../services/smokingService';
 import SmokingHabitsResult from '../components/smokingQuiz/SmokingHabitsResult';
 import SmokingHabitsQuestions from '../components/smokingQuiz/SmokingHabitsQuestions';
@@ -29,7 +28,7 @@ const defaultState = {
     cigarettes_per_day: '',
     smoking_years: '',
     triggers: [],
-    health_issues: '' // Changed from array to string
+    health_issues: []
 };
 
 // Form state reducer
@@ -38,10 +37,19 @@ const formReducer = (state, action) => {
         case 'UPDATE_FIELD':
             return { ...state, [action.field]: action.value };
         case 'UPDATE_TRIGGERS':
-            const updatedTriggers = action.checked
-                ? [...state.triggers, action.value]
-                : state.triggers.filter((t) => t !== action.value);
-            return { ...state, triggers: updatedTriggers };
+            return {
+                ...state,
+                triggers: action.checked
+                    ? [...state.triggers, action.value]
+                    : state.triggers.filter((t) => t !== action.value)
+            };
+        case 'UPDATE_HEALTH_ISSUES':
+            return {
+                ...state,
+                health_issues: action.checked
+                    ? [...state.health_issues, action.value]
+                    : state.health_issues.filter((issue) => issue !== action.value)
+            };
         case 'RESET':
             return defaultState;
         case 'INITIALIZE':
@@ -51,8 +59,31 @@ const formReducer = (state, action) => {
     }
 };
 
+// Button styles 
+const buttonStyles = {
+    base: {
+        display: 'flex',
+        alignItems: 'center',
+        padding: '12px 16px',
+        borderRadius: '12px',
+        fontWeight: 500,
+        cursor: 'pointer',
+    },
+    outline: {
+        border: '1px solid #3f332b',
+        color: '#3f332b',
+        background: 'transparent',
+    },
+    primary: {
+        border: 'none',
+        color: 'white',
+        background: '#3f332b',
+        boxShadow: '0 4px 0 rgba(63, 51, 43, 0.5)',
+    }
+};
+
 /**
- * SmokingQuiz component for assessing user's smoking habits
+ * assessing user's smoking habits
  */
 const SmokingQuiz = () => {
     const navigate = useNavigate();
@@ -73,7 +104,7 @@ const SmokingQuiz = () => {
     const { questions } = useMemo(() => SmokingHabitsQuestions(), []);
 
     /**
-     * Handles field value changes
+     * Generic field change handler
      */
     const handleChange = useCallback((e) => {
         const { name, value } = e.target;
@@ -89,6 +120,23 @@ const SmokingQuiz = () => {
     }, []);
 
     /**
+     * Handles checkbox changes for health issues
+     */
+    const handleHealthIssuesChange = useCallback((e) => {
+        const { value, checked } = e.target;
+        dispatch({ type: 'UPDATE_HEALTH_ISSUES', value, checked });
+    }, []);
+
+    /**
+     * Determines the appropriate handler based on field type
+     */
+    const getFieldHandler = useCallback((fieldName) => {
+        if (fieldName === 'triggers') return handleCheckboxChange;
+        if (fieldName === 'health_issues') return handleHealthIssuesChange;
+        return handleChange;
+    }, [handleChange, handleCheckboxChange, handleHealthIssuesChange]);
+
+    /**
      * Validates the current question's field
      */
     const validateCurrentField = useCallback(() => {
@@ -96,7 +144,7 @@ const SmokingQuiz = () => {
 
         // Skip validation for optional fields
         if (currentField === 'health_issues') {
-            return true; // Health issues is optional
+            return true;
         }
 
         // Validate triggers field (array)
@@ -108,7 +156,7 @@ const SmokingQuiz = () => {
             return true;
         }
 
-        // Validate other fields
+        // Validate other required fields
         if (!formData[currentField]) {
             setError(`Please fill in the required field before continuing.`);
             return false;
@@ -118,19 +166,29 @@ const SmokingQuiz = () => {
     }, [currentQuestion, formData, questions]);
 
     /**
+     * Creates data object for API submission
+     */
+    const prepareDataForSubmission = useCallback(() => {
+        return {
+            cigarettes_per_pack: Number(formData.cigarettes_per_pack),
+            price_per_pack: Number(formData.price_per_pack),
+            cigarettes_per_day: Number(formData.cigarettes_per_day),
+            smoking_years: Math.round(Number(formData.smoking_years)),
+            triggers: formData.triggers,
+            health_issues: formData.health_issues || []
+        };
+    }, [formData]);
+
+    /**
      * Handles form submission
      */
     const handleSubmit = useCallback(async () => {
         try {
-            // Basic validation for all fields
-            if (
-                !formData.cigarettes_per_day ||
-                !formData.smoking_years ||
-                !formData.price_per_pack ||
-                !formData.cigarettes_per_pack ||
-                !formData.triggers ||
-                formData.triggers.length === 0
-            ) {
+            // Basic validation for required fields
+            const requiredFields = ['cigarettes_per_day', 'smoking_years', 'price_per_pack', 'cigarettes_per_pack'];
+            const missingFields = requiredFields.filter(field => !formData[field]);
+
+            if (missingFields.length > 0 || !formData.triggers?.length) {
                 setError('Please fill in all required fields before submitting the assessment.');
                 return;
             }
@@ -141,15 +199,7 @@ const SmokingQuiz = () => {
             setError(null);
 
             // Format data for API submission
-            const dataToSubmit = {
-                cigarettes_per_pack: Number(formData.cigarettes_per_pack),
-                price_per_pack: Number(formData.price_per_pack),
-                cigarettes_per_day: Number(formData.cigarettes_per_day),
-                smoking_years: Math.round(Number(formData.smoking_years)),
-                triggers: formData.triggers,
-                health_issues: formData.health_issues || 'No health issues reported' // Default value if empty
-            };
-
+            const dataToSubmit = prepareDataForSubmission();
             console.log('User data being submitted:', dataToSubmit);
 
             // Add a small delay for better UX
@@ -159,15 +209,18 @@ const SmokingQuiz = () => {
                 // Submit data to API and get result
                 const resultData = await smokingService.createSmokingHabit(dataToSubmit);
 
-                // Make sure we're using the user's submitted data as the base
+                // Create combined result object
+                const calculatedDailyCost = (
+                    (Number(dataToSubmit.cigarettes_per_day) / Number(dataToSubmit.cigarettes_per_pack)) *
+                    Number(dataToSubmit.price_per_pack)
+                );
+
+                // Set the result using user's submitted data as the base
                 setResult({
                     ...dataToSubmit,
                     ai_feedback: resultData?.ai_feedback || '',
-                    // Add any other fields from API that are needed but preserve user input
                     created_at: resultData?.created_at || new Date().toISOString(),
-                    daily_cost: resultData?.daily_cost ||
-                        ((Number(dataToSubmit.cigarettes_per_day) / Number(dataToSubmit.cigarettes_per_pack)) *
-                            Number(dataToSubmit.price_per_pack))
+                    daily_cost: resultData?.daily_cost || calculatedDailyCost
                 });
 
             } catch (apiError) {
@@ -210,7 +263,7 @@ const SmokingQuiz = () => {
             setSubmitting(false);
             setLoading(false);
         }
-    }, [formData]);
+    }, [formData, prepareDataForSubmission]);
 
     /**
      * Handles navigation to the next question
@@ -248,6 +301,28 @@ const SmokingQuiz = () => {
     }, []);
 
     /**
+     * Process health issues data from API
+     */
+    const processHealthIssues = useCallback((data) => {
+        if (!data.health_issues) return [];
+
+        if (Array.isArray(data.health_issues)) {
+            return data.health_issues;
+        }
+
+        if (typeof data.health_issues === 'string') {
+            try {
+                const parsed = JSON.parse(data.health_issues);
+                return Array.isArray(parsed) ? parsed : [data.health_issues];
+            } catch (e) {
+                return [data.health_issues];
+            }
+        }
+
+        return [];
+    }, []);
+
+    /**
      * Fetch existing data when component mounts or quiz is completed
      */
     useEffect(() => {
@@ -259,14 +334,11 @@ const SmokingQuiz = () => {
                 if (quizCompleted && response?.data?.length > 0) {
                     // Sort data by created_at in descending order to get the most recent record
                     const sortedRecords = [...response.data].sort((a, b) => {
-                        const dateA = new Date(a.created_at || 0);
-                        const dateB = new Date(b.created_at || 0);
-                        return dateB - dateA; // Most recent first
+                        return new Date(b.created_at || 0) - new Date(a.created_at || 0);
                     });
 
                     // Get the most recent record
                     const latestRecord = sortedRecords[0];
-
                     console.log("Selected most recent record:", latestRecord);
 
                     // Initialize form with fetched data
@@ -278,7 +350,7 @@ const SmokingQuiz = () => {
                             cigarettes_per_day: latestRecord.cigarettes_per_day,
                             smoking_years: latestRecord.smoking_years,
                             triggers: Array.isArray(latestRecord.triggers) ? latestRecord.triggers : [],
-                            health_issues: latestRecord.health_issues || '' // Keep as string
+                            health_issues: processHealthIssues(latestRecord)
                         }
                     });
 
@@ -299,14 +371,15 @@ const SmokingQuiz = () => {
         };
 
         fetchExistingData();
-    }, [quizCompleted]);
+    }, [quizCompleted, processHealthIssues]);
 
-    // Add or update the useEffect hook that controls body overflow
+    /**
+     * Control body overflow based on form/results display
+     */
     useEffect(() => {
-        // Disable scrolling when the form is shown
+        // Document body overflow handling for modal-like behavior
         if (showForm) {
             document.body.style.overflow = 'hidden';
-            // For iOS Safari which might not respect overflow:hidden
             document.body.style.position = 'fixed';
             document.body.style.width = '100%';
             document.body.style.height = '100%';
@@ -345,7 +418,7 @@ const SmokingQuiz = () => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                bgcolor: 'background.default'
+                bgcolor: '#ffffff'
             }}>
                 <CircularProgress size={40} sx={{ color: '#3f332b' }} />
             </Box>
@@ -355,14 +428,130 @@ const SmokingQuiz = () => {
     // Get the current question text
     const currentQuestionText = questions[currentQuestion]?.question || '';
 
+    // Render appropriate content based on form/results view
+    const renderContent = () => {
+        if (showForm) {
+            return (
+                <>
+                    {/* Quiz header */}
+                    <Box mb={4} sx={{ textAlign: 'center', width: '100%' }}>
+                        <Typography variant="h4" component="h1" sx={{
+                            fontWeight: 600,
+                            mb: -2,
+                            color: 'text.primary',
+                            fontSize: { xs: '1.75rem', md: '2rem' }
+                        }}>
+                            Assessing Your Smoking Habit...
+                        </Typography>
+                    </Box>
+
+                    {/* Question content - centered */}
+                    <Box sx={{
+                        mt: 2,
+                        mb: 2,
+                        width: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center'
+                    }}>
+                        {/* Chat Bubble with question */}
+                        <QuizChatBubble
+                            questionText={currentQuestionText}
+                            submitting={submitting}
+                        />
+
+                        {/* Question options */}
+                        {!submitting && (
+                            <Box sx={{
+                                width: '100%',
+                                px: { xs: 0, sm: 2 },
+                                mt: -6,
+                            }}>
+                                {questions[currentQuestion].component(
+                                    formData[questions[currentQuestion].field],
+                                    getFieldHandler(questions[currentQuestion].field)
+                                )}
+                            </Box>
+                        )}
+                    </Box>
+
+                    {/* Navigation Buttons */}
+                    <Box sx={{ mt: 1 }}>
+                        <QuizNavigationButtons
+                            currentQuestion={currentQuestion}
+                            questionsLength={questions.length}
+                            submitting={submitting}
+                            onPrevious={handlePrevious}
+                            onNext={handleNext}
+                        />
+                    </Box>
+                </>
+            );
+        }
+
+        // Results view
+        return (
+            <Fade in={!showForm} timeout={500}>
+                <Box sx={{ width: '100%', bgcolor: '#ffffff' }}>
+                    <Box sx={{
+                        py: 4,
+                        px: { xs: 2, md: 0 },
+                        backgroundColor: '#ffffff',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        overflow: 'visible',
+                    }}>
+                        <SmokingHabitsResult data={result} />
+
+                        {/* Action buttons */}
+                        <Box sx={{
+                            mt: 4,
+                            mb: 4,
+                            display: 'flex',
+                            justifyContent: 'center',
+                            gap: 2,
+                            flexDirection: { xs: 'column', sm: 'row' },
+                            alignItems: 'center'
+                        }}>
+                            <button
+                                onClick={handleRetakeQuiz}
+                                style={{
+                                    ...buttonStyles.base,
+                                    ...buttonStyles.outline,
+                                    width: isMobile ? '100%' : 'auto',
+                                    justifyContent: isMobile ? 'center' : 'flex-start'
+                                }}
+                            >
+                                <RefreshIcon style={{ marginRight: '8px' }} />
+                                Retake Assessment
+                            </button>
+                            <button
+                                onClick={() => navigate('/')}
+                                style={{
+                                    ...buttonStyles.base,
+                                    ...buttonStyles.primary,
+                                    width: isMobile ? '100%' : 'auto',
+                                    justifyContent: isMobile ? 'center' : 'flex-start'
+                                }}
+                            >
+                                <HomeIcon style={{ marginRight: '8px' }} />
+                                Back to Homepage
+                            </button>
+                        </Box>
+                    </Box>
+                </Box>
+            </Fade>
+        );
+    };
+
     return (
         <Box sx={{
-            height: '100vh',
+            minHeight: '100vh',
             width: '100%',
             display: 'flex',
             flexDirection: 'column',
-            overflow: 'hidden',
             position: 'relative',
+            backgroundColor: '#ffffff'
         }}>
             {/* Progress bar section */}
             {showForm && (
@@ -397,7 +586,6 @@ const SmokingQuiz = () => {
                     <Container
                         maxWidth="md"
                         sx={{
-                            mx: 'auto',
                             width: { xs: 'calc(100% - 80px)', sm: 'calc(100% - 120px)' },
                             marginLeft: 'auto',
                             marginRight: 'auto'
@@ -414,14 +602,9 @@ const SmokingQuiz = () => {
             {/* Main content */}
             <Box sx={{
                 flex: 1,
-                py: 2,
-                px: { xs: 2, md: 4 },
-                overflowY: showForm ? 'hidden' : 'auto',
-                overflowX: 'hidden',
                 display: 'flex',
                 flexDirection: 'column',
-                justifyContent: 'flex-start',
-                alignItems: 'center',
+                bgcolor: '#ffffff'
             }}>
                 <Container
                     maxWidth="md"
@@ -432,7 +615,8 @@ const SmokingQuiz = () => {
                         flexDirection: 'column',
                         width: { xs: 'calc(100% - 80px)', sm: 'calc(100% - 120px)' },
                         marginLeft: 'auto',
-                        marginRight: 'auto'
+                        marginRight: 'auto',
+                        bgcolor: '#ffffff'
                     }}
                 >
                     {/* Error message alert */}
@@ -451,121 +635,8 @@ const SmokingQuiz = () => {
                         </Alert>
                     )}
 
-                    {showForm ? (
-                        <>
-                            {/* Quiz header */}
-                            <Box mb={4} sx={{ textAlign: 'center', width: '100%' }}>
-                                <Typography variant="h4" component="h1" sx={{
-                                    fontWeight: 600,
-                                    mb: -2,
-                                    color: 'text.primary',
-                                    fontSize: { xs: '1.75rem', md: '2rem' }
-                                }}>
-                                    Assessing Your Smoking Habit...
-                                </Typography>
-                            </Box>
-
-                            {/* Question content - centered */}
-                            <Box sx={{
-                                mt: 2,
-                                mb: 2,
-                                width: '100%',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center'
-                            }}>
-                                {/* Chat Bubble with question only */}
-                                <QuizChatBubble
-                                    questionText={currentQuestionText}
-                                    submitting={submitting}
-                                />
-
-                                {/* Options below the chat bubble */}
-                                {!submitting && (
-                                    <Box sx={{
-                                        width: '100%',
-                                        px: { xs: 0, sm: 2 },
-                                        mt: -6,
-                                    }}>
-                                        {questions[currentQuestion].component(
-                                            formData[questions[currentQuestion].field],
-                                            questions[currentQuestion].field === 'triggers'
-                                                ? handleCheckboxChange
-                                                : handleChange // Use handleChange for health_issues
-                                        )}
-                                    </Box>
-                                )}
-                            </Box>
-
-                            {/* Navigation Buttons */}
-                            <Box sx={{ mt: 1 }}>
-                                <QuizNavigationButtons
-                                    currentQuestion={currentQuestion}
-                                    questionsLength={questions.length}
-                                    submitting={submitting}
-                                    onPrevious={handlePrevious}
-                                    onNext={handleNext}
-                                />
-                            </Box>
-                        </>
-                    ) : (
-                        // Results display
-                        <Fade in={!showForm} timeout={500}>
-                            <Box sx={{ width: '100%' }}>
-                                <SmokingHabitsResult data={result} />
-                                <Box sx={{
-                                    mt: 4,
-                                    display: 'flex',
-                                    justifyContent: 'center',
-                                    gap: 2,
-                                    flexDirection: { xs: 'column', sm: 'row' },
-                                    alignItems: 'center'
-                                }}>
-                                    <button
-                                        onClick={handleRetakeQuiz}
-                                        className="btn btn-outline"
-                                        style={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            padding: '12px 16px',
-                                            borderRadius: '12px',
-                                            border: '1px solid #3f332b',
-                                            color: '#3f332b',
-                                            background: 'transparent',
-                                            cursor: 'pointer',
-                                            fontWeight: 500,
-                                            width: isMobile ? '100%' : 'auto',
-                                            justifyContent: isMobile ? 'center' : 'flex-start'
-                                        }}
-                                    >
-                                        <RefreshIcon style={{ marginRight: '8px' }} />
-                                        Retake Assessment
-                                    </button>
-                                    <button
-                                        onClick={() => navigate('/')}
-                                        className="btn btn-primary"
-                                        style={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            padding: '12px 16px',
-                                            borderRadius: '12px',
-                                            border: 'none',
-                                            color: 'white',
-                                            background: '#3f332b',
-                                            cursor: 'pointer',
-                                            fontWeight: 500,
-                                            boxShadow: '0 4px 0 rgba(63, 51, 43, 0.5)',
-                                            width: isMobile ? '100%' : 'auto',
-                                            justifyContent: isMobile ? 'center' : 'flex-start'
-                                        }}
-                                    >
-                                        <HomeIcon style={{ marginRight: '8px' }} />
-                                        Back to Homepage
-                                    </button>
-                                </Box>
-                            </Box>
-                        </Fade>
-                    )}
+                    {/* Render form or results based on showForm state */}
+                    {renderContent()}
                 </Container>
             </Box>
         </Box>
