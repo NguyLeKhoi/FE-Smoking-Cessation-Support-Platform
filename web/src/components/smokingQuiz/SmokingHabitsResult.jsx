@@ -40,12 +40,10 @@ const SmokingHabitsResult = ({ data }) => {
             ? [smokingData.triggers]
             : []);
 
-    // Ensure health_issues is always an array
-    const healthIssues = Array.isArray(smokingData.health_issues)
+    // Get health_issues as a string
+    const healthIssues = typeof smokingData.health_issues === 'string'
         ? smokingData.health_issues
-        : (typeof smokingData.health_issues === 'string' && smokingData.health_issues
-            ? [smokingData.health_issues]
-            : []);
+        : 'No health issues reported';
 
     const aiFeedback = smokingData.ai_feedback || "";
 
@@ -369,16 +367,9 @@ const SmokingHabitsResult = ({ data }) => {
                 }}>
                     Health Issues
                 </Typography>
-                {healthIssues && healthIssues.length > 0 ? (
-                    <Typography variant="body1">
-                        {/* Join the array elements with commas */}
-                        {healthIssues.join(', ')}
-                    </Typography>
-                ) : (
-                    <Typography variant="body1" sx={{ fontStyle: 'italic', color: 'text.secondary' }}>
-                        No health issues reported
-                    </Typography>
-                )}
+                <Typography variant="body1">
+                    {healthIssues || 'No health issues reported'}
+                </Typography>
             </Box>
 
             <Box sx={{ mt: 4 }}>
@@ -482,7 +473,9 @@ const SmokingHabitsResult = ({ data }) => {
                                 <Typography variant="body1" sx={{ color: 'text.secondary' }}>
                                     {question.field === 'triggers'
                                         ? (triggers.length > 0 ? triggers.join(', ') : 'None selected')
-                                        : smokingData[question.field] || 'Not provided'}
+                                        : question.field === 'health_issues'
+                                            ? (healthIssues || 'No health issues reported')
+                                            : smokingData[question.field] || 'Not provided'}
                                 </Typography>
                             </Box>
                         ))}

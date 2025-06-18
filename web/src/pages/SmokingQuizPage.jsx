@@ -7,7 +7,8 @@ import {
     useTheme,
     useMediaQuery,
     Fade,
-    Alert
+    Alert,
+    TextField
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import HomeIcon from '@mui/icons-material/Home';
@@ -28,7 +29,7 @@ const defaultState = {
     cigarettes_per_day: '',
     smoking_years: '',
     triggers: [],
-    health_issues: []
+    health_issues: '' // Changed from array to string
 };
 
 // Form state reducer
@@ -41,11 +42,6 @@ const formReducer = (state, action) => {
                 ? [...state.triggers, action.value]
                 : state.triggers.filter((t) => t !== action.value);
             return { ...state, triggers: updatedTriggers };
-        case 'UPDATE_HEALTH_ISSUES':
-            const updatedHealthIssues = action.checked
-                ? [...state.health_issues, action.value]
-                : state.health_issues.filter((issue) => issue !== action.value);
-            return { ...state, health_issues: updatedHealthIssues };
         case 'RESET':
             return defaultState;
         case 'INITIALIZE':
@@ -93,14 +89,6 @@ const SmokingQuiz = () => {
     }, []);
 
     /**
-     * Handles checkbox changes for health issues
-     */
-    const handleHealthIssuesChange = useCallback((e) => {
-        const { value, checked } = e.target;
-        dispatch({ type: 'UPDATE_HEALTH_ISSUES', value, checked });
-    }, []);
-
-    /**
      * Validates the current question's field
      */
     const validateCurrentField = useCallback(() => {
@@ -108,22 +96,13 @@ const SmokingQuiz = () => {
 
         // Skip validation for optional fields
         if (currentField === 'health_issues') {
-            return true;
+            return true; // Health issues is optional
         }
 
         // Validate triggers field (array)
         if (currentField === 'triggers') {
             if (!formData.triggers?.length) {
                 setError(`Please select at least one smoking trigger before continuing.`);
-                return false;
-            }
-            return true;
-        }
-
-        // Validate health issues field (array)
-        if (currentField === 'health_issues') {
-            if (!formData.health_issues?.length) {
-                setError(`Please select at least one option before continuing.`);
                 return false;
             }
             return true;
@@ -168,7 +147,7 @@ const SmokingQuiz = () => {
                 cigarettes_per_day: Number(formData.cigarettes_per_day),
                 smoking_years: Math.round(Number(formData.smoking_years)),
                 triggers: formData.triggers,
-                health_issues: formData.health_issues || []
+                health_issues: formData.health_issues || 'No health issues reported' // Default value if empty
             };
 
             console.log('User data being submitted:', dataToSubmit);
@@ -290,24 +269,6 @@ const SmokingQuiz = () => {
 
                     console.log("Selected most recent record:", latestRecord);
 
-                    // Format health_issues as an array if it's a string
-                    let healthIssues = [];
-                    if (latestRecord.health_issues) {
-                        if (Array.isArray(latestRecord.health_issues)) {
-                            healthIssues = latestRecord.health_issues;
-                        } else if (typeof latestRecord.health_issues === 'string') {
-                            // If it's a string, try to parse it or use it as a single item
-                            try {
-                                healthIssues = JSON.parse(latestRecord.health_issues);
-                                if (!Array.isArray(healthIssues)) {
-                                    healthIssues = [latestRecord.health_issues];
-                                }
-                            } catch (e) {
-                                healthIssues = [latestRecord.health_issues];
-                            }
-                        }
-                    }
-
                     // Initialize form with fetched data
                     dispatch({
                         type: 'INITIALIZE',
@@ -317,7 +278,7 @@ const SmokingQuiz = () => {
                             cigarettes_per_day: latestRecord.cigarettes_per_day,
                             smoking_years: latestRecord.smoking_years,
                             triggers: Array.isArray(latestRecord.triggers) ? latestRecord.triggers : [],
-                            health_issues: healthIssues
+                            health_issues: latestRecord.health_issues || '' // Keep as string
                         }
                     });
 
@@ -530,9 +491,7 @@ const SmokingQuiz = () => {
                                             formData[questions[currentQuestion].field],
                                             questions[currentQuestion].field === 'triggers'
                                                 ? handleCheckboxChange
-                                                : questions[currentQuestion].field === 'health_issues'
-                                                    ? handleHealthIssuesChange
-                                                    : handleChange
+                                                : handleChange // Use handleChange for health_issues
                                         )}
                                     </Box>
                                 )}
