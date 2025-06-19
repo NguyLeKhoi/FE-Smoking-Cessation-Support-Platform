@@ -121,7 +121,7 @@ const FeatureSection = () => {
                     gutterBottom
                     align="center"
                     sx={{
-                        fontWeight: 500,
+                        fontWeight: 600,
                         color: theme.palette.text.primary,
                         mb: 5
                     }}

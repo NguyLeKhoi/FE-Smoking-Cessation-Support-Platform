@@ -36,11 +36,11 @@ export default function HomePage() {
                   fontWeight: 600,
                   color: 'text.primary',
                   fontSize: { xs: '2.5rem', md: '4rem' },
-                  mb: 2
+                  mb: 1
                 }}>
                   Quit smoking now
                 </Typography>
-                <Box sx={{ display: 'flex', justifyContent: { xs: 'center', md: 'flex-start' }}}>
+                <Box sx={{ display: 'flex', justifyContent: { xs: 'center', md: 'flex-start' } }}>
                 </Box>
               </Box>
 

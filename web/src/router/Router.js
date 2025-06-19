@@ -54,7 +54,7 @@ export const routes = createBrowserRouter([
   {
     path: '/blog',
     element: (
-      <MainLayout>
+      <MainLayout showFooter={false} >
         <Blog />
       </MainLayout>
     ),
