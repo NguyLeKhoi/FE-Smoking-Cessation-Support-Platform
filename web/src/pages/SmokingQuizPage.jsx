@@ -7,13 +7,14 @@ import {
     useTheme,
     useMediaQuery,
     Fade,
-    Alert,
     IconButton
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import HomeIcon from '@mui/icons-material/Home';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import CloseIcon from '@mui/icons-material/Close';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import smokingService from '../services/smokingService';
 import SmokingHabitsResult from '../components/smokingQuiz/SmokingHabitsResult';
 import SmokingHabitsQuestions from '../components/smokingQuiz/SmokingHabitsQuestions';
@@ -103,6 +104,35 @@ const SmokingQuiz = () => {
     // Get questions with memoization
     const { questions } = useMemo(() => SmokingHabitsQuestions(), []);
 
+    // Create a function to show toast notifications
+    const showToast = useCallback((message, type = 'error') => {
+        const toastOptions = {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+        };
+
+        switch (type) {
+            case 'success':
+                toast.success(message, toastOptions);
+                break;
+            case 'info':
+                toast.info(message, toastOptions);
+                break;
+            case 'warning':
+                toast.warning(message, toastOptions);
+                break;
+            case 'error':
+            default:
+                toast.error(message, toastOptions);
+                break;
+        }
+    }, []);
+
     /**
      * Generic field change handler
      */
@@ -150,7 +180,9 @@ const SmokingQuiz = () => {
         // Validate triggers field (array)
         if (currentField === 'triggers') {
             if (!formData.triggers?.length) {
-                setError(`Please select at least one smoking trigger before continuing.`);
+                const errorMsg = `Please select at least one smoking trigger before continuing.`;
+                setError(errorMsg);
+                showToast(errorMsg);
                 return false;
             }
             return true;
@@ -158,12 +190,14 @@ const SmokingQuiz = () => {
 
         // Validate other required fields
         if (!formData[currentField]) {
-            setError(`Please fill in the required field before continuing.`);
+            const errorMsg = `Please select an option before continuing.`;
+            setError(errorMsg);
+            showToast(errorMsg);
             return false;
         }
 
         return true;
-    }, [currentQuestion, formData, questions]);
+    }, [currentQuestion, formData, questions, showToast]);
 
     /**
      * Creates data object for API submission
@@ -189,7 +223,9 @@ const SmokingQuiz = () => {
             const missingFields = requiredFields.filter(field => !formData[field]);
 
             if (missingFields.length > 0 || !formData.triggers?.length) {
-                setError('Please fill in all required fields before submitting the assessment.');
+                const errorMsg = 'Please fill in all required fields before submitting the assessment.';
+                setError(errorMsg);
+                showToast(errorMsg);
                 return;
             }
 
@@ -223,6 +259,9 @@ const SmokingQuiz = () => {
                     daily_cost: resultData?.daily_cost || calculatedDailyCost
                 });
 
+                // Show success toast
+                showToast('Assessment completed successfully!', 'success');
+
             } catch (apiError) {
                 console.error('API error, proceeding with submitted data:', apiError);
                 // If API fails, still show results with user data
@@ -230,6 +269,9 @@ const SmokingQuiz = () => {
                     ...dataToSubmit,
                     ai_feedback: "We couldn't generate personalized feedback at this time, but here's your smoking assessment based on the data you provided."
                 });
+
+                // Show warning toast for API issue
+                showToast("We couldn't connect to our AI service, but your assessment is still available.", 'warning');
             }
 
             setShowForm(false);
@@ -256,14 +298,17 @@ const SmokingQuiz = () => {
                 }
 
                 setError(errorMessage);
+                showToast(errorMessage);
             } else {
-                setError('There was an error submitting your assessment. Please try again.');
+                const errorMsg = 'There was an error submitting your assessment. Please try again.';
+                setError(errorMsg);
+                showToast(errorMsg);
             }
         } finally {
             setSubmitting(false);
             setLoading(false);
         }
-    }, [formData, prepareDataForSubmission]);
+    }, [formData, prepareDataForSubmission, showToast]);
 
     /**
      * Handles navigation to the next question
@@ -356,6 +401,9 @@ const SmokingQuiz = () => {
 
                     setResult(latestRecord);
                     setShowForm(false);
+
+                    // Show success toast when previous assessment is loaded
+                    showToast('Your previous assessment has been loaded.', 'info');
                 } else {
                     dispatch({ type: 'RESET' });
                     setShowForm(true);
@@ -363,7 +411,9 @@ const SmokingQuiz = () => {
                 }
             } catch (err) {
                 console.error("Error fetching smoking habits:", err);
-                setError("Failed to load your previous data. Please complete the assessment.");
+                const errorMsg = "Failed to load your previous data. Please complete the assessment.";
+                setError(errorMsg);
+                showToast(errorMsg);
                 setShowForm(true);
             } finally {
                 setLoading(false);
@@ -371,7 +421,7 @@ const SmokingQuiz = () => {
         };
 
         fetchExistingData();
-    }, [quizCompleted, processHealthIssues]);
+    }, [quizCompleted, processHealthIssues, showToast]);
 
     /**
      * Control body overflow based on form/results display
@@ -476,7 +526,12 @@ const SmokingQuiz = () => {
                     </Box>
 
                     {/* Navigation Buttons */}
-                    <Box sx={{ mt: 1 }}>
+                    <Box sx={{
+                        mt: 1,
+                        mb: 3,
+                        width: '100%',
+                        position: 'relative'
+                    }}>
                         <QuizNavigationButtons
                             currentQuestion={currentQuestion}
                             questionsLength={questions.length}
@@ -551,8 +606,24 @@ const SmokingQuiz = () => {
             display: 'flex',
             flexDirection: 'column',
             position: 'relative',
-            backgroundColor: '#ffffff'
+            backgroundColor: '#ffffff',
+            // Add padding at the bottom
+            pb: { xs: 2, sm: 4 }
         }}>
+            {/* Add ToastContainer at the root level */}
+            <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
+
             {/* Progress bar section */}
             {showForm && (
                 <Box sx={{
@@ -616,25 +687,9 @@ const SmokingQuiz = () => {
                         width: { xs: 'calc(100% - 80px)', sm: 'calc(100% - 120px)' },
                         marginLeft: 'auto',
                         marginRight: 'auto',
-                        bgcolor: '#ffffff'
+                        bgcolor: '#ffffff',
                     }}
                 >
-                    {/* Error message alert */}
-                    {error && (
-                        <Alert
-                            severity="error"
-                            onClose={() => setError(null)}
-                            sx={{
-                                borderRadius: 2,
-                                boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.1)',
-                                mb: 3,
-                                width: '100%'
-                            }}
-                        >
-                            {error}
-                        </Alert>
-                    )}
-
                     {/* Render form or results based on showForm state */}
                     {renderContent()}
                 </Container>
