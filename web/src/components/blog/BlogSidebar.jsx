@@ -3,8 +3,6 @@ import { Box, Typography, List, ListItem, ListItemIcon, ListItemText, Paper, Too
 import { styled } from '@mui/system';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Link as RouterLink } from 'react-router-dom';
-
-// Icons
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import BuildIcon from '@mui/icons-material/Build';
@@ -14,7 +12,7 @@ import NewspaperIcon from '@mui/icons-material/Newspaper';
 import SearchIcon from '@mui/icons-material/Search';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 
-// Blog post categories
+
 export const POST_TYPE = {
   HEALTH_BENEFITS: 'health_benefits',
   SUCCESS_STORIES: 'success_stories',
@@ -27,56 +25,54 @@ export const POST_TYPE = {
 const categoryItems = [
   {
     label: 'HEALTH BENEFITS',
-    icon: <FavoriteIcon fontSize="medium" />,
+    icon: <FavoriteIcon fontSize="small" />,
     path: '/blog/category/health_benefits',
     type: POST_TYPE.HEALTH_BENEFITS,
     description: 'Discover the positive health changes after quitting'
   },
   {
     label: 'SUCCESS STORIES',
-    icon: <EmojiEventsIcon fontSize="medium" />,
+    icon: <EmojiEventsIcon fontSize="small" />,
     path: '/blog/category/success_stories',
     type: POST_TYPE.SUCCESS_STORIES,
     description: 'Inspiring stories from former smokers'
   },
   {
     label: 'TOOLS & TIPS',
-    icon: <BuildIcon fontSize="medium" />,
+    icon: <BuildIcon fontSize="small" />,
     path: '/blog/category/tools_and_tips',
     type: POST_TYPE.TOOLS_AND_TIPS,
     description: 'Practical strategies to quit smoking'
   },
   {
     label: 'SMOKING DANGERS',
-    icon: <WarningIcon fontSize="medium" />,
+    icon: <WarningIcon fontSize="small" />,
     path: '/blog/category/smoking_dangers',
     type: POST_TYPE.SMOKING_DANGERS,
     description: 'Health risks associated with smoking'
   },
   {
     label: 'SUPPORT RESOURCES',
-    icon: <SupportIcon fontSize="medium" />,
+    icon: <SupportIcon fontSize="small" />,
     path: '/blog/category/support_resources',
     type: POST_TYPE.SUPPORT_RESOURCES,
     description: 'Find help in your quit journey'
   },
   {
     label: 'NEWS & RESEARCH',
-    icon: <NewspaperIcon fontSize="medium" />,
+    icon: <NewspaperIcon fontSize="small" />,
     path: '/blog/category/news_and_research',
     type: POST_TYPE.NEWS_AND_RESEARCH,
     description: 'Latest studies and developments'
   },
 ];
 
-// Additional navigation items
 const navigationItems = [
-  { label: 'SAVED ARTICLES', icon: <BookmarkIcon fontSize="medium" />, path: '/blog/saved', hasNotification: true }
+  { label: 'SAVED ARTICLES', icon: <BookmarkIcon fontSize="small" />, path: '/blog/saved', hasNotification: true }
 ];
 
-// Custom styled components
 const SidebarContainer = styled(Paper)(({ theme }) => ({
-  width: 280,
+  width: 260,
   height: '100vh',
   backgroundColor: theme.palette.background.paper,
   boxShadow: '4px 0px 10px rgba(0, 0, 0, 0.03)',
@@ -131,7 +127,6 @@ const BlogSidebar = ({ newPosts = [] }) => {
   // Determine active category based on URL path
   const [activeItem, setActiveItem] = useState(() => {
     const currentPath = location.pathname;
-    // Check if we're on a category page
     const categoryIndex = categoryItems.findIndex(item =>
       currentPath.includes(item.type) || currentPath.includes(item.path)
     );
@@ -158,7 +153,7 @@ const BlogSidebar = ({ newPosts = [] }) => {
       if (index >= 0) {
         navigate(categoryItems[index].path);
       } else {
-        navigate('/blog'); // All articles
+        navigate('/blog');
       }
     } else {
       navigate(navigationItems[index].path);
@@ -185,7 +180,7 @@ const BlogSidebar = ({ newPosts = [] }) => {
         >
           <ListItemText
             primary={
-              <Typography sx={{ fontWeight: 700, fontSize: '1rem' }}>
+              <Typography sx={{ fontWeight: 700, fontSize: '0.9rem' }}>
                 All Articles
               </Typography>
             }

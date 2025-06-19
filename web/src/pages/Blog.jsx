@@ -30,8 +30,7 @@ const Blog = () => {
 
     const articles = Array(6).fill(articleTemplate);
 
-    // Define the sidebar width for consistent layout
-    const sidebarWidth = 280;
+    const sidebarWidth = 260;
 
     return (
         <Box sx={{
@@ -69,7 +68,8 @@ const Blog = () => {
                 <Container
                     maxWidth="lg"
                     sx={{
-                        py: 8,
+                        pt: 1,
+                        pb: 8,
                         px: 4
                     }}
                 >
@@ -82,7 +82,7 @@ const Blog = () => {
                                     fontWeight: 700,
                                     mb: 3,
                                     color: 'text.primary',
-                                    fontSize: '3.5rem',
+                                    fontSize: '2.5rem',
                                     lineHeight: 1.2
                                 }}
                             >
@@ -92,7 +92,8 @@ const Blog = () => {
                             <Card sx={{ borderRadius: 2, overflow: 'hidden', mb: 6 }}>
                                 <CardMedia
                                     component="img"
-                                    height="450"
+                                    height="400"
+                                    width="100%"
                                     image={Banner2}
                                     alt="Smoking Cessation"
                                     sx={{ objectFit: 'cover' }}
@@ -106,7 +107,7 @@ const Blog = () => {
                                     fontWeight: 500,
                                     mb: 4,
                                     color: 'text.secondary',
-                                    fontSize: '2rem',
+                                    fontSize: '1.3rem',
                                     lineHeight: 1.4
                                 }}
                             >
