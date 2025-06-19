@@ -22,7 +22,7 @@ import QuizProgressIndicator from '../components/smokingQuiz/ProgressIndicator';
 import QuizNavigationButtons from '../components/smokingQuiz/NavigationButtons';
 import QuizChatBubble from '../components/smokingQuiz/ChatBubble';
 
-// Default form state
+
 const defaultState = {
     cigarettes_per_pack: '',
     price_per_pack: '',
@@ -32,7 +32,6 @@ const defaultState = {
     health_issues: []
 };
 
-// Form state reducer
 const formReducer = (state, action) => {
     switch (action.type) {
         case 'UPDATE_FIELD':
@@ -104,33 +103,9 @@ const SmokingQuiz = () => {
     // Get questions with memoization
     const { questions } = useMemo(() => SmokingHabitsQuestions(), []);
 
-    // Create a function to show toast notifications
-    const showToast = useCallback((message, type = 'error') => {
-        const toastOptions = {
-            position: "top-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-        };
-
-        switch (type) {
-            case 'success':
-                toast.success(message, toastOptions);
-                break;
-            case 'info':
-                toast.info(message, toastOptions);
-                break;
-            case 'warning':
-                toast.warning(message, toastOptions);
-                break;
-            case 'error':
-            default:
-                toast.error(message, toastOptions);
-                break;
-        }
+    // Show toast notifications
+    const showToast = useCallback((message, type = 'default') => {
+        toast(message);
     }, []);
 
     /**
@@ -141,17 +116,11 @@ const SmokingQuiz = () => {
         dispatch({ type: 'UPDATE_FIELD', field: name, value });
     }, []);
 
-    /**
-     * Handles checkbox changes for triggers
-     */
     const handleCheckboxChange = useCallback((e) => {
         const { value, checked } = e.target;
         dispatch({ type: 'UPDATE_TRIGGERS', value, checked });
     }, []);
 
-    /**
-     * Handles checkbox changes for health issues
-     */
     const handleHealthIssuesChange = useCallback((e) => {
         const { value, checked } = e.target;
         dispatch({ type: 'UPDATE_HEALTH_ISSUES', value, checked });
@@ -165,21 +134,16 @@ const SmokingQuiz = () => {
         return handleChange;
     }, [handleChange, handleCheckboxChange]);
 
-    /**
-     * Validates the current question's field
-     */
     const validateCurrentField = useCallback(() => {
         const currentField = questions[currentQuestion].field;
 
-        // Skip validation for optional fields
         if (currentField === 'health_issues') {
             return true;
         }
 
-        // Validate triggers field (array)
         if (currentField === 'triggers') {
             if (!formData.triggers?.length) {
-                const errorMsg = `Please select at least one smoking trigger before continuing.`;
+                const errorMsg = `Please select at least one smoking trigger.`;
                 setError(errorMsg);
                 showToast(errorMsg);
                 return false;
@@ -187,9 +151,8 @@ const SmokingQuiz = () => {
             return true;
         }
 
-        // Validate other required fields
         if (!formData[currentField]) {
-            const errorMsg = `Please select an option before continuing.`;
+            const errorMsg = `Please select an option.`;
             setError(errorMsg);
             showToast(errorMsg);
             return false;
@@ -198,9 +161,6 @@ const SmokingQuiz = () => {
         return true;
     }, [currentQuestion, formData, questions, showToast]);
 
-    /**
-     * Creates data object for API submission
-     */
     const prepareDataForSubmission = useCallback(() => {
         return {
             cigarettes_per_pack: Number(formData.cigarettes_per_pack),
@@ -212,12 +172,8 @@ const SmokingQuiz = () => {
         };
     }, [formData]);
 
-    /**
-     * Handles form submission
-     */
     const handleSubmit = useCallback(async () => {
         try {
-            // Basic validation for required fields
             const requiredFields = ['cigarettes_per_day', 'smoking_years', 'price_per_pack', 'cigarettes_per_pack'];
             const missingFields = requiredFields.filter(field => !formData[field]);
 
@@ -241,7 +197,6 @@ const SmokingQuiz = () => {
             await new Promise(resolve => setTimeout(resolve, 800));
 
             try {
-                // Submit data to API and get result
                 const resultData = await smokingService.createSmokingHabit(dataToSubmit);
 
                 // Create combined result object
@@ -250,7 +205,6 @@ const SmokingQuiz = () => {
                     Number(dataToSubmit.price_per_pack)
                 );
 
-                // Set the result using user's submitted data as the base
                 setResult({
                     ...dataToSubmit,
                     ai_feedback: resultData?.ai_feedback || '',
@@ -258,18 +212,12 @@ const SmokingQuiz = () => {
                     daily_cost: resultData?.daily_cost || calculatedDailyCost
                 });
 
-                // Show success toast
-                showToast('Assessment completed successfully!', 'success');
-
             } catch (apiError) {
                 console.error('API error, proceeding with submitted data:', apiError);
-                // If API fails, still show results with user data
                 setResult({
                     ...dataToSubmit,
                     ai_feedback: "We couldn't generate personalized feedback at this time, but here's your smoking assessment based on the data you provided."
                 });
-
-                // Show warning toast for API issue
                 showToast("We couldn't connect to our AI service, but your assessment is still available.", 'warning');
             }
 
@@ -282,8 +230,6 @@ const SmokingQuiz = () => {
             if (error.response?.data) {
                 const errorData = error.response.data;
                 let errorMessage = 'Server validation error. Please check your inputs.';
-
-                // Format validation errors from different possible formats
                 if (errorData.message && Array.isArray(errorData.message) && errorData.message.length > 0) {
                     const messages = errorData.message.map(item => {
                         if (item.path && item.message) {
@@ -309,9 +255,6 @@ const SmokingQuiz = () => {
         }
     }, [formData, prepareDataForSubmission, showToast]);
 
-    /**
-     * Handles navigation to the next question
-     */
     const handleNext = useCallback(() => {
         if (!validateCurrentField()) {
             return;
@@ -326,17 +269,11 @@ const SmokingQuiz = () => {
         }
     }, [currentQuestion, questions.length, validateCurrentField, handleSubmit]);
 
-    /**
-     * Handles navigation to the previous question
-     */
     const handlePrevious = useCallback(() => {
         setCurrentQuestion(prev => prev - 1);
         setError(null);
     }, []);
 
-    /**
-     * Resets the quiz to start over
-     */
     const handleRetakeQuiz = useCallback(() => {
         setShowForm(true);
         setCurrentQuestion(0);
@@ -344,9 +281,6 @@ const SmokingQuiz = () => {
         dispatch({ type: 'RESET' });
     }, []);
 
-    /**
-     * Process health issues data from API
-     */
     const processHealthIssues = useCallback((data) => {
         if (!data.health_issues) return [];
 
@@ -401,8 +335,6 @@ const SmokingQuiz = () => {
                     setResult(latestRecord);
                     setShowForm(false);
 
-                    // Show success toast when previous assessment is loaded
-                    showToast('Your previous assessment has been loaded.', 'info');
                 } else {
                     dispatch({ type: 'RESET' });
                     setShowForm(true);
@@ -423,10 +355,9 @@ const SmokingQuiz = () => {
     }, [quizCompleted, processHealthIssues, showToast]);
 
     /**
-     * Control body overflow based on form/results display
+     * body overflow based onresults display
      */
     useEffect(() => {
-        // Document body overflow handling for modal-like behavior
         if (showForm) {
             document.body.style.overflow = 'hidden';
             document.body.style.position = 'fixed';
@@ -442,14 +373,12 @@ const SmokingQuiz = () => {
             document.body.style.height = '';
             document.body.style.top = '';
 
-            // Restore scroll position
             if (scrollY) {
                 window.scrollTo(0, parseInt(scrollY || '0', 10) * -1);
             }
         }
 
         return () => {
-            // Cleanup: always re-enable scrolling when component unmounts
             document.body.style.overflow = '';
             document.body.style.position = '';
             document.body.style.width = '';
@@ -458,7 +387,6 @@ const SmokingQuiz = () => {
         };
     }, [showForm]);
 
-    // Show loading indicator while fetching initial data
     if (loading && !showForm) {
         return (
             <Box sx={{
@@ -474,10 +402,7 @@ const SmokingQuiz = () => {
         );
     }
 
-    // Get the current question text
     const currentQuestionText = questions[currentQuestion]?.question || '';
-
-    // Render appropriate content based on form/results view
     const renderContent = () => {
         if (showForm) {
             return (
@@ -494,7 +419,7 @@ const SmokingQuiz = () => {
                         </Typography>
                     </Box>
 
-                    {/* Question content - centered */}
+                    {/* Question content */}
                     <Box sx={{
                         mt: 2,
                         mb: 2,
@@ -606,22 +531,9 @@ const SmokingQuiz = () => {
             flexDirection: 'column',
             position: 'relative',
             backgroundColor: '#ffffff',
-            // Add padding at the bottom
             pb: { xs: 2, sm: 4 }
         }}>
-            {/* Add ToastContainer at the root level */}
-            <ToastContainer
-                position="top-right"
-                autoClose={5000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="light"
-            />
+
 
             {/* Progress bar section */}
             {showForm && (
@@ -652,7 +564,7 @@ const SmokingQuiz = () => {
                         <CloseIcon />
                     </IconButton>
 
-                    {/* Progress indicator centered in container */}
+                    {/* Progress indicator */}
                     <Container
                         maxWidth="md"
                         sx={{
@@ -689,7 +601,6 @@ const SmokingQuiz = () => {
                         bgcolor: '#ffffff',
                     }}
                 >
-                    {/* Render form or results based on showForm state */}
                     {renderContent()}
                 </Container>
             </Box>

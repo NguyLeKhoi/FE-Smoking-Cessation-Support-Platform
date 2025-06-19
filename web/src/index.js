@@ -6,7 +6,7 @@ import { ThemeProvider, CssBaseline } from '@mui/material';
 import theme from './theme/theme';
 
 // Import React-Toastify
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, Bounce } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -14,20 +14,22 @@ root.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      {/* Add ToastContainer at the root level */}
+     
+      <App />
       <ToastContainer
         position="top-right"
         autoClose={5000}
         hideProgressBar={false}
         newestOnTop
-        closeOnClick
+        closeOnClick={false}
         rtl={false}
         pauseOnFocusLoss
         draggable
         pauseOnHover
         theme="light"
+        transition={Bounce}
+        icon={<span>🦄</span>} 
       />
-      <App />
     </ThemeProvider>
   </React.StrictMode>
 );
