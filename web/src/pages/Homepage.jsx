@@ -33,14 +33,14 @@ export default function HomePage() {
               }}>
                 <Typography variant="h2" gutterBottom sx={{
                   lineHeight: 1.1,
-                  fontWeight: 500,
+                  fontWeight: 600,
                   color: 'text.primary',
                   fontSize: { xs: '2.5rem', md: '4rem' },
                   mb: 2
                 }}>
                   Quit smoking now
                 </Typography>
-                <Box sx={{ display: 'flex', justifyContent: { xs: 'center', md: 'flex-start' }, mb: 2 }}>
+                <Box sx={{ display: 'flex', justifyContent: { xs: 'center', md: 'flex-start' }}}>
                 </Box>
               </Box>
 
