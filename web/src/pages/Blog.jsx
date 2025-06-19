@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Box,
     Container,
@@ -11,24 +11,47 @@ import {
     Paper,
     TextField,
     InputAdornment,
+    CircularProgress,
+    Alert
 } from '@mui/material';
 import EmailIcon from '@mui/icons-material/Email';
-import Banner1 from '../assets/banner1.gif';
 import Banner2 from '../assets/banner2.jpg';
 import CustomCard from '../components/blog/CustomCard';
 import BlogSidebar from '../components/blog/BlogSidebar';
+import postService from '../services/postService';
 
 const Blog = () => {
-    const articleTemplate = {
-        image: Banner1,
-        title: "Understanding Nicotine Addiction",
-        subtitle: "A comprehensive look at how nicotine affects the brain and why quitting can be challenging. Learn about the science behind addiction...",
-        date: "MAR 22",
-        author: "DR. SARAH",
-        duration: "11min"
-    };
+    const [posts, setPosts] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    const articles = Array(6).fill(articleTemplate);
+    useEffect(() => {
+        const fetchPosts = async () => {
+            try {
+                setLoading(true);
+                const response = await postService.getAllPosts();
+                console.log('Posts fetched:', response);
+
+                // Check if response has data property and it's an array
+                if (response && response.data && Array.isArray(response.data)) {
+                    setPosts(response.data);
+                } else if (Array.isArray(response)) {
+
+                    setPosts(response);
+                } else {
+                    console.error('Unexpected API response format:', response);
+                    setError('Received unexpected data format from API');
+                }
+            } catch (err) {
+                console.error('Failed to fetch posts:', err);
+                setError('Failed to load posts. Please try again later.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchPosts();
+    }, []);
 
     const sidebarWidth = 260;
 
@@ -119,19 +142,40 @@ const Blog = () => {
                         <Divider sx={{ my: 4, borderColor: 'primary.main' }} />
 
                         {/* Articles Section */}
-                        <Grid container spacing={3}>
-                            {articles.map((article, index) => (
-                                <Grid item xs={4} key={index}>
-                                    <CustomCard
-                                        image={article.image}
-                                        title={article.title}
-                                        subtitle={article.subtitle}
-                                        author={article.author}
-                                        duration={article.duration}
-                                    />
-                                </Grid>
-                            ))}
-                        </Grid>
+                        <Box sx={{ my: 4 }}>
+                            {loading && (
+                                <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
+                                    <CircularProgress />
+                                </Box>
+                            )}
+
+                            {error && (
+                                <Alert severity="error" sx={{ mb: 3 }}>
+                                    {error}
+                                </Alert>
+                            )}
+
+                            {!loading && !error && posts.length === 0 && (
+                                <Alert severity="info" sx={{ mb: 3 }}>
+                                    No posts available at the moment.
+                                </Alert>
+                            )}
+
+                            <Grid container spacing={3}>
+                                {posts.map((post, index) => (
+                                    <Grid item xs={12} md={6} lg={4} key={index}>
+                                        <CustomCard
+                                            image={post.thumbnail || 'https://placehold.co/600x400?text=No+Image'}
+                                            height={300}
+                                            title={post.title}
+                                            subtitle={post.content?.substring(0, 120) + '...' || 'No content available'}
+                                            author={post.author?.name || 'Anonymous'}
+                                            duration={post.read_time || '5 min'}
+                                        />
+                                    </Grid>
+                                ))}
+                            </Grid>
+                        </Box>
 
                         {/* Subscription Section */}
                         <Paper
