@@ -13,6 +13,10 @@ import LoginSuccessPage from '../pages/LoginSuccessPage';
 import ForgotPasswordPage from '../pages/ForgotPasswordPage';
 import ResetPasswordPage from '../pages/ResetPasswordPage';
 import SmokingQuizPage from '../pages/SmokingQuizPage';
+import MembershipPlansPage from '../pages/MembershipPlansPage';
+import NotFoundPage from '../pages/NotFoundPage';
+import LoadingPage from '../pages/LoadingPage';
+import AdminDashboard from '../pages/AdminDashboard';
 
 export const routes = createBrowserRouter([
   {
@@ -90,10 +94,37 @@ export const routes = createBrowserRouter([
     ),
   },
   {
+    path: '/membership-plans',
+    element: (
+      <MainLayout showFooter={false}>
+        <MembershipPlansPage />
+      </MainLayout>
+    ),
+  },
+  {
+    path: '/loading-test',
+    element: (
+      <AuthLayout>
+        <LoadingPage />
+      </AuthLayout>
+    ),
+  },
+  // Admin Routes
+  {
+    path: '/admin/*',
+    element: (
+      <ProtectedRoute requireAdmin={true}>
+        <MainLayout>
+          <AdminDashboard />
+        </MainLayout>
+      </ProtectedRoute>
+    ),
+  },
+  {
     path: '*',
     element: (
       <MainLayout showHeader={false}>
-        <div>404 Not Found</div>
+        <NotFoundPage />
       </MainLayout>
     ),
   },

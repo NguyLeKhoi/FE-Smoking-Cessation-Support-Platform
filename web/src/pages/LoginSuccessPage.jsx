@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import LoadingPage from './LoadingPage';
 
 export default function LoginSuccessPage() {
   const navigate = useNavigate();
@@ -23,10 +24,5 @@ export default function LoginSuccessPage() {
     }
   }, [navigate, location]);
 
-  // You can render a loading message or spinner while processing
-  return (
-    <div>
-      <p>Processing login...</p>
-    </div>
-  );
+  return <LoadingPage />;
 } 

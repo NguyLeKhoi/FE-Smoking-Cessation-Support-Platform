@@ -3,6 +3,7 @@ import { Container, TextField, Button, Typography, Box, Alert, Link, IconButton 
 import { useNavigate } from 'react-router-dom';
 import { login } from '../services/authService';
 import GlowingDotsGrid from '../components/animated/GlowingDotsGrid';
+import LoadingPage from './LoadingPage';
 import HomeIcon from '@mui/icons-material/Home'; // Import the home icon
 
 export default function LoginPage() {
@@ -74,6 +75,10 @@ export default function LoginPage() {
       color: 'text.primary',
     },
   };
+
+  if (loading) {
+    return <LoadingPage />;
+  }
 
   return (
     <Box

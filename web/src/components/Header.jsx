@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AppBar, Toolbar, Typography, Button, IconButton, Box, Badge, Avatar } from '@mui/material';
+import { AppBar, Toolbar, Typography, Button, IconButton, Box, Badge, Avatar, CircularProgress } from '@mui/material';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import { AnimatedUnderline } from './animated/AnimatedUnderline';
@@ -13,6 +13,7 @@ const Header = ({ authStatus }) => {
   const [scrolled, setScrolled] = useState(0);
   const [notifications, setNotifications] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [loadingMotivation, setLoadingMotivation] = useState(false);
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -75,6 +76,7 @@ const Header = ({ authStatus }) => {
       }
 
       if (shouldShowToast) {
+        setLoadingMotivation(true);
         try {
           const data = await motivationService.getMotivationMessage();
           if (data && data.data && data.data.message) {
@@ -83,13 +85,11 @@ const Header = ({ authStatus }) => {
             let timestampText = ''; // Set timestamp to empty as per previous request
 
             // Regex to find and extract the timestamp pattern at the very end
-            // This regex will now handle the common case of HH:MM:SS MM/DD/YYYY and remove the preceding 'and' or 'at' if present
             const timestampExtractionRegex = /(?:\s*(?:and|at)?\s*)?(\d{1,2}:\d{2}:\d{2}\s\d{1,2}\/\d{1,2}\/\d{4})$/;
             const match = fullMessage.match(timestampExtractionRegex);
 
             if (match) {
               messageText = fullMessage.replace(match[0], '').trim();
-              // timestampText remains empty as per user's request to remove it from display
             }
 
             // Add to notifications state for the dropdown
@@ -134,11 +134,16 @@ const Header = ({ authStatus }) => {
             duration: 4000,
             position: 'top-center',
           });
+        } finally {
+          setLoadingMotivation(false);
         }
       }
     };
 
+    // Initial fetch
     fetchMotivationMessage();
+    
+    // Set up interval for subsequent fetches
     const intervalId = setInterval(fetchMotivationMessage, 7200000);
 
     return () => {
@@ -243,11 +248,41 @@ const Header = ({ authStatus }) => {
             </AnimatedUnderline>
           </Box>
 
+          <Box component={RouterLink} to="/membership-plans" sx={{ textDecoration: 'none', display: 'flex', alignItems: 'center', ml: 3 }}>
+            <AnimatedUnderline>
+              <Typography
+                variant="h6"
+                sx={{
+                  color: '#000000',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                  '&:hover img': {
+                    transform: 'translateY(-5px)'
+                  }
+                }}
+              >
+                <img
+                  src="icon/icons8-premium-subscription-24.png"
+                  alt="Membership Icon"
+                  style={{
+                    width: '30px',
+                    height: '30px',
+                    verticalAlign: 'middle',
+                    transition: 'transform 0.3s ease-in-out'
+                  }}
+                />
+                Membership
+              </Typography>
+            </AnimatedUnderline>
+          </Box>
+
           <Box sx={{ flexGrow: 1 }} />
 
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
             {authStatus ? (
               <>
+                {loadingMotivation && <CircularProgress size={20} sx={{ color: '#3f332b', mr: 1 }} />}
                 {/* Welcome message - New addition */}
                 {!loading && userData && userData.username && (
                   <Typography
@@ -261,6 +296,26 @@ const Header = ({ authStatus }) => {
                   >
                     Welcome back, {userData.username}!
                   </Typography>
+                )}
+
+                {/* Admin Link - New addition */}
+                {!loading && userData && userData.role === 'admin' && (
+                  <Button
+                    component={RouterLink}
+                    to="/admin"
+                    variant="outlined"
+                    sx={{
+                      mr: 1,
+                      color: '#3f332b',
+                      borderColor: '#3f332b',
+                      '&:hover': {
+                        borderColor: '#000000',
+                        backgroundColor: 'rgba(63, 51, 43, 0.04)',
+                      },
+                    }}
+                  >
+                    Admin Panel
+                  </Button>
                 )}
 
                 <IconButton

@@ -6,6 +6,7 @@ import ProfileSidebar from '../components/profilePage/ProfileSidebar';
 import UserInfoSection from '../components/profilePage/UserInfoSection';
 import StatisticsSection from '../components/profilePage/StatisticsSection';
 import AchievementSection from '../components/profilePage/AchievementSection';
+import LoadingPage from './LoadingPage';
 
 export default function ProfilePage({ handleLogout }) {
   const navigate = useNavigate();
@@ -131,7 +132,7 @@ export default function ProfilePage({ handleLogout }) {
   ];
 
   if (loading) {
-    return <div className="profile-loading">Loading profile...</div>;
+    return <LoadingPage />;
   }
 
   if (error) {

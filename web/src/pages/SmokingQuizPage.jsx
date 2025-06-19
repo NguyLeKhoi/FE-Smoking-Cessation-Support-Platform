@@ -162,9 +162,8 @@ const SmokingQuiz = () => {
      */
     const getFieldHandler = useCallback((fieldName) => {
         if (fieldName === 'triggers') return handleCheckboxChange;
-        if (fieldName === 'health_issues') return handleHealthIssuesChange;
         return handleChange;
-    }, [handleChange, handleCheckboxChange, handleHealthIssuesChange]);
+    }, [handleChange, handleCheckboxChange]);
 
     /**
      * Validates the current question's field
