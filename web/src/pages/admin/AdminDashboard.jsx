@@ -21,7 +21,7 @@ import { useNavigate } from 'react-router-dom';
 import PeopleIcon from '@mui/icons-material/People';
 import ArticleIcon from '@mui/icons-material/Article';
 import SettingsIcon from '@mui/icons-material/Settings';
-import { fetchCurrentUser } from '../services/userService';
+import { fetchCurrentUser } from '../../services/userService';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -39,12 +39,12 @@ const AdminDashboard = () => {
         setLoading(true);
         const response = await fetchCurrentUser();
         const user = response.data;
-        
+
         if (!user || user.role !== 'admin') {
           navigate('/');
           return;
         }
-        
+
         setUserData(user);
         // Here you would typically fetch admin stats
         // For now using dummy data
@@ -77,7 +77,7 @@ const AdminDashboard = () => {
       <Typography variant="h4" component="h1" gutterBottom>
         Admin Dashboard
       </Typography>
-      
+
       <Grid container spacing={3}>
         {/* Stats Cards */}
         <Grid item xs={12} md={4}>
@@ -93,7 +93,7 @@ const AdminDashboard = () => {
             </CardContent>
           </Card>
         </Grid>
-        
+
         <Grid item xs={12} md={4}>
           <Card>
             <CardContent>
@@ -107,7 +107,7 @@ const AdminDashboard = () => {
             </CardContent>
           </Card>
         </Grid>
-        
+
         <Grid item xs={12} md={4}>
           <Card>
             <CardContent>

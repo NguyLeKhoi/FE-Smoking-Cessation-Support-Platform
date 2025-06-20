@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { fetchCurrentUser, updateCurrentUser } from '../services/userService';
-import ProfileSidebar from '../components/profilePage/ProfileSidebar';
-import UserInfoSection from '../components/profilePage/UserInfoSection';
-import StatisticsSection from '../components/profilePage/StatisticsSection';
-import AchievementSection from '../components/profilePage/AchievementSection';
-import LoadingPage from './LoadingPage';
+import { fetchCurrentUser, updateCurrentUser } from '../../services/userService';
+import ProfileSidebar from '../../components/profilePage/ProfileSidebar';
+import UserInfoSection from '../../components/profilePage/UserInfoSection';
+import StatisticsSection from '../../components/profilePage/StatisticsSection';
+import AchievementSection from '../../components/profilePage/AchievementSection';
+import LoadingPage from '../LoadingPage';
 
 export default function ProfilePage({ handleLogout }) {
   const navigate = useNavigate();
@@ -35,7 +35,7 @@ export default function ProfilePage({ handleLogout }) {
           last_name: response.data.last_name || '',
           dob: response.data.dob || '',
           phone_number: response.data.phone_number || '',
-          avatar: response.data.avatar || '', 
+          avatar: response.data.avatar || '',
         });
       } catch (err) {
         setError('Failed to load user profile. Please try again later.');
@@ -67,7 +67,7 @@ export default function ProfilePage({ handleLogout }) {
         last_name: formData.last_name,
         phone_number: formData.phone_number,
         avatar: formData.avatar,
-        dob: formData.dob 
+        dob: formData.dob
       };
 
       setLoading(true);
@@ -76,7 +76,7 @@ export default function ProfilePage({ handleLogout }) {
       setUserData(prevData => ({
         ...prevData,
         ...response.data,
-        dob: response.data.dob || prevData.dob 
+        dob: response.data.dob || prevData.dob
       }));
 
       setFormData(prevFormData => ({
@@ -86,7 +86,7 @@ export default function ProfilePage({ handleLogout }) {
         phone_number: response.data.phone_number || prevFormData.phone_number,
         avatar: response.data.avatar || prevFormData.avatar,
         email: prevFormData.email,
-        dob: response.data.dob || prevFormData.dob 
+        dob: response.data.dob || prevFormData.dob
       }));
 
       setIsEditing(false);

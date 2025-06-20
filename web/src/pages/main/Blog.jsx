@@ -15,10 +15,10 @@ import {
     Alert
 } from '@mui/material';
 import EmailIcon from '@mui/icons-material/Email';
-import Banner2 from '../assets/banner2.jpg';
-import CustomCard from '../components/blog/CustomCard';
-import BlogSidebar from '../components/blog/BlogSidebar';
-import postService from '../services/postService';
+import Banner2 from '../../assets/banner2.jpg';
+import CustomCard from '../../components/blog/CustomCard';
+import BlogSidebar from '../../components/blog/BlogSidebar';
+import postService from '../../services/postService';
 
 const Blog = () => {
     const [posts, setPosts] = useState([]);

@@ -2,9 +2,9 @@ import React from 'react';
 import { Container, Box, Typography, Grid, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import Lottie from 'lottie-react';
-import quitSignAnimation from '../assets/animations/quit-sign.json';
-import QuotesCarousel from '../components/homePage/QuotesCarousel';
-import FeatureSection from '../components/homePage/FeatureSection';
+import quitSign from '../../assets/animations/quit-sign.json';
+import QuotesCarousel from '../../components/homePage/QuotesCarousel';
+import FeatureSection from '../../components/homePage/FeatureSection';
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -123,7 +123,7 @@ export default function HomePage() {
                     }}
                   >
                     <Lottie
-                      animationData={quitSignAnimation}
+                      animationData={quitSign}
                       style={{
                         width: '100%',
                         height: '100%',
