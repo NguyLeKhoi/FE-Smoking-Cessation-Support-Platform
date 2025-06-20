@@ -1,40 +1,48 @@
 import React, { useState } from 'react';
-import { 
-    Box, 
-    Typography, 
-    Grid, 
-    Paper, 
-    Accordion, 
-    AccordionSummary, 
-    AccordionDetails 
+import {
+    Box,
+    Typography,
+    Grid,
+    Paper,
+    Accordion,
+    AccordionSummary,
+    AccordionDetails
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SavingsIcon from '@mui/icons-material/Savings';
 import HealthAndSafetyIcon from '@mui/icons-material/HealthAndSafety';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
-import SmartToyIcon from '@mui/icons-material/SmartToy';
 import SmokingHabitsQuestions from './SmokingHabitsQuestions';
 
 const SmokingHabitsResult = ({ data }) => {
+    // ensures hooks are called in the same order every render
+    const [expanded, setExpanded] = useState(true);
+
     // Get questions to reference fields and labels
     const { questions } = SmokingHabitsQuestions();
-
     if (!data) return null;
 
-    // Ensure we're working with the correct data structure
+    // Ensure correct data structure
     console.log("Raw result data:", data);
 
     // Get data from the right location in the response
-    const smokingData = data.data || data; // Handle both {data: {...}} and direct object format
+    const smokingData = data.data || data;
 
     // Access fields with proper error handling
-    const cigarettesPerDay = parseFloat(smokingData.cigarettes_per_day);
-    const smokingYears = parseFloat(smokingData.smoking_years);
-    const pricePerPack = parseFloat(smokingData.price_per_pack);
-    const cigarettesPerPack = parseFloat(smokingData.cigarettes_per_pack);
-    const triggers = Array.isArray(smokingData.triggers) ? smokingData.triggers : [];
-    const healthIssues = smokingData.health_issues || "";
+    const cigarettesPerDay = Number(smokingData.cigarettes_per_day) || 0;
+    const smokingYears = Number(smokingData.smoking_years) || 0;
+    const pricePerPack = Number(smokingData.price_per_pack) || 0;
+    const cigarettesPerPack = Number(smokingData.cigarettes_per_pack) || 0;
+    const triggers = Array.isArray(smokingData.triggers)
+        ? smokingData.triggers
+        : (typeof smokingData.triggers === 'string'
+            ? [smokingData.triggers]
+            : []);
+    const healthIssues = typeof smokingData.health_issues === 'string'
+        ? smokingData.health_issues
+        : 'No health issues reported';
+
     const aiFeedback = smokingData.ai_feedback || "";
 
     // Calculate lifetime cigarettes
@@ -50,7 +58,7 @@ const SmokingHabitsResult = ({ data }) => {
     const minutesPerDay = cigarettesPerDay * 5;
     const daysSpentSmoking = (minutesPerDay * 365 * smokingYears) / (60 * 24);
 
-    // Format AI feedback with paragraph breaks
+    // Format AI feedback into paragraphs
     const formattedAiFeedback = aiFeedback ?
         aiFeedback.split('\n\n').map((paragraph, index) => (
             <Typography key={index} variant="body1" paragraph>
@@ -59,7 +67,17 @@ const SmokingHabitsResult = ({ data }) => {
         )) : null;
 
     return (
-        <Box>
+        <Box sx={{
+            backgroundColor: '#ffffff',
+            borderRadius: '16px',
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+            p: { xs: 3, md: 4 },
+            width: '100%',
+            height: '100%',
+            minHeight: '100vh',
+            overflow: 'visible',
+            mb: 4
+        }}>
             <Typography
                 variant="h4"
                 component="h2"
@@ -74,8 +92,9 @@ const SmokingHabitsResult = ({ data }) => {
 
             {aiFeedback && (
                 <Box sx={{ mb: 5, width: '100%' }}>
-                    <Accordion 
-                        defaultExpanded={true} // Start expanded to show the important feedback
+                    <Accordion
+                        expanded={expanded}
+                        onChange={() => setExpanded(!expanded)}
                         elevation={0}
                         sx={{
                             borderRadius: '12px',
@@ -85,7 +104,7 @@ const SmokingHabitsResult = ({ data }) => {
                             '&:before': {
                                 display: 'none',
                             },
-                            overflow: 'hidden'
+                            overflow: 'visible'
                         }}
                     >
                         <AccordionSummary
@@ -112,14 +131,14 @@ const SmokingHabitsResult = ({ data }) => {
                                 Personalized Feedback
                             </Typography>
                         </AccordionSummary>
-                        <AccordionDetails sx={{ p: { xs: 3, md: 4 } }}>
+                        <AccordionDetails sx={{ p: { xs: 3, md: 4 }, overflow: 'visible' }}>
                             <Box sx={{
                                 pl: 1,
                                 wordBreak: 'break-word',
                                 whiteSpace: 'pre-wrap',
                                 width: '100%',
-                                height: 'auto',
-                                overflow: 'visible'
+                                overflow: 'visible',
+                                height: 'auto'
                             }}>
                                 {aiFeedback.split('\n\n').map((paragraph, index) => (
                                     <Typography
@@ -150,7 +169,6 @@ const SmokingHabitsResult = ({ data }) => {
             </Typography>
 
             <Grid container spacing={3} sx={{ mb: 4 }} justifyContent="center">
-                {/* Each grid item will have exactly the same width */}
                 <Grid item xs={12} sm={6} md={3} sx={{ width: { xs: '100%', sm: '50%', md: '40%' } }}>
                     <Paper
                         elevation={0}
@@ -158,7 +176,7 @@ const SmokingHabitsResult = ({ data }) => {
                             p: 3,
                             height: '100%',
                             minHeight: '240px',
-                            width: '100%', // Ensure paper takes full width of grid item
+                            width: '100%',
                             borderRadius: 3,
                             border: '1px solid',
                             borderColor: 'divider',
@@ -167,7 +185,7 @@ const SmokingHabitsResult = ({ data }) => {
                             alignItems: 'center',
                             justifyContent: 'center',
                             textAlign: 'center',
-                            boxSizing: 'border-box' // Include padding in element's dimensions
+                            boxSizing: 'border-box',
                         }}
                     >
                         <LocalFireDepartmentIcon
@@ -193,7 +211,7 @@ const SmokingHabitsResult = ({ data }) => {
                             p: 3,
                             height: '100%',
                             minHeight: '240px',
-                            width: '100%', // Ensure paper takes full width of grid item
+                            width: '100%',
                             borderRadius: 3,
                             border: '1px solid',
                             borderColor: 'divider',
@@ -202,7 +220,7 @@ const SmokingHabitsResult = ({ data }) => {
                             alignItems: 'center',
                             justifyContent: 'center',
                             textAlign: 'center',
-                            boxSizing: 'border-box' // Include padding in element's dimensions
+                            boxSizing: 'border-box'
                         }}
                     >
                         <SavingsIcon
@@ -228,7 +246,7 @@ const SmokingHabitsResult = ({ data }) => {
                             p: 3,
                             height: '100%',
                             minHeight: '240px',
-                            width: '100%', // Ensure paper takes full width of grid item
+                            width: '100%',
                             borderRadius: 3,
                             border: '1px solid',
                             borderColor: 'divider',
@@ -237,7 +255,7 @@ const SmokingHabitsResult = ({ data }) => {
                             alignItems: 'center',
                             justifyContent: 'center',
                             textAlign: 'center',
-                            boxSizing: 'border-box' // Include padding in element's dimensions
+                            boxSizing: 'border-box'
                         }}
                     >
                         <AccessTimeIcon
@@ -263,7 +281,7 @@ const SmokingHabitsResult = ({ data }) => {
                             p: 3,
                             height: '100%',
                             minHeight: '240px',
-                            width: '100%', // Ensure paper takes full width of grid item
+                            width: '100%',
                             borderRadius: 3,
                             border: '1px solid',
                             borderColor: 'divider',
@@ -272,7 +290,7 @@ const SmokingHabitsResult = ({ data }) => {
                             alignItems: 'center',
                             justifyContent: 'center',
                             textAlign: 'center',
-                            boxSizing: 'border-box' // Include padding in element's dimensions
+                            boxSizing: 'border-box'
                         }}
                     >
                         <HealthAndSafetyIcon
@@ -348,34 +366,19 @@ const SmokingHabitsResult = ({ data }) => {
                 </Paper>
             </Box>
 
-            {healthIssues && (
-                <Box sx={{ mb: 4 }}>
-                    <Typography
-                        variant="h5"
-                        sx={{
-                            fontWeight: 600,
-                            mb: 2,
-                            color: 'text.primary'
-                        }}
-                    >
-                        Health Concerns
-                    </Typography>
-
-                    <Paper
-                        elevation={0}
-                        sx={{
-                            p: 3,
-                            borderRadius: 3,
-                            border: '1px solid',
-                            borderColor: 'divider'
-                        }}
-                    >
-                        <Typography variant="body1">
-                            {healthIssues}
-                        </Typography>
-                    </Paper>
-                </Box>
-            )}
+            {/* Health Issues */}
+            <Box sx={{ mb: 4 }}>
+                <Typography variant="subtitle1" sx={{
+                    fontWeight: 600,
+                    color: 'text.secondary',
+                    mb: 1
+                }}>
+                    Health Issues
+                </Typography>
+                <Typography variant="body1">
+                    {healthIssues || 'No health issues reported'}
+                </Typography>
+            </Box>
 
             <Box sx={{ mt: 4 }}>
                 <Typography
@@ -429,7 +432,7 @@ const SmokingHabitsResult = ({ data }) => {
 
             {/* shows the original answers */}
             <Box sx={{ mt: 6, mb: 4 }}>
-                <Accordion 
+                <Accordion
                     elevation={0}
                     sx={{
                         borderRadius: '12px',
@@ -467,7 +470,7 @@ const SmokingHabitsResult = ({ data }) => {
                     </AccordionSummary>
                     <AccordionDetails sx={{ p: 3 }}>
                         {questions.map(question => (
-                            <Box key={question.id} sx={{ 
+                            <Box key={question.id} sx={{
                                 mb: 2,
                                 pb: 2,
                                 borderBottom: question.id !== questions.length ? '1px solid rgba(0, 0, 0, 0.08)' : 'none'
@@ -478,7 +481,9 @@ const SmokingHabitsResult = ({ data }) => {
                                 <Typography variant="body1" sx={{ color: 'text.secondary' }}>
                                     {question.field === 'triggers'
                                         ? (triggers.length > 0 ? triggers.join(', ') : 'None selected')
-                                        : smokingData[question.field] || 'Not provided'}
+                                        : question.field === 'health_issues'
+                                            ? (healthIssues || 'No health issues reported')
+                                            : smokingData[question.field] || 'Not provided'}
                                 </Typography>
                             </Box>
                         ))}

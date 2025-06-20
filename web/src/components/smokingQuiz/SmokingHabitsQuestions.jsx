@@ -6,7 +6,8 @@ import {
     FormControlLabel,
     Checkbox,
     Box,
-    Typography
+    Typography,
+    Grid
 } from '@mui/material';
 
 // Extract common styles to reuse across components
@@ -105,7 +106,7 @@ const SmokingHabitsQuestions = () => {
         'Gum disease or tooth loss',
         'Reduced sense of taste or smell',
         'Fatigue or low energy',
-        'No, I haven\'t experienced any health issues'
+        'No health issues'
     ];
 
     const questions = [
@@ -223,37 +224,31 @@ const SmokingHabitsQuestions = () => {
         },
         {
             id: 6,
-            question: 'Have you experienced any health issues due to smoking?',
+            question: 'Have you experienced any health issues due to smoking? (Please describe)',
             field: 'health_issues',
             component: (value, onChange) => (
-                <TextField
-                    fullWidth
-                    multiline
-                    rows={4}
-                    name="health_issues"
-                    value={value || ''}
-                    onChange={(e) => {
-                        // Ensure we pass a properly formatted event object
-                        const event = {
-                            target: {
-                                name: 'health_issues',
-                                value: e.target.value
+                <Box sx={{ mt: 3 }}>
+                    <TextField
+                        fullWidth
+                        id="health_issues"
+                        name="health_issues"
+                        label="Health issues (optional)"
+                        placeholder="For example: coughing, shortness of breath, etc. or 'No health issues'"
+                        multiline
+                        rows={3}
+                        value={value || ''}
+                        onChange={onChange}
+                        variant="outlined"
+                        sx={{
+                            '& .MuiOutlinedInput-root': {
+                                borderRadius: '12px',
+                                '&:hover fieldset': {
+                                    borderColor: 'rgba(0, 0, 0, 0.24)',
+                                }
                             }
-                        };
-                        onChange(event);
-                    }}
-                    placeholder="e.g. coughing, shortness of breath, reduced stamina"
-                    variant="outlined"
-                    sx={{
-                        '& .MuiOutlinedInput-root': {
-                            borderRadius: '12px',
-                            bgcolor: 'rgba(0, 0, 0, 0.02)',
-                            '& fieldset': { borderColor: 'rgba(0, 0, 0, 0.12)' },
-                            '&:hover fieldset': { borderColor: 'rgba(0, 0, 0, 0.24)' },
-                            '&.Mui-focused fieldset': { borderColor: 'primary.main' },
-                        }
-                    }}
-            />
+                        }}
+                    />
+                </Box>
             )
         }
     ];

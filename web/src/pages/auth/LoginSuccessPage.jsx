@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import LoadingPage from './LoadingPage';
+import LoadingPage from '../LoadingPage';
 
 export default function LoginSuccessPage() {
   const navigate = useNavigate();

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
+import Header from '../components/layout/Header';
+import Footer from '../components/layout/Footer';
 import Chatbox from '../components/Chatbox';
 import { Box, IconButton } from '@mui/material';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
@@ -30,10 +30,10 @@ export default function MainLayout({ children, showHeader = true, showFooter = t
           top: 0,
           left: 0,
           width: '100%',
-          zIndex: 1100, 
-          backgroundColor: '#F9F7F4', 
-          backdropFilter: 'blur(5px)', 
-          WebkitBackdropFilter: 'blur(5px)', 
+          zIndex: 1100,
+          backgroundColor: 'background.paper',
+          backdropFilter: 'blur(5px)',
+          WebkitBackdropFilter: 'blur(5px)',
         }}>
           <Header authStatus={authStatus} onLogout={handleLogout} />
         </Box>
@@ -46,7 +46,7 @@ export default function MainLayout({ children, showHeader = true, showFooter = t
           return child;
         })}
       </Box>
-      
+
       {/* Chat button positioned fixed at bottom right */}
       {!isChatboxOpen && (
         <IconButton
