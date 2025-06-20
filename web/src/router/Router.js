@@ -2,6 +2,7 @@ import { createBrowserRouter } from 'react-router-dom';
 import MainLayout from '../layout/MainLayout';
 import AuthLayout from '../layout/AuthLayout';
 import ProtectedRoute from '../components/ProtectedRoute';
+import QuitPlanLayout from '../layout/QuitPlanLayout';
 
 // Pages
 import Homepage from '../pages/Homepage';
@@ -17,6 +18,8 @@ import MembershipPlansPage from '../pages/MembershipPlansPage';
 import NotFoundPage from '../pages/NotFoundPage';
 import LoadingPage from '../pages/LoadingPage';
 import AdminDashboard from '../pages/AdminDashboard';
+import QuitPlanPage from '../pages/QuitPlanPages/QuitPlanPage';
+import QuitPlanResultPage from '../pages/QuitPlanPages/QuitPlanResultPage';
 
 export const routes = createBrowserRouter([
   {
@@ -107,6 +110,26 @@ export const routes = createBrowserRouter([
       <AuthLayout>
         <LoadingPage />
       </AuthLayout>
+    ),
+  },
+  {
+    path: '/quit-plan',
+    element: (
+      <ProtectedRoute>
+        <QuitPlanLayout>
+          <QuitPlanPage />
+        </QuitPlanLayout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/quit-plan/result',
+    element: (
+      <ProtectedRoute>
+        <QuitPlanLayout>
+          <QuitPlanResultPage />
+        </QuitPlanLayout>
+      </ProtectedRoute>
     ),
   },
   // Admin Routes

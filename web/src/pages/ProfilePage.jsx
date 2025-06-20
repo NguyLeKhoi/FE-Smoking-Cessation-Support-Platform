@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Box } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Route, Routes } from 'react-router-dom';
 import { fetchCurrentUser, updateCurrentUser } from '../services/userService';
 import ProfileSidebar from '../components/profilePage/ProfileSidebar';
 import UserInfoSection from '../components/profilePage/UserInfoSection';
 import StatisticsSection from '../components/profilePage/StatisticsSection';
 import AchievementSection from '../components/profilePage/AchievementSection';
 import LoadingPage from './LoadingPage';
+import QuitPlanPage from './QuitPlanPages/QuitPlanPage';
 
 export default function ProfilePage({ handleLogout }) {
   const navigate = useNavigate();
@@ -210,6 +211,9 @@ export default function ProfilePage({ handleLogout }) {
           </Button>
         </Box>
       </Box>
+      <Routes>
+        <Route path="/quit-plan" element={<QuitPlanPage />} />
+      </Routes>
     </>
   );
 }
