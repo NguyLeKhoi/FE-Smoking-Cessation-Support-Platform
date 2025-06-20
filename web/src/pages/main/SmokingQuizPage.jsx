@@ -15,12 +15,12 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import CloseIcon from '@mui/icons-material/Close';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import smokingService from '../services/smokingService';
-import SmokingHabitsResult from '../components/smokingQuiz/SmokingHabitsResult';
-import SmokingHabitsQuestions from '../components/smokingQuiz/SmokingHabitsQuestions';
-import QuizProgressIndicator from '../components/smokingQuiz/ProgressIndicator';
-import QuizNavigationButtons from '../components/smokingQuiz/NavigationButtons';
-import QuizChatBubble from '../components/smokingQuiz/ChatBubble';
+import smokingService from '../../services/smokingService';
+import SmokingHabitsResult from '../../components/smokingQuiz/SmokingHabitsResult';
+import SmokingHabitsQuestions from '../../components/smokingQuiz/SmokingHabitsQuestions';
+import QuizProgressIndicator from '../../components/smokingQuiz/ProgressIndicator';
+import QuizNavigationButtons from '../../components/smokingQuiz/NavigationButtons';
+import QuizChatBubble from '../../components/smokingQuiz/ChatBubble';
 
 
 const defaultState = {

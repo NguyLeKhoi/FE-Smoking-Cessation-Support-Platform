@@ -1,42 +1,71 @@
 import React, { useState, useEffect } from 'react';
 import { Container, TextField, Button, Typography, Box, Alert, Link } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import { forgotPassword } from '../services/authService';
-import GlowingDotsGrid from '../components/animated/GlowingDotsGrid'; // Add this import
-import LoadingPage from './LoadingPage'; // Import LoadingPage
+import { useNavigate, useLocation } from 'react-router-dom';
+import { resetPassword } from '../../services/authService';
+import GlowingDotsGrid from '../../components/animated/GlowingDotsGrid';
+import LoadingPage from '../LoadingPage';
 
-export default function ForgotPasswordPage() {
+export default function ResetPasswordPage() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const token = queryParams.get('token');
+  const [formData, setFormData] = useState({
+    password: '',
+    confirmPassword: '',
+  });
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   // Effect to disable scrolling when component mounts
   useEffect(() => {
-    // Save the current overflow style
     const originalStyle = window.getComputedStyle(document.body).overflow;
-    // Disable scrolling
     document.body.style.overflow = 'hidden';
-
-    // Re-enable scrolling when component unmounts
     return () => {
       document.body.style.overflow = originalStyle;
     };
   }, []);
 
+  useEffect(() => {
+    if (!token) {
+      setError('No reset token provided.');
+    }
+  }, [token]);
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage('');
     setError('');
+
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match.');
+      return;
+    }
+
+    if (!token) {
+      setError('Cannot reset password: No token provided.');
+      return;
+    }
+
     setLoading(true);
 
     try {
-      await forgotPassword({ email });
-      setMessage('If an account with that email exists, a password reset link has been sent.');
-      setEmail('');
+      await resetPassword({ token, password: formData.password, confirmPassword: formData.confirmPassword });
+      setMessage('Your password has been reset successfully. You can now sign in.');
+      setFormData({
+        password: '',
+        confirmPassword: '',
+      });
     } catch (error) {
-      console.error('Forgot password error caught:', error);
+      console.error('Reset password error caught:', error);
       if (error.message) {
         setError(`Error: ${error.message}`);
       } else {
@@ -80,12 +109,11 @@ export default function ForgotPasswordPage() {
       left: 0,
       right: 0,
       bottom: 0,
-      bgcolor: '#f6f5f3', // Changed to white to match other pages
+      bgcolor: '#f6f5f3',
     }}>
-      {/* Add GlowingDotsGrid */}
       <GlowingDotsGrid
-        dotSize={12}     // Larger dots
-        dotGap={38}      // More space between dots
+        dotSize={12}
+        dotGap={38}
         threshold={150}
         speedThreshold={100}
         shockRadius={250}
@@ -95,7 +123,7 @@ export default function ForgotPasswordPage() {
           left: 0,
           width: '100%',
           height: '100%',
-          zIndex: 1, // Behind the login form
+          zIndex: 1,
         }}
       />
 
@@ -113,14 +141,14 @@ export default function ForgotPasswordPage() {
             mx: 'auto',
             maxHeight: '90vh',
             overflowY: 'auto',
-            backdropFilter: 'blur(5px)', // Add slight blur for better text contrast
+            backdropFilter: 'blur(5px)',
           }}
         >
           <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 700, color: 'text.primary', mb: 1 }}>
-            Forgot Password
+            Reset Password
           </Typography>
           <Typography variant="h6" gutterBottom sx={{ color: 'text.secondary', mb: 4, textAlign: 'center' }}>
-            Enter your email to receive a password reset link
+            Enter your new password below
           </Typography>
 
           {message && (
@@ -138,14 +166,26 @@ export default function ForgotPasswordPage() {
           <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%', mt: 2 }}>
             <TextField
               fullWidth
-              label="Email"
-              name="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              label="New Password"
+              name="password"
+              type="password"
+              value={formData.password}
+              onChange={handleChange}
               margin="normal"
               required
-              autoComplete="email"
+              autoComplete="new-password"
+              sx={textFieldStyle}
+            />
+            <TextField
+              fullWidth
+              label="Confirm New Password"
+              name="confirmPassword"
+              type="password"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              margin="normal"
+              required
+              autoComplete="new-password"
               sx={textFieldStyle}
             />
 
@@ -173,7 +213,7 @@ export default function ForgotPasswordPage() {
                 },
               }}
             >
-              {loading ? 'Sending...' : 'Send Reset Link'}
+              {loading ? 'Resetting...' : 'Reset Password'}
             </Button>
 
             <Box sx={{ textAlign: 'center', mt: 3 }}>

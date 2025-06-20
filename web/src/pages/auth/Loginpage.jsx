@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Container, TextField, Button, Typography, Box, Alert, Link, IconButton } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { login } from '../services/authService';
-import GlowingDotsGrid from '../components/animated/GlowingDotsGrid';
-import LoadingPage from './LoadingPage';
+import { login } from '../../services/authService';
+import GlowingDotsGrid from '../../components/animated/GlowingDotsGrid';
+import LoadingPage from '../LoadingPage';
 import HomeIcon from '@mui/icons-material/Home'; // Import the home icon
 
 export default function LoginPage() {

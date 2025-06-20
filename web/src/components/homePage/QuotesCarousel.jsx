@@ -102,7 +102,7 @@ const QuotesCarousel = () => {
                         component="h2"
                         gutterBottom
                         sx={{
-                            fontWeight: 500,
+                            fontWeight: 600,
                             color: theme.palette.text.primary,
                             mb: 2
                         }}

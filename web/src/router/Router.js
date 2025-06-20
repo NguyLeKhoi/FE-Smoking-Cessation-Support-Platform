@@ -4,19 +4,26 @@ import AuthLayout from '../layout/AuthLayout';
 import ProtectedRoute from '../components/ProtectedRoute';
 
 // Pages
-import Homepage from '../pages/Homepage';
-import Loginpage from '../pages/Loginpage';
-import Blog from '../pages/Blog';
-import Signuppage from '../pages/SignupPage';
-import ProfilePage from '../pages/ProfilePage';
-import LoginSuccessPage from '../pages/LoginSuccessPage';
-import ForgotPasswordPage from '../pages/ForgotPasswordPage';
-import ResetPasswordPage from '../pages/ResetPasswordPage';
-import SmokingQuizPage from '../pages/SmokingQuizPage';
-import MembershipPlansPage from '../pages/MembershipPlansPage';
+
+//auth
+import Loginpage from '../pages/auth/Loginpage';
+import Signuppage from '../pages/auth/SignupPage';
+import ForgotPasswordPage from '../pages/auth/ForgotPasswordPage';
+import ResetPasswordPage from '../pages/auth/ResetPasswordPage';
+import LoginSuccessPage from '../pages/auth/LoginSuccessPage';
+
+//main
+import Homepage from '../pages/main/Homepage';
+import Blog from '../pages/main/Blog';
+import ProfilePage from '../pages/main/ProfilePage';
+import SmokingQuizPage from '../pages/main/SmokingQuizPage';
+import MembershipPlansPage from '../pages/main/MembershipPlansPage';
+
+//admin
+import AdminDashboard from '../pages/admin/AdminDashboard';
+
 import NotFoundPage from '../pages/NotFoundPage';
 import LoadingPage from '../pages/LoadingPage';
-import AdminDashboard from '../pages/AdminDashboard';
 
 export const routes = createBrowserRouter([
   {
@@ -54,7 +61,7 @@ export const routes = createBrowserRouter([
   {
     path: '/blog',
     element: (
-      <MainLayout>
+      <MainLayout showFooter={false} >
         <Blog />
       </MainLayout>
     ),

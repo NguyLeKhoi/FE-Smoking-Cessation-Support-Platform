@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Typography, List, ListItem, ListItemText, ListItemIcon } from '@mui/material';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import membershipService from '../services/membershipService';
-import LoadingPage from './LoadingPage';
+// Fix the import paths
+import membershipService from '../../services/membershipService';
+import LoadingPage from '../LoadingPage';
 import { useNavigate } from 'react-router-dom';
-import { isAuthenticated } from '../services/authService';
+import { isAuthenticated } from '../../services/authService';
 
 const MembershipPlansPage = () => {
   const [plans, setPlans] = useState([]);
@@ -89,8 +90,8 @@ const MembershipPlansPage = () => {
               width: '100%',
               height: '120px',
               background: plan.name === 'BASIC PACK' ? 'linear-gradient(to right, #8e2de2, #4a00e0)' :
-                          plan.name === 'STANDARD' ? 'linear-gradient(to right, #ff4e50, #fcb045)' :
-                          'linear-gradient(to right, #00c6ff, #0072ff)',
+                plan.name === 'STANDARD' ? 'linear-gradient(to right, #ff4e50, #fcb045)' :
+                  'linear-gradient(to right, #00c6ff, #0072ff)',
               borderRadius: '20px 20px 0 0',
               zIndex: 1,
             }}
@@ -113,9 +114,11 @@ const MembershipPlansPage = () => {
               {plan.features.map((feature, featureIndex) => (
                 <ListItem key={featureIndex} sx={{ paddingY: 0.5 }}>
                   <ListItemIcon sx={{ minWidth: 'auto', marginRight: 1 }}>
-                    <CheckCircleOutlineIcon sx={{ color: plan.name === 'BASIC PACK' ? '#8e2de2' : 
-                                                plan.name === 'STANDARD' ? '#ff4e50' : 
-                                                '#00c6ff', fontSize: '1.2rem' }} />
+                    <CheckCircleOutlineIcon sx={{
+                      color: plan.name === 'BASIC PACK' ? '#8e2de2' :
+                        plan.name === 'STANDARD' ? '#ff4e50' :
+                          '#00c6ff', fontSize: '1.2rem'
+                    }} />
                   </ListItemIcon>
                   <ListItemText primary={feature} sx={{ '& .MuiListItemText-primary': { fontSize: '0.9rem' } }} />
                 </ListItem>
@@ -126,11 +129,10 @@ const MembershipPlansPage = () => {
                 width: 150,
                 height: 150,
                 borderRadius: '50%',
-                border: `5px solid ${
-                  plan.name === 'BASIC PACK' ? '#8e2de2' :
-                  plan.name === 'STANDARD' ? '#ff4e50' :
-                  '#00c6ff'
-                }`,
+                border: `5px solid ${plan.name === 'BASIC PACK' ? '#8e2de2' :
+                    plan.name === 'STANDARD' ? '#ff4e50' :
+                      '#00c6ff'
+                  }`,
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'center',
@@ -154,4 +156,4 @@ const MembershipPlansPage = () => {
   );
 };
 
-export default MembershipPlansPage; 
+export default MembershipPlansPage;

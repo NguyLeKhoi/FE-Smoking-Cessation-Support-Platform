@@ -23,7 +23,7 @@ const SidebarContainer = styled(Paper)(({ theme }) => ({
     height: '100vh',
     backgroundColor: theme.palette.background.paper,
     boxShadow: '4px 0px 10px rgba(0, 0, 0, 0.03)',
-    padding: '0', // Removed top padding
+    padding: '0', 
     display: 'flex',
     flexDirection: 'column',
     color: theme.palette.text.primary,

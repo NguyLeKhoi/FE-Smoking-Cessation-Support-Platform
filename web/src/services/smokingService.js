@@ -28,7 +28,7 @@ const smokingService = {
 
             const response = await api.post('/smoking-habits', formattedData);
 
-            // Important: Return the user's input data if the API response doesn't include it
+            // Return the user's input data if the API response doesn't include it
             if (!response.data) {
                 return {
                     ...formattedData,
@@ -53,7 +53,6 @@ const smokingService = {
             // Still return the user's input data even if the API call fails
             return {
                 ...habitData,
-                // Ensure health_issues is a string in the returned data
                 health_issues: typeof habitData.health_issues === 'string'
                     ? habitData.health_issues
                     : (Array.isArray(habitData.health_issues)
@@ -64,7 +63,6 @@ const smokingService = {
         }
     },
 
-    // Get current user's smoking habits
     getMySmokingHabits: async () => {
         try {
             const response = await api.get('/smoking-habits/me');
@@ -75,7 +73,6 @@ const smokingService = {
         }
     },
 
-    // Delete a specific smoking habit by ID
     deleteSmokingHabit: async (id) => {
         try {
             const response = await api.delete(`/smoking-habits/${id}`);
