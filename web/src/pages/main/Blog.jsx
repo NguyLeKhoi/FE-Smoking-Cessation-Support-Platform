@@ -97,7 +97,7 @@ const Blog = () => {
                             ? new Date(featuredPost.publishDate || featuredPost.created_at).toLocaleDateString('en-US', {
                                 month: 'short',
                                 day: 'numeric'
-                            }).toUpperCase()
+                              }).toUpperCase()
                             : "UNKNOWN DATE"
                         }
                         author={
@@ -106,7 +106,7 @@ const Blog = () => {
                                 : "ZEROTINE TEAM"
                         }
                         slug={featuredPost.slug || generateSlug(featuredPost.title) || `post-featured`}
-                        id={featuredPost.id}
+                        id={featuredPost.id} 
                     />
                 ) : (
                     loading ? (
@@ -204,7 +204,7 @@ const Blog = () => {
                                             : `MAY ${10 + index}`
                                         }
                                         slug={post.slug || (post.title && generateSlug(post.title)) || `post-${index}`}
-                                        id={post.id}
+                                        id={post.id} 
                                     />
                                 </Grid>
                             ))}

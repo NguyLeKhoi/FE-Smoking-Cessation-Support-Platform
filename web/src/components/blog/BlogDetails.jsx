@@ -6,19 +6,21 @@ import {
     Avatar,
     Chip,
     Divider,
-    CircularProgress,
     Alert,
-    Breadcrumbs,
     Link,
-    Button
+    Button,
+    Stack
 } from '@mui/material';
 import { Link as RouterLink, useParams, useNavigate } from 'react-router-dom';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import ShareIcon from '@mui/icons-material/Share';
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
 import postService from '../../services/postService';
 import { formatDistanceToNow } from 'date-fns';
+import LoadingPage from '../../pages/LoadingPage';
 
 const BlogDetails = () => {
     const { id } = useParams();
@@ -57,236 +59,272 @@ const BlogDetails = () => {
     };
 
     if (loading) {
-        return (
-            <Container maxWidth="lg" sx={{ my: 8 }}>
-                <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
-                    <CircularProgress />
-                </Box>
-            </Container>
-        );
+        return <LoadingPage />;
     }
 
     if (error || !post) {
         return (
-            <Container maxWidth="lg" sx={{ my: 8 }}>
-                <Button
-                    startIcon={<ArrowBackIcon />}
-                    onClick={handleGoBack}
-                    sx={{ mb: 4 }}
-                >
-                    Back to Blog
-                </Button>
-                <Alert severity="error" sx={{ my: 2 }}>
-                    {error || 'Post not found'}
-                </Alert>
-            </Container>
+            <Box sx={{ bgcolor: 'background.paper', minHeight: '100vh' }}>
+                <Container maxWidth="md" sx={{ py: 8 }}>
+                    <Button
+                        startIcon={<ArrowBackIcon />}
+                        onClick={handleGoBack}
+                        sx={{ mb: 4 }}
+                    >
+                        Back to Blog
+                    </Button>
+                    <Alert severity="error" sx={{ my: 2 }}>
+                        {error || 'Post not found'}
+                    </Alert>
+                </Container>
+            </Box>
         );
     }
 
     // Format date
     const publishDate = new Date(post.created_at);
     const formattedDate = publishDate.toLocaleDateString('en-US', {
-        year: 'numeric',
         month: 'long',
-        day: 'numeric'
+        day: 'numeric',
+        year: 'numeric'
     });
-
-    const timeAgo = formatDistanceToNow(publishDate, { addSuffix: true });
 
     // Estimate read time (1 min per 200 words)
     const wordCount = post.content?.split(/\s+/).length || 0;
     const readTime = Math.max(1, Math.ceil(wordCount / 200));
 
     return (
-        <Container maxWidth="lg" sx={{ my: { xs: 4, md: 8 } }}>
-            {/* Breadcrumbs navigation */}
-            <Breadcrumbs sx={{ mb: 3 }}>
-                <Link component={RouterLink} to="/" underline="hover" color="inherit">
-                    Home
-                </Link>
-                <Link component={RouterLink} to="/blog" underline="hover" color="inherit">
-                    Blog
-                </Link>
-                <Typography color="text.primary">{post.type}</Typography>
-            </Breadcrumbs>
-
-            {/* Back button */}
-            <Button
-                startIcon={<ArrowBackIcon />}
-                onClick={handleGoBack}
-                sx={{ mb: 4 }}
-            >
-                Back to Blog
-            </Button>
-
-            {/* Post category */}
-            {post.type && (
-                <Chip
-                    label={post.type.replace(/_/g, ' ')}
-                    color="primary"
-                    size="small"
-                    sx={{
-                        textTransform: 'uppercase',
-                        fontWeight: 500,
-                        mb: 2,
-                        borderRadius: '4px'
-                    }}
-                />
-            )}
-
-            {/* Post title */}
-            <Typography
-                variant="h2"
-                component="h1"
-                sx={{
-                    fontWeight: 800,
-                    fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' },
-                    lineHeight: 1.2,
-                    mb: 3
-                }}
-            >
-                {post.title}
-            </Typography>
-
-            {/* Author and meta information */}
-            <Box
-                sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    flexWrap: 'wrap',
-                    gap: 2,
-                    mb: 4
-                }}
-            >
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Avatar
-                        src={post.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${post.first_name} ${post.last_name}`}
-                        alt={`${post.first_name} ${post.last_name}`}
-                        sx={{ width: 40, height: 40 }}
-                    />
-                    <Box>
-                        <Typography variant="subtitle1" fontWeight={600}>
-                            {post.first_name} {post.last_name}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                            {formattedDate} ({timeAgo})
-                        </Typography>
-                    </Box>
-                </Box>
-
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, ml: { xs: 0, sm: 'auto' } }}>
-                    <AccessTimeIcon fontSize="small" color="action" />
-                    <Typography variant="body2" color="text.secondary">
-                        {readTime} min read
-                    </Typography>
-
-                    <Button
-                        size="small"
-                        startIcon={<BookmarkIcon />}
-                        sx={{ ml: 2 }}
-                    >
-                        Save
-                    </Button>
-
-                    <Button
-                        size="small"
-                        startIcon={<ShareIcon />}
-                    >
-                        Share
-                    </Button>
-                </Box>
-            </Box>
-
-            {/* Main image */}
-            {post.thumbnail && (
-                <Box
-                    sx={{
-                        width: '100%',
-                        borderRadius: 2,
-                        overflow: 'hidden',
-                        mb: 5
-                    }}
-                >
-                    <img
-                        src={post.thumbnail}
-                        alt={post.title}
-                        style={{
-                            width: '100%',
-                            height: 'auto',
-                            maxHeight: '600px',
-                            objectFit: 'cover'
-                        }}
-                    />
-                </Box>
-            )}
-
-            {/* Post content */}
-            <Box
-                sx={{
-                    typography: 'body1',
-                    fontSize: { xs: '1rem', md: '1.1rem' },
-                    lineHeight: 1.7,
-                    color: 'text.primary',
-                    '& p': { mb: 3 },
-                    '& h2': {
-                        fontSize: '1.75rem',
-                        fontWeight: 700,
-                        mt: 5,
-                        mb: 3
-                    },
-                    '& h3': {
-                        fontSize: '1.35rem',
-                        fontWeight: 600,
-                        mt: 4,
-                        mb: 2
-                    },
-                    '& ul, & ol': {
-                        pl: 4,
-                        mb: 3
-                    },
-                    '& li': {
-                        mb: 1
-                    }
-                }}
-            >
-                {/* We should use a rich text renderer here for formatted content */}
-                {/* For now, let's display the raw content */}
-                <Typography variant="body1" paragraph>
-                    {post.content}
-                </Typography>
-            </Box>
-
-            <Divider sx={{ my: 5 }} />
-
-            {/* Actions section */}
-            <Box sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                mb: 5
-            }}>
+        <Box sx={{ bgcolor: 'background.paper', py: 0 }}>
+            <Container maxWidth="md" sx={{ pt: 2, pb: 8 }}>
+                {/* Back button - small and subtle */}
                 <Button
                     startIcon={<ArrowBackIcon />}
                     onClick={handleGoBack}
+                    sx={{
+                        mb: 4,
+                        color: 'text.secondary',
+                        fontWeight: 400,
+                        textTransform: 'none',
+                        fontSize: '0.9rem'
+                    }}
                 >
-                    Back to Blog
+                    Back to articles
                 </Button>
 
-                <Box>
-                    <Button
-                        startIcon={<BookmarkIcon />}
-                        sx={{ mr: 2 }}
+                {/* Post title - larger and bolder */}
+                <Typography
+                    variant="h1"
+                    component="h1"
+                    sx={{
+                        fontWeight: 900,
+                        fontSize: { xs: '2.5rem', sm: '3.25rem', md: '3.5rem' },
+                        lineHeight: 1.1,
+                        mb: 3,
+                        letterSpacing: '-0.03em',
+                        color: '#242424'
+                    }}
+                >
+                    {post.title}
+                </Typography>
+
+                {/* Subtitle and category chip in the same row */}
+                <Box sx={{
+                    display: 'flex',
+                    flexDirection: { xs: 'column', sm: 'row' },
+                    alignItems: { xs: 'flex-start', sm: 'center' },
+                    gap: { xs: 2, sm: 1.5 },
+                    mb: 4
+                }}>
+                    {/* Subtitle */}
+                    <Typography
+                        variant="h2"
+                        sx={{
+                            fontSize: '1.35rem',
+                            color: 'text.secondary',
+                            lineHeight: 1.4,
+                            fontWeight: 400,
+                            flexGrow: 1,
+                            mr: 2
+                        }}
                     >
-                        Save
-                    </Button>
-                    <Button
-                        startIcon={<ShareIcon />}
-                    >
-                        Share
-                    </Button>
+                        {post.content?.split('.')[0] + '.' || "Helpful information to support your journey."}
+                    </Typography>
+
+                    {/* Post category chip */}
+                    {post.type && (
+                        <Chip
+                            label={post.type.replace(/_/g, ' ')}
+                            color="primary"
+                            size="small"
+                            variant="outlined"
+                            sx={{
+                                textTransform: 'capitalize',
+                                fontWeight: 500,
+                                borderRadius: '4px',
+                                flexShrink: 0,
+                            }}
+                        />
+                    )}
                 </Box>
-            </Box>
-        </Container>
+
+                {/* Author and meta information */}
+                <Box
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        flexWrap: 'wrap',
+                        mb: 5
+                    }}
+                >
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <Avatar
+                            src={post.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${post.first_name} ${post.last_name}`}
+                            alt={`${post.first_name} ${post.last_name}`}
+                            sx={{ width: 48, height: 48 }}
+                        />
+                        <Box>
+                            <Typography variant="subtitle1" fontWeight={600} color="text.primary">
+                                {post.first_name} {post.last_name}
+                            </Typography>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <Typography variant="body2" color="text.secondary">
+                                    {formattedDate}
+                                </Typography>
+                                <Box component="span" sx={{ color: 'text.secondary' }}>·</Box>
+                                <Typography variant="body2" color="text.secondary">
+                                    {readTime} min read
+                                </Typography>
+                            </Box>
+                        </Box>
+                    </Box>
+
+                    <Stack direction="row" spacing={1} sx={{ mt: { xs: 2, sm: 0 } }}>
+                        <Button
+                            size="small"
+                            startIcon={<BookmarkIcon />}
+                            sx={{
+                                color: 'text.secondary',
+                                borderRadius: '20px',
+                                px: 2
+                            }}
+                        >
+                            Save
+                        </Button>
+                        <Button
+                            size="small"
+                            startIcon={<ShareIcon />}
+                            sx={{
+                                color: 'text.secondary',
+                                borderRadius: '20px',
+                                px: 2
+                            }}
+                        >
+                            Share
+                        </Button>
+                    </Stack>
+                </Box>
+
+                {/* Main image */}
+                {post.thumbnail && (
+                    <Box
+                        sx={{
+                            width: '100%',
+                            borderRadius: 8,
+                            overflow: 'hidden',
+                            mb: 5,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                        }}
+                    >
+                        <img
+                            src={post.thumbnail}
+                            alt={post.title}
+                            style={{
+                                width: '100%',
+                                height: 'auto',
+                                display: 'block',
+                                maxHeight: '450px',
+                                minHeight: '450px',
+                                objectFit: 'cover'
+                            }}
+                        />
+                    </Box>
+                )}
+
+                {/* Post content */}
+                <Box
+                    sx={{
+                        typography: 'body1',
+                        fontSize: { xs: '1.1rem', md: '1.2rem' },
+                        lineHeight: 1.7,
+                        color: '#242424',
+                        fontFamily: '"Merriweather", "Georgia", serif',
+                        '& p': { mb: 3 },
+                        '& h2': {
+                            fontSize: '1.75rem',
+                            fontWeight: 700,
+                            mt: 5,
+                            mb: 3,
+                            fontFamily: '"Helvetica", "Arial", sans-serif',
+                        },
+                        '& h3': {
+                            fontSize: '1.35rem',
+                            fontWeight: 600,
+                            mt: 4,
+                            mb: 2,
+                            fontFamily: '"Helvetica", "Arial", sans-serif',
+                        },
+                        '& ul, & ol': {
+                            pl: 4,
+                            mb: 3
+                        },
+                        '& li': {
+                            mb: 1
+                        },
+                        letterSpacing: '0.01em'
+                    }}
+                >
+                    <Typography
+                        variant="body1"
+                        paragraph
+                        sx={{
+                            fontSize: '1.2rem',
+                            lineHeight: 1.7,
+                            mb: 3
+                        }}
+                    >
+                        {post.content}
+                    </Typography>
+                </Box>
+
+                <Divider sx={{ my: 5 }} />
+
+                {/* Engagement metrics */}
+                <Box sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    mb: 4
+                }}>
+                    <Box sx={{ display: 'flex', gap: 2 }}>
+                        <Button
+                            startIcon={<ThumbUpOutlinedIcon />}
+                            sx={{ color: 'text.secondary' }}
+                        >
+                            536
+                        </Button>
+                        <Button
+                            startIcon={<ChatBubbleOutlineIcon />}
+                            sx={{ color: 'text.secondary' }}
+                        >
+                            17
+                        </Button>
+                    </Box>
+                </Box>
+            </Container>
+        </Box>
     );
 };
 
