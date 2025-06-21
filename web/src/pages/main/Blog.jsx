@@ -17,8 +17,8 @@ import {
 import EmailIcon from '@mui/icons-material/Email';
 import Banner2 from '../../assets/banner2.jpg';
 import CustomCard from '../../components/blog/CustomCard';
-import BlogSidebar from '../../components/blog/BlogSidebar';
 import postService from '../../services/postService';
+import { generateSlug } from '../../utils/slugUtils';
 
 const Blog = () => {
     const [posts, setPosts] = useState([]);
@@ -36,7 +36,6 @@ const Blog = () => {
                 if (response && response.data && Array.isArray(response.data)) {
                     setPosts(response.data);
                 } else if (Array.isArray(response)) {
-
                     setPosts(response);
                 } else {
                     console.error('Unexpected API response format:', response);
@@ -53,8 +52,6 @@ const Blog = () => {
         fetchPosts();
     }, []);
 
-    const sidebarWidth = 260;
-
     return (
         <Box sx={{
             display: 'flex',
@@ -62,38 +59,21 @@ const Blog = () => {
             backgroundColor: 'background.paper',
             position: 'relative'
         }}>
-            {/* Desktop sidebar */}
-            <Box
-                component="nav"
-                sx={{
-                    width: sidebarWidth,
-                    flexShrink: 0,
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    bottom: 0,
-                    zIndex: 1000,
-                }}
-            >
-                <BlogSidebar />
-            </Box>
-
-            {/* Main content */}
+            {/* Main content - now takes full width */}
             <Box
                 component="main"
                 sx={{
                     flexGrow: 1,
-                    marginLeft: `${sidebarWidth}px`,
-                    width: `calc(100% - ${sidebarWidth}px)`,
+                    width: '100%',
                 }}
             >
                 {/* Content with proper padding */}
                 <Container
                     maxWidth="lg"
                     sx={{
-                        pt: 1,
+                        pt: { xs: 2, md: 4 },
                         pb: 8,
-                        px: 4
+                        px: { xs: 2, sm: 4 }
                     }}
                 >
                     <Box sx={{ width: '100%' }}>
@@ -105,7 +85,7 @@ const Blog = () => {
                                     fontWeight: 700,
                                     mb: 3,
                                     color: 'text.primary',
-                                    fontSize: '2.5rem',
+                                    fontSize: { xs: '2rem', md: '2.5rem' },
                                     lineHeight: 1.2
                                 }}
                             >
@@ -163,14 +143,20 @@ const Blog = () => {
 
                             <Grid container spacing={3}>
                                 {posts.map((post, index) => (
-                                    <Grid item xs={12} md={6} lg={4} key={index}>
+                                    <Grid item xs={12} sm={6} md={4} key={index}>
                                         <CustomCard
-                                            image={post.thumbnail || 'https://placehold.co/600x400?text=No+Image'}
-                                            height={300}
-                                            title={post.title}
-                                            subtitle={post.content?.substring(0, 120) + '...' || 'No content available'}
-                                            author={post.author?.name || 'Anonymous'}
-                                            duration={post.read_time || '5 min'}
+                                            image={post.thumbnail || `https://source.unsplash.com/random/600x400?smoking-cessation&sig=${index}`}
+                                            title={post.title || "How to improve your journey to quitting smoking"}
+                                            subtitle={post.content?.substring(0, 120) + '...' || "Learn effective strategies and supportive approaches to help you on your path to becoming smoke-free."}
+                                            author={post.author?.name?.toUpperCase() || "ZEROTINE TEAM"}
+                                            date={post.publishDate
+                                                ? new Date(post.publishDate).toLocaleDateString('en-US', {
+                                                    month: 'short',
+                                                    day: 'numeric'
+                                                }).toUpperCase()
+                                                : `MAY ${10 + index}`
+                                            }
+                                            slug={post.slug || generateSlug(post.title) || `post-${index}`}
                                         />
                                     </Grid>
                                 ))}
@@ -184,7 +170,7 @@ const Blog = () => {
                                 mt: 8,
                                 mb: 4,
                                 textAlign: 'center',
-                                p: 6,
+                                p: { xs: 3, md: 6 },
                                 borderRadius: 3,
                                 backgroundColor: 'section.light',
                                 border: '1px solid',
@@ -217,6 +203,7 @@ const Blog = () => {
 
                             <Box sx={{
                                 display: 'flex',
+                                flexDirection: { xs: 'column', sm: 'row' },
                                 justifyContent: 'center',
                                 alignItems: 'center',
                                 gap: 2,
@@ -246,6 +233,7 @@ const Blog = () => {
                                     sx={{
                                         py: 1.5,
                                         px: 4,
+                                        width: { xs: '100%', sm: 'auto' },
                                         bgcolor: 'primary.main',
                                         color: 'white',
                                         borderRadius: '12px',
