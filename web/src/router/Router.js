@@ -15,6 +15,7 @@ import LoginSuccessPage from '../pages/auth/LoginSuccessPage';
 //main
 import Homepage from '../pages/main/Homepage';
 import Blog from '../pages/main/Blog';
+import BlogDetails from '../components/blog/BlogDetails';
 import ProfilePage from '../pages/main/ProfilePage';
 import SmokingQuizPage from '../pages/main/SmokingQuizPage';
 import MembershipPlansPage from '../pages/main/MembershipPlansPage';
@@ -63,6 +64,14 @@ export const routes = createBrowserRouter([
     element: (
       <MainLayout showFooter={false} >
         <Blog />
+      </MainLayout>
+    ),
+  },
+  {
+    path: '/blog/:id',
+    element: (
+      <MainLayout showFooter={false} >
+        <BlogDetails />
       </MainLayout>
     ),
   },

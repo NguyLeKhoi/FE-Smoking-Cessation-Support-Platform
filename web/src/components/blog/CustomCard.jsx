@@ -18,12 +18,13 @@ const CustomCard = ({
     authorAvatar,
     achievement,
     date,
-    slug
+    slug,
+    id
 }) => {
     return (
         <Card
             component={RouterLink}
-            to={`/blog/${slug || 'post'}`}
+            to={id ? `/blog/${id}` : `/blog/${slug || 'post'}`}
             sx={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -46,7 +47,7 @@ const CustomCard = ({
         >
             {/* Image Container */}
             <Box sx={{
-                borderRadius: '16px',
+                borderRadius: '20px',
                 overflow: 'hidden',
                 position: 'relative',
                 mb: 2,
@@ -58,7 +59,7 @@ const CustomCard = ({
                     image={image}
                     alt={title}
                     sx={{
-                        height: 230,
+                        height: 250,
                         objectFit: 'cover'
                     }}
                 />
