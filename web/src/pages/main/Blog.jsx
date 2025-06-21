@@ -59,7 +59,7 @@ const Blog = () => {
             backgroundColor: 'background.paper',
             position: 'relative'
         }}>
-            {/* Main content - now takes full width */}
+            {/* Main content */}
             <Box
                 component="main"
                 sx={{
@@ -67,7 +67,7 @@ const Blog = () => {
                     width: '100%',
                 }}
             >
-                {/* Content with proper padding */}
+                {/* Content*/}
                 <Container
                     maxWidth="lg"
                     sx={{
@@ -122,7 +122,7 @@ const Blog = () => {
                         <Divider sx={{ my: 4, borderColor: 'primary.main' }} />
 
                         {/* Articles Section */}
-                        <Box sx={{ my: 4 }}>
+                        <Box sx={{ my: 8 }}> 
                             {loading && (
                                 <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
                                     <CircularProgress />
@@ -141,22 +141,46 @@ const Blog = () => {
                                 </Alert>
                             )}
 
-                            <Grid container spacing={3}>
+                            <Grid
+                                container
+                                spacing={3}    // Increased spacing between grid items (both row and column)
+                                sx={{
+                                    mt: 2,     // Top margin for the grid container
+                                    mb: 4      // Bottom margin for the grid container
+                                }}
+                            >
                                 {posts.map((post, index) => (
-                                    <Grid item xs={12} sm={6} md={4} key={index}>
+                                    <Grid
+                                        item
+                                        xs={12}
+                                        sm={6}
+                                        md={4}
+                                        key={index}
+                                        sx={{
+                                            display: 'flex',
+                                            justifyContent: 'center',   
+                                            mb: 5  //extra bottom margin to each item
+                                        }}
+                                    >
                                         <CustomCard
                                             image={post.thumbnail || `https://source.unsplash.com/random/600x400?smoking-cessation&sig=${index}`}
                                             title={post.title || "How to improve your journey to quitting smoking"}
                                             subtitle={post.content?.substring(0, 120) + '...' || "Learn effective strategies and supportive approaches to help you on your path to becoming smoke-free."}
-                                            author={post.author?.name?.toUpperCase() || "ZEROTINE TEAM"}
-                                            date={post.publishDate
-                                                ? new Date(post.publishDate).toLocaleDateString('en-US', {
+                                            author={
+                                                post.first_name || post.last_name
+                                                    ? `${post.first_name || ''} ${post.last_name || ''}`.trim().toUpperCase()
+                                                    : "ZEROTINE TEAM"
+                                            }
+                                            authorAvatar={post.avatar || null}
+                                            achievement={post.achievement_id || null}
+                                            date={post.publishDate || post.created_at
+                                                ? new Date(post.publishDate || post.created_at).toLocaleDateString('en-US', {
                                                     month: 'short',
                                                     day: 'numeric'
                                                 }).toUpperCase()
                                                 : `MAY ${10 + index}`
                                             }
-                                            slug={post.slug || generateSlug(post.title) || `post-${index}`}
+                                            slug={post.slug || (post.title && generateSlug(post.title)) || `post-${index}`}
                                         />
                                     </Grid>
                                 ))}

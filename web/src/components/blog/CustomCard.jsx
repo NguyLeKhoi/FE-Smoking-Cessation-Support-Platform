@@ -3,11 +3,23 @@ import {
     Card,
     CardMedia,
     Typography,
-    Box
+    Box,
+    Avatar,
+    Tooltip
 } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 
-const CustomCard = ({ image, title, subtitle, author, date, slug }) => {
+const CustomCard = ({
+    image,
+    title,
+    subtitle,
+    author,
+    authorAvatar,
+    achievement,
+    date,
+    slug
+}) => {
     return (
         <Card
             component={RouterLink}
@@ -23,7 +35,7 @@ const CustomCard = ({ image, title, subtitle, author, date, slug }) => {
                 minHeight: 350,
                 borderRadius: '16px',
                 overflow: 'hidden',
-                boxShadow: 'none', // Remove default shadow
+                boxShadow: 'none',
                 textDecoration: 'none',
                 position: 'relative',
                 transition: 'transform 0.2s ease',
@@ -38,7 +50,6 @@ const CustomCard = ({ image, title, subtitle, author, date, slug }) => {
                 overflow: 'hidden',
                 position: 'relative',
                 mb: 2,
-                // Subtle border effect
                 border: '1px solid',
                 borderColor: 'rgba(0, 0, 0, 0.04)'
             }}>
@@ -47,14 +58,22 @@ const CustomCard = ({ image, title, subtitle, author, date, slug }) => {
                     image={image}
                     alt={title}
                     sx={{
-                        height: 220,
+                        height: 230,
                         objectFit: 'cover'
                     }}
                 />
             </Box>
 
             {/* Date and Author */}
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+            <Box sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                gap: 1,
+                mb: 1.5,
+                flexWrap: 'wrap'
+            }}>
+                {/* Date */}
                 <Typography
                     variant="body2"
                     sx={{
@@ -68,6 +87,7 @@ const CustomCard = ({ image, title, subtitle, author, date, slug }) => {
                     {date}
                 </Typography>
 
+                {/* Dot separator */}
                 <Box
                     component="span"
                     sx={{
@@ -78,18 +98,65 @@ const CustomCard = ({ image, title, subtitle, author, date, slug }) => {
                     }}
                 />
 
-                <Typography
-                    variant="body2"
-                    sx={{
-                        color: '#9E9E9E',
-                        fontWeight: 500,
-                        fontSize: '0.85rem',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.5px'
-                    }}
-                >
-                    {author}
-                </Typography>
+                {/* Author with Avatar */}
+                <Box sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                    ml: 0
+                }}>
+                    {authorAvatar ? (
+                        <Avatar
+                            src={authorAvatar}
+                            alt={author}
+                            sx={{
+                                width: 20,
+                                height: 20,
+                                border: achievement ? '1px solid gold' : 'none'
+                            }}
+                        />
+                    ) : (
+                        <Avatar
+                            sx={{
+                                width: 20,
+                                height: 20,
+                                bgcolor: '#f0f0f0',
+                                color: '#555',
+                                fontSize: '0.65rem',
+                                border: achievement ? '1px solid gold' : 'none'
+                            }}
+                        >
+                            {author ? author.charAt(0) : 'Z'}
+                        </Avatar>
+                    )}
+
+                    <Typography
+                        variant="body2"
+                        sx={{
+                            color: '#9E9E9E',
+                            fontWeight: 500,
+                            fontSize: '0.85rem',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.5px'
+                        }}
+                    >
+                        {author}
+                    </Typography>
+
+                    {/* Achievement icon */}
+                    {achievement && (
+                        <Tooltip title="Author Achievement">
+                            <EmojiEventsIcon
+                                fontSize="small"
+                                sx={{
+                                    color: 'gold',
+                                    fontSize: '1rem',
+                                    ml: -0.5
+                                }}
+                            />
+                        </Tooltip>
+                    )}
+                </Box>
             </Box>
 
             {/* Title */}
@@ -98,7 +165,7 @@ const CustomCard = ({ image, title, subtitle, author, date, slug }) => {
                 sx={{
                     fontWeight: 700,
                     color: '#333',
-                    fontSize: '1.5rem',
+                    fontSize: '1.2rem',
                     lineHeight: 1.3,
                     mb: 1.5
                 }}
@@ -106,7 +173,7 @@ const CustomCard = ({ image, title, subtitle, author, date, slug }) => {
                 {title}
             </Typography>
 
-            {/* Subtitle/Excerpt */}
+            {/* Subtitle */}
             <Typography
                 variant="body1"
                 sx={{
