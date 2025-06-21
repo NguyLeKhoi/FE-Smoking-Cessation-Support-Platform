@@ -5,7 +5,7 @@ import {
     Typography,
     Box,
     Avatar,
-    Tooltip
+    Tooltip,
 } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
@@ -19,7 +19,7 @@ const CustomCard = ({
     achievement,
     date,
     slug,
-    id
+    id  // Added id prop here
 }) => {
     return (
         <Card

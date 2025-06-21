@@ -10,7 +10,9 @@ import {
     TextField,
     InputAdornment,
     CircularProgress,
-    Alert
+    Alert,
+    Pagination,
+    Stack
 } from '@mui/material';
 import EmailIcon from '@mui/icons-material/Email';
 import Banner2 from '../../assets/banner2.jpg';
@@ -25,6 +27,11 @@ const Blog = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const FEATURED_POST_ID = "9ff8d9f9-0032-4746-8393-d95249945eba";
+    
+    // Pagination states
+    const [page, setPage] = useState(1);
+    const [postsPerPage] = useState(9); // 6 cards per page (3x2 grid)
+    const [totalPages, setTotalPages] = useState(1);
 
     useEffect(() => {
         const fetchPosts = async () => {
@@ -56,9 +63,15 @@ const Blog = () => {
                     const regularPosts = postsData.filter(post => post.id !== FEATURED_POST_ID);
                     setFeaturedPost(featured);
                     setPosts(regularPosts);
+                    
+                    // Calculate total pages based on regular posts
+                    setTotalPages(Math.ceil(regularPosts.length / postsPerPage));
                 } else {
                     console.log('Featured post not found, showing all posts');
                     setPosts(postsData);
+                    
+                    // Calculate total pages based on all posts
+                    setTotalPages(Math.ceil(postsData.length / postsPerPage));
                 }
 
             } catch (err) {
@@ -70,7 +83,19 @@ const Blog = () => {
         };
 
         fetchPosts();
-    }, []);
+    }, [postsPerPage]);
+
+    // Handle page change
+    const handlePageChange = (event, value) => {
+        setPage(value);
+        // Scroll to the top of the articles section
+        document.getElementById('articles-section')?.scrollIntoView({ behavior: 'smooth' });
+    };
+
+    // Get current posts for the selected page
+    const indexOfLastPost = page * postsPerPage;
+    const indexOfFirstPost = indexOfLastPost - postsPerPage;
+    const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
 
     return (
         <Box sx={{
@@ -102,8 +127,8 @@ const Blog = () => {
                         }
                         author={
                             (featuredPost.first_name || featuredPost.last_name)
-                                ? `${featuredPost.first_name || ''} ${featuredPost.last_name || ''}`.trim().toUpperCase()
-                                : "ZEROTINE TEAM"
+                                ? `${featuredPost.first_name || ''} ${featuredPost.last_name || ''}`
+                                : "Zerotine Team"
                         }
                         slug={featuredPost.slug || generateSlug(featuredPost.title) || `post-featured`}
                         id={featuredPost.id} 
@@ -134,7 +159,7 @@ const Blog = () => {
                     }}
                 >
                     {/* Articles Section */}
-                    <Box sx={{ my: 6 }}>
+                    <Box id="articles-section" sx={{ my: 6 }}>
                         <Typography
                             variant="h4"
                             component="h2"
@@ -173,7 +198,7 @@ const Blog = () => {
                                 mb: 4
                             }}
                         >
-                            {posts.map((post, index) => (
+                            {currentPosts.map((post, index) => (
                                 <Grid
                                     item
                                     xs={12}
@@ -186,13 +211,13 @@ const Blog = () => {
                                     }}
                                 >
                                     <CustomCard
-                                        image={post.thumbnail || `https://source.unsplash.com/random/600x400?smoking-cessation&sig=${index}`}
+                                        image={post.thumbnail || `https://source.unsplash.com/random/600x400?smoking-cessation&sig=${indexOfFirstPost + index}`}
                                         title={post.title || "How to improve your journey to quitting smoking"}
                                         subtitle={post.content?.substring(0, 120) + '...' || "Learn effective strategies and supportive approaches."}
                                         author={
                                             post.first_name || post.last_name
-                                                ? `${post.first_name || ''} ${post.last_name || ''}`.trim().toUpperCase()
-                                                : "ZEROTINE TEAM"
+                                                ? `${post.first_name || ''} ${post.last_name || ''}`
+                                                : "Zerotine Team"
                                         }
                                         authorAvatar={post.avatar || null}
                                         achievement={post.achievement_id || null}
@@ -201,107 +226,48 @@ const Blog = () => {
                                                 month: 'short',
                                                 day: 'numeric'
                                             }).toUpperCase()
-                                            : `MAY ${10 + index}`
+                                            : `MAY ${10 + indexOfFirstPost + index}`
                                         }
-                                        slug={post.slug || (post.title && generateSlug(post.title)) || `post-${index}`}
+                                        slug={post.slug || (post.title && generateSlug(post.title)) || `post-${indexOfFirstPost + index}`}
                                         id={post.id} 
                                     />
                                 </Grid>
                             ))}
                         </Grid>
-                    </Box>
-
-                    {/* Subscription Section */}
-                    <Paper
-                        elevation={0}
-                        sx={{
-                            mt: 8,
-                            mb: 4,
-                            textAlign: 'center',
-                            p: { xs: 3, md: 6 },
-                            borderRadius: 3,
-                            backgroundColor: 'section.light',
-                            border: '1px solid',
-                            borderColor: 'divider',
-                            boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.05)',
-                        }}
-                    >
-                        <Typography
-                            variant="h4"
-                            sx={{
-                                fontWeight: 700,
-                                mb: 3,
-                                color: 'text.primary'
-                            }}
-                        >
-                            Subscribe to Our Newsletter
-                        </Typography>
-
-                        <Typography
-                            variant="body1"
-                            sx={{
-                                mb: 4,
-                                color: 'text.secondary',
-                                maxWidth: '600px',
-                                mx: 'auto'
-                            }}
-                        >
-                            Stay updated with the latest articles, success stories, and tips to help you on your journey to a smoke-free life.
-                        </Typography>
-
-                        <Box sx={{
-                            display: 'flex',
-                            flexDirection: { xs: 'column', sm: 'row' },
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            gap: 2,
-                            maxWidth: '600px',
-                            mx: 'auto'
-                        }}>
-                            <TextField
-                                placeholder="Enter your email address"
-                                variant="outlined"
-                                fullWidth
-                                sx={{
-                                    '& .MuiOutlinedInput-root': {
-                                        borderRadius: '12px',
-                                        backgroundColor: 'background.default',
-                                    },
-                                }}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <EmailIcon color="primary" />
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
-                            <Button
-                                variant="contained"
-                                sx={{
-                                    py: 1.5,
-                                    px: 4,
-                                    width: { xs: '100%', sm: 'auto' },
-                                    bgcolor: 'primary.main',
-                                    color: 'white',
-                                    borderRadius: '12px',
-                                    boxShadow: '0 4px 0 rgba(0, 0, 0, 0.2)',
-                                    '&:hover': {
-                                        bgcolor: 'primary.dark',
-                                        boxShadow: '0 2px 0 rgba(0, 0, 0, 0.2)',
-                                        transform: 'translateY(2px)',
-                                    },
-                                    '&:active': {
-                                        boxShadow: '0 0 0 rgba(0, 0, 0, 0.2)',
-                                        transform: 'translateY(4px)',
-                                    },
-                                    transition: 'all 0.2s'
+                        
+                        {/* Pagination */}
+                        {!loading && !error && totalPages > 1 && (
+                            <Stack 
+                                spacing={2} 
+                                alignItems="center" 
+                                sx={{ 
+                                    mt: 6, 
+                                    mb: 2,
+                                    pt: 3,
+                                    borderTop: '1px solid',
+                                    borderColor: 'divider'
                                 }}
                             >
-                                Subscribe
-                            </Button>
-                        </Box>
-                    </Paper>
+                                <Pagination 
+                                    count={totalPages} 
+                                    page={page} 
+                                    onChange={handlePageChange}
+                                    color="primary"
+                                    size="large"
+                                    showFirstButton
+                                    showLastButton
+                                    sx={{
+                                        '& .MuiPaginationItem-root': {
+                                            fontWeight: 500
+                                        }
+                                    }}
+                                />
+                                <Typography variant="body2" color="text.secondary">
+                                    Page {page} of {totalPages}
+                                </Typography>
+                            </Stack>
+                        )}
+                    </Box>
                 </Container>
             </Box>
         </Box>
