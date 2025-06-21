@@ -27,7 +27,7 @@ const Blog = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const FEATURED_POST_ID = "9ff8d9f9-0032-4746-8393-d95249945eba";
-    
+
     // Pagination states
     const [page, setPage] = useState(1);
     const [postsPerPage] = useState(9); // 6 cards per page (3x2 grid)
@@ -63,13 +63,13 @@ const Blog = () => {
                     const regularPosts = postsData.filter(post => post.id !== FEATURED_POST_ID);
                     setFeaturedPost(featured);
                     setPosts(regularPosts);
-                    
+
                     // Calculate total pages based on regular posts
                     setTotalPages(Math.ceil(regularPosts.length / postsPerPage));
                 } else {
                     console.log('Featured post not found, showing all posts');
                     setPosts(postsData);
-                    
+
                     // Calculate total pages based on all posts
                     setTotalPages(Math.ceil(postsData.length / postsPerPage));
                 }
@@ -122,7 +122,7 @@ const Blog = () => {
                             ? new Date(featuredPost.publishDate || featuredPost.created_at).toLocaleDateString('en-US', {
                                 month: 'short',
                                 day: 'numeric'
-                              }).toUpperCase()
+                            }).toUpperCase()
                             : "UNKNOWN DATE"
                         }
                         author={
@@ -131,7 +131,7 @@ const Blog = () => {
                                 : "Zerotine Team"
                         }
                         slug={featuredPost.slug || generateSlug(featuredPost.title) || `post-featured`}
-                        id={featuredPost.id} 
+                        id={featuredPost.id}
                     />
                 ) : (
                     loading ? (
@@ -192,7 +192,7 @@ const Blog = () => {
 
                         <Grid
                             container
-                            spacing={3}
+                            spacing={8}
                             sx={{
                                 mt: 2,
                                 mb: 4
@@ -229,28 +229,28 @@ const Blog = () => {
                                             : `MAY ${10 + indexOfFirstPost + index}`
                                         }
                                         slug={post.slug || (post.title && generateSlug(post.title)) || `post-${indexOfFirstPost + index}`}
-                                        id={post.id} 
+                                        id={post.id}
                                     />
                                 </Grid>
                             ))}
                         </Grid>
-                        
+
                         {/* Pagination */}
                         {!loading && !error && totalPages > 1 && (
-                            <Stack 
-                                spacing={2} 
-                                alignItems="center" 
-                                sx={{ 
-                                    mt: 6, 
+                            <Stack
+                                spacing={2}
+                                alignItems="center"
+                                sx={{
+                                    mt: 6,
                                     mb: 2,
                                     pt: 3,
                                     borderTop: '1px solid',
                                     borderColor: 'divider'
                                 }}
                             >
-                                <Pagination 
-                                    count={totalPages} 
-                                    page={page} 
+                                <Pagination
+                                    count={totalPages}
+                                    page={page}
                                     onChange={handlePageChange}
                                     color="primary"
                                     size="large"

@@ -96,7 +96,7 @@ const BlogDetails = () => {
     return (
         <Box sx={{ bgcolor: 'background.paper', py: 0 }}>
             <Container maxWidth="md" sx={{ pt: 2, pb: 8 }}>
-                {/* Back button - small and subtle */}
+                {/* Back button */}
                 <Button
                     startIcon={<ArrowBackIcon />}
                     onClick={handleGoBack}
@@ -111,13 +111,13 @@ const BlogDetails = () => {
                     Back to articles
                 </Button>
 
-                {/* Post title - larger and bolder */}
+                {/* Post title */}
                 <Typography
                     variant="h1"
                     component="h1"
                     sx={{
                         fontWeight: 900,
-                        fontSize: { xs: '2.5rem', sm: '3.25rem', md: '3.5rem' },
+                        fontSize: { xs: '2.5rem', sm: '3.25rem', md: '3rem' },
                         lineHeight: 1.1,
                         mb: 3,
                         letterSpacing: '-0.03em',
@@ -127,7 +127,7 @@ const BlogDetails = () => {
                     {post.title}
                 </Typography>
 
-                {/* Subtitle and category chip in the same row */}
+                {/* Subtitle and category chip*/}
                 <Box sx={{
                     display: 'flex',
                     flexDirection: { xs: 'column', sm: 'row' },
@@ -160,7 +160,7 @@ const BlogDetails = () => {
                             sx={{
                                 textTransform: 'capitalize',
                                 fontWeight: 500,
-                                borderRadius: '4px',
+                                borderRadius: '10px',
                                 flexShrink: 0,
                             }}
                         />

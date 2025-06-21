@@ -19,7 +19,7 @@ const CustomCard = ({
     achievement,
     date,
     slug,
-    id  // Added id prop here
+    id
 }) => {
     return (
         <Card
@@ -31,8 +31,8 @@ const CustomCard = ({
                 height: '100%',
                 bgcolor: 'background.paper',
                 transition: 'all 0.2s ease-in-out',
-                maxWidth: 360,
-                minWidth: 360,
+                maxWidth: 300,
+                minWidth: 330,
                 minHeight: 350,
                 borderRadius: '16px',
                 overflow: 'hidden',
@@ -42,7 +42,9 @@ const CustomCard = ({
                 transition: 'transform 0.2s ease',
                 '&:hover': {
                     transform: 'translateY(-6px)'
-                }
+                },
+                width: '100%',
+                mx: 'auto'
             }}
         >
             {/* Image Container */}

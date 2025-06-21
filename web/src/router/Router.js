@@ -14,11 +14,14 @@ import LoginSuccessPage from '../pages/auth/LoginSuccessPage';
 
 //main
 import Homepage from '../pages/main/Homepage';
-import Blog from '../pages/main/Blog';
 import BlogDetails from '../components/blog/BlogDetails';
 import ProfilePage from '../pages/main/ProfilePage';
 import SmokingQuizPage from '../pages/main/SmokingQuizPage';
 import MembershipPlansPage from '../pages/main/MembershipPlansPage';
+
+//blog
+import Blog from '../pages/blog/Blog';
+import MyBlogPage from '../pages/blog/MyBlogPage';
 
 //admin
 import AdminDashboard from '../pages/admin/AdminDashboard';
@@ -75,6 +78,15 @@ export const routes = createBrowserRouter([
       </MainLayout>
     ),
   },
+  {
+    path: '/my-blog',
+    element: (
+      <ProtectedRoute>
+        <MyBlogPage />
+      </ProtectedRoute>
+    ),
+  },
+
   {
     path: '/profile',
     element: (
@@ -136,6 +148,7 @@ export const routes = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
+
   {
     path: '*',
     element: (
