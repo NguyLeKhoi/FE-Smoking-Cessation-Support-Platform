@@ -12,11 +12,16 @@ const quitPlanService = {
 
   /**
    * Create a daily record for the active quit plan phase
-   * @param {Object} data - { cigarette_smoke: number, craving_level: number, health_status: string, record_date: string }
+   * @param {Object} data - { cigarette_smoke: number, craving_level: number, health_status: string, record_date: string, phase_id: string }
    * @returns {Promise}
    */
   createDailyRecord: async (data) => {
     return api.post('/quit-plans/records', data);
+  },
+
+  // Alias for compatibility
+  createPlanRecord: async (data) => {
+    return quitPlanService.createDailyRecord(data);
   },
 
   /**

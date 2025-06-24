@@ -22,9 +22,8 @@ import MembershipPlansPage from '../pages/main/MembershipPlansPage';
 
 //quit-plan
 import QuitPlanPage from '../pages/quit-plans/QuitPlanPage';
-import QuitPlanResultPage from '../pages/quit-plans/QuitPlanResultPage';
+import QuitPlanResultPage from '../pages/quit-plans/QuitPlanDetailPage';
 import PhaseRecordPage from '../pages/quit-plans/PhaseRecordPage';
-import PlanRecordPage from '../pages/quit-plans/PlanRecordPage';
 
 //admin
 import AdminDashboard from '../pages/admin/AdminDashboard';
@@ -142,16 +141,6 @@ export const routes = createBrowserRouter([
       <ProtectedRoute>
         <MainLayout>
           <PhaseRecordPage />
-        </MainLayout>
-      </ProtectedRoute>
-    ), 
-  },
-  {
-    path: '/quit-plan/:planId/phase/all',
-    element: (
-      <ProtectedRoute>
-        <MainLayout>
-        <PlanRecordPage />
         </MainLayout>
       </ProtectedRoute>
     ), 

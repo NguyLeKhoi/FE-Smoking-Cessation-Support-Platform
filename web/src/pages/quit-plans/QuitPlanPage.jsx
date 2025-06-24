@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Typography, Paper, Grid, IconButton, CircularProgress, Button } from '@mui/material';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Box, Typography, Paper, Grid, IconButton, CircularProgress, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EventIcon from '@mui/icons-material/Event';
 import FlagIcon from '@mui/icons-material/Flag';
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
 import SmokingRoomsIcon from '@mui/icons-material/SmokingRooms';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import SettingsIcon from '@mui/icons-material/Settings';
 import quitPlanService from '../../services/quitPlanService';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -27,6 +29,12 @@ const getPhaseStatus = (phases) => {
   });
 };
 
+const slogans = [
+  'Start your quit journey today and track your progress here!',
+  'Your determination today is your freedom tomorrow.',
+  'A smoke-free life is a healthier life. You can do it!',
+];
+
 const QuitPlanPage = ({ setHasActivePlan }) => {
   const [quitPlans, setQuitPlans] = useState([]);
   const [fetchingPlans, setFetchingPlans] = useState(true);
@@ -38,6 +46,8 @@ const QuitPlanPage = ({ setHasActivePlan }) => {
   // Khai báo plan/phases trước mọi useEffect
   const plan = Array.isArray(quitPlans) && quitPlans.length > 0 ? quitPlans[0] : null;
   const phases = plan?.phases ? getPhaseStatus(plan.phases) : [];
+
+  const randomSlogan = useMemo(() => slogans[Math.floor(Math.random() * slogans.length)], []);
 
   useEffect(() => {
     fetchQuitPlans();
@@ -72,7 +82,7 @@ const QuitPlanPage = ({ setHasActivePlan }) => {
   };
 
   return (
-    <Box mb={4}>
+    <Box mb={4} sx={{ bgcolor: '#fff', minHeight: '100vh', p: 0 }}>
       <Typography variant="h3" fontWeight={800} align="center" mb={4} color="primary">
         Quit Plan
       </Typography>
@@ -93,43 +103,56 @@ const QuitPlanPage = ({ setHasActivePlan }) => {
           </Button>
         </Box>
       ) : (
-        <>
-          {/* Plan Overview */}
-          <Paper sx={{ p: 3, mb: 4, borderRadius: 3, boxShadow: 3 }}>
-            <Typography variant="h6" fontWeight={700} mb={1}><FlagIcon sx={{ mr: 1, verticalAlign: 'middle' }} />Plan Overview</Typography>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <Typography variant="subtitle2" color="text.secondary"><SmokingRoomsIcon sx={{ mr: 1, fontSize: 18, verticalAlign: 'middle' }} />Reason</Typography>
-                <Typography variant="body1">{plan.reason}</Typography>
-              </Grid>
-              <Grid item xs={6} sm={3}>
-                <Typography variant="subtitle2" color="text.secondary"><FlagIcon sx={{ mr: 1, fontSize: 18, verticalAlign: 'middle' }} />Type</Typography>
-                <Typography variant="body1">{plan.plan_type}</Typography>
-              </Grid>
-              <Grid item xs={6} sm={3}>
-                <Typography variant="subtitle2" color="text.secondary"><HourglassEmptyIcon sx={{ mr: 1, fontSize: 18, verticalAlign: 'middle' }} />Status</Typography>
-                <Typography variant="body1">{plan.status}</Typography>
-              </Grid>
-              <Grid item xs={6} sm={3}>
-                <Typography variant="subtitle2" color="text.secondary"><EventIcon sx={{ mr: 1, fontSize: 18, verticalAlign: 'middle' }} />Start date</Typography>
-                <Typography variant="body1">{plan.start_date ? new Date(plan.start_date).toLocaleDateString() : '-'}</Typography>
-              </Grid>
-              <Grid item xs={6} sm={3}>
-                <Typography variant="subtitle2" color="text.secondary"><EventIcon sx={{ mr: 1, fontSize: 18, verticalAlign: 'middle' }} />End date</Typography>
-                <Typography variant="body1">{plan.expected_end_date ? new Date(plan.expected_end_date).toLocaleDateString() : '-'}</Typography>
-              </Grid>
-            </Grid>
-            <Box display="flex" justifyContent="flex-end" mt={2}>
-              <Button variant="outlined" sx={{ mr: 1 }} onClick={() => navigate(`/quit-plan/${plan.id}`)}>
-                View details
-              </Button>
-              <IconButton color="error" onClick={() => handleDeletePlan(plan.id)} disabled={deletingId === plan.id}>
-                {deletingId === plan.id ? <CircularProgress size={24} /> : <DeleteIcon />}
-              </IconButton>
-            </Box>
-          </Paper>
-        </>
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow sx={{ bgcolor: '#f5f7fa' }}>
+                <TableCell align="center"><SmokingRoomsIcon sx={{ mr: 1, color: '#1976d2' }} /> <b>Reason</b></TableCell>
+                <TableCell align="center"><FlagIcon sx={{ mr: 1, color: '#ff9800' }} /> <b>Type</b></TableCell>
+                <TableCell align="center"><HourglassEmptyIcon sx={{ mr: 1, color: '#43a047' }} /> <b>Status</b></TableCell>
+                <TableCell align="center"><EventIcon sx={{ mr: 1, color: '#0288d1' }} /> <b>Duration</b></TableCell>
+                <TableCell align="center"><CalendarMonthIcon sx={{ mr: 1, color: '#7e57c2' }} /> <b>Plan info</b></TableCell>
+                <TableCell align="center"><SettingsIcon sx={{ mr: 1, color: '#607d8b' }} /> <b>Actions</b></TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              <TableRow>
+                <TableCell align="center">{plan.reason}</TableCell>
+                <TableCell align="center">{plan.plan_type}</TableCell>
+                <TableCell align="center">
+                  <Box display="inline-flex" alignItems="center" gap={1}>
+                    <HourglassEmptyIcon sx={{ fontSize: 18, color: plan.status === 'ACTIVE' ? '#43a047' : plan.status === 'PENDING' ? '#ff9800' : '#e53935' }} />
+                    <Typography fontWeight={700} color={plan.status === 'ACTIVE' ? 'success.main' : plan.status === 'PENDING' ? 'warning.main' : 'error.main'}>
+                      {plan.status}
+                    </Typography>
+                  </Box>
+                </TableCell>
+                <TableCell align="center">
+                  {plan.start_date && plan.expected_end_date
+                    ? `${new Date(plan.start_date).toLocaleDateString()} - ${new Date(plan.expected_end_date).toLocaleDateString()}`
+                    : '-'}
+                </TableCell>
+                <TableCell align="center">
+                  {plan.totalDays && plan.total_phases
+                    ? `${plan.totalDays} days, ${plan.total_phases} phases`
+                    : '-'}
+                </TableCell>
+                <TableCell align="center">
+                  <Button variant="outlined" sx={{ mr: 1 }} onClick={() => navigate(`/quit-plan/${plan.id}`)}>
+                    View details
+                  </Button>
+                  <IconButton color="error" onClick={() => handleDeletePlan(plan.id)} disabled={deletingId === plan.id}>
+                    {deletingId === plan.id ? <CircularProgress size={24} /> : <DeleteIcon />}
+                  </IconButton>
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </TableContainer>
       )}
+      <Typography align="center" color="text.secondary" sx={{ mt: 4, fontSize: '1.1rem' }}>
+        {randomSlogan}
+      </Typography>
     </Box>
   );
 };
