@@ -16,15 +16,21 @@ import Homepage from '../pages/main/Homepage';
 import Blog from '../pages/main/Blog';
 import ProfilePage from '../pages/main/ProfilePage';
 import SmokingQuizPage from '../pages/main/SmokingQuizPage';
+
+//membership
 import MembershipPlansPage from '../pages/main/MembershipPlansPage';
-import QuitPlanPage from '../pages/QuitPlanPages/QuitPlanPage';
-import QuitPlanResultPage from '../pages/QuitPlanPages/QuitPlanResultPage';
-import NotFoundPage from '../pages/NotFoundPage';
+
+//quit-plan
+import QuitPlanPage from '../pages/quit-plans/QuitPlanPage';
+import QuitPlanResultPage from '../pages/quit-plans/QuitPlanResultPage';
+import PhaseRecordPage from '../pages/quit-plans/PhaseRecordPage';
+import PlanRecordPage from '../pages/quit-plans/PlanRecordPage';
 
 //admin
 import AdminDashboard from '../pages/admin/AdminDashboard';
 
-
+//404
+import NotFoundPage from '../pages/NotFoundPage';
 
 
 export const routes = createBrowserRouter([
@@ -121,7 +127,7 @@ export const routes = createBrowserRouter([
     ),
   },
   {
-    path: '/quit-plan/result',
+    path: '/quit-plan/:id',
     element: (
       <ProtectedRoute>
         <MainLayout>
@@ -131,14 +137,24 @@ export const routes = createBrowserRouter([
     ),
   },
   {
-    path: '/quit-plan/:id',
+    path: '/quit-plan/:planId/phase/:phaseId',
     element: (
       <ProtectedRoute>
         <MainLayout>
-          <QuitPlanResultPage />
+          <PhaseRecordPage />
         </MainLayout>
       </ProtectedRoute>
-    ),
+    ), 
+  },
+  {
+    path: '/quit-plan/:planId/phase/all',
+    element: (
+      <ProtectedRoute>
+        <MainLayout>
+        <PlanRecordPage />
+        </MainLayout>
+      </ProtectedRoute>
+    ), 
   },
   // Admin Routes
   {

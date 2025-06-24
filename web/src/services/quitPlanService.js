@@ -44,6 +44,14 @@ const quitPlanService = {
   getAllQuitPlans: async () => {
     return api.get('/quit-plans');
   },
+
+  getPhaseRecords: (planId, phaseId) => {
+    return api.get(`/plan-records/${planId}/${phaseId}`);
+  },
+
+  getPlanRecords: (planId) => {
+    return api.get(`/plan-records/${planId}`);
+  },
 };
 
 export default quitPlanService; 

@@ -7,7 +7,7 @@ import UserInfoSection from '../../components/profilePage/UserInfoSection';
 import StatisticsSection from '../../components/profilePage/StatisticsSection';
 import AchievementSection from '../../components/profilePage/AchievementSection';
 import LoadingPage from '../LoadingPage'
-import QuitPlanPage from '../QuitPlanPages/QuitPlanPage';
+import QuitPlanPage from '../quit-plans/QuitPlanPage';
 
 export default function ProfilePage({ handleLogout }) {
   const navigate = useNavigate();

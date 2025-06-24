@@ -7,6 +7,7 @@ import { isAuthenticated, logout } from '../services/authService';
 import { Toaster } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import quitPlanService from '../services/quitPlanService';
+import Tooltip from '@mui/material/Tooltip';
 
 export default function QuitPlanMainLayout({ children, showHeader = true, showFooter = true, onPlanCreated }) {
   const [authStatus, setAuthStatus] = useState(isAuthenticated());
@@ -15,6 +16,7 @@ export default function QuitPlanMainLayout({ children, showHeader = true, showFo
   const [planType, setPlanType] = useState('standard');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [hasActivePlan, setHasActivePlan] = useState(false);
   const navigate = useNavigate();
 
   // Function to handle logout and update auth status
@@ -39,7 +41,8 @@ export default function QuitPlanMainLayout({ children, showHeader = true, showFo
       const response = await quitPlanService.createQuitPlan({ reason, plan_type: planType });
       if (onPlanCreated) await onPlanCreated();
       handleCloseModal();
-      navigate('/quit-plan/result', { state: { result: response.data } });
+      navigate('/quit-plan', { state: { result: response.data } });
+      
     } catch (err) {
       setError(err?.response?.data?.message || err?.message || 'Failed to create quit plan');
     } finally {
@@ -65,27 +68,38 @@ export default function QuitPlanMainLayout({ children, showHeader = true, showFo
         </Box>
       )}
       <Box component="main" sx={{ flexGrow: 1, paddingTop: showHeader ? '64px' : 0 }}>
-        {children}
+        {React.Children.map(children, (child) =>
+          React.isValidElement(child)
+            ? React.cloneElement(child, { setHasActivePlan })
+            : child
+        )}
       </Box>
       {/* Create Quit Plan Button */}
-      <IconButton
-        aria-label="create quit plan"
-        onClick={handleOpenModal}
-        sx={{
-          position: 'fixed',
-          bottom: 20,
-          right: 20,
-          zIndex: 1200,
-          bgcolor: '#3f332b',
-          color: 'white',
-          '&:hover': { bgcolor: '#5f5349' },
-          boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
-          width: 56,
-          height: 56,
-        }}
-      >
-        <AddIcon fontSize="large" />
-      </IconButton>
+      <Tooltip title={hasActivePlan ? 'You already have an active plan' : 'Create new quit plan'}>
+        <span>
+          <IconButton
+            aria-label="create quit plan"
+            onClick={handleOpenModal}
+            disabled={!!hasActivePlan}
+            sx={{
+              position: 'fixed',
+              bottom: 20,
+              right: 20,
+              zIndex: 1200,
+              bgcolor: '#3f332b',
+              color: 'white',
+              '&:hover': { bgcolor: '#5f5349' },
+              boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
+              width: 56,
+              height: 56,
+              opacity: hasActivePlan ? 0.5 : 1,
+              pointerEvents: hasActivePlan ? 'none' : 'auto',
+            }}
+          >
+            <AddIcon fontSize="large" />
+          </IconButton>
+        </span>
+      </Tooltip>
       {/* Modal for creating a new quit plan */}
       <Modal
         open={modalOpen}
