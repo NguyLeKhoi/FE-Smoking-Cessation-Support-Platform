@@ -36,6 +36,14 @@ const quitPlanService = {
   deleteQuitPlan: async (id) => {
     return api.delete(`/quit-plans/${id}`);
   },
+
+  /**
+   * Get all quit plans for the current user
+   * @returns {Promise}
+   */
+  getAllQuitPlans: async () => {
+    return api.get('/quit-plans');
+  },
 };
 
 export default quitPlanService; 

@@ -1,23 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Box } from '@mui/material';
-<<<<<<< HEAD:web/src/pages/ProfilePage.jsx
 import { useNavigate, Route, Routes } from 'react-router-dom';
-import { fetchCurrentUser, updateCurrentUser } from '../services/userService';
-import ProfileSidebar from '../components/profilePage/ProfileSidebar';
-import UserInfoSection from '../components/profilePage/UserInfoSection';
-import StatisticsSection from '../components/profilePage/StatisticsSection';
-import AchievementSection from '../components/profilePage/AchievementSection';
-import LoadingPage from './LoadingPage';
-import QuitPlanPage from './QuitPlanPages/QuitPlanPage';
-=======
-import { useNavigate } from 'react-router-dom';
 import { fetchCurrentUser, updateCurrentUser } from '../../services/userService';
 import ProfileSidebar from '../../components/profilePage/ProfileSidebar';
 import UserInfoSection from '../../components/profilePage/UserInfoSection';
 import StatisticsSection from '../../components/profilePage/StatisticsSection';
 import AchievementSection from '../../components/profilePage/AchievementSection';
-import LoadingPage from '../LoadingPage';
->>>>>>> 67614e3ee372a90d8a5ec97ee5a0e72f8987a6de:web/src/pages/main/ProfilePage.jsx
+import LoadingPage from '../LoadingPage'
+import QuitPlanPage from '../QuitPlanPages/QuitPlanPage';
 
 export default function ProfilePage({ handleLogout }) {
   const navigate = useNavigate();

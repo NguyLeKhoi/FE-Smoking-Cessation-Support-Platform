@@ -2,9 +2,7 @@ import { createBrowserRouter } from 'react-router-dom';
 import MainLayout from '../layout/MainLayout';
 import AuthLayout from '../layout/AuthLayout';
 import ProtectedRoute from '../components/ProtectedRoute';
-import QuitPlanLayout from '../layout/QuitPlanLayout';
-
-// Pages
+import QuitPlanMainLayout from '../layout/QuitPlanMainLayout';
 
 //auth
 import Loginpage from '../pages/auth/Loginpage';
@@ -19,15 +17,15 @@ import Blog from '../pages/main/Blog';
 import ProfilePage from '../pages/main/ProfilePage';
 import SmokingQuizPage from '../pages/main/SmokingQuizPage';
 import MembershipPlansPage from '../pages/main/MembershipPlansPage';
+import QuitPlanPage from '../pages/QuitPlanPages/QuitPlanPage';
+import QuitPlanResultPage from '../pages/QuitPlanPages/QuitPlanResultPage';
+import NotFoundPage from '../pages/NotFoundPage';
 
 //admin
 import AdminDashboard from '../pages/admin/AdminDashboard';
 
-import NotFoundPage from '../pages/NotFoundPage';
-import LoadingPage from '../pages/LoadingPage';
-import AdminDashboard from '../pages/AdminDashboard';
-import QuitPlanPage from '../pages/QuitPlanPages/QuitPlanPage';
-import QuitPlanResultPage from '../pages/QuitPlanPages/QuitPlanResultPage';
+
+
 
 export const routes = createBrowserRouter([
   {
@@ -113,20 +111,12 @@ export const routes = createBrowserRouter([
     ),
   },
   {
-    path: '/loading-test',
-    element: (
-      <AuthLayout>
-        <LoadingPage />
-      </AuthLayout>
-    ),
-  },
-  {
     path: '/quit-plan',
     element: (
       <ProtectedRoute>
-        <QuitPlanLayout>
+        <QuitPlanMainLayout>
           <QuitPlanPage />
-        </QuitPlanLayout>
+        </QuitPlanMainLayout>
       </ProtectedRoute>
     ),
   },
@@ -134,9 +124,19 @@ export const routes = createBrowserRouter([
     path: '/quit-plan/result',
     element: (
       <ProtectedRoute>
-        <QuitPlanLayout>
+        <MainLayout>
           <QuitPlanResultPage />
-        </QuitPlanLayout>
+        </MainLayout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/quit-plan/:id',
+    element: (
+      <ProtectedRoute>
+        <MainLayout>
+          <QuitPlanResultPage />
+        </MainLayout>
       </ProtectedRoute>
     ),
   },
