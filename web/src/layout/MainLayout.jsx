@@ -7,7 +7,7 @@ import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import { isAuthenticated, logout } from '../services/authService'; // Import isAuthenticated and logout
 import { Toaster } from 'react-hot-toast';
 
-export default function MainLayout({ children, showHeader = true, showFooter = true }) {
+export default function MainLayout({ children, showHeader = true, showFooter = true, fab }) {
   const [isChatboxOpen, setIsChatboxOpen] = useState(false);
   const [authStatus, setAuthStatus] = useState(isAuthenticated()); // State for authentication status
 
@@ -47,8 +47,10 @@ export default function MainLayout({ children, showHeader = true, showFooter = t
         })}
       </Box>
 
-      {/* Chat button positioned fixed at bottom right */}
-      {!isChatboxOpen && (
+      {/* Floating Action Button or Chat button positioned fixed at bottom right */}
+      {fab ? (
+        <Box sx={{ position: 'fixed', bottom: 20, right: 20, zIndex: 1200 }}>{fab}</Box>
+      ) : !isChatboxOpen && (
         <IconButton
           aria-label="open chat"
           onClick={toggleChatbox}

@@ -2,8 +2,7 @@ import { createBrowserRouter } from 'react-router-dom';
 import MainLayout from '../layout/MainLayout';
 import AuthLayout from '../layout/AuthLayout';
 import ProtectedRoute from '../components/ProtectedRoute';
-
-// Pages
+import QuitPlanMainLayout from '../layout/QuitPlanMainLayout';
 
 //auth
 import Loginpage from '../pages/auth/Loginpage';
@@ -17,13 +16,21 @@ import Homepage from '../pages/main/Homepage';
 import Blog from '../pages/main/Blog';
 import ProfilePage from '../pages/main/ProfilePage';
 import SmokingQuizPage from '../pages/main/SmokingQuizPage';
+
+//membership
 import MembershipPlansPage from '../pages/main/MembershipPlansPage';
+
+//quit-plan
+import QuitPlanPage from '../pages/quit-plans/QuitPlanPage';
+import QuitPlanResultPage from '../pages/quit-plans/QuitPlanDetailPage';
+import PhaseRecordPage from '../pages/quit-plans/PhaseRecordPage';
 
 //admin
 import AdminDashboard from '../pages/admin/AdminDashboard';
 
+//404
 import NotFoundPage from '../pages/NotFoundPage';
-import LoadingPage from '../pages/LoadingPage';
+
 
 export const routes = createBrowserRouter([
   {
@@ -109,12 +116,34 @@ export const routes = createBrowserRouter([
     ),
   },
   {
-    path: '/loading-test',
+    path: '/quit-plan',
     element: (
-      <AuthLayout>
-        <LoadingPage />
-      </AuthLayout>
+      <ProtectedRoute>
+        <QuitPlanMainLayout>
+          <QuitPlanPage />
+        </QuitPlanMainLayout>
+      </ProtectedRoute>
     ),
+  },
+  {
+    path: '/quit-plan/:id',
+    element: (
+      <ProtectedRoute>
+        <MainLayout>
+          <QuitPlanResultPage />
+        </MainLayout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/quit-plan/:planId/phase/:phaseId',
+    element: (
+      <ProtectedRoute>
+        <MainLayout>
+          <PhaseRecordPage />
+        </MainLayout>
+      </ProtectedRoute>
+    ), 
   },
   // Admin Routes
   {
@@ -130,9 +159,7 @@ export const routes = createBrowserRouter([
   {
     path: '*',
     element: (
-      <MainLayout showHeader={false}>
-        <NotFoundPage />
-      </MainLayout>
+      <NotFoundPage />
     ),
   },
 ]);
