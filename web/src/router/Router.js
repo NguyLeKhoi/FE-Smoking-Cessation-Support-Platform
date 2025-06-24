@@ -159,9 +159,7 @@ export const routes = createBrowserRouter([
   {
     path: '*',
     element: (
-      <MainLayout showHeader={false}>
-        <NotFoundPage />
-      </MainLayout>
+      <NotFoundPage />
     ),
   },
 ]);
