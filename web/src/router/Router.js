@@ -20,6 +20,7 @@ import SmokingQuizPage from '../pages/main/SmokingQuizPage';
 //membership
 import MembershipPlansPage from '../pages/main/MembershipPlansPage';
 
+
 //blog
 import Blog from '../pages/blog/Blog';
 import MyBlogPage from '../pages/blog/MyBlogPage';
@@ -30,6 +31,7 @@ import CreateBlogPage from '../pages/blog/CreateBlogPage';
 import QuitPlanPage from '../pages/quit-plans/QuitPlanPage';
 import QuitPlanResultPage from '../pages/quit-plans/QuitPlanDetailPage';
 import PhaseRecordPage from '../pages/quit-plans/PhaseRecordPage';
+
 
 //admin
 import AdminDashboard from '../pages/admin/AdminDashboard';
@@ -186,7 +188,7 @@ export const routes = createBrowserRouter([
           <PhaseRecordPage />
         </MainLayout>
       </ProtectedRoute>
-    ), 
+    ),
   },
   // Admin Routes
   {
