@@ -6,13 +6,9 @@ import {
     Alert,
     Card,
     Typography,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    TextField,
-    CircularProgress,
-    Chip
+    Chip,
+    Pagination,
+    Stack
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import AddIcon from '@mui/icons-material/Add';
@@ -33,15 +29,9 @@ const MyBlogPage = () => {
     const [selectedPostId, setSelectedPostId] = useState(null);
     const [userData, setUserData] = useState(null);
 
-    // Edit functionality state
-    const [editLoading, setEditLoading] = useState(false);
-    const [editDialogOpen, setEditDialogOpen] = useState(false);
-    const [editingPost, setEditingPost] = useState(null);
-    const [editFormData, setEditFormData] = useState({
-        title: '',
-        content: '',
-        thumbnail: ''
-    });
+    // Pagination state
+    const [currentPage, setCurrentPage] = useState(1);
+    const postsPerPage = 5;
 
     useEffect(() => {
         const loadData = async () => {
@@ -75,6 +65,12 @@ const MyBlogPage = () => {
                 console.log(`Found ${userPosts.length} posts for the current user:`, userPosts);
                 setUserPosts(userPosts);
 
+                // Reset to first page if current page is beyond available pages
+                const totalPages = Math.ceil(userPosts.length / postsPerPage);
+                if (currentPage > totalPages && totalPages > 0) {
+                    setCurrentPage(1);
+                }
+
             } catch (error) {
                 console.error('Failed to fetch user posts:', error);
                 setError(`Failed to load your blog posts: ${error.message}`);
@@ -84,68 +80,28 @@ const MyBlogPage = () => {
         };
 
         loadData();
-    }, []);
+    }, [currentPage]);
+
+    // Calculate pagination values
+    const totalPages = Math.ceil(userPosts.length / postsPerPage);
+    const indexOfLastPost = currentPage * postsPerPage;
+    const indexOfFirstPost = indexOfLastPost - postsPerPage;
+    const currentPosts = userPosts.slice(indexOfFirstPost, indexOfLastPost);
+
+    // Handle page change
+    const handlePageChange = (event, value) => {
+        setCurrentPage(value);
+        // Scroll to top when changing pages
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
 
     const handleCreatePost = () => {
         navigate('/blog/create');
     };
 
+    // Navigate to edit page instead of opening modal
     const handleEditPost = (postId) => {
-        const post = userPosts.find(p => p.id === postId);
-        if (post) {
-            setEditingPost(post);
-            setEditFormData({
-                title: post.title || '',
-                content: post.content || '',
-                thumbnail: post.thumbnail || ''
-            });
-            setEditDialogOpen(true);
-        }
-    };
-
-    const handleUpdatePost = async () => {
-        if (!editingPost || !editFormData.title.trim()) {
-            toast.error('Title is required');
-            return;
-        }
-
-        try {
-            setEditLoading(true);
-
-            // Call the updatePost API
-            const updatedPost = await postService.updatePost(editingPost.id, editFormData);
-
-            // Update the posts array with the updated post
-            setUserPosts(prevPosts =>
-                prevPosts.map(post =>
-                    post.id === editingPost.id ? { ...post, ...updatedPost } : post
-                )
-            );
-
-            handleEditDialogClose();
-
-        } catch (error) {
-            console.error('Failed to update post:', error);
-        } finally {
-            setEditLoading(false);
-        }
-    };
-
-    const handleEditDialogClose = () => {
-        setEditDialogOpen(false);
-        setEditingPost(null);
-        setEditFormData({
-            title: '',
-            content: '',
-            thumbnail: ''
-        });
-    };
-
-    const handleEditFormChange = (field) => (event) => {
-        setEditFormData(prev => ({
-            ...prev,
-            [field]: event.target.value
-        }));
+        navigate(`/blog/edit/${postId}`);
     };
 
     const handleDeletePost = async (postId) => {
@@ -156,37 +112,84 @@ const MyBlogPage = () => {
             await postService.deletePost(postId);
 
             // Remove the deleted post from the list
-            setUserPosts(userPosts.filter(post => post.id !== postId));
+            const updatedPosts = userPosts.filter(post => post.id !== postId);
+            setUserPosts(updatedPosts);
+
+            // If deleted the last post on the current page, go to previous page
+            const newTotalPages = Math.ceil(updatedPosts.length / postsPerPage);
+            if (currentPage > newTotalPages && newTotalPages > 0) {
+                setCurrentPage(newTotalPages);
+            }
+
+            toast.success('Post deleted successfully!');
 
         } catch (error) {
             console.error('Failed to delete post:', error);
+            toast.error('Failed to delete post. Please try again.');
         } finally {
             setSelectedPostId(null);
             setDeleteLoading(false);
         }
     };
 
-
-
     if (loading) {
         return <LoadingPage />;
     }
 
-    // Content to be displayed
     const content = (
         <Container maxWidth="lg" sx={{ py: 2 }}>
-            {/* Create New Post Button positioned at top right */}
+            {/* Top Section - Posts Summary and Create Button */}
             <Box sx={{
                 display: 'flex',
-                justifyContent: 'flex-end',
+                justifyContent: 'space-between',
+                alignItems: 'flex-start',
                 mb: 3,
                 mt: 3,
+                flexWrap: 'wrap',
+                gap: 2
             }}>
+                {/* Posts Summary - Left Side */}
+                {userPosts.length > 0 && (
+                    <Box sx={{ flex: 1, minWidth: '300px' }}>
+                        <Typography variant="h6" gutterBottom>
+                            My Posts ({userPosts.length})
+                        </Typography>
+                        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                            <Chip
+                                label={`Approved: ${userPosts.filter(post => post.status?.toUpperCase() === 'APPROVED').length}`}
+                                color="success"
+                                size="small"
+                                variant="outlined"
+                            />
+                            <Chip
+                                label={`Pending: ${userPosts.filter(post => post.status?.toUpperCase() === 'PENDING').length}`}
+                                color="warning"
+                                size="small"
+                                variant="outlined"
+                            />
+                            <Chip
+                                label={`Rejected: ${userPosts.filter(post => post.status?.toUpperCase() === 'REJECTED').length}`}
+                                color="error"
+                                size="small"
+                                variant="outlined"
+                            />
+                            <Chip
+                                label={`Updating: ${userPosts.filter(post => post.status?.toUpperCase() === 'UPDATING').length}`}
+                                color="info"
+                                size="small"
+                                variant="outlined"
+                            />
+                        </Box>
+                    </Box>
+                )}
+
+                {/* Create New Post Button - Right Side */}
                 <Button
                     variant="contained"
                     color="primary"
                     startIcon={<AddIcon />}
                     onClick={handleCreatePost}
+                    sx={{ flexShrink: 0 }}
                 >
                     Create New Post
                 </Button>
@@ -217,56 +220,22 @@ const MyBlogPage = () => {
                 </Card>
             )}
 
-            {/* Posts Summary */}
-            {userPosts.length > 0 && (
+            {/* Pagination Info */}
+            {userPosts.length > 0 && totalPages > 1 && (
                 <Box sx={{ mb: 3 }}>
-                    <Typography variant="h6" gutterBottom>
-                        My Posts ({userPosts.length})
+                    <Typography variant="body2" color="text.secondary">
+                        Showing {indexOfFirstPost + 1} - {Math.min(indexOfLastPost, userPosts.length)} of {userPosts.length} posts
                     </Typography>
-                    <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <Chip
-                                label={`Approved: ${userPosts.filter(post => post.status?.toUpperCase() === 'APPROVED').length}`}
-                                color="success"
-                                size="small"
-                                variant="outlined"
-                            />
-                        </Box>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <Chip
-                                label={`Pending: ${userPosts.filter(post => post.status?.toUpperCase() === 'PENDING').length}`}
-                                color="warning"
-                                size="small"
-                                variant="outlined"
-                            />
-                        </Box>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <Chip
-                                label={`Rejected: ${userPosts.filter(post => post.status?.toUpperCase() === 'REJECTED').length}`}
-                                color="error"
-                                size="small"
-                                variant="outlined"
-                            />
-                        </Box>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <Chip
-                                label={`Updating: ${userPosts.filter(post => post.status?.toUpperCase() === 'UPDATING').length}`}
-                                color="info"
-                                size="small"
-                                variant="outlined"
-                            />
-                        </Box>
-                    </Box>
                 </Box>
             )}
 
             {/* Horizontal Blog Cards */}
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                {userPosts.map((post, index) => (
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, minHeight: '400px' }}>
+                {currentPosts.map((post, index) => (
                     <Box key={post.id || index} sx={{ position: 'relative' }}>
                         <MyBlogCard
                             post={post}
-                            index={index}
+                            index={indexOfFirstPost + index}
                             userData={userData}
                             onEdit={handleEditPost}
                             onDelete={handleDeletePost}
@@ -274,100 +243,46 @@ const MyBlogPage = () => {
                             selectedPostId={selectedPostId}
                             showEditDelete={true}
                         />
-
-
                     </Box>
                 ))}
             </Box>
 
-            {/* Edit Post Dialog */}
-            <Dialog
-                open={editDialogOpen}
-                onClose={handleEditDialogClose}
-                maxWidth="md"
-                fullWidth
-            >
-                <DialogTitle>
-                    Edit Post
-                </DialogTitle>
-                <DialogContent>
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
-                        <TextField
-                            label="Title"
-                            fullWidth
-                            value={editFormData.title}
-                            onChange={handleEditFormChange('title')}
-                            variant="outlined"
-                            required
-                            error={!editFormData.title.trim()}
-                            helperText={!editFormData.title.trim() ? 'Title is required' : ''}
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+                <Box sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    mt: 4,
+                    mb: 2
+                }}>
+                    <Stack spacing={2}>
+                        <Pagination
+                            count={totalPages}
+                            page={currentPage}
+                            onChange={handlePageChange}
+                            color="primary"
+                            size="large"
+                            showFirstButton
+                            showLastButton
+                            sx={{
+                                '& .MuiPaginationItem-root': {
+                                    fontSize: '1rem',
+                                }
+                            }}
                         />
-
-                        <TextField
-                            label="Content"
-                            fullWidth
-                            multiline
-                            rows={6}
-                            value={editFormData.content}
-                            onChange={handleEditFormChange('content')}
-                            variant="outlined"
-                        />
-
-                        <TextField
-                            label="Thumbnail URL"
-                            fullWidth
-                            value={editFormData.thumbnail}
-                            onChange={handleEditFormChange('thumbnail')}
-                            variant="outlined"
-                            helperText="Enter a URL for the post thumbnail image (optional)"
-                        />
-
-                        {editingPost?.status?.toUpperCase() === 'PENDING' && (
-                            <Alert severity="info">
-                                This post is pending review. Changes may require re-approval.
-                            </Alert>
-                        )}
-
-                        {editingPost?.status?.toUpperCase() === 'REJECTED' && (
-                            <Alert severity="warning">
-                                This post was rejected. Please review feedback and make necessary changes.
-                            </Alert>
-                        )}
-
-                        {editingPost?.status?.toUpperCase() === 'UPDATING' && (
-                            <Alert severity="info">
-                                This post is currently being updated. Changes are being processed.
-                            </Alert>
-                        )}
-                    </Box>
-                </DialogContent>
-                <DialogActions>
-                    <Button
-                        onClick={handleEditDialogClose}
-                        disabled={editLoading}
-                    >
-                        Cancel
-                    </Button>
-                    <Button
-                        onClick={handleUpdatePost}
-                        variant="contained"
-                        disabled={editLoading || !editFormData.title.trim()}
-                    >
-                        {editLoading ? (
-                            <>
-                                <CircularProgress size={20} sx={{ mr: 1 }} />
-                                Updating...
-                            </>
-                        ) : (
-                            'Update Post'
-                        )}
-                    </Button>
-                </DialogActions>
-            </Dialog>
+                        <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            align="center"
+                        >
+                            Page {currentPage} of {totalPages}
+                        </Typography>
+                    </Stack>
+                </Box>
+            )}
         </Container>
     );
 
-    // Render with profile layout
     return (
         <Box sx={{
             display: 'flex',

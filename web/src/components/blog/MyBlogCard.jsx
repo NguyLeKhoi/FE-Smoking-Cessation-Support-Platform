@@ -4,9 +4,7 @@ import {
     CardMedia,
     Typography,
     Box,
-    Avatar,
     IconButton,
-    Tooltip,
     CircularProgress,
     Menu,
     MenuItem,
@@ -17,11 +15,12 @@ import {
 } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ShareIcon from '@mui/icons-material/Share';
 import ReportIcon from '@mui/icons-material/Report';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import EditCalendarIcon from '@mui/icons-material/EditCalendar';
 import { generateSlug } from '../../utils/slugUtils';
 
 const MyBlogCard = ({
@@ -137,12 +136,20 @@ const MyBlogCard = ({
         }
     };
 
-    const postDate = post.publishDate || post.created_at
-        ? new Date(post.publishDate || post.created_at).toLocaleDateString('en-US', {
+    // Format dates
+    const formatDate = (dateString) => {
+        if (!dateString) return null;
+        return new Date(dateString).toLocaleDateString('en-US', {
             month: 'short',
-            day: 'numeric'
-        })
-        : `${4}d ago`;
+            day: 'numeric',
+            year: 'numeric'
+        });
+    };
+
+    // Get created and updated dates
+    const createdDate = formatDate(post.created_at);
+    const updatedDate = formatDate(post.updated_at);
+    const wasUpdated = post.created_at !== post.updated_at;
 
     const authorName = post.first_name || post.last_name
         ? `${post.first_name || ''} ${post.last_name || ''}`
@@ -158,7 +165,7 @@ const MyBlogCard = ({
                 sx={{
                     display: 'flex',
                     flexDirection: 'row',
-                    height: 180,
+                    height: 220, // Slightly increased height to accommodate date info
                     bgcolor: 'background.paper',
                     transition: 'all 0.2s ease-in-out',
                     borderRadius: '12px',
@@ -224,78 +231,66 @@ const MyBlogCard = ({
                         </Typography>
                     </Box>
 
-                    {/* Bottom section - Author and Date */}
-                    <Box sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        mt: 'auto'
-                    }}>
-                        {/* Author info */}
+                    {/* Bottom section - Dates */}
+                    <Box sx={{ mt: 'auto' }}>
+
+                        {/* Date Information */}
                         <Box sx={{
                             display: 'flex',
-                            alignItems: 'center',
-                            gap: 1
+                            flexDirection: 'column',
+                            gap: 0.5
                         }}>
-                            {(post.avatar || userData?.avatar) ? (
-                                <Avatar
-                                    src={post.avatar || userData?.avatar}
-                                    alt={authorName}
-                                    sx={{
-                                        width: 24,
-                                        height: 24,
-                                        border: post.achievement_id ? '1px solid gold' : 'none'
-                                    }}
-                                />
-                            ) : (
-                                <Avatar
-                                    sx={{
-                                        width: 24,
-                                        height: 24,
-                                        bgcolor: '#f0f0f0',
-                                        color: '#555',
-                                        fontSize: '0.7rem',
-                                        border: post.achievement_id ? '1px solid gold' : 'none'
-                                    }}
-                                >
-                                    {authorName ? authorName.charAt(0) : 'Z'}
-                                </Avatar>
-                            )}
-
-                            <Typography
-                                variant="body2"
-                                sx={{
-                                    color: '#666',
-                                    fontWeight: 500,
-                                    fontSize: '0.85rem'
-                                }}
-                            >
-                                {authorName}
-                            </Typography>
-
-                            {post.achievement_id && (
-                                <Tooltip title="Author Achievement">
-                                    <EmojiEventsIcon
-                                        fontSize="small"
+                            {/* Created Date */}
+                            {createdDate && (
+                                <Box sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 0.5
+                                }}>
+                                    <AccessTimeIcon
                                         sx={{
-                                            color: 'gold',
-                                            fontSize: '1rem'
+                                            fontSize: '0.8rem',
+                                            color: '#999'
                                         }}
                                     />
-                                </Tooltip>
+                                    <Typography
+                                        variant="body2"
+                                        sx={{
+                                            color: '#999',
+                                            fontSize: '0.75rem'
+                                        }}
+                                    >
+                                        Created on: {createdDate}
+                                    </Typography>
+                                </Box>
+                            )}
+
+                            {/* Updated Date - Only show if different from created */}
+                            {wasUpdated && updatedDate && (
+                                <Box sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 0.5
+                                }}>
+                                    <EditCalendarIcon
+                                        sx={{
+                                            fontSize: '0.8rem',
+                                            color: '#666'
+                                        }}
+                                    />
+                                    <Typography
+                                        variant="body2"
+                                        sx={{
+                                            color: '#666',
+                                            fontSize: '0.75rem',
+                                            fontWeight: 500
+                                        }}
+                                    >
+                                        Updated on: {updatedDate}
+                                    </Typography>
+                                </Box>
                             )}
                         </Box>
-
-                        {/* Date */}
-                        <Typography
-                            variant="body2"
-                            sx={{
-                                color: '#999',
-                                fontSize: '0.85rem'
-                            }}
-                        >
-                            {postDate}
-                        </Typography>
                     </Box>
                 </Box>
 
@@ -304,7 +299,8 @@ const MyBlogCard = ({
                     width: 220,
                     height: '100%',
                     position: 'relative',
-                    flexShrink: 0
+                    flexShrink: 0,
+                    borderLeft: '1px solid rgba(0,0,0,0.06)',
                 }}>
                     <CardMedia
                         component="img"
@@ -326,7 +322,6 @@ const MyBlogCard = ({
                         flexDirection: 'column',
                         gap: 1
                     }}>
-
                         <IconButton
                             size="small"
                             sx={{
