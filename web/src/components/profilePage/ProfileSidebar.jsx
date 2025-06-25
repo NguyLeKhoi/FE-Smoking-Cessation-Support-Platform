@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Typography, List, ListItem, ListItemIcon, ListItemText, Badge, Paper, Tooltip } from '@mui/material';
+import { Box, Typography, List, ListItem, ListItemIcon, ListItemText, Badge, Paper } from '@mui/material';
 import { styled } from '@mui/system';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Link as RouterLink } from 'react-router-dom';
@@ -8,12 +8,15 @@ import PersonIcon from '@mui/icons-material/Person';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import ExploreIcon from '@mui/icons-material/Explore';
 import ArticleIcon from '@mui/icons-material/Article';
+import StorefrontIcon from '@mui/icons-material/Storefront';
+import BlockIcon from '@mui/icons-material/Block';
 
 const menuItems = [
     { label: 'LEADERBOARDS', icon: <EmojiEventsIcon fontSize="medium" />, path: '/leaderboards' },
     { label: 'QUESTS', icon: <ExploreIcon fontSize="medium" />, hasNotification: true, path: '/quests' },
     { label: 'MY POSTS', icon: <ArticleIcon fontSize="medium" />, path: '/my-blog' },
     { label: 'PROFILE', icon: <PersonIcon fontSize="medium" />, path: '/profile' },
+    { label: 'QUIT PLAN', icon: <BlockIcon fontSize="medium" />, path: '/quit-plan' },
     { label: 'MORE', icon: <MoreHorizIcon fontSize="medium" />, path: '/more' },
 ];
 
@@ -132,37 +135,33 @@ const ProfileSidebar = ({ userData }) => {
 
                 <List sx={{ display: 'flex', flexDirection: 'column', width: '100%', p: 0 }}>
                     {menuItems.map((item, index) => (
-                        <Tooltip
-                            key={index}
-                            title={index !== 3 && index !== 2 ? "Coming soon" : ""}
-                            placement="right"
+                        <StyledListItem
+                            component={RouterLink}
+                            to={item.path}
+                            active={activeItem === index ? 1 : 0}
+                            onClick={() => handleItemClick(index)}
                         >
-                            <StyledListItem
-                                active={activeItem === index ? 1 : 0}
-                                onClick={() => handleItemClick(index)}
-                            >
-                                <ListItemIcon sx={{
-                                    color: activeItem === index ? 'primary.main' : 'text.secondary',
-                                    minWidth: 36
-                                }}>
-                                    {item.hasNotification ? (
-                                        <Badge
-                                            color="error"
-                                            variant="dot"
-                                            overlap="circular"
-                                            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                                        >
-                                            {item.icon}
-                                        </Badge>
-                                    ) : (
-                                        item.icon
-                                    )}
-                                </ListItemIcon>
-                                <ListItemText
-                                    primary={<IconText>{item.label}</IconText>}
-                                />
-                            </StyledListItem>
-                        </Tooltip>
+                            <ListItemIcon sx={{
+                                color: activeItem === index ? 'primary.main' : 'text.secondary',
+                                minWidth: 36
+                            }}>
+                                {item.hasNotification ? (
+                                    <Badge
+                                        color="error"
+                                        variant="dot"
+                                        overlap="circular"
+                                        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                                    >
+                                        {item.icon}
+                                    </Badge>
+                                ) : (
+                                    item.icon
+                                )}
+                            </ListItemIcon>
+                            <ListItemText
+                                primary={<IconText>{item.label}</IconText>}
+                            />
+                        </StyledListItem>
                     ))}
                 </List>
             </Box>
