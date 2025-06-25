@@ -18,6 +18,22 @@ export const fetchCurrentUser = async () => {
 };
 
 /**
+ * Fetch the current user's posts
+ * @returns {Promise} Promise that resolves to array of user posts
+ */
+export const fetchCurrentUserPosts = async () => {
+    try {
+        const response = await api.get('/users/me/posts');
+        console.log('Current user posts received:', response.data);
+        return response.data;
+    } catch (error) {
+        toast(`Error fetching your posts: ${error.response?.data?.message || error.message}`);
+        console.error('Error fetching user posts:', error);
+        throw error;
+    }
+};
+
+/**
  * Fetch all users
  * @returns {Promise} Promise that resolves to array of user data
  */

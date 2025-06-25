@@ -2,33 +2,22 @@ import React, { useState, useEffect } from 'react';
 import {
     Box,
     Container,
-    Typography,
-    Grid,
     Button,
-    CircularProgress,
     Alert,
     Card,
-    IconButton,
-    Avatar
+    Typography
 } from '@mui/material';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import AddIcon from '@mui/icons-material/Add';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import CustomCard from '../../components/blog/CustomCard';
 import postService from '../../services/postService';
-import { generateSlug } from '../../utils/slugUtils';
 import { toast } from 'react-toastify';
 import LoadingPage from '../../pages/LoadingPage';
 import ProfileSidebar from '../../components/profilePage/ProfileSidebar';
-import { fetchCurrentUser, getUserById } from '../../services/userService';
+import { fetchCurrentUser, fetchCurrentUserPosts } from '../../services/userService';
+import MyBlogCard from '../../components/blog/MyBlogCard';
 
 const MyBlogPage = () => {
     const navigate = useNavigate();
-    const location = useLocation();
-
-    // Hardcoded user ID to match the specific posts
-    const SPECIFIC_USER_ID = "cd270e95-9d05-48aa-a78b-3b3e0e1e86a4";
 
     const [userPosts, setUserPosts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -36,52 +25,37 @@ const MyBlogPage = () => {
     const [deleteLoading, setDeleteLoading] = useState(false);
     const [selectedPostId, setSelectedPostId] = useState(null);
     const [userData, setUserData] = useState(null);
-    const [targetUser, setTargetUser] = useState(null);
 
     useEffect(() => {
         const loadData = async () => {
             try {
                 setLoading(true);
 
-                // 1. Fetch the current user for the sidebar
-                const userResponse = await fetchCurrentUser();
-                if (userResponse && userResponse.data) {
-                    setUserData(userResponse.data);
+                // 1. Fetch the current user data for the sidebar
+                const currentUserResponse = await fetchCurrentUser();
+                console.log("Current user response:", currentUserResponse);
+
+                if (currentUserResponse && currentUserResponse.data) {
+                    setUserData(currentUserResponse.data);
                 }
 
-                // 2. Try to get the specific target user details for the posts
-                try {
-                    const targetUserResponse = await getUserById(SPECIFIC_USER_ID);
-                    if (targetUserResponse && targetUserResponse.data) {
-                        setTargetUser(targetUserResponse.data);
-                    }
-                } catch (userError) {
-                    console.warn('Could not fetch target user details, will still show posts', userError);
-                }
+                // 2. Fetch the current user's posts directly from the API
+                const postsResponse = await fetchCurrentUserPosts();
+                console.log("Current user posts response:", postsResponse);
 
-                // 3. Get all posts
-                const postsResponse = await postService.getAllPosts();
-
-                let allPosts = [];
+                let userPosts = [];
                 if (Array.isArray(postsResponse)) {
-                    allPosts = postsResponse;
+                    userPosts = postsResponse;
                 } else if (postsResponse && Array.isArray(postsResponse.data)) {
-                    allPosts = postsResponse.data;
+                    userPosts = postsResponse.data;
                 }
 
-                console.log("All posts:", allPosts);
-
-                // 4. Filter posts by the specific user ID we want to show
-                const filteredPosts = allPosts.filter(post => {
-                    return String(post.user_id) === SPECIFIC_USER_ID;
-                });
-
-                console.log("Filtered posts for user ID:", SPECIFIC_USER_ID, filteredPosts);
-                setUserPosts(filteredPosts);
+                console.log(`Found ${userPosts.length} posts for the current user:`, userPosts);
+                setUserPosts(userPosts);
 
             } catch (error) {
                 console.error('Failed to fetch user posts:', error);
-                setError('Failed to load the blog posts. Please try again later.');
+                setError(`Failed to load your blog posts: ${error.message}`);
             } finally {
                 setLoading(false);
             }
@@ -124,11 +98,13 @@ const MyBlogPage = () => {
 
     // Content to be displayed
     const content = (
-        <Container maxWidth="lg" sx={{ py: 4 }}>
-            <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Typography variant="h4" component="h1" fontWeight={700}>
-                    My Posts
-                </Typography>
+        <Container maxWidth="lg" sx={{ py: 2 }}>
+            {/* Create New Post Button positioned at top right */}
+            <Box sx={{
+                display: 'flex',
+                justifyContent: 'flex-end',
+                mb: 3
+            }}>
                 <Button
                     variant="contained"
                     color="primary"
@@ -140,95 +116,46 @@ const MyBlogPage = () => {
             </Box>
 
             {error && (
-                <Alert severity="error" sx={{ mb: 4 }}>
+                <Alert severity="error" sx={{ mb: 2 }}>
                     {error}
                 </Alert>
             )}
 
             {!error && userPosts.length === 0 && (
-                <Card sx={{ p: 4, textAlign: 'center', mb: 4 }}>
+                <Card sx={{ p: 4, textAlign: 'center', mb: 2 }}>
                     <Typography variant="h6" color="text.secondary" gutterBottom>
-                        No blog posts found for this user
+                        You haven't created any blog posts yet
                     </Typography>
                     <Typography variant="body1" color="text.secondary" paragraph>
-                        There are no posts currently available from this author.
+                        Share your knowledge and experiences with the community by creating your first post.
                     </Typography>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        startIcon={<AddIcon />}
+                        onClick={handleCreatePost}
+                    >
+                        Create Your First Post
+                    </Button>
                 </Card>
             )}
 
-            <Grid container spacing={4}>
+            {/* Horizontal Blog Cards */}
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                 {userPosts.map((post, index) => (
-                    <Grid item xs={12} sm={6} md={4} key={post.id || index}>
-                        <Box sx={{ position: 'relative' }}>
-                            <CustomCard
-                                image={post.thumbnail || `https://source.unsplash.com/random/600x400?smoking-cessation&sig=${index}`}
-                                title={post.title || "Untitled Post"}
-                                subtitle={post.content?.substring(0, 120) + '...' || "No content provided."}
-                                author={
-                                    post.first_name || post.last_name
-                                        ? `${post.first_name || ''} ${post.last_name || ''}`
-                                        : targetUser
-                                            ? `${targetUser.first_name || ''} ${targetUser.last_name || ''}`.trim()
-                                            : "Zerotine Author"
-                                }
-                                authorAvatar={post.avatar || targetUser?.avatar || null}
-                                achievement={post.achievement_id || null}
-                                date={post.publishDate || post.created_at
-                                    ? new Date(post.publishDate || post.created_at).toLocaleDateString('en-US', {
-                                        month: 'short',
-                                        day: 'numeric'
-                                    }).toUpperCase()
-                                    : `JUNE ${10 + index}`
-                                }
-                                slug={post.slug || (post.title && generateSlug(post.title)) || `post-${index}`}
-                                id={post.id}
-                            />
-
-                            {/* Only show edit/delete buttons if this is the current user's post */}
-                            {userData && userData.id === SPECIFIC_USER_ID && (
-                                <Box sx={{
-                                    position: 'absolute',
-                                    top: 8,
-                                    right: 8,
-                                    display: 'flex',
-                                    gap: 1,
-                                    zIndex: 10
-                                }}>
-                                    <IconButton
-                                        size="small"
-                                        color="primary"
-                                        sx={{ bgcolor: 'rgba(255,255,255,0.9)' }}
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            e.stopPropagation();
-                                            handleEditPost(post.id);
-                                        }}
-                                    >
-                                        <EditIcon fontSize="small" />
-                                    </IconButton>
-
-                                    <IconButton
-                                        size="small"
-                                        color="error"
-                                        sx={{ bgcolor: 'rgba(255,255,255,0.9)' }}
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            e.stopPropagation();
-                                            handleDeletePost(post.id);
-                                        }}
-                                        disabled={deleteLoading && selectedPostId === post.id}
-                                    >
-                                        {deleteLoading && selectedPostId === post.id ?
-                                            <CircularProgress size={20} color="error" /> :
-                                            <DeleteIcon fontSize="small" />
-                                        }
-                                    </IconButton>
-                                </Box>
-                            )}
-                        </Box>
-                    </Grid>
+                    <MyBlogCard
+                        key={post.id || index}
+                        post={post}
+                        index={index}
+                        userData={userData}
+                        onEdit={handleEditPost}
+                        onDelete={handleDeletePost}
+                        deleteLoading={deleteLoading}
+                        selectedPostId={selectedPostId}
+                        showEditDelete={true}
+                    />
                 ))}
-            </Grid>
+            </Box>
         </Container>
     );
 
