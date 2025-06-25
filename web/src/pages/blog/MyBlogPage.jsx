@@ -11,7 +11,8 @@ import {
     DialogContent,
     DialogActions,
     TextField,
-    CircularProgress
+    CircularProgress,
+    Chip
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import AddIcon from '@mui/icons-material/Add';
@@ -66,6 +67,11 @@ const MyBlogPage = () => {
                     userPosts = postsResponse.data;
                 }
 
+                // Log the status field for debugging
+                userPosts.forEach(post => {
+                    console.log(`Post "${post.title}" has status: ${post.status}`);
+                });
+
                 console.log(`Found ${userPosts.length} posts for the current user:`, userPosts);
                 setUserPosts(userPosts);
 
@@ -116,7 +122,6 @@ const MyBlogPage = () => {
                 )
             );
 
-            toast.success('Post updated successfully!');
             handleEditDialogClose();
 
         } catch (error) {
@@ -155,12 +160,13 @@ const MyBlogPage = () => {
 
         } catch (error) {
             console.error('Failed to delete post:', error);
-            toast.error('Failed to delete post. Please try again.');
         } finally {
             setSelectedPostId(null);
             setDeleteLoading(false);
         }
     };
+
+
 
     if (loading) {
         return <LoadingPage />;
@@ -173,7 +179,8 @@ const MyBlogPage = () => {
             <Box sx={{
                 display: 'flex',
                 justifyContent: 'flex-end',
-                mb: 3
+                mb: 3,
+                mt: 3,
             }}>
                 <Button
                     variant="contained"
@@ -210,20 +217,66 @@ const MyBlogPage = () => {
                 </Card>
             )}
 
+            {/* Posts Summary */}
+            {userPosts.length > 0 && (
+                <Box sx={{ mb: 3 }}>
+                    <Typography variant="h6" gutterBottom>
+                        My Posts ({userPosts.length})
+                    </Typography>
+                    <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Chip
+                                label={`Approved: ${userPosts.filter(post => post.status?.toUpperCase() === 'APPROVED').length}`}
+                                color="success"
+                                size="small"
+                                variant="outlined"
+                            />
+                        </Box>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Chip
+                                label={`Pending: ${userPosts.filter(post => post.status?.toUpperCase() === 'PENDING').length}`}
+                                color="warning"
+                                size="small"
+                                variant="outlined"
+                            />
+                        </Box>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Chip
+                                label={`Rejected: ${userPosts.filter(post => post.status?.toUpperCase() === 'REJECTED').length}`}
+                                color="error"
+                                size="small"
+                                variant="outlined"
+                            />
+                        </Box>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Chip
+                                label={`Updating: ${userPosts.filter(post => post.status?.toUpperCase() === 'UPDATING').length}`}
+                                color="info"
+                                size="small"
+                                variant="outlined"
+                            />
+                        </Box>
+                    </Box>
+                </Box>
+            )}
+
             {/* Horizontal Blog Cards */}
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                 {userPosts.map((post, index) => (
-                    <MyBlogCard
-                        key={post.id || index}
-                        post={post}
-                        index={index}
-                        userData={userData}
-                        onEdit={handleEditPost}
-                        onDelete={handleDeletePost}
-                        deleteLoading={deleteLoading}
-                        selectedPostId={selectedPostId}
-                        showEditDelete={true}
-                    />
+                    <Box key={post.id || index} sx={{ position: 'relative' }}>
+                        <MyBlogCard
+                            post={post}
+                            index={index}
+                            userData={userData}
+                            onEdit={handleEditPost}
+                            onDelete={handleDeletePost}
+                            deleteLoading={deleteLoading}
+                            selectedPostId={selectedPostId}
+                            showEditDelete={true}
+                        />
+
+
+                    </Box>
                 ))}
             </Box>
 
@@ -234,7 +287,9 @@ const MyBlogPage = () => {
                 maxWidth="md"
                 fullWidth
             >
-                <DialogTitle>Edit Post</DialogTitle>
+                <DialogTitle>
+                    Edit Post
+                </DialogTitle>
                 <DialogContent>
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
                         <TextField
@@ -266,6 +321,24 @@ const MyBlogPage = () => {
                             variant="outlined"
                             helperText="Enter a URL for the post thumbnail image (optional)"
                         />
+
+                        {editingPost?.status?.toUpperCase() === 'PENDING' && (
+                            <Alert severity="info">
+                                This post is pending review. Changes may require re-approval.
+                            </Alert>
+                        )}
+
+                        {editingPost?.status?.toUpperCase() === 'REJECTED' && (
+                            <Alert severity="warning">
+                                This post was rejected. Please review feedback and make necessary changes.
+                            </Alert>
+                        )}
+
+                        {editingPost?.status?.toUpperCase() === 'UPDATING' && (
+                            <Alert severity="info">
+                                This post is currently being updated. Changes are being processed.
+                            </Alert>
+                        )}
                     </Box>
                 </DialogContent>
                 <DialogActions>

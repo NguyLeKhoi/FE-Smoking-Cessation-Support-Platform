@@ -12,10 +12,10 @@ import {
     MenuItem,
     ListItemIcon,
     ListItemText,
-    Divider
+    Divider,
+    Chip
 } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
-import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import EditIcon from '@mui/icons-material/Edit';
@@ -81,6 +81,62 @@ const MyBlogCard = ({
         console.log('Report post:', post.id);
     };
 
+    // Updated status chip handler to match API constants
+    const getStatusChip = (status) => {
+        switch (status?.toUpperCase()) {
+            case 'APPROVED':
+                return (
+                    <Chip
+                        label="Approved"
+                        color="success"
+                        size="small"
+                        variant="outlined"
+                        sx={{ fontWeight: 500 }}
+                    />
+                );
+            case 'PENDING':
+                return (
+                    <Chip
+                        label="Pending Review"
+                        color="warning"
+                        size="small"
+                        variant="outlined"
+                        sx={{ fontWeight: 500 }}
+                    />
+                );
+            case 'REJECTED':
+                return (
+                    <Chip
+                        label="Rejected"
+                        color="error"
+                        size="small"
+                        variant="outlined"
+                        sx={{ fontWeight: 500 }}
+                    />
+                );
+            case 'UPDATING':
+                return (
+                    <Chip
+                        label="Updating"
+                        color="info"
+                        size="small"
+                        variant="outlined"
+                        sx={{ fontWeight: 500 }}
+                    />
+                );
+            default:
+                return (
+                    <Chip
+                        label="Draft"
+                        color="default"
+                        size="small"
+                        variant="outlined"
+                        sx={{ fontWeight: 500 }}
+                    />
+                );
+        }
+    };
+
     const postDate = post.publishDate || post.created_at
         ? new Date(post.publishDate || post.created_at).toLocaleDateString('en-US', {
             month: 'short',
@@ -126,64 +182,95 @@ const MyBlogCard = ({
                     p: 3,
                     pr: 2
                 }}>
-                    {/* Title */}
-                    <Typography
-                        variant="h5"
-                        sx={{
-                            fontWeight: 700,
-                            color: '#333',
-                            fontSize: '1.4rem',
-                            lineHeight: 1.2,
-                            mb: 1,
-                            display: '-webkit-box',
-                            WebkitLineClamp: 2,
-                            WebkitBoxOrient: 'vertical',
-                            overflow: 'hidden'
-                        }}
-                    >
-                        {post.title || "Untitled Post"}
-                    </Typography>
+                    {/* Top section - Status chip and title */}
+                    <Box>
+                        {/* Status chip at the top */}
+                        <Box sx={{ mb: 1 }}>
+                            {getStatusChip(post.status)}
+                        </Box>
 
-                    {/* Subtitle */}
-                    <Typography
-                        variant="body2"
-                        sx={{
-                            color: '#666',
-                            fontSize: '0.95rem',
-                            lineHeight: 1.4,
-                            display: '-webkit-box',
-                            WebkitLineClamp: 2,
-                            WebkitBoxOrient: 'vertical',
-                            overflow: 'hidden',
-                            mb: 2,
-                            flex: 1
-                        }}
-                    >
-                        {post.content?.substring(0, 120) + '...' || "No content provided."}
-                    </Typography>
+                        {/* Title */}
+                        <Typography
+                            variant="h5"
+                            sx={{
+                                fontWeight: 700,
+                                color: '#333',
+                                fontSize: '1.4rem',
+                                lineHeight: 1.2,
+                                mb: 1,
+                                display: '-webkit-box',
+                                WebkitLineClamp: 2,
+                                WebkitBoxOrient: 'vertical',
+                                overflow: 'hidden'
+                            }}
+                        >
+                            {post.title || "Untitled Post"}
+                        </Typography>
 
-                    {/* Bottom section - Date */}
+                        {/* Subtitle */}
+                        <Typography
+                            variant="body2"
+                            sx={{
+                                color: '#666',
+                                fontSize: '0.95rem',
+                                lineHeight: 1.4,
+                                display: '-webkit-box',
+                                WebkitLineClamp: 2,
+                                WebkitBoxOrient: 'vertical',
+                                overflow: 'hidden'
+                            }}
+                        >
+                            {post.content?.substring(0, 120) + '...' || "No content provided."}
+                        </Typography>
+                    </Box>
+
+                    {/* Bottom section - Author and Date */}
                     <Box sx={{
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
                         mt: 'auto'
                     }}>
-                        {/* Date */}
+                        {/* Author info */}
                         <Box sx={{
                             display: 'flex',
                             alignItems: 'center',
                             gap: 1
                         }}>
+                            {(post.avatar || userData?.avatar) ? (
+                                <Avatar
+                                    src={post.avatar || userData?.avatar}
+                                    alt={authorName}
+                                    sx={{
+                                        width: 24,
+                                        height: 24,
+                                        border: post.achievement_id ? '1px solid gold' : 'none'
+                                    }}
+                                />
+                            ) : (
+                                <Avatar
+                                    sx={{
+                                        width: 24,
+                                        height: 24,
+                                        bgcolor: '#f0f0f0',
+                                        color: '#555',
+                                        fontSize: '0.7rem',
+                                        border: post.achievement_id ? '1px solid gold' : 'none'
+                                    }}
+                                >
+                                    {authorName ? authorName.charAt(0) : 'Z'}
+                                </Avatar>
+                            )}
 
                             <Typography
                                 variant="body2"
                                 sx={{
-                                    color: '#999',
+                                    color: '#666',
+                                    fontWeight: 500,
                                     fontSize: '0.85rem'
                                 }}
                             >
-                                {postDate}
+                                {authorName}
                             </Typography>
 
                             {post.achievement_id && (
@@ -198,12 +285,23 @@ const MyBlogCard = ({
                                 </Tooltip>
                             )}
                         </Box>
+
+                        {/* Date */}
+                        <Typography
+                            variant="body2"
+                            sx={{
+                                color: '#999',
+                                fontSize: '0.85rem'
+                            }}
+                        >
+                            {postDate}
+                        </Typography>
                     </Box>
                 </Box>
 
                 {/* Right side - Image */}
                 <Box sx={{
-                    width: 250,
+                    width: 220,
                     height: '100%',
                     position: 'relative',
                     flexShrink: 0
