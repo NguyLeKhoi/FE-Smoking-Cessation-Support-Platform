@@ -20,7 +20,7 @@ const BlogBanner = ({
     // Extract subtitle from markdown content
     const getSubtitle = (content) => {
         if (!content) return null;
-        
+
         // Remove markdown formatting for subtitle
         const plainText = content
             .replace(/#{1,6}\s+/g, '') // Remove headers

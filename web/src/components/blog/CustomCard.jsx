@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
-import MarkdownRenderer from '../common/MarkdownRenderer';
+import MarkdownRenderer from './MarkdownRenderer'; 
 
 const CustomCard = ({
     image,
