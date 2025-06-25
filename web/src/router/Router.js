@@ -23,6 +23,7 @@ import MembershipPlansPage from '../pages/main/MembershipPlansPage';
 import Blog from '../pages/blog/Blog';
 import MyBlogPage from '../pages/blog/MyBlogPage';
 import EditBlogPage from '../pages/blog/EditBlogPage';
+import CreateBlogPage from '../pages/blog/CreateBlogPage';
 
 //admin
 import AdminDashboard from '../pages/admin/AdminDashboard';
@@ -93,6 +94,16 @@ export const routes = createBrowserRouter([
       <ProtectedRoute>
         <MainLayout showFooter={false} showHeader={false} >
           <EditBlogPage />
+        </MainLayout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/blog/create',
+    element: (
+      <ProtectedRoute>
+        <MainLayout showFooter={false} >
+          <CreateBlogPage />
         </MainLayout>
       </ProtectedRoute>
     ),

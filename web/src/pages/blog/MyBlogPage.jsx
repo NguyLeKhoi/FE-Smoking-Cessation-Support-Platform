@@ -121,7 +121,6 @@ const MyBlogPage = () => {
                 setCurrentPage(newTotalPages);
             }
 
-            toast.success('Post deleted successfully!');
 
         } catch (error) {
             console.error('Failed to delete post:', error);
