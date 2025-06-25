@@ -5,7 +5,13 @@ import {
     Button,
     Alert,
     Card,
-    Typography
+    Typography,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    TextField,
+    CircularProgress
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import AddIcon from '@mui/icons-material/Add';
@@ -25,6 +31,16 @@ const MyBlogPage = () => {
     const [deleteLoading, setDeleteLoading] = useState(false);
     const [selectedPostId, setSelectedPostId] = useState(null);
     const [userData, setUserData] = useState(null);
+
+    // Edit functionality state
+    const [editLoading, setEditLoading] = useState(false);
+    const [editDialogOpen, setEditDialogOpen] = useState(false);
+    const [editingPost, setEditingPost] = useState(null);
+    const [editFormData, setEditFormData] = useState({
+        title: '',
+        content: '',
+        thumbnail: ''
+    });
 
     useEffect(() => {
         const loadData = async () => {
@@ -69,7 +85,62 @@ const MyBlogPage = () => {
     };
 
     const handleEditPost = (postId) => {
-        navigate(`/blog/edit/${postId}`);
+        const post = userPosts.find(p => p.id === postId);
+        if (post) {
+            setEditingPost(post);
+            setEditFormData({
+                title: post.title || '',
+                content: post.content || '',
+                thumbnail: post.thumbnail || ''
+            });
+            setEditDialogOpen(true);
+        }
+    };
+
+    const handleUpdatePost = async () => {
+        if (!editingPost || !editFormData.title.trim()) {
+            toast.error('Title is required');
+            return;
+        }
+
+        try {
+            setEditLoading(true);
+
+            // Call the updatePost API
+            const updatedPost = await postService.updatePost(editingPost.id, editFormData);
+
+            // Update the posts array with the updated post
+            setUserPosts(prevPosts =>
+                prevPosts.map(post =>
+                    post.id === editingPost.id ? { ...post, ...updatedPost } : post
+                )
+            );
+
+            toast.success('Post updated successfully!');
+            handleEditDialogClose();
+
+        } catch (error) {
+            console.error('Failed to update post:', error);
+        } finally {
+            setEditLoading(false);
+        }
+    };
+
+    const handleEditDialogClose = () => {
+        setEditDialogOpen(false);
+        setEditingPost(null);
+        setEditFormData({
+            title: '',
+            content: '',
+            thumbnail: ''
+        });
+    };
+
+    const handleEditFormChange = (field) => (event) => {
+        setEditFormData(prev => ({
+            ...prev,
+            [field]: event.target.value
+        }));
     };
 
     const handleDeletePost = async (postId) => {
@@ -81,7 +152,6 @@ const MyBlogPage = () => {
 
             // Remove the deleted post from the list
             setUserPosts(userPosts.filter(post => post.id !== postId));
-            toast.success('Post deleted successfully!');
 
         } catch (error) {
             console.error('Failed to delete post:', error);
@@ -156,6 +226,71 @@ const MyBlogPage = () => {
                     />
                 ))}
             </Box>
+
+            {/* Edit Post Dialog */}
+            <Dialog
+                open={editDialogOpen}
+                onClose={handleEditDialogClose}
+                maxWidth="md"
+                fullWidth
+            >
+                <DialogTitle>Edit Post</DialogTitle>
+                <DialogContent>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
+                        <TextField
+                            label="Title"
+                            fullWidth
+                            value={editFormData.title}
+                            onChange={handleEditFormChange('title')}
+                            variant="outlined"
+                            required
+                            error={!editFormData.title.trim()}
+                            helperText={!editFormData.title.trim() ? 'Title is required' : ''}
+                        />
+
+                        <TextField
+                            label="Content"
+                            fullWidth
+                            multiline
+                            rows={6}
+                            value={editFormData.content}
+                            onChange={handleEditFormChange('content')}
+                            variant="outlined"
+                        />
+
+                        <TextField
+                            label="Thumbnail URL"
+                            fullWidth
+                            value={editFormData.thumbnail}
+                            onChange={handleEditFormChange('thumbnail')}
+                            variant="outlined"
+                            helperText="Enter a URL for the post thumbnail image (optional)"
+                        />
+                    </Box>
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        onClick={handleEditDialogClose}
+                        disabled={editLoading}
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        onClick={handleUpdatePost}
+                        variant="contained"
+                        disabled={editLoading || !editFormData.title.trim()}
+                    >
+                        {editLoading ? (
+                            <>
+                                <CircularProgress size={20} sx={{ mr: 1 }} />
+                                Updating...
+                            </>
+                        ) : (
+                            'Update Post'
+                        )}
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Container>
     );
 
