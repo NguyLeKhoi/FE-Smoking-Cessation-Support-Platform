@@ -1,19 +1,21 @@
 import React, { useState } from 'react';
 import { Box, Typography, List, ListItem, ListItemIcon, ListItemText, Badge, Paper} from '@mui/material';
 import { styled } from '@mui/system';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Link as RouterLink } from 'react-router-dom';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import PersonIcon from '@mui/icons-material/Person';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import ExploreIcon from '@mui/icons-material/Explore';
+import ArticleIcon from '@mui/icons-material/Article';
 import StorefrontIcon from '@mui/icons-material/Storefront';
 import BlockIcon from '@mui/icons-material/Block';
+
 
 const menuItems = [
     { label: 'LEADERBOARDS', icon: <EmojiEventsIcon fontSize="medium" />, path: '/leaderboards' },
     { label: 'QUESTS', icon: <ExploreIcon fontSize="medium" />, hasNotification: true, path: '/quests' },
-    { label: 'SHOP', icon: <StorefrontIcon fontSize="medium" />, path: '/shop' },
+    { label: 'MY POSTS', icon: <ArticleIcon fontSize="medium" />, path: '/my-blog' },
     { label: 'PROFILE', icon: <PersonIcon fontSize="medium" />, path: '/profile' },
     { label: 'QUIT PLAN', icon: <BlockIcon fontSize="medium" />, path: '/quit-plan' },
     { label: 'MORE', icon: <MoreHorizIcon fontSize="medium" />, path: '/more' },
@@ -25,7 +27,7 @@ const SidebarContainer = styled(Paper)(({ theme }) => ({
     height: '100vh',
     backgroundColor: theme.palette.background.paper,
     boxShadow: '4px 0px 10px rgba(0, 0, 0, 0.03)',
-    padding: '0', 
+    padding: '0',
     display: 'flex',
     flexDirection: 'column',
     color: theme.palette.text.primary,
@@ -61,6 +63,7 @@ const IconText = styled(Typography)(({ theme }) => ({
 
 const ProfileSidebar = ({ userData }) => {
     const location = useLocation();
+    const navigate = useNavigate(); // Added useNavigate hook
     const [activeItem, setActiveItem] = useState(() => {
         const currentPath = location.pathname;
         const foundItem = menuItems.findIndex(item => currentPath.includes(item.path));
@@ -70,6 +73,20 @@ const ProfileSidebar = ({ userData }) => {
     const handleItemClick = (index) => {
         setActiveItem(index);
         console.log(`Selected: ${menuItems[index].label} (${menuItems[index].path})`);
+
+        // Handle navigation based on the menu item
+        if (menuItems[index].path === '/my-blog') {
+            // Navigate to user's blog posts page - use userData.id if available
+            const userId = userData?.id || 'dc0ef526-ec2b-4ff4-8aa0-308d0c8e499e'; // Use hardcoded ID as fallback
+            navigate(`/my-blog?userId=${userId}`);
+        } else if (index !== 3) { // For items other than PROFILE and MY BLOG
+            // Show toast or notification for "Coming Soon" features
+            console.log("This feature is coming soon");
+            // You could add a toast notification here
+        } else {
+            // Navigate to the default path for this menu item
+            navigate(menuItems[index].path);
+        }
     };
 
     return (
@@ -119,11 +136,18 @@ const ProfileSidebar = ({ userData }) => {
 
                 <List sx={{ display: 'flex', flexDirection: 'column', width: '100%', p: 0 }}>
                     {menuItems.map((item, index) => (
+
+                        <Tooltip
+                            key={index}
+                            title={index !== 3 && index !== 2 ? "Coming soon" : ""}
+                            placement="right"
+
                         <StyledListItem
                             component={RouterLink}
                             to={item.path}
                             active={activeItem === index ? 1 : 0}
                             onClick={() => handleItemClick(index)}
+
                         >
                             <ListItemIcon sx={{
                                 color: activeItem === index ? 'primary.main' : 'text.secondary',

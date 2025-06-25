@@ -4,115 +4,266 @@ import {
     CardContent,
     CardMedia,
     Typography,
-    Box
+    Box,
+    Avatar,
+    Chip,
+    Tooltip
 } from '@mui/material';
-import { motion } from 'framer-motion';
+import { Link as RouterLink } from 'react-router-dom';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import MarkdownRenderer from './MarkdownRenderer'; 
 
-const CustomCard = ({ image, title, subtitle, author, duration }) => {
+const CustomCard = ({
+    image,
+    title,
+    subtitle,
+    author,
+    authorAvatar,
+    achievement,
+    date,
+    slug,
+    id
+}) => {
     return (
-        <motion.div
-            whileHover={{
-                y: -10,
-                transition: { duration: 0.2 }
+        <Card
+            component={RouterLink}
+            to={id ? `/blog/${id}` : `/blog/${slug}`}
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                height: '100%',
+                bgcolor: 'background.paper',
+                transition: 'all 0.2s ease-in-out',
+                maxWidth: 300,
+                minWidth: 330,
+                minHeight: 350,
+                borderRadius: '16px',
+                overflow: 'hidden',
+                boxShadow: 'none',
+                textDecoration: 'none',
+                position: 'relative',
+                transition: 'transform 0.2s ease',
+                '&:hover': {
+                    transform: 'translateY(-6px)'
+                },
+                width: '100%',
+                mx: 'auto'
             }}
         >
-            <Card sx={{
-                borderRadius: 3,
-                boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.05)',
+            {/* Image Container */}
+            <Box sx={{
+                borderRadius: '20px',
+                overflow: 'hidden',
+                position: 'relative',
+                mb: 2,
                 border: '1px solid',
-                borderColor: 'divider',
-                height: '200px',
-                maxWidth: '470px',
-                minWidth: '470px',
-                display: 'flex',
-                flexDirection: 'row',
-                bgcolor: 'section.light',
-                transition: 'all 0.2s ease-in-out',
-                '&:hover': {
-                    borderColor: 'primary.main',
-                    boxShadow: '0px 6px 25px rgba(0, 0, 0, 0.1)',
-                },
-                overflow: 'hidden'
+                borderColor: 'rgba(0, 0, 0, 0.04)'
             }}>
-                {/* Text Content (Left Side) */}
-                <CardContent sx={{
-                    flexGrow: 1,
-                    flexBasis: '60%',
+                <CardMedia
+                    component="img"
+                    image={image}
+                    alt={title}
+                    sx={{
+                        height: 250,
+                        objectFit: 'cover'
+                    }}
+                />
+            </Box>
+
+            {/* Date and Author */}
+            <Box sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                gap: 1,
+                mb: 1.5,
+                flexWrap: 'wrap'
+            }}>
+                {/* Date */}
+                <Typography
+                    variant="body2"
+                    sx={{
+                        color: '#9E9E9E',
+                        fontWeight: 500,
+                        fontSize: '0.85rem',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.5px'
+                    }}
+                >
+                    {date}
+                </Typography>
+
+                {/* Dot separator */}
+                <Box
+                    component="span"
+                    sx={{
+                        width: '4px',
+                        height: '4px',
+                        borderRadius: '50%',
+                        bgcolor: '#D0D0D0'
+                    }}
+                />
+
+                {/* Author with Avatar */}
+                <Box sx={{
                     display: 'flex',
-                    flexDirection: 'column',
-                    padding: 2,
-                    py: 2,
-                    '&:last-child': { pb: 2 },
-                    height: '100%'
+                    alignItems: 'center',
+                    gap: 1,
+                    ml: 0
                 }}>
-                    <Typography
-                        variant="h6"
-                        sx={{
-                            fontWeight: 700,
-                            mb: 1,
-                            color: 'text.primary',
-                            fontSize: '0.95rem',
-                            lineHeight: 1.2,
-                            display: '-webkit-box',
-                            WebkitLineClamp: 2,
-                            WebkitBoxOrient: 'vertical',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis'
-                        }}
-                    >
-                        {title}
-                    </Typography>
+                    {authorAvatar ? (
+                        <Avatar
+                            src={authorAvatar}
+                            alt={author}
+                            sx={{
+                                width: 20,
+                                height: 20,
+                                border: achievement ? '1px solid gold' : 'none'
+                            }}
+                        />
+                    ) : (
+                        <Avatar
+                            sx={{
+                                width: 20,
+                                height: 20,
+                                bgcolor: '#f0f0f0',
+                                color: '#555',
+                                fontSize: '0.65rem',
+                                border: achievement ? '1px solid gold' : 'none'
+                            }}
+                        >
+                            {author ? author.charAt(0) : 'Z'}
+                        </Avatar>
+                    )}
+
                     <Typography
                         variant="body2"
                         sx={{
-                            color: 'text.secondary',
-                            mb: 1,
-                            lineHeight: 1.3,
-                            fontSize: '0.8rem',
-                            flexGrow: 1,
-                            display: '-webkit-box',
-                            WebkitLineClamp: 3,
-                            WebkitBoxOrient: 'vertical',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis'
+                            color: '#9E9E9E',
+                            fontWeight: 500,
+                            fontSize: '0.85rem',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.5px'
                         }}
                     >
-                        {subtitle}
+                        {author}
                     </Typography>
-                    <Typography
-                        variant="caption"
-                        sx={{
-                            color: 'secondary.main',
-                            mt: 'auto',
-                            fontSize: '0.7rem',
-                            fontWeight: 'medium'
-                        }}
-                    >
-                        {`Text: ${author} • Duration: ${duration}`}
-                    </Typography>
-                </CardContent>
 
-                {/* Image (Right Side) */}
-                <Box sx={{
-                    flexBasis: '40%',
-                    position: 'relative',
-                    flexShrink: 0,
-                    borderLeft: '1px solid',
-                    borderColor: 'divider'
-                }}>
-                    <CardMedia
-                        component="img"
-                        image={image}
-                        alt={title}
-                        sx={{
-                            objectFit: 'cover',
-                            height: '100%',
-                            width: '100%'
-                        }}
-                    />
+                    {/* Achievement icon */}
+                    {achievement && (
+                        <Tooltip title="Author Achievement">
+                            <EmojiEventsIcon
+                                fontSize="small"
+                                sx={{
+                                    color: 'gold',
+                                    fontSize: '1rem',
+                                    ml: -0.5
+                                }}
+                            />
+                        </Tooltip>
+                    )}
                 </Box>
-            </Card>
-        </motion.div>
+            </Box>
+
+            {/* Title */}
+            <Typography
+                variant="h5"
+                sx={{
+                    fontWeight: 700,
+                    color: '#333',
+                    fontSize: '1.2rem',
+                    lineHeight: 1.3,
+                    mb: 1.5
+                }}
+            >
+                {title}
+            </Typography>
+
+            {/* Subtitle - Now using MarkdownRenderer */}
+            <Box
+                sx={{
+                    color: '#555',
+                    fontSize: '0.95rem',
+                    lineHeight: 1.5,
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden',
+                    mb: 1
+                }}
+            >
+                <MarkdownRenderer
+                    content={subtitle?.substring(0, 120) + (subtitle?.length > 120 ? '...' : '') || "Learn effective strategies and supportive approaches."}
+                    sx={{
+                        // Override all markdown styles to match the original Typography styles
+                        '& *': {
+                            color: '#555 !important',
+                            fontSize: '0.95rem !important',
+                            lineHeight: '1.5 !important',
+                            margin: '0 !important',
+                            padding: '0 !important',
+                            fontWeight: 'inherit !important',
+                            textDecoration: 'none !important',
+                            border: 'none !important',
+                            background: 'none !important',
+                            fontFamily: 'inherit !important'
+                        },
+                        '& p': {
+                            margin: '0 !important',
+                            padding: '0 !important',
+                            display: 'inline !important'
+                        },
+                        '& h1, & h2, & h3, & h4, & h5, & h6': {
+                            fontSize: '0.95rem !important',
+                            fontWeight: 'inherit !important',
+                            margin: '0 !important',
+                            display: 'inline !important'
+                        },
+                        '& strong, & b': {
+                            fontWeight: 'inherit !important'
+                        },
+                        '& em, & i': {
+                            fontStyle: 'normal !important'
+                        },
+                        '& code': {
+                            backgroundColor: 'transparent !important',
+                            padding: '0 !important',
+                            fontFamily: 'inherit !important',
+                            fontSize: '0.95rem !important'
+                        },
+                        '& ul, & ol': {
+                            margin: '0 !important',
+                            padding: '0 !important',
+                            listStyle: 'none !important'
+                        },
+                        '& li': {
+                            margin: '0 !important',
+                            padding: '0 !important',
+                            display: 'inline !important'
+                        },
+                        '& blockquote': {
+                            margin: '0 !important',
+                            padding: '0 !important',
+                            border: 'none !important',
+                            fontStyle: 'normal !important'
+                        },
+                        '& a': {
+                            color: '#555 !important',
+                            textDecoration: 'none !important'
+                        },
+                        '& img': {
+                            display: 'none !important'
+                        },
+                        '& table, & th, & td': {
+                            display: 'none !important'
+                        },
+                        '& hr': {
+                            display: 'none !important'
+                        }
+                    }}
+                />
+            </Box>
+        </Card>
     );
 };
 
