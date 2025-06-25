@@ -6,6 +6,7 @@ import {
     Container
 } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
+import MarkdownRenderer from './MarkdownRenderer';
 
 const BlogBanner = ({
     title,
@@ -16,6 +17,22 @@ const BlogBanner = ({
     slug,
     id
 }) => {
+    // Extract subtitle from markdown content
+    const getSubtitle = (content) => {
+        if (!content) return null;
+        
+        // Remove markdown formatting for subtitle
+        const plainText = content
+            .replace(/#{1,6}\s+/g, '') // Remove headers
+            .replace(/\*\*(.*?)\*\*/g, '$1') // Remove bold
+            .replace(/\*(.*?)\*/g, '$1') // Remove italic
+            .replace(/`(.*?)`/g, '$1') // Remove inline code
+            .replace(/\[(.*?)\]\(.*?\)/g, '$1') // Remove links
+            .trim();
+
+        return plainText.substring(0, 150) + (plainText.length > 150 ? '...' : '');
+    };
+
     return (
         <Box sx={{ width: '100%', py: 5 }}>
             <Container maxWidth="lg">
@@ -101,7 +118,7 @@ const BlogBanner = ({
                             </Typography>
                         )}
 
-                        {/* Subtitle */}
+                        {/* Subtitle - Now handles markdown content */}
                         {subtitle && (
                             <Typography
                                 variant="body1"
@@ -112,7 +129,7 @@ const BlogBanner = ({
                                     lineHeight: 1.5
                                 }}
                             >
-                                {subtitle}
+                                {getSubtitle(subtitle)}
                             </Typography>
                         )}
 

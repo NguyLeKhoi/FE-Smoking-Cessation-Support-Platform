@@ -1,14 +1,17 @@
 import React from 'react';
 import {
     Card,
+    CardContent,
     CardMedia,
     Typography,
     Box,
     Avatar,
-    Tooltip,
+    Chip,
+    Tooltip
 } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import MarkdownRenderer from '../common/MarkdownRenderer';
 
 const CustomCard = ({
     image,
@@ -24,7 +27,7 @@ const CustomCard = ({
     return (
         <Card
             component={RouterLink}
-            to={id ? `/blog/${id}` : `/blog/${slug || 'post'}`}
+            to={id ? `/blog/${id}` : `/blog/${slug}`}
             sx={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -176,9 +179,8 @@ const CustomCard = ({
                 {title}
             </Typography>
 
-            {/* Subtitle */}
-            <Typography
-                variant="body1"
+            {/* Subtitle - Now using MarkdownRenderer */}
+            <Box
                 sx={{
                     color: '#555',
                     fontSize: '0.95rem',
@@ -190,8 +192,77 @@ const CustomCard = ({
                     mb: 1
                 }}
             >
-                {subtitle}
-            </Typography>
+                <MarkdownRenderer
+                    content={subtitle?.substring(0, 120) + (subtitle?.length > 120 ? '...' : '') || "Learn effective strategies and supportive approaches."}
+                    sx={{
+                        // Override all markdown styles to match the original Typography styles
+                        '& *': {
+                            color: '#555 !important',
+                            fontSize: '0.95rem !important',
+                            lineHeight: '1.5 !important',
+                            margin: '0 !important',
+                            padding: '0 !important',
+                            fontWeight: 'inherit !important',
+                            textDecoration: 'none !important',
+                            border: 'none !important',
+                            background: 'none !important',
+                            fontFamily: 'inherit !important'
+                        },
+                        '& p': {
+                            margin: '0 !important',
+                            padding: '0 !important',
+                            display: 'inline !important'
+                        },
+                        '& h1, & h2, & h3, & h4, & h5, & h6': {
+                            fontSize: '0.95rem !important',
+                            fontWeight: 'inherit !important',
+                            margin: '0 !important',
+                            display: 'inline !important'
+                        },
+                        '& strong, & b': {
+                            fontWeight: 'inherit !important'
+                        },
+                        '& em, & i': {
+                            fontStyle: 'normal !important'
+                        },
+                        '& code': {
+                            backgroundColor: 'transparent !important',
+                            padding: '0 !important',
+                            fontFamily: 'inherit !important',
+                            fontSize: '0.95rem !important'
+                        },
+                        '& ul, & ol': {
+                            margin: '0 !important',
+                            padding: '0 !important',
+                            listStyle: 'none !important'
+                        },
+                        '& li': {
+                            margin: '0 !important',
+                            padding: '0 !important',
+                            display: 'inline !important'
+                        },
+                        '& blockquote': {
+                            margin: '0 !important',
+                            padding: '0 !important',
+                            border: 'none !important',
+                            fontStyle: 'normal !important'
+                        },
+                        '& a': {
+                            color: '#555 !important',
+                            textDecoration: 'none !important'
+                        },
+                        '& img': {
+                            display: 'none !important'
+                        },
+                        '& table, & th, & td': {
+                            display: 'none !important'
+                        },
+                        '& hr': {
+                            display: 'none !important'
+                        }
+                    }}
+                />
+            </Box>
         </Card>
     );
 };
