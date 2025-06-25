@@ -11,13 +11,19 @@ import {
     Chip,
     Breadcrumbs,
     Link,
-    Divider
+    Divider,
+    Tabs,
+    Tab
 } from '@mui/material';
 import { useNavigate, useParams, Link as RouterLink } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import SaveIcon from '@mui/icons-material/Save';
 import HomeIcon from '@mui/icons-material/Home';
 import EditIcon from '@mui/icons-material/Edit';
+import PreviewIcon from '@mui/icons-material/Preview';
+import CodeIcon from '@mui/icons-material/Code';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import postService from '../../services/postService';
 import { toast } from 'react-toastify';
 import LoadingPage from '../LoadingPage';
@@ -36,6 +42,7 @@ const EditBlogPage = () => {
         thumbnail: ''
     });
     const [formErrors, setFormErrors] = useState({});
+    const [contentTab, setContentTab] = useState(0); // 0 = Edit, 1 = Preview
 
     useEffect(() => {
         const fetchPost = async () => {
@@ -66,7 +73,6 @@ const EditBlogPage = () => {
             } catch (error) {
                 console.error('Failed to fetch post:', error);
                 setError(error.message || 'Failed to load post');
-                toast.error('Failed to load post for editing');
             } finally {
                 setLoading(false);
             }
@@ -141,21 +147,22 @@ const EditBlogPage = () => {
             const updatedPost = await postService.updatePost(postId, formData);
             console.log('Post updated successfully:', updatedPost);
 
-            toast.success('Post updated successfully!');
-
-            // Navigate back to the blog list
-            navigate('/blog/my-posts');
+            // Navigate back to blog list page
+            navigate('/my-blog');
 
         } catch (error) {
             console.error('Failed to update post:', error);
-            toast.error('Failed to update post. Please try again.');
         } finally {
             setSaving(false);
         }
     };
 
     const handleCancel = () => {
-        navigate('/blog/my-posts');
+        navigate('/my-blog');
+    };
+
+    const handleContentTabChange = (event, newValue) => {
+        setContentTab(newValue);
     };
 
     // Get status chip
@@ -174,6 +181,79 @@ const EditBlogPage = () => {
         }
     };
 
+    // Markdown styles
+    const markdownStyles = {
+        '& h1, & h2, & h3, & h4, & h5, & h6': {
+            marginTop: 2,
+            marginBottom: 1,
+            fontWeight: 600,
+        },
+        '& h1': { fontSize: '2rem' },
+        '& h2': { fontSize: '1.5rem' },
+        '& h3': { fontSize: '1.25rem' },
+        '& p': {
+            marginBottom: 1,
+            lineHeight: 1.6,
+        },
+        '& ul, & ol': {
+            marginLeft: 2,
+            marginBottom: 1,
+        },
+        '& li': {
+            marginBottom: 0.5,
+        },
+        '& blockquote': {
+            borderLeft: '4px solid #ddd',
+            paddingLeft: 2,
+            margin: '1rem 0',
+            fontStyle: 'italic',
+            color: 'text.secondary',
+        },
+        '& code': {
+            backgroundColor: 'grey.100',
+            padding: '2px 4px',
+            borderRadius: 1,
+            fontFamily: 'monospace',
+            fontSize: '0.875rem',
+        },
+        '& pre': {
+            backgroundColor: 'grey.100',
+            padding: 2,
+            borderRadius: 1,
+            overflow: 'auto',
+            '& code': {
+                backgroundColor: 'transparent',
+                padding: 0,
+            },
+        },
+        '& a': {
+            color: 'primary.main',
+            textDecoration: 'none',
+            '&:hover': {
+                textDecoration: 'underline',
+            },
+        },
+        '& img': {
+            maxWidth: '100%',
+            height: 'auto',
+            borderRadius: 1,
+        },
+        '& table': {
+            width: '100%',
+            borderCollapse: 'collapse',
+            marginBottom: 2,
+        },
+        '& th, & td': {
+            border: '1px solid #ddd',
+            padding: 1,
+            textAlign: 'left',
+        },
+        '& th': {
+            backgroundColor: 'grey.100',
+            fontWeight: 600,
+        },
+    };
+
     if (loading) {
         return <LoadingPage />;
     }
@@ -187,7 +267,7 @@ const EditBlogPage = () => {
                 <Button
                     variant="outlined"
                     startIcon={<ArrowBackIcon />}
-                    onClick={() => navigate('/blog/my-posts')}
+                    onClick={() => navigate('/my-blog')}
                 >
                     Back to My Posts
                 </Button>
@@ -196,7 +276,7 @@ const EditBlogPage = () => {
     }
 
     return (
-        <Container maxWidth="md" sx={{ py: 4 }}>
+        <Container maxWidth="lg" sx={{ py: 4 }}>
             {/* Breadcrumbs */}
             <Breadcrumbs aria-label="breadcrumb" sx={{ mb: 3 }}>
                 <Link
@@ -211,7 +291,7 @@ const EditBlogPage = () => {
                 </Link>
                 <Link
                     component={RouterLink}
-                    to="/blog/my-posts"
+                    to="/my-blog"
                     underline="hover"
                     color="inherit"
                 >
@@ -233,7 +313,7 @@ const EditBlogPage = () => {
                 </Box>
 
                 <Typography variant="body1" color="text.secondary">
-                    Make changes to your blog post. {post?.status?.toUpperCase() === 'PENDING' && 'Changes may require re-approval.'}
+                    Make changes to your post. {post?.status?.toUpperCase() === 'PENDING' && 'Changes may require re-approval.'}
                 </Typography>
             </Box>
 
@@ -251,51 +331,126 @@ const EditBlogPage = () => {
             )}
 
             {/* Edit Form */}
-            <Paper elevation={2} sx={{ p: 4 }}>
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                    {/* Title Field */}
-                    <TextField
-                        label="Title"
-                        fullWidth
-                        value={formData.title}
-                        onChange={handleInputChange('title')}
-                        error={!!formErrors.title}
-                        helperText={formErrors.title || 'Enter a compelling title for your post'}
-                        variant="outlined"
-                        required
-                    />
+            <Box sx={{ display: 'flex', gap: 3 }}>
+                {/* Left Column - Form */}
+                <Box sx={{ flex: 1 }}>
+                    <Paper elevation={2} sx={{ p: 4 }}>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                            {/* Title Field */}
+                            <TextField
+                                label="Title"
+                                fullWidth
+                                value={formData.title}
+                                onChange={handleInputChange('title')}
+                                error={!!formErrors.title}
+                                helperText={formErrors.title || 'Enter a compelling title for your post'}
+                                variant="outlined"
+                                required
+                            />
 
-                    {/* Content Field */}
-                    <TextField
-                        label="Content"
-                        fullWidth
-                        multiline
-                        rows={12}
-                        value={formData.content}
-                        onChange={handleInputChange('content')}
-                        error={!!formErrors.content}
-                        helperText={formErrors.content || 'Write your blog post content here'}
-                        variant="outlined"
-                        required
-                    />
+                            {/* Content Field with Tabs */}
+                            <Box>
+                                <Tabs value={contentTab} onChange={handleContentTabChange} sx={{ mb: 2 }}>
+                                    <Tab
+                                        label="Edit"
+                                        icon={<CodeIcon />}
+                                        iconPosition="start"
+                                    />
+                                    <Tab
+                                        label="Preview"
+                                        icon={<PreviewIcon />}
+                                        iconPosition="start"
+                                    />
+                                </Tabs>
 
-                    {/* Thumbnail Field */}
-                    <TextField
-                        label="Thumbnail URL"
-                        fullWidth
-                        value={formData.thumbnail}
-                        onChange={handleInputChange('thumbnail')}
-                        error={!!formErrors.thumbnail}
-                        helperText={formErrors.thumbnail || 'Optional: Enter a URL for the post thumbnail image'}
-                        variant="outlined"
-                        placeholder="https://example.com/image.jpg"
-                    />
+                                {contentTab === 0 ? (
+                                    <TextField
+                                        label="Content (Markdown)"
+                                        fullWidth
+                                        multiline
+                                        rows={20}
+                                        value={formData.content}
+                                        onChange={handleInputChange('content')}
+                                        error={!!formErrors.content}
+                                        helperText={formErrors.content || 'Write your blog post content using Markdown syntax'}
+                                        variant="outlined"
+                                        required
+                                        sx={{
+                                            '& .MuiInputBase-input': {
+                                                fontFamily: 'monospace',
+                                                fontSize: '0.875rem',
+                                            }
+                                        }}
+                                    />
+                                ) : (
+                                    <Paper
+                                        variant="outlined"
+                                        sx={{
+                                            p: 3,
+                                            minHeight: 500,
+                                            maxHeight: 500,
+                                            overflow: 'auto',
+                                            backgroundColor: 'background.paper',
+                                            ...markdownStyles
+                                        }}
+                                    >
+                                        {formData.content ? (
+                                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                                {formData.content}
+                                            </ReactMarkdown>
+                                        ) : (
+                                            <Typography color="text.secondary" sx={{ fontStyle: 'italic' }}>
+                                                No content to preview. Start writing in the Edit tab.
+                                            </Typography>
+                                        )}
+                                    </Paper>
+                                )}
+                            </Box>
 
+                            {/* Thumbnail Field */}
+                            <TextField
+                                label="Thumbnail URL"
+                                fullWidth
+                                value={formData.thumbnail}
+                                onChange={handleInputChange('thumbnail')}
+                                error={!!formErrors.thumbnail}
+                                helperText={formErrors.thumbnail || 'Optional: Enter a URL for the post thumbnail image'}
+                                variant="outlined"
+                                placeholder="https://example.com/image.jpg"
+                            />
+
+                            <Divider />
+
+                            {/* Action Buttons */}
+                            <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
+                                <Button
+                                    variant="outlined"
+                                    onClick={handleCancel}
+                                    disabled={saving}
+                                >
+                                    Cancel
+                                </Button>
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={handleSave}
+                                    disabled={saving}
+                                    startIcon={saving ? <CircularProgress size={20} /> : <SaveIcon />}
+                                >
+                                    {saving ? 'Saving...' : 'Save Changes'}
+                                </Button>
+                            </Box>
+                        </Box>
+                    </Paper>
+                </Box>
+
+                {/* Right Column - Info and Preview */}
+                <Box sx={{ width: 350, display: 'flex', flexDirection: 'column', gap: 3 }}>
                     {/* Thumbnail Preview */}
                     {formData.thumbnail && isValidUrl(formData.thumbnail) && (
-                        <Box sx={{ mt: 2 }}>
-                            <Typography variant="body2" color="text.secondary" gutterBottom>
-                                Thumbnail Preview:
+                        <Paper elevation={1} sx={{ p: 3 }}>
+                            <Typography variant="h6" gutterBottom>
+                                Thumbnail Preview
                             </Typography>
                             <Box
                                 component="img"
@@ -303,7 +458,6 @@ const EditBlogPage = () => {
                                 alt="Thumbnail preview"
                                 sx={{
                                     width: '100%',
-                                    maxWidth: 400,
                                     height: 200,
                                     objectFit: 'cover',
                                     borderRadius: 1,
@@ -313,52 +467,52 @@ const EditBlogPage = () => {
                                     e.target.style.display = 'none';
                                 }}
                             />
-                        </Box>
+                        </Paper>
                     )}
 
-                    <Divider />
+                    {/* Markdown Help */}
+                    <Paper elevation={1} sx={{ p: 3 }}>
+                        <Typography variant="h6" gutterBottom>
+                            Markdown Guide
+                        </Typography>
+                        <Box sx={{ fontSize: '0.875rem', lineHeight: 1.6 }}>
+                            <Typography variant="body2" gutterBottom>
+                                <strong># Heading 1</strong><br />
+                                <strong>## Heading 2</strong><br />
+                                <strong>**Bold text**</strong><br />
+                                <strong>*Italic text*</strong><br />
+                                <strong>[Link](url)</strong><br />
+                                <strong>![Image](url)</strong><br />
+                                <strong>- List item</strong><br />
+                                <strong>1. Numbered item</strong><br />
+                                <strong>`code`</strong><br />
+                                <strong>```code block```</strong><br />
+                                <strong>&gt; Quote</strong>
+                            </Typography>
+                        </Box>
+                    </Paper>
 
-                    {/* Action Buttons */}
-                    <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-                        <Button
-                            variant="outlined"
-                            onClick={handleCancel}
-                            disabled={saving}
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={handleSave}
-                            disabled={saving}
-                            startIcon={saving ? <CircularProgress size={20} /> : <SaveIcon />}
-                        >
-                            {saving ? 'Saving...' : 'Save Changes'}
-                        </Button>
-                    </Box>
+                    {/* Post Info */}
+                    {post && (
+                        <Paper elevation={1} sx={{ p: 3 }}>
+                            <Typography variant="h6" gutterBottom>
+                                Post Information
+                            </Typography>
+                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                <Typography variant="body2" color="text.secondary">
+                                    <strong>Created:</strong> {new Date(post.created_at).toLocaleString()}
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                    <strong>Last Updated:</strong> {new Date(post.updated_at).toLocaleString()}
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                    <strong>Status:</strong> {post.status || 'Unknown'}
+                                </Typography>
+                            </Box>
+                        </Paper>
+                    )}
                 </Box>
-            </Paper>
-
-            {/* Post Info */}
-            {post && (
-                <Paper elevation={1} sx={{ p: 3, mt: 3, bgcolor: 'grey.50' }}>
-                    <Typography variant="h6" gutterBottom>
-                        Post Information
-                    </Typography>
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                        <Typography variant="body2" color="text.secondary">
-                            <strong>Created:</strong> {new Date(post.created_at).toLocaleString()}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                            <strong>Last Updated:</strong> {new Date(post.updated_at).toLocaleString()}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                            <strong>Status:</strong> {post.status || 'Unknown'}
-                        </Typography>
-                    </Box>
-                </Paper>
-            )}
+            </Box>
         </Container>
     );
 };

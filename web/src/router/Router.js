@@ -91,7 +91,7 @@ export const routes = createBrowserRouter([
     path: '/blog/edit/:postId',
     element: (
       <ProtectedRoute>
-        <MainLayout showFooter={false} >
+        <MainLayout showFooter={false} showHeader={false} >
           <EditBlogPage />
         </MainLayout>
       </ProtectedRoute>

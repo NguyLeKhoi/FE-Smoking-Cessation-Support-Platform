@@ -22,6 +22,7 @@ import ReportIcon from '@mui/icons-material/Report';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import EditCalendarIcon from '@mui/icons-material/EditCalendar';
 import { generateSlug } from '../../utils/slugUtils';
+import MarkdownRenderer from './MarkdownRenderer';
 
 const MyBlogCard = ({
     post,
@@ -165,7 +166,7 @@ const MyBlogCard = ({
                 sx={{
                     display: 'flex',
                     flexDirection: 'row',
-                    height: 220, // Slightly increased height to accommodate date info
+                    height: 220,
                     bgcolor: 'background.paper',
                     transition: 'all 0.2s ease-in-out',
                     borderRadius: '12px',
@@ -214,21 +215,24 @@ const MyBlogCard = ({
                             {post.title || "Untitled Post"}
                         </Typography>
 
-                        {/* Subtitle */}
-                        <Typography
-                            variant="body2"
-                            sx={{
-                                color: '#666',
-                                fontSize: '0.95rem',
-                                lineHeight: 1.4,
-                                display: '-webkit-box',
-                                WebkitLineClamp: 2,
-                                WebkitBoxOrient: 'vertical',
-                                overflow: 'hidden'
-                            }}
-                        >
-                            {post.content?.substring(0, 120) + '...' || "No content provided."}
-                        </Typography>
+                        {/* Subtitle - Markdown Preview */}
+                        <Box sx={{
+                            fontSize: '0.95rem',
+                            lineHeight: 1.4,
+                            overflow: 'hidden',
+                            display: '-webkit-box',
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: 'vertical',
+                        }}>
+                            <MarkdownRenderer
+                                content={post.content?.substring(0, 120) + '...' || "No content provided."}
+                                sx={{
+                                    '& p': { margin: 0 },
+                                    '& h1, & h2, & h3, & h4, & h5, & h6': { margin: 0, fontSize: 'inherit' },
+                                    '& *': { fontSize: 'inherit', lineHeight: 'inherit' }
+                                }}
+                            />
+                        </Box>
                     </Box>
 
                     {/* Bottom section - Dates */}

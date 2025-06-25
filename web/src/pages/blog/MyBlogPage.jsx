@@ -99,7 +99,7 @@ const MyBlogPage = () => {
         navigate('/blog/create');
     };
 
-    // Navigate to edit page instead of opening modal
+    // Navigate to edit page
     const handleEditPost = (postId) => {
         navigate(`/blog/edit/${postId}`);
     };
@@ -125,7 +125,6 @@ const MyBlogPage = () => {
 
         } catch (error) {
             console.error('Failed to delete post:', error);
-            toast.error('Failed to delete post. Please try again.');
         } finally {
             setSelectedPostId(null);
             setDeleteLoading(false);
