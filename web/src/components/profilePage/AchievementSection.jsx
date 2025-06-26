@@ -1,286 +1,76 @@
-import React from 'react';
-import { Box, Typography, Paper, Grid } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Box, Typography, Paper, Avatar, CircularProgress } from '@mui/material';
+import achievementsService from '../../services/achievementsService';
+import { Link } from 'react-router-dom';
 
-const AchievementSection = ({ achievements }) => {
+const AchievementSection = () => {
+  const [achievements, setAchievements] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-    return (
-       <Box sx={{ mt: 5 }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                    <Typography variant="h5"
-                      sx={{
-                        fontWeight: 'bold',
-                        mb: 1,
-                        color: 'text.primary',
-                        fontSize: '32px'
-                      }}>
-                      Achievements
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        color: 'primary.main',
-                        fontWeight: 'medium',
-                        cursor: 'pointer',
-                        '&:hover': { textDecoration: 'underline' }
-                      }}
-                    >
-                      VIEW ALL
-                    </Typography>
-                  </Box>
-                  <Paper
-                    elevation={0}
-                    sx={{
-                      p: 0,
-                      bgcolor: 'background.paper',
-                      borderRadius: 3,
-                      border: '1px solid',
-                      borderColor: 'divider',
-                      overflow: 'hidden'
-                    }}
-                  >
-                    {/* Smoke-Free Streak Achievement */}
-                    <Box sx={{ p: 3, borderBottom: '1px solid', borderColor: 'divider' }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-                        <Box
-                          sx={{
-                            width: 80,
-                            height: 80,
-                            borderRadius: 2,
-                            background: 'linear-gradient(135deg, #ff6b6b, #ff8e53)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            position: 'relative',
-                            flexShrink: 0
-                          }}
-                        >
-                          <Box
-                            sx={{
-                              fontSize: '40px',
-                              color: 'white',
-                              filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))'
-                            }}
-                          >
-                            🚭
-                          </Box>
-                          <Box
-                            sx={{
-                              position: 'absolute',
-                              bottom: -5,
-                              left: '50%',
-                              transform: 'translateX(-50%)',
-                              bgcolor: '#ff6b6b',
-                              color: 'white',
-                              fontSize: '10px',
-                              fontWeight: 'bold',
-                              px: 1,
-                              py: 0,
-                              borderRadius: 1,
-                              border: '2px solid white',
-                              whiteSpace: 'nowrap',
-                              minWidth: 'fit-content',
-                              textAlign: 'center'
-                            }}
-                          >
-                            LEVEL 6
-                          </Box>
-                        </Box>
-                        <Box sx={{ flex: 1 }}>
-                          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                            <Typography variant="h6" sx={{ color: 'text.primary', fontWeight: 'bold' }}>
-                              Smoke-Free Streak
-                            </Typography>
-                            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                              63/75 days
-                            </Typography>
-                          </Box>
-                          <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2 }}>
-                            Maintain a 75-day smoke-free streak
-                          </Typography>
-                          <Box
-                            sx={{
-                              height: 8,
-                              borderRadius: 4,
-                              bgcolor: 'section.main',
-                              position: 'relative',
-                              overflow: 'hidden'
-                            }}
-                          >
-                            <Box
-                              sx={{
-                                width: `${(63 / 75) * 100}%`,
-                                height: '100%',
-                                background: 'linear-gradient(90deg, #ff6b6b, #ff8e53)',
-                                borderRadius: 4,
-                              }}
-                            />
-                          </Box>
-                        </Box>
-                      </Box>
-                    </Box>
-                    {/* Health Recovery Achievement */}
-                    <Box sx={{ p: 3, borderBottom: '1px solid', borderColor: 'divider' }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-                        <Box
-                          sx={{
-                            width: 80,
-                            height: 80,
-                            borderRadius: 2,
-                            background: 'linear-gradient(135deg, #e74c3c, #c0392b)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            position: 'relative',
-                            flexShrink: 0
-                          }}
-                        >
-                          <Box
-                            sx={{
-                              fontSize: '40px',
-                              color: 'white',
-                              filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))'
-                            }}
-                          >
-                            ❤️
-                          </Box>
-                          <Box
-                            sx={{
-                              position: 'absolute',
-                              bottom: -5,
-                              left: '50%',
-                              transform: 'translateX(-50%)',
-                              bgcolor: '#e74c3c',
-                              color: 'white',
-                              fontSize: '10px',
-                              fontWeight: 'bold',
-                              px: 1,
-                              py: 0,
-                              borderRadius: 1,
-                              border: '2px solid white',
-                              whiteSpace: 'nowrap',
-                              minWidth: 'fit-content',
-                              textAlign: 'center'
-                            }}
-                          >
-                            LEVEL 9
-                          </Box>
-                        </Box>
-                        <Box sx={{ flex: 1 }}>
-                          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                            <Typography variant="h6" sx={{ color: 'text.primary', fontWeight: 'bold' }}>
-                              Health Recovery
-                            </Typography>
-                            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                              183/200 days
-                            </Typography>
-                          </Box>
-                          <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2 }}>
-                            Reach 200 days to restore lung function
-                          </Typography>
-                          <Box
-                            sx={{
-                              height: 8,
-                              borderRadius: 4,
-                              bgcolor: 'section.main',
-                              position: 'relative',
-                              overflow: 'hidden'
-                            }}
-                          >
-                            <Box
-                              sx={{
-                                width: `${(183 / 200) * 100}%`,
-                                height: '100%',
-                                background: 'linear-gradient(90deg, #e74c3c, #c0392b)',
-                                borderRadius: 4,
-                              }}
-                            />
-                          </Box>
-                        </Box>
-                      </Box>
-                    </Box>
-                    {/* Money Saved Achievement */}
-                    <Box sx={{ p: 3 }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-                        <Box
-                          sx={{
-                            width: 80,
-                            height: 80,
-                            borderRadius: 2,
-                            background: 'linear-gradient(135deg, #f7b733, #fc4a1a)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            position: 'relative',
-                            flexShrink: 0
-                          }}
-                        >
-                          <Box
-                            sx={{
-                              fontSize: '40px',
-                              color: 'white',
-                              filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))'
-                            }}
-                          >
-                            💰
-                          </Box>
-                          <Box
-                            sx={{
-                              position: 'absolute',
-                              bottom: -5,
-                              left: '50%',
-                              transform: 'translateX(-50%)',
-                              bgcolor: '#f7b733',
-                              color: 'white',
-                              fontSize: '10px',
-                              fontWeight: 'bold',
-                              px: 1,
-                              py: 0,
-                              borderRadius: 1,
-                              border: '2px solid white',
-                              whiteSpace: 'nowrap',
-                              minWidth: 'fit-content',
-                              textAlign: 'center'
-                            }}
-                          >
-                            LEVEL 10
-                          </Box>
-                        </Box>
-                        <Box sx={{ flex: 1 }}>
-                          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                            <Typography variant="h6" sx={{ color: 'text.primary', fontWeight: 'bold' }}>
-                              Money Saved
-                            </Typography>
-                            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                              $1000/$1000
-                            </Typography>
-                          </Box>
-                          <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2 }}>
-                            You've saved $1000 by not buying cigarettes
-                          </Typography>
-                          <Box
-                            sx={{
-                              height: 8,
-                              borderRadius: 4,
-                              bgcolor: 'section.main',
-                              position: 'relative',
-                              overflow: 'hidden'
-                            }}
-                          >
-                            <Box
-                              sx={{
-                                width: '100%',
-                                height: '100%',
-                                background: 'linear-gradient(90deg, #f7b733, #fc4a1a)',
-                                borderRadius: 4,
-                              }}
-                            />
-                          </Box>
-                        </Box>
-                      </Box>
-                    </Box>
-                  </Paper>
+  useEffect(() => {
+    const fetchAchievements = async () => {
+      try {
+        const data = await achievementsService.getAllAchievements();
+        setAchievements(data.data || []);
+      } catch (err) {
+        setError('Failed to load achievements');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAchievements();
+  }, []);
+
+  // Show only top 3 achievements
+  const topAchievements = achievements.slice(0, 3);
+
+  return (
+    <Box sx={{ mt: 5 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Typography variant="h5"
+          sx={{ fontWeight: 'bold', mb: 1, color: 'text.primary', fontSize: '32px' }}>
+          Achievements
+        </Typography>
+        <Typography
+          variant="body2"
+          component={Link}
+          to="/achievements"
+          sx={{ color: 'primary.main', fontWeight: 'medium', cursor: 'pointer', '&:hover': { textDecoration: 'underline' }, textDecoration: 'none' }}
+        >
+          VIEW ALL
+        </Typography>
+      </Box>
+      <Paper
+        elevation={0}
+        sx={{ p: 0, bgcolor: 'background.paper', borderRadius: 3, border: '1px solid', borderColor: 'divider', overflow: 'hidden' }}
+      >
+        {loading ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', p: 4 }}>
+            <CircularProgress />
+          </Box>
+        ) : error ? (
+          <Box sx={{ p: 4, textAlign: 'center', color: 'error.main' }}>{error}</Box>
+        ) : topAchievements.length === 0 ? (
+          <Box sx={{ p: 4, textAlign: 'center', color: 'text.secondary' }}>No achievements yet.</Box>
+        ) : (
+          topAchievements.map((ach, idx) => (
+            <Box key={ach.id || idx} sx={{ p: 3, borderBottom: idx !== topAchievements.length - 1 ? '1px solid' : 'none', borderColor: 'divider', display: 'flex', alignItems: 'center', gap: 3 }}>
+              <Avatar src={ach.image_url} alt={ach.name} sx={{ width: 80, height: 80, borderRadius: 2, mr: 2 }} />
+              <Box sx={{ flex: 1 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                  <Typography variant="h6" sx={{ color: 'text.primary', fontWeight: 'bold' }}>{ach.name}</Typography>
+                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>{ach.point} pts</Typography>
                 </Box>
-    );
+                <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>{ach.description}</Typography>
+                <Typography variant="caption" sx={{ color: 'text.disabled' }}>Created: {new Date(ach.created_at).toLocaleDateString()}</Typography>
+              </Box>
+            </Box>
+          ))
+        )}
+      </Paper>
+    </Box>
+  );
 };
 
 export default AchievementSection;

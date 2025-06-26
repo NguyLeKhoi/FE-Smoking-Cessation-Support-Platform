@@ -17,6 +17,9 @@ import BlogDetails from '../components/blog/BlogDetails';
 import ProfilePage from '../pages/main/ProfilePage';
 import SmokingQuizPage from '../pages/main/SmokingQuizPage';
 
+//achievements
+import AchievementsPage from '../pages/achievements/AchivementsPage';
+
 //membership
 import MembershipPlansPage from '../pages/main/MembershipPlansPage';
 
@@ -95,6 +98,14 @@ export const routes = createBrowserRouter([
       <ProtectedRoute>
         <MyBlogPage />
       </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/achievements',
+    element: (
+      <MainLayout showFooter={false} showHeader={false} >
+        <AchievementsPage />
+      </MainLayout>
     ),
   },
   {
