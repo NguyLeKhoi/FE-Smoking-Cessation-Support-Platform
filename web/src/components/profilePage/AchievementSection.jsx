@@ -56,14 +56,29 @@ const AchievementSection = () => {
         ) : (
           topAchievements.map((ach, idx) => (
             <Box key={ach.id || idx} sx={{ p: 3, borderBottom: idx !== topAchievements.length - 1 ? '1px solid' : 'none', borderColor: 'divider', display: 'flex', alignItems: 'center', gap: 3 }}>
-              <Avatar src={ach.image_url} alt={ach.name} sx={{ width: 80, height: 80, borderRadius: 2, mr: 2 }} />
+              <Avatar src={ach.image_url} alt={ach.name} sx={{ width: 60, height: 60, borderRadius: 2, mr: 2 }} />
               <Box sx={{ flex: 1 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                   <Typography variant="h6" sx={{ color: 'text.primary', fontWeight: 'bold' }}>{ach.name}</Typography>
                   <Typography variant="body2" sx={{ color: 'text.secondary' }}>{ach.point} pts</Typography>
                 </Box>
                 <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>{ach.description}</Typography>
-                <Typography variant="caption" sx={{ color: 'text.disabled' }}>Created: {new Date(ach.created_at).toLocaleDateString()}</Typography>
+                {/* <Box sx={{ height: 8, borderRadius: 4, bgcolor: '#f5f5f5', position: 'relative', overflow: 'hidden', mb: 1 }}>
+                  <Box
+                    sx={{
+                      width: ach.progress !== undefined
+                        ? `${Math.round(ach.progress * 100)}%`
+                        : ach.max_point
+                          ? `${Math.min(100, Math.round((ach.point / ach.max_point) * 100))}%`
+                          : '100%',
+                      height: '100%',
+                      background: '#ffd353',
+                      borderRadius: 4,
+                      transition: 'width 0.4s',
+                    }}
+                  />
+                </Box> */}
+                <Typography variant="caption" sx={{ color: 'text.disabled' }}>Obtained on: {new Date(ach.created_at).toLocaleDateString()}</Typography>
               </Box>
             </Box>
           ))

@@ -46,7 +46,7 @@ const AchievementsPage = () => {
                     ) : (
                         achievements.map((ach, idx) => (
                             <Box key={ach.id || idx} sx={{ p: 3, borderBottom: idx !== achievements.length - 1 ? '1px solid' : 'none', borderColor: 'divider', display: 'flex', alignItems: 'center', gap: 3 }}>
-                                <Avatar src={ach.image_url} alt={ach.name} sx={{ width: 80, height: 80, borderRadius: 2, mr: 2 }} />
+                                <Avatar src={ach.image_url} alt={ach.name} sx={{ width: 50, height: 50, borderRadius: 2, mr: 2 }} />
                                 <Box sx={{ flex: 1 }}>
                                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                                         <Typography variant="h6" sx={{ color: 'text.primary', fontWeight: 'bold' }}>{ach.name}</Typography>
