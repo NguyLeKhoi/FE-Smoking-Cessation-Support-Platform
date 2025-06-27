@@ -64,6 +64,8 @@ const AdminDashboard = () => {
     checkAdminAccess();
   }, [navigate]);
 
+  useEffect(() => { window.scrollTo({ top: 0 }); }, []);
+
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">

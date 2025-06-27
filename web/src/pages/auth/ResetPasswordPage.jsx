@@ -33,6 +33,8 @@ export default function ResetPasswordPage() {
     }
   }, [token]);
 
+  useEffect(() => { window.scrollTo({ top: 0 }); }, []);
+
   const handleChange = (e) => {
     setFormData({
       ...formData,

@@ -94,6 +94,8 @@ const Blog = () => {
         fetchPosts();
     }, [postsPerPage]);
 
+    useEffect(() => { window.scrollTo({ top: 0 }); }, []);
+
     // Handle page change
     const handlePageChange = (event, value) => {
         setPage(value);

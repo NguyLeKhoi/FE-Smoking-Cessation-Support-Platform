@@ -24,6 +24,8 @@ export default function LoginPage() {
     };
   }, []);
 
+  useEffect(() => { window.scrollTo({ top: 0 }); }, []);
+
   const handleChange = (e) => {
     setFormData({
       ...formData,

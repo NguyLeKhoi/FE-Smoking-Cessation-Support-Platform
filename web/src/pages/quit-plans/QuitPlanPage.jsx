@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Box, Typography, Paper, Grid, IconButton, CircularProgress, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Box, Typography, IconButton, CircularProgress, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EventIcon from '@mui/icons-material/Event';
 import FlagIcon from '@mui/icons-material/Flag';
@@ -39,13 +39,11 @@ const QuitPlanPage = ({ setHasActivePlan }) => {
   const [quitPlans, setQuitPlans] = useState([]);
   const [fetchingPlans, setFetchingPlans] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
-  const [error, setError] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
 
   // Khai báo plan/phases trước mọi useEffect
   const plan = Array.isArray(quitPlans) && quitPlans.length > 0 ? quitPlans[0] : null;
-  const phases = plan?.phases ? getPhaseStatus(plan.phases) : [];
 
   const randomSlogan = useMemo(() => slogans[Math.floor(Math.random() * slogans.length)], []);
 
@@ -57,13 +55,13 @@ const QuitPlanPage = ({ setHasActivePlan }) => {
     if (setHasActivePlan) setHasActivePlan(!!plan);
   }, [plan, setHasActivePlan]);
 
+  useEffect(() => { window.scrollTo({ top: 0 }); }, []);
+
   const fetchQuitPlans = async () => {
     setFetchingPlans(true);
     try {
       const response = await quitPlanService.getAllQuitPlans();
       setQuitPlans(Array.isArray(response.data?.data?.data) ? response.data.data.data : []);
-    } catch (err) {
-      setError('Failed to fetch quit plans');
     } finally {
       setFetchingPlans(false);
     }
@@ -74,8 +72,6 @@ const QuitPlanPage = ({ setHasActivePlan }) => {
     try {
       await quitPlanService.deleteQuitPlan(id);
       setQuitPlans((prev) => prev.filter((plan) => plan.id !== id));
-    } catch (err) {
-      setError('Failed to delete quit plan');
     } finally {
       setDeletingId(null);
     }

@@ -24,5 +24,7 @@ export default function LoginSuccessPage() {
     }
   }, [navigate, location]);
 
+  useEffect(() => { window.scrollTo({ top: 0 }); }, []);
+
   return <LoadingPage />;
 } 

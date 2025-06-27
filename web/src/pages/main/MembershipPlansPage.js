@@ -39,6 +39,8 @@ const MembershipPlansPage = () => {
     fetchPlans();
   }, [navigate]);
 
+  useEffect(() => { window.scrollTo({ top: 0 }); }, []);
+
   if (loading) {
     return <LoadingPage />;
   }

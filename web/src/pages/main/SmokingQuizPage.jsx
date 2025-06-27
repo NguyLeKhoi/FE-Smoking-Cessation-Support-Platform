@@ -387,6 +387,8 @@ const SmokingQuiz = () => {
         };
     }, [showForm]);
 
+    useEffect(() => { window.scrollTo({ top: 0 }); }, []);
+
     if (loading && !showForm) {
         return (
             <Box sx={{

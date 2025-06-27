@@ -34,6 +34,8 @@ export default function SignupPage() {
     };
   }, []);
 
+  useEffect(() => { window.scrollTo({ top: 0 }); }, []);
+
   const handleChange = (e) => {
     setFormData({
       ...formData,

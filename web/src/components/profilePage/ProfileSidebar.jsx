@@ -10,6 +10,7 @@ import ExploreIcon from '@mui/icons-material/Explore';
 import ArticleIcon from '@mui/icons-material/Article';
 import StorefrontIcon from '@mui/icons-material/Storefront';
 import BlockIcon from '@mui/icons-material/Block';
+import { Tooltip } from '@mui/material';
 
 
 const menuItems = [
@@ -141,35 +142,35 @@ const ProfileSidebar = ({ userData }) => {
                             key={index}
                             title={index !== 3 && index !== 2 ? "Coming soon" : ""}
                             placement="right"
-
-                        <StyledListItem
-                            component={RouterLink}
-                            to={item.path}
-                            active={activeItem === index ? 1 : 0}
-                            onClick={() => handleItemClick(index)}
-
                         >
-                            <ListItemIcon sx={{
-                                color: activeItem === index ? 'primary.main' : 'text.secondary',
-                                minWidth: 36
-                            }}>
-                                {item.hasNotification ? (
-                                    <Badge
-                                        color="error"
-                                        variant="dot"
-                                        overlap="circular"
-                                        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                                    >
-                                        {item.icon}
-                                    </Badge>
-                                ) : (
-                                    item.icon
-                                )}
-                            </ListItemIcon>
-                            <ListItemText
-                                primary={<IconText>{item.label}</IconText>}
-                            />
-                        </StyledListItem>
+                            <StyledListItem
+                                component={RouterLink}
+                                to={item.path}
+                                active={activeItem === index ? 1 : 0}
+                                onClick={() => handleItemClick(index)}
+                            >
+                                <ListItemIcon sx={{
+                                    color: activeItem === index ? 'primary.main' : 'text.secondary',
+                                    minWidth: 36
+                                }}>
+                                    {item.hasNotification ? (
+                                        <Badge
+                                            color="error"
+                                            variant="dot"
+                                            overlap="circular"
+                                            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                                        >
+                                            {item.icon}
+                                        </Badge>
+                                    ) : (
+                                        item.icon
+                                    )}
+                                </ListItemIcon>
+                                <ListItemText
+                                    primary={<IconText>{item.label}</IconText>}
+                                />
+                            </StyledListItem>
+                        </Tooltip>
                     ))}
                 </List>
             </Box>

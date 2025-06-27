@@ -49,6 +49,8 @@ export default function ProfilePage({ handleLogout }) {
     loadUserProfile();
   }, []);
 
+  useEffect(() => { window.scrollTo({ top: 0 }); }, []);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
