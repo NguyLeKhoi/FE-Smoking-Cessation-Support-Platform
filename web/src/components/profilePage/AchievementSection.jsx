@@ -61,7 +61,9 @@ const AchievementSection = () => {
         ) : error ? (
           <Box sx={{ p: 4, textAlign: 'center', color: 'error.main' }}>{error}</Box>
         ) : userAchievements.length === 0 ? (
-          <Box sx={{ p: 4, textAlign: 'center', color: 'text.secondary' }}>No achievements yet.</Box>
+          <Box sx={{ p: 4, textAlign: 'center', color: 'text.secondary', fontStyle: 'italic' }}>
+            You have not obtained any achievements yet!
+          </Box>
         ) : (
           userAchievements.map((ach, idx) => (
             <Box
