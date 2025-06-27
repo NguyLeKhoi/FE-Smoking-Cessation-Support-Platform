@@ -13,10 +13,6 @@ export default function SignupPage() {
     email: '',
     password: '',
     confirmPassword: '',
-    first_name: '',
-    last_name: '',
-    dob: '',
-    phone_number: '',
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -56,10 +52,6 @@ export default function SignupPage() {
       setError('Please enter a valid email address');
       return false;
     }
-    if (!formData.phone_number.match(/^[0-9]{10}$/)) {
-      setError('Please enter a valid 10-digit phone number');
-      return false;
-    }
     return true;
   };
 
@@ -78,10 +70,6 @@ export default function SignupPage() {
         username: formData.username,
         email: formData.email,
         password: formData.password,
-        first_name: formData.first_name,
-        last_name: formData.last_name,
-        dob: formData.dob,
-        phone_number: formData.phone_number,
       };
 
       console.log('Signup data being sent:', userData);
@@ -189,7 +177,7 @@ export default function SignupPage() {
             borderRadius: 3,
             bgcolor: 'background.paper',
             boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.05)',
-            maxWidth: 800,
+            maxWidth: 600,
             mx: 'auto',
             maxHeight: '90vh',
             overflowY: 'auto',
@@ -232,107 +220,57 @@ export default function SignupPage() {
           )}
 
           <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%', mt: 2 }}>
-            <Grid container spacing={2}>
+            <Grid container spacing={2} justifyContent="center">
               <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="First Name"
-                  name="first_name"
-                  value={formData.first_name}
-                  onChange={handleChange}
-                  required
-                  autoComplete="given-name"
-                  sx={textFieldStyle}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Last Name"
-                  name="last_name"
-                  value={formData.last_name}
-                  onChange={handleChange}
-                  required
-                  autoComplete="family-name"
-                  sx={textFieldStyle}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Username"
-                  name="username"
-                  value={formData.username}
-                  onChange={handleChange}
-                  required
-                  autoComplete="username"
-                  sx={textFieldStyle}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Email"
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  autoComplete="email"
-                  sx={textFieldStyle}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Phone Number"
-                  name="phone_number"
-                  value={formData.phone_number}
-                  onChange={handleChange}
-                  required
-                  autoComplete="tel"
-                  placeholder="1234567890"
-                  sx={textFieldStyle}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Birth Date"
-                  name="dob"
-                  type="date"
-                  value={formData.dob}
-                  onChange={handleChange}
-                  required
-                  InputLabelProps={{ shrink: true }}
-                  sx={textFieldStyle}
-                />
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <TextField
+                    fullWidth
+                    label="Username"
+                    name="username"
+                    value={formData.username}
+                    onChange={handleChange}
+                    required
+                    autoComplete="username"
+                    sx={textFieldStyle}
+                  />
+                  <TextField
+                    fullWidth
+                    label="Password"
+                    name="password"
+                    type="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                    autoComplete="new-password"
+                    sx={textFieldStyle}
+                  />
+                </Box>
               </Grid>
               <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Password"
-                  name="password"
-                  type="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                  autoComplete="new-password"
-                  sx={textFieldStyle}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Confirm Password"
-                  name="confirmPassword"
-                  type="password"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  required
-                  autoComplete="new-password"
-                  sx={textFieldStyle}
-                />
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <TextField
+                    fullWidth
+                    label="Email"
+                    name="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                    autoComplete="email"
+                    sx={textFieldStyle}
+                  />
+                  <TextField
+                    fullWidth
+                    label="Confirm Password"
+                    name="confirmPassword"
+                    type="password"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    required
+                    autoComplete="new-password"
+                    sx={textFieldStyle}
+                  />
+                </Box>
               </Grid>
             </Grid>
 
