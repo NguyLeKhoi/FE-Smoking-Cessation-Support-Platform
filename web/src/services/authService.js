@@ -1,4 +1,5 @@
 import api from './api';
+import { getUserById } from './userService';
 
 export const login = async (credentials) => {
   try {
@@ -7,6 +8,22 @@ export const login = async (credentials) => {
     localStorage.setItem('accessToken', accessToken);
     if (refreshToken) {
       localStorage.setItem('refreshToken', refreshToken);
+    }
+    // Fetch user info after login and store userId
+    let userId = null;
+    try {
+      // Decode JWT to get userId if available, otherwise fetch from /users/me or /users/{id}
+      // Here, we assume you have a way to get the userId, e.g., from /users/me or /users/{id}
+      // If you have a /users/me endpoint, you can use it here instead of getUserById
+      // For now, let's assume you have to fetch it from /users/me
+      const userInfo = await api.get('/users/me');
+      userId = userInfo.data?.id;
+      if (userId) {
+        localStorage.setItem('userId', userId);
+      }
+    } catch (e) {
+      // fallback or log error
+      console.error('Failed to fetch user info after login:', e);
     }
     return response.data.data;
   } catch (error) {
@@ -33,7 +50,7 @@ export const refreshToken = async () => {
   try {
     const refreshToken = localStorage.getItem('refreshToken');
     if (!refreshToken) throw new Error('No refresh token available');
-    
+
     const response = await api.post('/auth/refresh', { refreshToken });
     const { accessToken } = response.data.data;
     localStorage.setItem('accessToken', accessToken);
