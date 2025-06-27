@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Typography, List, ListItem, ListItemIcon, ListItemText, Badge, Paper} from '@mui/material';
+import { Box, Typography, List, ListItem, ListItemIcon, ListItemText, Badge, Paper } from '@mui/material';
 import { styled } from '@mui/system';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Link as RouterLink } from 'react-router-dom';
@@ -10,7 +10,6 @@ import ExploreIcon from '@mui/icons-material/Explore';
 import ArticleIcon from '@mui/icons-material/Article';
 import StorefrontIcon from '@mui/icons-material/Storefront';
 import BlockIcon from '@mui/icons-material/Block';
-import { Tooltip } from '@mui/material';
 
 
 const menuItems = [
@@ -137,40 +136,34 @@ const ProfileSidebar = ({ userData }) => {
 
                 <List sx={{ display: 'flex', flexDirection: 'column', width: '100%', p: 0 }}>
                     {menuItems.map((item, index) => (
-
-                        <Tooltip
-                            key={index}
-                            title={index !== 3 && index !== 2 ? "Coming soon" : ""}
-                            placement="right"
+                        <StyledListItem
+                            key={item.label}
+                            component={RouterLink}
+                            to={item.path}
+                            active={activeItem === index ? 1 : 0}
+                            onClick={() => handleItemClick(index)}
                         >
-                            <StyledListItem
-                                component={RouterLink}
-                                to={item.path}
-                                active={activeItem === index ? 1 : 0}
-                                onClick={() => handleItemClick(index)}
-                            >
-                                <ListItemIcon sx={{
-                                    color: activeItem === index ? 'primary.main' : 'text.secondary',
-                                    minWidth: 36
-                                }}>
-                                    {item.hasNotification ? (
-                                        <Badge
-                                            color="error"
-                                            variant="dot"
-                                            overlap="circular"
-                                            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                                        >
-                                            {item.icon}
-                                        </Badge>
-                                    ) : (
-                                        item.icon
-                                    )}
-                                </ListItemIcon>
-                                <ListItemText
-                                    primary={<IconText>{item.label}</IconText>}
-                                />
-                            </StyledListItem>
-                        </Tooltip>
+                            <ListItemIcon sx={{
+                                color: activeItem === index ? 'primary.main' : 'text.secondary',
+                                minWidth: 36
+                            }}>
+                                {item.hasNotification ? (
+                                    <Badge
+                                        color="error"
+                                        variant="dot"
+                                        overlap="circular"
+                                        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                                    >
+                                        {item.icon}
+                                    </Badge>
+                                ) : (
+                                    item.icon
+                                )}
+                            </ListItemIcon>
+                            <ListItemText
+                                primary={<IconText>{item.label}</IconText>}
+                            />
+                        </StyledListItem>
                     ))}
                 </List>
             </Box>
