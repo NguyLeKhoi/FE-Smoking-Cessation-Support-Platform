@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Box, Typography, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
@@ -8,6 +8,8 @@ const NotFoundPage = () => {
   const handleGoHome = () => {
     navigate('/');
   };
+
+  useEffect(() => { window.scrollTo({ top: 0 }); }, []);
 
   return (
     <Box

@@ -166,7 +166,7 @@ export const routes = createBrowserRouter([
   {
     path: '/membership-plans',
     element: (
-      <MainLayout showFooter={false}>
+      <MainLayout>
         <MembershipPlansPage />
       </MainLayout>
     ),

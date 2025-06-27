@@ -82,6 +82,8 @@ const MyBlogPage = () => {
         loadData();
     }, [currentPage]);
 
+    useEffect(() => { window.scrollTo({ top: 0 }); }, []);
+
     // Calculate pagination values
     const totalPages = Math.ceil(userPosts.length / postsPerPage);
     const indexOfLastPost = currentPage * postsPerPage;

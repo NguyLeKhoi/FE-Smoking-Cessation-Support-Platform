@@ -1,22 +1,22 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useLocation, useParams, Link } from 'react-router-dom';
-import { Box, Typography, Paper, Button, Grid, CircularProgress } from '@mui/material';
+import { Box, Typography, Paper, Button, Grid} from '@mui/material';
 import EventIcon from '@mui/icons-material/Event';
 import FlagIcon from '@mui/icons-material/Flag';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
 import BlockIcon from '@mui/icons-material/Block';
 import SmokingRoomsIcon from '@mui/icons-material/SmokingRooms';
-import ErrorIcon from '@mui/icons-material/Error';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import ErrorIcon from '@mui/icons-material/Error';
 import quitPlanService from '../../services/quitPlanService';
-import Modal from '@mui/material/Modal';
 import AddDailyRecordModal from '../../components/quit-plans/AddDailyRecordModal';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import LoadingPage from '../LoadingPage';
+import toast from 'react-hot-toast';
 
 const getPhaseStatus = (phases) => {
   if (!Array.isArray(phases)) return [];
@@ -46,10 +46,6 @@ const QuitPlanResultPage = () => {
   const result = location.state?.result;
   const [openRecordModal, setOpenRecordModal] = useState(false);
   const [recordPhase, setRecordPhase] = useState(null);
-  const [planRecords, setPlanRecords] = useState([]);
-  const [loadingRecords, setLoadingRecords] = useState(false);
-  const [errorRecords, setErrorRecords] = useState('');
-  const [addRecordError, setAddRecordError] = useState('');
 
   const displayData = id
     ? plan
@@ -60,18 +56,11 @@ const QuitPlanResultPage = () => {
   useEffect(() => {
     if (id) {
       fetchPlanById(id);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }, [id]);
 
-  useEffect(() => {
-    if (planObj?.id) {
-      setLoadingRecords(true);
-      quitPlanService.getPlanRecords(planObj.id)
-        .then(res => setPlanRecords(Array.isArray(res.data) ? res.data : res.data?.data || []))
-        .catch(() => setErrorRecords('Failed to fetch plan records'))
-        .finally(() => setLoadingRecords(false));
-    }
-  }, [planObj?.id]);
+  useEffect(() => { window.scrollTo({ top: 0 }); }, []);
 
   const fetchPlanById = async (planId) => {
     setLoading(true);
@@ -97,7 +86,6 @@ const QuitPlanResultPage = () => {
   };
 
   const handleAddDailyRecord = async (data) => {
-    setAddRecordError('');
     if (!planObj?.id || !recordPhase?.id) return;
     console.log('Submitting daily record:', { ...data, phase_id: recordPhase.id });
     try {
@@ -106,25 +94,24 @@ const QuitPlanResultPage = () => {
         phase_id: recordPhase.id,
       });
       console.log('Create record response:', res);
-      // Reload records
-      setLoadingRecords(true);
-      const reloadRes = await quitPlanService.getPlanRecords(planObj.id);
-      setPlanRecords(Array.isArray(reloadRes.data) ? reloadRes.data : reloadRes.data?.data || []);
       setOpenRecordModal(false);
       setRecordPhase(null);
+      toast.success('Add daily record successfully!', {
+        position: 'top-center',
+        style: { marginTop: '70px' }
+      });
     } catch (err) {
       console.error('Error adding record:', err, err?.response);
-      setAddRecordError('Failed to add record. Please try again.');
-    } finally {
-      setLoadingRecords(false);
     }
   };
 
-  // Tính toán dữ liệu cho vòng tròn progress dựa vào phase
-  const totalPhases = phases.length;
-  const completedPhases = phases.filter(phase => String(phase.status).toLowerCase() === 'completed').length;
-  const percent = totalPhases > 0 ? Math.round((completedPhases / totalPhases) * 100) : 0;
-  const latestRecord = planRecords.length > 0 ? planRecords[planRecords.length - 1] : null;
+  // Use new progress and statistics fields from API
+  const planProgress = planObj?.progress || {};
+  const planStatistics = planObj?.statistics || {};
+  // Use new progress percentage and completed/total phases
+  const totalPhases = planProgress.totalPhases ?? phases.length;
+  const completedPhases = planProgress.completedPhases ?? phases.filter(phase => String(phase.status).toLowerCase() === 'completed').length;
+  const percent = planProgress.progressPercentage ?? (totalPhases > 0 ? Math.round((completedPhases / totalPhases) * 100) : 0);
 
   if (loading) {
     return <LoadingPage />;
@@ -151,40 +138,32 @@ const QuitPlanResultPage = () => {
             <Typography variant="subtitle1" color="text.secondary">Phases completed</Typography>
           </Box>
         </Box>
-        <Grid container spacing={2} justifyContent="center" sx={{ maxWidth: 800 }}>
-          <Grid item xs={6} sm={3}>
+        {/* Plan-level statistics */}
+        <Grid container spacing={2} justifyContent="center" sx={{ maxWidth: 800, mb: 2 }}>
+          <Grid item xs={12} sm={4}>
             <Paper sx={{ p: 2, borderRadius: 3, textAlign: 'center', boxShadow: 2 }}>
-              <Typography variant="subtitle2" color="text.secondary">Cigarettes</Typography>
-              <Box display="flex" alignItems="center" justifyContent="center" gap={1} mt={1}>
-                <SmokingRoomsIcon color="primary" />
-                <Typography sx={{ fontSize: '1.5rem', fontWeight: 800 }}>{latestRecord ? latestRecord.cigarette_smoke : '-'}</Typography>
-              </Box>
-            </Paper>
-          </Grid>
-          <Grid item xs={6} sm={3}>
-            <Paper sx={{ p: 2, borderRadius: 3, textAlign: 'center', boxShadow: 2 }}>
-              <Typography variant="subtitle2" color="text.secondary">Craving level</Typography>
-              <Box display="flex" alignItems="center" justifyContent="center" gap={1} mt={1}>
-                <FavoriteIcon color="error" />
-                <Typography sx={{ fontSize: '1.5rem', fontWeight: 800 }}>{latestRecord ? latestRecord.craving_level : '-'}</Typography>
-              </Box>
-            </Paper>
-          </Grid>
-          <Grid item xs={6} sm={3}>
-            <Paper sx={{ p: 2, borderRadius: 3, textAlign: 'center', boxShadow: 2 }}>
-              <Typography variant="subtitle2" color="text.secondary">Health</Typography>
-              <Box display="flex" alignItems="center" justifyContent="center" gap={1} mt={1}>
-                <LocalHospitalIcon color="action" />
-                <Typography sx={{ fontSize: '1.5rem', fontWeight: 800 }}>{latestRecord ? latestRecord.health_status : '-'}</Typography>
-              </Box>
-            </Paper>
-          </Grid>
-          <Grid item xs={6} sm={3}>
-            <Paper sx={{ p: 2, borderRadius: 3, textAlign: 'center', boxShadow: 2 }}>
-              <Typography variant="subtitle2" color="text.secondary">Money saved</Typography>
+              <Typography variant="subtitle2" color="text.secondary">Money Saved</Typography>
               <Box display="flex" alignItems="center" justifyContent="center" gap={1} mt={1}>
                 <AttachMoneyIcon color="success" />
-                <Typography sx={{ fontSize: '1.5rem', fontWeight: 800 }}>{latestRecord ? latestRecord.money_saved : '-'}</Typography>
+                <Typography sx={{ fontSize: '1.5rem', fontWeight: 800 }}>{planStatistics.totalMoneySaved ?? '-'}</Typography>
+              </Box>
+            </Paper>
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <Paper sx={{ p: 2, borderRadius: 3, textAlign: 'center', boxShadow: 2 }}>
+              <Typography variant="subtitle2" color="text.secondary">Days Recorded</Typography>
+              <Box display="flex" alignItems="center" justifyContent="center" gap={1} mt={1}>
+                <EventIcon color="primary" />
+                <Typography sx={{ fontSize: '1.5rem', fontWeight: 800 }}>{planStatistics.totalDaysRecorded ?? '-'}</Typography>
+              </Box>
+            </Paper>
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <Paper sx={{ p: 2, borderRadius: 3, textAlign: 'center', boxShadow: 2 }}>
+              <Typography variant="subtitle2" color="text.secondary">Avg. Cigarettes/Day</Typography>
+              <Box display="flex" alignItems="center" justifyContent="center" gap={1} mt={1}>
+                <SmokingRoomsIcon color="primary" />
+                <Typography sx={{ fontSize: '1.5rem', fontWeight: 800 }}>{planStatistics.averageCigarettesPerDay ?? '-'}</Typography>
               </Box>
             </Paper>
           </Grid>
@@ -217,9 +196,9 @@ const QuitPlanResultPage = () => {
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'flex-start',
-                  mr: { md: 2 },
                   alignItems: 'center',
                   textAlign: 'center',
+                  fontSize: '1rem',
                 }}
               >
                 <Typography variant="h5" fontWeight={700} mb={2} align="center"><FlagIcon sx={{ mr: 1, verticalAlign: 'middle' }} />Plan Overview</Typography>
@@ -266,8 +245,8 @@ const QuitPlanResultPage = () => {
                     <Paper
                       key={phase.id || idx}
                       sx={{
-                        minWidth: 320,
-                        maxWidth: 380,
+                        minWidth: 480,
+                        maxWidth: 600,
                         p: 3,
                         borderRadius: 4,
                         bgcolor: '#fff',
@@ -287,54 +266,88 @@ const QuitPlanResultPage = () => {
                         },
                       }}
                     >
-                      <Box display="flex" alignItems="center" mb={1}>
-                        {phase.status === 'COMPLETED' && <CheckCircleIcon color="success" sx={{ mr: 1 }} />}
-                        {phase.status === 'ACTIVE' && <FlagIcon color="primary" sx={{ mr: 1 }} />}
-                        {phase.status === 'PENDING' && <HourglassEmptyIcon color="warning" sx={{ mr: 1 }} />}
-                        {phase.status === 'LOCKED' && <BlockIcon color="disabled" sx={{ mr: 1 }} />}
-                        <Typography variant="h6" fontWeight={700}>Phase {phase.phase_number}</Typography>
-                      </Box>
+                      <Typography variant="h6" fontWeight={700} mb={1}>Phase {phase.phase_number}</Typography>
+                      {/* Limit per day: show as a single row, centered */}
                       <Box
                         sx={{
-                          bgcolor: '#fff3e0',
+                          bgcolor: '#ffe0b2',
                           color: '#d84315',
                           borderRadius: 2,
                           px: 2,
-                          py: 1,
-                          mb: 1.5,
-                          display: 'inline-flex',
+                          py: 2,
+                          mb: 3,
+                          display: 'flex',
                           alignItems: 'center',
-                          fontWeight: 700,
-                          fontSize: '1.1rem',
+                          fontWeight: 900,
+                          fontSize: '1.2rem',
+                          justifyContent: 'center',
+                          boxShadow: 1,
+                          width: '100%',
                         }}
                       >
-                        <SmokingRoomsIcon sx={{ mr: 1 }} />
-                        Limit per day: {phase.limit_cigarettes_per_day}
+                        <SmokingRoomsIcon sx={{ mr: 1, fontSize: 28 }} />
+                        <span style={{fontWeight: 900}}>Limit per day: {phase.limit_cigarettes_per_day}</span>
                       </Box>
-                      <Typography variant="body1"><EventIcon sx={{ mr: 1, fontSize: 18, verticalAlign: 'middle' }} />Start: {phase.start_date ? new Date(phase.start_date).toLocaleDateString() : '-'}</Typography>
-                      <Typography variant="body1"><EventIcon sx={{ mr: 1, fontSize: 18, verticalAlign: 'middle' }} />End: {phase.expected_end_date ? new Date(phase.expected_end_date).toLocaleDateString() : '-'}</Typography>
-                      <Typography variant="body1"><HourglassEmptyIcon sx={{ mr: 1, fontSize: 18, verticalAlign: 'middle' }} />Status: {phase.status}</Typography>
-                      <Typography variant="body1"><FlagIcon sx={{ mr: 1, fontSize: 18, verticalAlign: 'middle' }} />Duration: {phase.duration} days</Typography>
-                      <Button
-                        variant="outlined"
-                        size="small"
-                        sx={{ mt: 2 }}
-                        component={Link}
-                        to={`/quit-plan/${planObj.id}/phase/${phase.id}`}
-                        disabled={String(phase.status).toUpperCase() === 'PENDING'}
-                      >
-                        View records
-                      </Button>
-                      {phase.status === 'ACTIVE' && (
+                      <Box display="flex" flexDirection="row" gap={2} alignItems="flex-start">
+                        {/* Left column: basic info */}
+                        <Box flex={1} minWidth={0}>
+                          <Typography variant="body2" display="flex" alignItems="center" mb={0.5} fontWeight={700}><EventIcon sx={{ mr: 1, fontSize: 18, verticalAlign: 'middle' }} /> Start:&nbsp;<span style={{fontWeight:400}}>{phase.start_date ? new Date(phase.start_date).toLocaleDateString() : '-'}</span></Typography>
+                          <Typography variant="body2" display="flex" alignItems="center" mb={0.5} fontWeight={700}><EventIcon sx={{ mr: 1, fontSize: 18, verticalAlign: 'middle' }} /> End:&nbsp;<span style={{fontWeight:400}}>{phase.expected_end_date ? new Date(phase.expected_end_date).toLocaleDateString() : '-'}</span></Typography>
+                          <Typography variant="body2" display="flex" alignItems="center" mb={0.5} fontWeight={700}><HourglassEmptyIcon sx={{ mr: 1, fontSize: 18, verticalAlign: 'middle' }} /> Status:&nbsp;<span style={{fontWeight:400}}>{phase.status}</span></Typography>
+                          <Typography variant="body2" display="flex" alignItems="center" fontWeight={700}><FlagIcon sx={{ mr: 1, fontSize: 18, verticalAlign: 'middle' }} /> Duration:&nbsp;<span style={{fontWeight:400}}>{phase.duration} days</span></Typography>
+                        </Box>
+                        {/* Right column: statistics */}
+                        <Box flex={1} minWidth={0}>
+                          {phase.statistics && (
+                            <Box>
+                              <Typography variant="body2" display="flex" alignItems="center" mb={0.5} fontWeight={700}>
+                                <CheckCircleIcon sx={{ mr: 1, fontSize: 16, color: '#43a047' }} />
+                                Recorded: <span style={{marginLeft: 4, fontWeight:400}}>{phase.statistics.recordedDays}</span>
+                                <span style={{margin: '0 8px'}}>/</span>
+                                <BlockIcon sx={{ mr: 1, fontSize: 16, color: '#e53935' }} />
+                                Missed: <span style={{marginLeft: 4, fontWeight:400}}>{phase.statistics.missedDays}</span>
+                              </Typography>
+                              <Typography variant="body2" display="flex" alignItems="center" mb={0.5} fontWeight={700}>
+                                <FavoriteIcon sx={{ mr: 1, fontSize: 16, color: '#1976d2' }} />
+                                Passed: <span style={{marginLeft: 4, fontWeight:400}}>{phase.statistics.passedDays}</span>
+                                <span style={{margin: '0 8px'}}>/</span>
+                                <ErrorIcon sx={{ mr: 1, fontSize: 16, color: '#e53935' }} />
+                                Failed: <span style={{marginLeft: 4, fontWeight:400}}>{phase.statistics.failedDays}</span>
+                              </Typography>
+                              <Typography variant="body2" display="flex" alignItems="center" fontWeight={700}>
+                                <EventIcon sx={{ mr: 1, fontSize: 16 }} /> Expected Days: <span style={{marginLeft: 4, fontWeight:400}}>{phase.statistics.totalExpectedDays}</span>
+                              </Typography>
+                              <Typography variant="body2" display="flex" alignItems="center" fontWeight={700}>
+                                <HourglassEmptyIcon sx={{ mr: 1, fontSize: 16, color: '#ff9800' }} /> Failure Rate: <span style={{marginLeft: 4, fontWeight:400}}>{phase.statistics.failureRate}%</span>
+                              </Typography>
+                            </Box>
+                          )}
+                        </Box>
+                      </Box>
+                      {/* Buttons: View records & Add daily record side by side */}
+                      <Box display="flex" flexDirection="row" justifyContent="center" alignItems="center" gap={2} mt={2}>
                         <Button
-                          variant="contained"
-                          color="primary"
-                          sx={{ mt: 2 }}
-                          onClick={() => handleOpenRecordModal(phase)}
+                          variant="outlined"
+                          size="small"
+                          sx={{ flex: 1, minWidth: 150 }}
+                          component={Link}
+                          to={`/quit-plan/${planObj.id}/phase/${phase.id}`}
+                          disabled={String(phase.status).toUpperCase() === 'PENDING'}
                         >
-                          Add daily record
+                          View records
                         </Button>
-                      )}
+                        {/* Add daily record button for ACTIVE phase */}
+                        {String(phase.status).toUpperCase() === 'ACTIVE' || String(phase.status).toUpperCase() === 'IN-PROGRESS' ? (
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            sx={{ flex: 1, minWidth: 150 }}
+                            onClick={() => handleOpenRecordModal(phase)}
+                          >
+                            Add daily record
+                          </Button>
+                        ) : null}
+                      </Box>
                     </Paper>
                   ))}
                 </PhaseScrollBox>
@@ -350,11 +363,6 @@ const QuitPlanResultPage = () => {
         onClose={handleCloseRecordModal}
         onSubmit={handleAddDailyRecord}
       />
-      {addRecordError && (
-        <Box mt={2} textAlign="center">
-          <Typography color="error">{addRecordError}</Typography>
-        </Box>
-      )}
     </Box>
   );
 };

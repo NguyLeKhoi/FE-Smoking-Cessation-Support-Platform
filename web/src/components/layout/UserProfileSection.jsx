@@ -26,19 +26,24 @@ const UserProfileSection = ({ authStatus, loadingMotivation, notifications, setN
 
     useEffect(() => {
         if (authStatus) {
+            const cachedUser = sessionStorage.getItem('userData');
+            if (cachedUser) {
+                setUserData(JSON.parse(cachedUser));
+                setLoading(false);
+                return;
+            }
             const fetchUserData = async () => {
                 try {
                     setLoading(true);
                     const response = await fetchCurrentUser();
-                    console.log('User data in header:', response.data);
                     setUserData(response.data);
+                    sessionStorage.setItem('userData', JSON.stringify(response.data));
                 } catch (error) {
                     console.error('Error fetching user data for header:', error);
                 } finally {
                     setLoading(false);
                 }
             };
-
             fetchUserData();
         }
     }, [authStatus]);

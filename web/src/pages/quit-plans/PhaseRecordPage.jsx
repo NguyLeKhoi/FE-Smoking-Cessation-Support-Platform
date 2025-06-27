@@ -1,9 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Box, Typography, Paper, Button, CircularProgress, Modal, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
+import { Box, Typography, Paper, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import quitPlanService from '../../services/quitPlanService';
-import DailyRecordForm from './QuitPlanDetailPage';
 import EventIcon from '@mui/icons-material/Event';
 import SmokingRoomsIcon from '@mui/icons-material/SmokingRooms';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -27,6 +25,7 @@ function PhaseRecordPage() {
 
   useEffect(() => {
     fetchRecords();
+    window.scrollTo({ top: 0 });
     // eslint-disable-next-line
   }, [planId, phaseId]);
 
