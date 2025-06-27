@@ -81,6 +81,9 @@ const AchievementSection = () => {
               <Box sx={{ flex: 1 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                   <Typography variant="h6" sx={{ color: 'text.primary', fontWeight: 'bold' }}>{ach.name}</Typography>
+                  {ach.point && (
+                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>{ach.point} pts</Typography>
+                  )}
                 </Box>
                 <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>{ach.description}</Typography>
                 <Typography variant="caption" sx={{ color: 'text.disabled' }}>{ach.earned_date ? `Obtained: ${new Date(ach.earned_date).toLocaleDateString()}` : ''}</Typography>
