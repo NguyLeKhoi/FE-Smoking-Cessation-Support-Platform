@@ -137,6 +137,7 @@ const ProfileSidebar = ({ userData }) => {
                 <List sx={{ display: 'flex', flexDirection: 'column', width: '100%', p: 0 }}>
                     {menuItems.map((item, index) => (
                         <StyledListItem
+                            key={item.label}
                             component={RouterLink}
                             to={item.path}
                             active={activeItem === index ? 1 : 0}

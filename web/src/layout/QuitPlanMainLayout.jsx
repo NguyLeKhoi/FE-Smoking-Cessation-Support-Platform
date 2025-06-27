@@ -5,7 +5,7 @@ import { Box, IconButton, Modal, Paper, Typography, TextField, Button } from '@m
 import AddIcon from '@mui/icons-material/Add';
 import { isAuthenticated, logout } from '../services/authService';
 import { Toaster } from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import quitPlanService from '../services/quitPlanService';
 import Tooltip from '@mui/material/Tooltip';
 
@@ -51,91 +51,93 @@ export default function QuitPlanMainLayout({ children, showHeader = true, showFo
   };
 
   return (
-    <Box sx={{ position: 'relative', display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      <Toaster />
-      {showHeader && (
-        <Box style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100%',
-          zIndex: 1100,
-          backgroundColor: 'background.paper',
-          backdropFilter: 'blur(5px)',
-          WebkitBackdropFilter: 'blur(5px)',
-        }}>
-          <Header authStatus={authStatus} onLogout={handleLogout} />
-        </Box>
-      )}
-      <Box component="main" sx={{ flexGrow: 1, paddingTop: showHeader ? '64px' : 0 }}>
-        {React.Children.map(children, (child) =>
-          React.isValidElement(child)
-            ? React.cloneElement(child, { setHasActivePlan })
-            : child
+    <>
+      <Box sx={{ position: 'relative', display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+        <Toaster />
+        {showHeader && (
+          <Box style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            zIndex: 1100,
+            backgroundColor: 'background.paper',
+            backdropFilter: 'blur(5px)',
+            WebkitBackdropFilter: 'blur(5px)',
+          }}>
+            <Header authStatus={authStatus} onLogout={handleLogout} />
+          </Box>
         )}
+        <Box component="main" sx={{ flexGrow: 1, paddingTop: showHeader ? '64px' : 0 }}>
+          {React.Children.map(children, (child) =>
+            React.isValidElement(child)
+              ? React.cloneElement(child, { setHasActivePlan })
+              : child
+          )}
+        </Box>
+        {/* Create Quit Plan Button */}
+        <Tooltip title={hasActivePlan ? 'You already have an active plan' : 'Create new quit plan'}>
+          <span>
+            <IconButton
+              aria-label="create quit plan"
+              onClick={handleOpenModal}
+              disabled={!!hasActivePlan}
+              sx={{
+                position: 'fixed',
+                bottom: 20,
+                right: 20,
+                zIndex: 1200,
+                bgcolor: '#3f332b',
+                color: 'white',
+                '&:hover': { bgcolor: '#5f5349' },
+                boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
+                width: 56,
+                height: 56,
+                opacity: hasActivePlan ? 0.5 : 1,
+                pointerEvents: hasActivePlan ? 'none' : 'auto',
+              }}
+            >
+              <AddIcon fontSize="large" />
+            </IconButton>
+          </span>
+        </Tooltip>
+        {/* Modal for creating a new quit plan */}
+        <Modal
+          open={modalOpen}
+          onClose={handleCloseModal}
+          aria-labelledby="create-quit-plan-modal"
+          sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+        >
+          <Paper sx={{ p: 4, maxWidth: 400, width: '100%' }}>
+            <Typography id="create-quit-plan-modal" variant="h6" fontWeight={700} mb={2}>
+              Create New Quit Plan
+            </Typography>
+            <form onSubmit={handleCreatePlan}>
+              <TextField
+                label="Reason"
+                value={reason}
+                onChange={e => setReason(e.target.value)}
+                fullWidth
+                required
+                margin="normal"
+              />
+              <TextField
+                label="Plan Type"
+                value={planType}
+                onChange={e => setPlanType(e.target.value)}
+                fullWidth
+                required
+                margin="normal"
+              />
+              <Button type="submit" variant="contained" color="primary" disabled={loading} sx={{ mt: 2, width: '100%' }}>
+                {loading ? 'Creating...' : 'Create Quit Plan'}
+              </Button>
+            </form>
+            {error && <Typography color="error" mt={2}>{error}</Typography>}
+          </Paper>
+        </Modal>
+        {showFooter && <Footer />}
       </Box>
-      {/* Create Quit Plan Button */}
-      <Tooltip title={hasActivePlan ? 'You already have an active plan' : 'Create new quit plan'}>
-        <span>
-          <IconButton
-            aria-label="create quit plan"
-            onClick={handleOpenModal}
-            disabled={!!hasActivePlan}
-            sx={{
-              position: 'fixed',
-              bottom: 20,
-              right: 20,
-              zIndex: 1200,
-              bgcolor: '#3f332b',
-              color: 'white',
-              '&:hover': { bgcolor: '#5f5349' },
-              boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
-              width: 56,
-              height: 56,
-              opacity: hasActivePlan ? 0.5 : 1,
-              pointerEvents: hasActivePlan ? 'none' : 'auto',
-            }}
-          >
-            <AddIcon fontSize="large" />
-          </IconButton>
-        </span>
-      </Tooltip>
-      {/* Modal for creating a new quit plan */}
-      <Modal
-        open={modalOpen}
-        onClose={handleCloseModal}
-        aria-labelledby="create-quit-plan-modal"
-        sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-      >
-        <Paper sx={{ p: 4, maxWidth: 400, width: '100%' }}>
-          <Typography id="create-quit-plan-modal" variant="h6" fontWeight={700} mb={2}>
-            Create New Quit Plan
-          </Typography>
-          <form onSubmit={handleCreatePlan}>
-            <TextField
-              label="Reason"
-              value={reason}
-              onChange={e => setReason(e.target.value)}
-              fullWidth
-              required
-              margin="normal"
-            />
-            <TextField
-              label="Plan Type"
-              value={planType}
-              onChange={e => setPlanType(e.target.value)}
-              fullWidth
-              required
-              margin="normal"
-            />
-            <Button type="submit" variant="contained" color="primary" disabled={loading} sx={{ mt: 2, width: '100%' }}>
-              {loading ? 'Creating...' : 'Create Quit Plan'}
-            </Button>
-          </form>
-          {error && <Typography color="error" mt={2}>{error}</Typography>}
-        </Paper>
-      </Modal>
-      {showFooter && <Footer />}
-    </Box>
+    </>
   );
 } 

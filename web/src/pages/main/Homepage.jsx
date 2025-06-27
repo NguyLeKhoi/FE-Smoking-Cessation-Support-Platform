@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Container, Box, Typography, Grid, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import Lottie from 'lottie-react';
@@ -8,6 +8,8 @@ import FeatureSection from '../../components/homePage/FeatureSection';
 
 export default function HomePage() {
   const navigate = useNavigate();
+
+  useEffect(() => { window.scrollTo({ top: 0 }); }, []);
 
   return (
     <Box sx={{ bgcolor: 'background.paper' }}>

@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, List, ListItem, ListItemText, ListItemIcon } from '@mui/material';
+import { Box, Typography, List, ListItem, ListItemText, ListItemIcon, Button } from '@mui/material';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 // Fix the import paths
 import membershipService from '../../services/membershipService';
 import LoadingPage from '../LoadingPage';
 import { useNavigate } from 'react-router-dom';
 import { isAuthenticated } from '../../services/authService';
+import subscriptionService from '../../services/subscriptionService';
 
 const MembershipPlansPage = () => {
   const [plans, setPlans] = useState([]);
@@ -39,6 +40,19 @@ const MembershipPlansPage = () => {
     fetchPlans();
   }, [navigate]);
 
+  useEffect(() => { window.scrollTo({ top: 0 }); }, []);
+
+  const handleChoosePlan = async (planId) => {
+    try {
+      const res = await subscriptionService.createPayment({ plan_id: planId });
+      if (res.data && res.data.checkoutUrl) {
+        window.location.href = res.data.checkoutUrl;
+      }
+    } catch (err) {
+      alert('Could not create payment link. Please try again.');
+    }
+  };
+
   if (loading) {
     return <LoadingPage />;
   }
@@ -51,10 +65,11 @@ const MembershipPlansPage = () => {
     <Box
       sx={{
         display: 'flex',
+        flexWrap: 'wrap',
         justifyContent: 'center',
         alignItems: 'center',
-        minHeight: 'calc(100vh - 64px)', // Adjust based on header height
-        backgroundColor: '#f0f2f5',
+        minHeight: 'calc(100vh - 64px)',
+        backgroundColor: '#fff',
         padding: 4,
         gap: 4,
       }}
@@ -63,93 +78,69 @@ const MembershipPlansPage = () => {
         <Box
           key={plan.id}
           sx={{
-            width: 300,
-            minHeight: 500,
-            borderRadius: '20px',
-            boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.1)',
-            backgroundColor: 'white',
-            position: 'relative',
-            overflow: 'hidden',
+            width: 400,
+            minHeight: 480,
+            borderRadius: 4,
+            boxShadow: '0 2px 16px 0 rgba(0,0,0,0.06)',
+            backgroundColor: 'background.paper',
+            border: '2px solid #e0e0e0',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            paddingTop: 8, // Space for the top gradient part
-            paddingBottom: 4,
-            transition: 'transform 0.3s ease-in-out',
+            p: 4,
+            transition: 'transform 0.2s cubic-bezier(.4,2,.6,1), box-shadow 0.2s',
             '&:hover': {
-              transform: 'translateY(-10px)',
+              transform: 'translateY(-6px) scale(1.03)',
+              boxShadow: 12,
             },
           }}
         >
-          {/* Gradient background part */}
+          <Typography variant="h5" fontWeight={800} mb={2} color="text.primary">
+            {plan.name}
+          </Typography>
+          <List sx={{ width: '100%', mb: 2 }}>
+            {plan.features.map((feature, featureIndex) => (
+              <ListItem key={featureIndex} sx={{ py: 0.5 }}>
+                <ListItemIcon sx={{ minWidth: 32 }}>
+                  <CheckCircleOutlineIcon color="primary" fontSize="small" />
+                </ListItemIcon>
+                <ListItemText primary={feature} sx={{ '& .MuiListItemText-primary': { fontSize: '1rem', color: 'text.secondary' } }} />
+              </ListItem>
+            ))}
+          </List>
           <Box
             sx={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
               width: '100%',
-              height: '120px',
-              background: plan.name === 'BASIC PACK' ? 'linear-gradient(to right, #8e2de2, #4a00e0)' :
-                plan.name === 'STANDARD' ? 'linear-gradient(to right, #ff4e50, #fcb045)' :
-                  'linear-gradient(to right, #00c6ff, #0072ff)',
-              borderRadius: '20px 20px 0 0',
-              zIndex: 1,
-            }}
-          />
-
-          {/* Main content */}
-          <Box
-            sx={{
-              position: 'relative',
-              zIndex: 2,
-              textAlign: 'center',
-              width: '100%',
-              padding: '0 20px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              mb: 2,
             }}
           >
-            <Typography variant="h5" sx={{ fontWeight: 'bold', marginBottom: 2 }}>
-              {plan.name}
+            <Typography variant="h3" fontWeight={900} color="primary.main" mb={0.5}>
+              ${plan.price}
             </Typography>
-            <List sx={{ width: '100%' }}>
-              {plan.features.map((feature, featureIndex) => (
-                <ListItem key={featureIndex} sx={{ paddingY: 0.5 }}>
-                  <ListItemIcon sx={{ minWidth: 'auto', marginRight: 1 }}>
-                    <CheckCircleOutlineIcon sx={{
-                      color: plan.name === 'BASIC PACK' ? '#8e2de2' :
-                        plan.name === 'STANDARD' ? '#ff4e50' :
-                          '#00c6ff', fontSize: '1.2rem'
-                    }} />
-                  </ListItemIcon>
-                  <ListItemText primary={feature} sx={{ '& .MuiListItemText-primary': { fontSize: '0.9rem' } }} />
-                </ListItem>
-              ))}
-            </List>
-            <Box
-              sx={{
-                width: 150,
-                height: 150,
-                borderRadius: '50%',
-                border: `5px solid ${plan.name === 'BASIC PACK' ? '#8e2de2' :
-                    plan.name === 'STANDARD' ? '#ff4e50' :
-                      '#00c6ff'
-                  }`,
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                backgroundColor: '#333',
-                color: 'white',
-                margin: '20px auto 0 auto',
-              }}
-            >
-              <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
-                ${plan.price}
-              </Typography>
-              <Typography variant="subtitle2">
-                PRICE CREDIT
-              </Typography>
-            </Box>
+            <Typography variant="subtitle2" color="text.secondary">
+              per month
+            </Typography>
           </Box>
+          <Button
+            variant="contained"
+            color="primary"
+            size="large"
+            sx={{
+              borderRadius: 3,
+              fontWeight: 700,
+              width: '100%',
+              mt: 1,
+              py: 1.2,
+              fontSize: '1.1rem',
+              boxShadow: '0 2px 8px 0 rgba(0,0,0,0.08)',
+            }}
+            onClick={() => handleChoosePlan(plan.id)}
+          >
+            Choose Plan
+          </Button>
         </Box>
       ))}
     </Box>

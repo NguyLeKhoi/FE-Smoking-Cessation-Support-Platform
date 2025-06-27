@@ -11,10 +11,8 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
     <ThemeProvider theme={theme}>
       <CssBaseline />
-     
       <App />
       <ToastContainer
         position="top-right"
@@ -31,5 +29,4 @@ root.render(
         icon={<span>🦄</span>} 
       />
     </ThemeProvider>
-  </React.StrictMode>
 );

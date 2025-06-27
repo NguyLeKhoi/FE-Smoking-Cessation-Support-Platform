@@ -86,6 +86,8 @@ const EditBlogPage = () => {
         }
     }, [postId]);
 
+    useEffect(() => { window.scrollTo({ top: 0 }); }, []);
+
     const handleInputChange = (field) => (event) => {
         const value = event.target.value;
         setFormData(prev => ({

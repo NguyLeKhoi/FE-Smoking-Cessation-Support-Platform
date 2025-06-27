@@ -25,6 +25,8 @@ export default function ForgotPasswordPage() {
     };
   }, []);
 
+  useEffect(() => { window.scrollTo({ top: 0 }); }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage('');

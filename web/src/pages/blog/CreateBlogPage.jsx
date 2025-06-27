@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Box,
     Container,
@@ -209,6 +209,8 @@ const CreateBlogPage = () => {
             fontWeight: 600,
         },
     };
+
+    useEffect(() => { window.scrollTo({ top: 0 }); }, []);
 
     return (
         <Box sx={{
