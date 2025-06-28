@@ -179,17 +179,29 @@ export default function AdminMembership() {
         </TableContainer>
       )}
       {/* Modal Create/Edit */}
-      <Dialog open={openModal} onClose={handleCloseModal} maxWidth="sm" fullWidth>
+      <Dialog open={openModal} onClose={handleCloseModal} maxWidth="md" fullWidth>
         <DialogTitle>{modalType === 'create' ? 'Create Membership Plan' : 'Edit Membership Plan'}</DialogTitle>
-        <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
-          <TextField label="Name" name="name" value={form.name} onChange={handleFormChange} fullWidth required />
-          <TextField label="Description" name="description" value={form.description} onChange={handleFormChange} fullWidth required />
-          <TextField label="Price" name="price" value={form.price} onChange={handleFormChange} type="number" fullWidth required />
-          <TextField label="Duration (days)" name="duration_days" value={form.duration_days} onChange={handleFormChange} type="number" fullWidth required />
+        <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1, maxHeight: '70vh', overflowY: 'auto' }}>
+          <Box>
+            <Typography fontWeight={700} mb={0.5} htmlFor="membership-name">Name *</Typography>
+            <TextField id="membership-name" name="name" value={form.name} onChange={handleFormChange} fullWidth required variant="outlined" placeholder="Enter plan name" InputLabelProps={{ shrink: true }} />
+          </Box>
+          <Box>
+            <Typography fontWeight={700} mb={0.5} htmlFor="membership-description">Description *</Typography>
+            <TextField id="membership-description" name="description" value={form.description} onChange={handleFormChange} fullWidth required variant="outlined" placeholder="Enter description" InputLabelProps={{ shrink: true }} />
+          </Box>
+          <Box>
+            <Typography fontWeight={700} mb={0.5} htmlFor="membership-price">Price *</Typography>
+            <TextField id="membership-price" name="price" value={form.price} onChange={handleFormChange} type="number" fullWidth required variant="outlined" placeholder="Enter price" InputLabelProps={{ shrink: true }} />
+          </Box>
+          <Box>
+            <Typography fontWeight={700} mb={0.5} htmlFor="membership-duration">Duration (days) *</Typography>
+            <TextField id="membership-duration" name="duration_days" value={form.duration_days} onChange={handleFormChange} type="number" fullWidth required variant="outlined" placeholder="Enter duration in days" InputLabelProps={{ shrink: true }} />
+          </Box>
           <Box>
             <Typography variant="subtitle2" mb={1}>Features</Typography>
             <Box display="flex" gap={1} mb={1}>
-              <TextField label="Add feature" value={form.featureInput} onChange={e => setForm({ ...form, featureInput: e.target.value })} size="small" />
+              <TextField label="Add feature" value={form.featureInput} onChange={e => setForm({ ...form, featureInput: e.target.value })} size="small" variant="outlined" InputLabelProps={{ shrink: true }} />
               <Button variant="outlined" onClick={handleAddFeature}>Add</Button>
             </Box>
             <Box display="flex" gap={1} flexWrap="wrap">
