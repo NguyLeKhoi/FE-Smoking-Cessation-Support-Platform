@@ -5,6 +5,7 @@ import { login } from '../../services/authService';
 import GlowingDotsGrid from '../../components/animated/GlowingDotsGrid';
 import LoadingPage from '../LoadingPage';
 import HomeIcon from '@mui/icons-material/Home'; // Import the home icon
+import { jwtDecode } from 'jwt-decode';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -41,7 +42,13 @@ export default function LoginPage() {
     try {
       const response = await login(formData);
       if (response && response.accessToken) {
-        navigate('/');
+        // Decode token để kiểm tra role
+        const decoded = jwtDecode(response.accessToken);
+        if (decoded.role === 'admin') {
+          navigate('/admin');
+        } else {
+          navigate('/');
+        }
       } else {
         setError('Login failed: Invalid credentials or server response.');
       }
@@ -197,10 +204,10 @@ export default function LoginPage() {
 
             <Box sx={{ textAlign: 'right', mt: 1 }}>
               <Link
-                component="button"
+                component="span"
                 variant="body2"
                 onClick={() => navigate('/forgot-password')}
-                sx={{ color: 'primary.main', fontWeight: 500 }}
+                sx={{ color: 'primary.main', fontWeight: 500, cursor: 'pointer' }}
               >
                 Forgot password?
               </Link>
@@ -271,13 +278,14 @@ export default function LoginPage() {
               <Typography variant="body1" sx={{ color: 'text.secondary' }}>
                 Don't have an account?{' '}
                 <Link
-                  component="button"
+                  component="span"
                   variant="body1"
                   onClick={() => navigate('/signup')}
                   sx={{
                     color: 'primary.main',
                     fontWeight: 600,
                     textDecoration: 'none',
+                    cursor: 'pointer',
                     position: 'relative',
                     '&::after': {
                       content: '""',
