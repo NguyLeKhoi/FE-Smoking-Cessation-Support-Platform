@@ -26,12 +26,14 @@ export default function AddDailyRecordModal({ open, onClose, onSubmit }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit({
+    const payload = {
       cigarette_smoke: Number(cigaretteSmoke),
       craving_level: Number(cravingLevel),
       health_status: healthStatus,
       record_date: new Date(recordDate).toISOString(),
-    });
+    };
+    console.log('Add Daily Record payload:', payload);
+    onSubmit(payload);
   };
 
   const handleClose = () => {

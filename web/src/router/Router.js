@@ -3,6 +3,7 @@ import MainLayout from '../layout/MainLayout';
 import AuthLayout from '../layout/AuthLayout';
 import ProtectedRoute from '../components/ProtectedRoute';
 import QuitPlanMainLayout from '../layout/QuitPlanMainLayout';
+import AdminLayout from '../layout/AdminLayout';
 
 //auth
 import Loginpage from '../pages/auth/Loginpage';
@@ -206,9 +207,9 @@ export const routes = createBrowserRouter([
     path: '/admin/*',
     element: (
       <ProtectedRoute requireAdmin={true}>
-        <MainLayout>
+        <AdminLayout>
           <AdminDashboard />
-        </MainLayout>
+        </AdminLayout>
       </ProtectedRoute>
     ),
   },
