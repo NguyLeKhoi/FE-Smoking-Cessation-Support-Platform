@@ -106,7 +106,6 @@ const Blog = () => {
         document.getElementById('articles-section')?.scrollIntoView({ behavior: 'smooth' });
     };
 
-    // Handle create post navigation
     const handleCreatePost = () => {
         if (userAuthenticated) {
             navigate('/blog/create');
@@ -115,7 +114,6 @@ const Blog = () => {
         }
     };
 
-    // Handle view my posts navigation
     const handleViewMyPosts = () => {
         if (userAuthenticated) {
             navigate('/my-blog');
@@ -142,13 +140,14 @@ const Blog = () => {
                 sx={{
                     flexGrow: 1,
                     width: '100%',
+
                 }}
             >
                 {/* Featured Post Banner */}
                 {featuredPost ? (
                     <BlogBanner
                         title={featuredPost.title || "Cessation Access & Support"}
-                        subtitle={featuredPost.content} // Pass full content instead of substring
+                        subtitle={featuredPost.content}
                         bannerImage={featuredPost.thumbnail || Banner2}
                         date={featuredPost.publishDate || featuredPost.created_at
                             ? new Date(featuredPost.publishDate || featuredPost.created_at).toLocaleDateString('en-US', {
@@ -179,7 +178,7 @@ const Blog = () => {
                     )
                 )}
 
-                <Divider sx={{ my: 4, borderColor: 'divider' }} />
+                <Divider sx={{ my: 4, borderColor: 'divider', mx: 8 }} />
 
                 {/* Content with regular posts */}
                 <Container
@@ -194,7 +193,7 @@ const Blog = () => {
                     <Box
                         id="articles-section"
                         sx={{
-                            my: 6,
+                            my: 3,
                             display: 'flex',
                             justifyContent: 'space-between',
                             alignItems: 'flex-start',
@@ -255,47 +254,6 @@ const Blog = () => {
                                 </Button>
                             </Box>
                         )}
-
-                        {/* Call-to-Action for Non-Authenticated Users */}
-                        {!userAuthenticated && (
-                            <Box sx={{
-                                display: 'flex',
-                                gap: 2,
-                                flexShrink: 0,
-                                flexWrap: 'wrap'
-                            }}>
-                                <Button
-                                    variant="outlined"
-                                    onClick={() => navigate('/login')}
-                                    sx={{
-                                        textTransform: 'none',
-                                        fontWeight: 500,
-                                        borderRadius: 2,
-                                        px: 3
-                                    }}
-                                >
-                                    Sign In
-                                </Button>
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    startIcon={<AddIcon />}
-                                    onClick={handleCreatePost}
-                                    sx={{
-                                        textTransform: 'none',
-                                        fontWeight: 600,
-                                        borderRadius: 2,
-                                        px: 3,
-                                        boxShadow: 2,
-                                        '&:hover': {
-                                            boxShadow: 4
-                                        }
-                                    }}
-                                >
-                                    Share Your Story
-                                </Button>
-                            </Box>
-                        )}
                     </Box>
 
                     {/* Engagement Call-to-Action for Non-Authenticated Users */}
@@ -303,12 +261,12 @@ const Blog = () => {
                         <Paper
                             elevation={1}
                             sx={{
-                                p: 4,
+                                p: 3,
                                 mb: 4,
                                 backgroundColor: 'primary.50',
-                                border: '1px solid',
-                                borderColor: 'primary.100',
-                                borderRadius: 3
+                                border: '0.5px solid',
+                                borderColor: 'divider',
+                                borderRadius: 5
                             }}
                         >
                             <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
@@ -377,7 +335,7 @@ const Blog = () => {
                                 <CustomCard
                                     image={post.thumbnail || `https://source.unsplash.com/random/600x400?smoking-cessation&sig=${indexOfFirstPost + index}`}
                                     title={post.title || "How to improve your journey to quitting smoking"}
-                                    subtitle={post.content} // Pass full content instead of substring
+                                    subtitle={post.content}
                                     author={
                                         post.first_name || post.last_name
                                             ? `${post.first_name || ''} ${post.last_name || ''}`

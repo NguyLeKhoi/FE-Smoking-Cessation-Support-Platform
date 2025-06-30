@@ -35,6 +35,9 @@ import QuitPlanPage from '../pages/quit-plans/QuitPlanPage';
 import QuitPlanResultPage from '../pages/quit-plans/QuitPlanDetailPage';
 import PhaseRecordPage from '../pages/quit-plans/PhaseRecordPage';
 
+//coach
+import CoachListPage from '../pages/coach/CoachListPage';
+
 
 //admin
 import AdminDashboard from '../pages/admin/AdminDashboard';
@@ -197,6 +200,16 @@ export const routes = createBrowserRouter([
       <ProtectedRoute>
         <MainLayout>
           <PhaseRecordPage />
+        </MainLayout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/coaches-list',
+    element: (
+      <ProtectedRoute>
+        <MainLayout>
+          <CoachListPage />
         </MainLayout>
       </ProtectedRoute>
     ),
