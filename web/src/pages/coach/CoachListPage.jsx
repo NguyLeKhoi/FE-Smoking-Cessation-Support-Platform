@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { getAllCoaches } from '../../services/coachService';
 import { createChatRoom, getAllChatRooms } from '../../services/chatService';
 import {
-    Card, CardContent, CardHeader, Avatar, Typography, Grid, Chip, Box, CircularProgress, Button
+    Grid, Typography, Box, CircularProgress
 } from '@mui/material';
-import { Link } from 'react-router-dom';
+import CoachInfo from '../../components/coach/CoachInfo';
+import ChatRoom from '../../components/coach/ChatRoom';
+import { useSocket } from '../../context/SocketContext';
 
 const CoachListPage = () => {
     const [coaches, setCoaches] = useState([]);
@@ -12,6 +14,7 @@ const CoachListPage = () => {
     const [error, setError] = useState(null);
     const [chatRooms, setChatRooms] = useState([]);
     const [chatRoomsLoading, setChatRoomsLoading] = useState(false);
+    const socket = useSocket();
 
     useEffect(() => {
         const fetchCoaches = async () => {
@@ -33,17 +36,9 @@ const CoachListPage = () => {
             setChatRoomsLoading(true);
             try {
                 const response = await getAllChatRooms();
-                console.log('Full response:', response);
-                console.log('response.data:', response.data);
-                console.log('Is response.data an array?', Array.isArray(response.data));
-
-                // The chat rooms array is in response.data.data
                 const chatRoomsArray = Array.isArray(response.data?.data) ? response.data.data : [];
-                console.log('chatRoomsArray to set:', chatRoomsArray);
-
                 setChatRooms(chatRoomsArray);
             } catch (e) {
-                console.error('Error fetching chat rooms:', e);
                 setChatRooms([]);
             } finally {
                 setChatRoomsLoading(false);
@@ -52,18 +47,38 @@ const CoachListPage = () => {
         fetchChatRooms();
     }, []);
 
-    useEffect(() => {
-        console.log('chatRooms state updated:', chatRooms);
-    }, [chatRooms]);
-
     const handleStartChat = async (coachId) => {
         try {
-            const result = await createChatRoom(coachId);
+            await createChatRoom(coachId);
             alert('Chat room created!');
         } catch (error) {
             alert('Failed to create chat room.');
         }
     };
+
+    const handleOpenChat = (room) => {
+        // Implement navigation to chat room page if needed
+        alert(`Open chat room: ${room.id}`);
+    };
+
+    // Example: join a room
+    const joinRoom = (chatRoomId) => {
+        if (socket) {
+            socket.emit('joinRoom', { chat_room_id: chatRoomId });
+        }
+    };
+
+    // Example: listen for new messages
+    useEffect(() => {
+        if (!socket) return;
+        const handleNewMessage = (msg) => {
+            // handle the new message
+        };
+        socket.on('newMessage', handleNewMessage);
+        return () => {
+            socket.off('newMessage', handleNewMessage);
+        };
+    }, [socket]);
 
     if (loading) {
         return (
@@ -78,7 +93,7 @@ const CoachListPage = () => {
     }
 
     return (
-        <Box sx={{ maxWidth: 1100, mx: 'auto', mt: 6, px: 2 }}>
+        <Box sx={{ maxWidth: 1100, mx: 'auto', mt: 1, px: 2 }}>
             <Typography variant="h4" fontWeight={700} gutterBottom align="center">
                 Meet Our Coaches
             </Typography>
@@ -92,36 +107,10 @@ const CoachListPage = () => {
                     <Grid container spacing={2}>
                         {chatRooms.map(room => (
                             <Grid item xs={12} sm={6} md={4} key={room.id}>
-                                <Card elevation={2} sx={{ borderRadius: 2, p: 2 }}>
-                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                                        <Typography variant="h6" fontWeight={600}>
-                                            Chat Room
-                                        </Typography>
-                                        <Chip
-                                            label={room.status}
-                                            color={room.status === 'active' ? 'success' : 'default'}
-                                            size="small"
-                                        />
-                                    </Box>
-                                    <Typography variant="body2" color="text.secondary" gutterBottom>
-                                        <strong>Room ID:</strong> {room.id.slice(0, 8)}...
-                                    </Typography>
-                                    <Typography variant="body2" color="text.secondary" gutterBottom>
-                                        <strong>Started:</strong> {new Date(room.started_at).toLocaleDateString()}
-                                    </Typography>
-                                    {room.ended_at && (
-                                        <Typography variant="body2" color="text.secondary">
-                                            <strong>Ended:</strong> {new Date(room.ended_at).toLocaleDateString()}
-                                        </Typography>
-                                    )}
-                                    <Button
-                                        variant="contained"
-                                        size="small"
-                                        sx={{ mt: 2, bgcolor: '#000000', '&:hover': { bgcolor: '#000000cd' } }}
-                                    >
-                                        Open Chat
-                                    </Button>
-                                </Card>
+                                <ChatRoom
+                                    room={room}
+                                    onOpenChat={() => joinRoom(room.id)}
+                                />
                             </Grid>
                         ))}
                     </Grid>
@@ -137,68 +126,7 @@ const CoachListPage = () => {
                 )}
                 {coaches.map((coach) => (
                     <Grid item xs={12} sm={6} md={4} key={coach.user_id}>
-                        <Card elevation={3} sx={{ borderRadius: 3, height: '100%' }}>
-                            <CardHeader
-                                avatar={
-                                    <Avatar
-                                        src={coach.users?.avatar || ''}
-                                        alt={coach.users?.username || 'Coach'}
-                                        sx={{ width: 56, height: 56, bgcolor: '#e0e0e0', fontWeight: 700 }}
-                                    >
-                                        {coach.users?.username ? coach.users.username.charAt(0).toUpperCase() : '?'}
-                                    </Avatar>
-                                }
-                                title={
-                                    <Button
-                                        component={Link}
-                                        to={`/profile/${coach.user_id}`}
-                                        sx={{
-                                            textTransform: 'none',
-                                            fontWeight: 600,
-                                            fontSize: '1.1rem',
-                                            color: '#222',
-                                            pl: 0,
-                                            '&:hover': { textDecoration: 'underline', bgcolor: 'transparent' }
-                                        }}
-                                    >
-                                        {coach.users?.username || 'Unknown Coach'}
-                                    </Button>
-                                }
-                                subheader={coach.specialization}
-                                action={
-                                    coach.is_active ? (
-                                        <Chip label="Active" color="success" size="small" />
-                                    ) : (
-                                        <Chip label="Inactive" color="default" size="small" />
-                                    )
-                                }
-                            />
-                            <CardContent>
-                                <Typography variant="body2" color="text.secondary" gutterBottom>
-                                    <strong>Experience:</strong> {coach.experience_years} years
-                                </Typography>
-                                <Typography variant="body2" color="text.secondary" gutterBottom>
-                                    <strong>Bio:</strong> {coach.bio}
-                                </Typography>
-                                <Typography variant="body2" color="text.secondary" gutterBottom>
-                                    <strong>Working Hours:</strong> {coach.working_hours}
-                                </Typography>
-                                <Typography variant="body2" color="text.secondary" gutterBottom>
-                                    <strong>Email:</strong> {coach.users?.email || 'N/A'}
-                                </Typography>
-                                <Typography variant="body2" color="text.secondary">
-                                    <strong>Phone:</strong> {coach.users?.phone_number || 'N/A'}
-                                </Typography>
-                                <Button
-                                    variant="outlined"
-                                    size="small"
-                                    sx={{ mt: 2 }}
-                                    onClick={() => handleStartChat(coach.id)}
-                                >
-                                    Start Chat
-                                </Button>
-                            </CardContent>
-                        </Card>
+                        <CoachInfo coach={coach} onStartChat={handleStartChat} />
                     </Grid>
                 ))}
             </Grid>

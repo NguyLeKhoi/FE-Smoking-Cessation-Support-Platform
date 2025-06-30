@@ -4,14 +4,17 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import theme from './theme/theme';
 import { routes } from './router/Router';
+import { SocketProvider } from './context/SocketContext';
 
 function App() {
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <RouterProvider router={routes} />
-      </LocalizationProvider>
+      <SocketProvider>
+        <CssBaseline />
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <RouterProvider router={routes} />
+        </LocalizationProvider>
+      </SocketProvider>
     </ThemeProvider>
   );
 }
