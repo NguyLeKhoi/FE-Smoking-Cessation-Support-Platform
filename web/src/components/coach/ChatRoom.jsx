@@ -8,11 +8,13 @@ const ChatRoom = ({ room, onOpenChat }) => {
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(true);
     const [lastMessage, setLastMessage] = useState(null);
+    const [unauthorized, setUnauthorized] = useState(false);
     const socket = useSocket();
 
     useEffect(() => {
         const fetchMessages = async () => {
             setLoading(true);
+            setUnauthorized(false);
             try {
                 const data = await getChatRoomMessages(room.id);
                 const messagesArray = Array.isArray(data.data?.data) ? data.data.data : [];
@@ -21,6 +23,10 @@ const ChatRoom = ({ room, onOpenChat }) => {
                     setLastMessage(messagesArray[messagesArray.length - 1]);
                 }
             } catch (e) {
+                // If unauthorized, set flag
+                if (e.response?.status === 400 && e.response?.data?.message?.includes('not authorized')) {
+                    setUnauthorized(true);
+                }
                 setMessages([]);
             } finally {
                 setLoading(false);
@@ -54,6 +60,40 @@ const ChatRoom = ({ room, onOpenChat }) => {
             minute: '2-digit',
         });
     };
+
+    if (unauthorized) {
+        return (
+            <div className="bg-white rounded-lg shadow-md border p-4 hover:shadow-lg transition-shadow">
+                <div className="flex justify-between items-center mb-3">
+                    <h3 className="text-lg font-semibold text-gray-800">Chat Room</h3>
+                    <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${room.status === 'active'
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-gray-100 text-gray-800'
+                            }`}
+                    >
+                        {room.status}
+                    </span>
+                </div>
+                <div className="space-y-2 mb-4">
+                    <div className="text-sm text-gray-600">
+                        <span className="font-medium">Room ID:</span> {room.id.slice(0, 8)}...
+                    </div>
+                    <div className="text-sm text-gray-600">
+                        <span className="font-medium">Started:</span> {formatDate(room.started_at)}
+                    </div>
+                    {room.ended_at && (
+                        <div className="text-sm text-gray-600">
+                            <span className="font-medium">Ended:</span> {formatDate(room.ended_at)}
+                        </div>
+                    )}
+                    <div className="text-sm text-red-600 font-semibold mt-2">
+                        You are not authorized to view messages in this chat room.
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="bg-white rounded-lg shadow-md border p-4 hover:shadow-lg transition-shadow">
