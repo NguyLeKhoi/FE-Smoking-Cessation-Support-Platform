@@ -18,6 +18,7 @@ import Homepage from '../pages/main/Homepage';
 import BlogDetails from '../components/blog/BlogDetails';
 import ProfilePage from '../pages/main/ProfilePage';
 import SmokingQuizPage from '../pages/main/SmokingQuizPage';
+import PaymentSuccessPage from '../pages/main/PaymentSuccessPage';
 
 //achievements
 import AchievementsPage from '../pages/achievements/AchivementsPage';
@@ -202,6 +203,10 @@ export const routes = createBrowserRouter([
         </MainLayout>
       </ProtectedRoute>
     ),
+  },
+  {
+    path: '/payment/success',
+    element: <PaymentSuccessPage />,
   },
   // Admin Routes
   {

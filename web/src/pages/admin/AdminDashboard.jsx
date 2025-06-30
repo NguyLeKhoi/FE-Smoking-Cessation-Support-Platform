@@ -149,7 +149,7 @@ const sharedTableContainerSx = {
 export default function AdminDashboard() {
   const [tab, setTab] = useState(0);
 
-  return (
+    return (
     <Box sx={{ width: '100%', mt: 0, mb: 0, maxWidth: '100%', mx: 0, p: 0 }}>
       <Box sx={{ borderBottom: '1px solid #e0e0e0', bgcolor: '#fff', width: '100%', maxWidth: '100%', mx: 0, mt: 4 }}>
         <Tabs
@@ -182,11 +182,11 @@ export default function AdminDashboard() {
                     </Typography>
                     <Typography variant="caption" color="#888">
                       {stat.sub}
-                    </Typography>
-                  </Box>
+      </Typography>
+                </Box>
                 </Grid>
               ))}
-            </Grid>
+        </Grid>
             {/* Table Section */}
             <>
               <Typography variant="h6" fontWeight={900} mb={2} p={2} color="#111">
@@ -216,15 +216,15 @@ export default function AdminDashboard() {
                             {row.members.map((m, i) => (
                               <Avatar key={i} src={m} sx={{ width: 28, height: 28 }} />
                             ))}
-                          </Box>
+                </Box>
                         </TableCell>
                         <TableCell align="left" sx={{ borderBottom: '1px solid #e0e0e0', py: 2 }}>
                           <Box display="flex" alignItems="center" gap={1}>
                             <Box sx={{ width: 80, height: 8, bgcolor: '#eee', borderRadius: 2, overflow: 'hidden' }}>
                               <Box sx={{ width: `${row.progress}%`, height: 8, bgcolor: '#111' }} />
-                            </Box>
+              </Box>
                             <Typography variant="body2" sx={{ color: '#111', fontWeight: 700 }}>{row.progress}%</Typography>
-                          </Box>
+                </Box>
                         </TableCell>
                       </TableRow>
                     ))}
