@@ -11,6 +11,7 @@ import Signuppage from '../pages/auth/SignupPage';
 import ForgotPasswordPage from '../pages/auth/ForgotPasswordPage';
 import ResetPasswordPage from '../pages/auth/ResetPasswordPage';
 import LoginSuccessPage from '../pages/auth/LoginSuccessPage';
+import RegisterCoachPage from '../pages/auth/RegisterCoachPage';
 
 //main
 import Homepage from '../pages/main/Homepage';
@@ -213,7 +214,14 @@ export const routes = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
-
+  {
+    path: '/register-coach',
+    element: (
+      <AuthLayout>
+        <RegisterCoachPage />
+      </AuthLayout>
+    ),
+  },
   {
     path: '*',
     element: (

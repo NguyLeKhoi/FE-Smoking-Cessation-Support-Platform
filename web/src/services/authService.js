@@ -111,4 +111,25 @@ export const resetPassword = async (resetData) => {
     }
     throw new Error('Network error');
   }
+};
+
+// Coach Service
+export const sendCoachCode = async ({ email, callbackUrl }) => {
+  try {
+    const response = await api.post('/coach/send-code', { email, callbackUrl });
+    return response.data;
+  } catch (error) {
+    if (error.response) throw error.response.data.message || 'Send code failed';
+    throw new Error('Network error');
+  }
+};
+
+export const registerCoach = async (coachData) => {
+  try {
+    const response = await api.post('/coach/coach-register', coachData);
+    return response.data;
+  } catch (error) {
+    if (error.response) throw error.response.data.message || 'Register coach failed';
+    throw new Error('Network error');
+  }
 }; 
