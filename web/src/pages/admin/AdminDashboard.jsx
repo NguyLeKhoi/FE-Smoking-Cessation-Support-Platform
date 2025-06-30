@@ -36,12 +36,14 @@ import TrendingFlatIcon from '@mui/icons-material/TrendingFlat';
 import AdminMembership from './AdminMembership';
 import AdminApprovePosts from './AdminApprovePosts';
 import AdminStatisticsTable from './AdminStatisticsTable';
+import AdminCoach from './AdminCoach';
 
 const tabList = [
   { label: 'Dashboard' },
   { label: 'Membership' },
   { label: 'Approve Posts' },
   { label: 'Achievements' },
+  { label: 'Coach Management' },
 ];
 
 const stats = [
@@ -245,6 +247,11 @@ export default function AdminDashboard() {
         {tab === 3 && (
           <Paper sx={sharedPaperSx}>
             <AdminStatisticsTable tableContainerSx={sharedTableContainerSx} />
+          </Paper>
+        )}
+        {tab === 4 && (
+          <Paper sx={sharedPaperSx}>
+            <AdminCoach />
           </Paper>
         )}
       </Box>
