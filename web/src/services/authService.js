@@ -76,6 +76,8 @@ export const logout = async () => {
   localStorage.removeItem('username');
   localStorage.removeItem('avatar');
   localStorage.removeItem('userInfo');
+  localStorage.removeItem('user');
+  localStorage.removeItem('token');
 
   // Clear sessionStorage as well
   sessionStorage.removeItem('userData');

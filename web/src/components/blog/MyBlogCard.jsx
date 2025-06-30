@@ -166,7 +166,7 @@ const MyBlogCard = ({
                 sx={{
                     display: 'flex',
                     flexDirection: 'row',
-                    height: 220,
+                    height: 240,
                     bgcolor: 'background.paper',
                     transition: 'all 0.2s ease-in-out',
                     borderRadius: '12px',

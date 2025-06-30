@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getAllCoaches } from '../../services/coachService';
-import { createChatRoom, getAllChatRooms } from '../../services/chatService';
+import { createChatRoom, getAllChatRooms, getAllCoachChatRooms } from '../../services/chatService';
 import {
     Grid, Typography, Box, CircularProgress
 } from '@mui/material';
@@ -8,6 +8,7 @@ import CoachInfo from '../../components/coach/CoachInfo';
 import ChatRoom from '../../components/coach/ChatRoom';
 import { useSocket } from '../../context/SocketContext';
 import ChatWindow from '../../components/coach/ChatWindow';
+import { jwtDecode } from 'jwt-decode';
 
 const CoachListPage = () => {
     const [coaches, setCoaches] = useState([]);
@@ -17,6 +18,22 @@ const CoachListPage = () => {
     const [chatRoomsLoading, setChatRoomsLoading] = useState(false);
     const socket = useSocket();
     const [openChatRooms, setOpenChatRooms] = useState([]);
+    const [role, setRole] = useState(null);
+
+    useEffect(() => {
+        const accessToken = localStorage.getItem('accessToken');
+        if (accessToken) {
+            try {
+                const decoded = jwtDecode(accessToken);
+                setRole(decoded.role); // e.g., 'user' or 'coach'
+            } catch (e) {
+                console.error('Failed to decode accessToken:', e);
+                setRole(null);
+            }
+        } else {
+            setRole(null);
+        }
+    }, []);
 
     useEffect(() => {
         const fetchCoaches = async () => {
@@ -33,28 +50,62 @@ const CoachListPage = () => {
         fetchCoaches();
     }, []);
 
-    useEffect(() => {
-        const fetchChatRooms = async () => {
-            setChatRoomsLoading(true);
-            try {
-                const response = await getAllChatRooms();
-                const chatRoomsArray = Array.isArray(response.data?.data) ? response.data.data : [];
-                setChatRooms(chatRoomsArray);
-            } catch (e) {
-                setChatRooms([]);
-            } finally {
-                setChatRoomsLoading(false);
+    // Move chat room fetching logic to a function
+    const fetchChatRooms = async () => {
+        setChatRoomsLoading(true);
+        try {
+            let response;
+            if (role === 'coach') {
+                response = await getAllCoachChatRooms();
+            } else {
+                response = await getAllChatRooms();
             }
-        };
-        fetchChatRooms();
-    }, []);
+
+            console.log('Fetch chat rooms response:', response);
+
+            // Handle different response structures
+            let chatRoomsArray = [];
+            if (response?.data?.data && Array.isArray(response.data.data)) {
+                chatRoomsArray = response.data.data;
+            } else if (response?.data && Array.isArray(response.data)) {
+                chatRoomsArray = response.data;
+            } else if (Array.isArray(response)) {
+                chatRoomsArray = response;
+            }
+
+            console.log('Processed chat rooms array:', chatRoomsArray);
+            setChatRooms(chatRoomsArray);
+        } catch (e) {
+            console.error('Error fetching chat rooms:', e);
+            setChatRooms([]);
+        } finally {
+            setChatRoomsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (role) {
+            fetchChatRooms();
+        }
+    }, [role]);
 
     const handleStartChat = async (coachId) => {
         try {
-            await createChatRoom(coachId);
-            alert('Chat room created!');
+            console.log('Creating chat room for coach:', coachId);
+            const response = await createChatRoom(coachId);
+            console.log('Create chat room response:', response);
+
+            // Show success message
+            alert('Chat room created successfully!');
+
+            // Add a small delay to ensure the backend has processed the creation
+            setTimeout(() => {
+                fetchChatRooms(); // Refresh the chat room list after creation
+            }, 500);
+
         } catch (error) {
-            alert('Failed to create chat room.');
+            console.error('Error creating chat room:', error);
+            alert('Failed to create chat room: ' + (error.response?.data?.message || error.message));
         }
     };
 
@@ -89,6 +140,15 @@ const CoachListPage = () => {
         };
     }, [socket]);
 
+    // Add refresh function for manual refresh
+    const handleRefreshChatRooms = () => {
+        if (role) {
+            fetchChatRooms();
+        }
+    };
+
+    const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+
     if (loading) {
         return (
             <Box sx={{ display: 'flex', justifyContent: 'center', mt: 8 }}>
@@ -101,30 +161,58 @@ const CoachListPage = () => {
         return <Typography color="error" align="center" sx={{ mt: 8 }}>{error}</Typography>;
     }
 
+    console.log('Current chatRooms state:', chatRooms);
+    console.log('Chat rooms length:', chatRooms?.length);
+
     return (
         <Box sx={{ maxWidth: 1100, mx: 'auto', mt: 1, px: 2 }}>
             <Typography variant="h4" fontWeight={700} gutterBottom align="center">
                 Meet Our Coaches
             </Typography>
             <Box sx={{ mb: 4 }}>
-                <Typography variant="h5" fontWeight={600} gutterBottom>
-                    Your Chat Rooms
-                </Typography>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                    <Typography variant="h5" fontWeight={600}>
+                        Your Chat Rooms
+                    </Typography>
+                    <button
+                        onClick={handleRefreshChatRooms}
+                        style={{
+                            padding: '8px 16px',
+                            backgroundColor: '#1976d2',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        Refresh
+                    </button>
+                </Box>
+
                 {chatRoomsLoading ? (
-                    <CircularProgress size={20} />
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <CircularProgress size={20} />
+                        <Typography>Loading chat rooms...</Typography>
+                    </Box>
                 ) : Array.isArray(chatRooms) && chatRooms.length > 0 ? (
                     <Grid container spacing={2}>
                         {chatRooms.map(room => (
                             <Grid item xs={12} sm={6} md={4} key={room.id}>
                                 <ChatRoom
                                     room={room}
+                                    role={role}
                                     onOpenChat={() => handleOpenChat(room)}
                                 />
                             </Grid>
                         ))}
                     </Grid>
                 ) : (
-                    <Typography>No chat rooms found.</Typography>
+                    <Box>
+                        <Typography>No chat rooms found.</Typography>
+                        <Typography variant="caption" color="text.secondary">
+                            Role: {role || 'Not determined'} | Rooms count: {chatRooms?.length || 0}
+                        </Typography>
+                    </Box>
                 )}
             </Box>
             <Box sx={{ position: 'fixed', bottom: 16, right: 16, display: 'flex', gap: 2, zIndex: 1300 }}>
@@ -136,14 +224,14 @@ const CoachListPage = () => {
                     />
                 ))}
             </Box>
-            <Grid container spacing={4}>
+            <Grid container spacing={4} justifyContent="center">
                 {coaches.length === 0 && (
                     <Grid item xs={12}>
                         <Typography align="center">No coaches found.</Typography>
                     </Grid>
                 )}
                 {coaches.map((coach) => (
-                    <Grid item xs={12} sm={6} md={4} key={coach.user_id}>
+                    <Grid item xs={12} sm={8} md={6} key={coach.user_id}>
                         <CoachInfo coach={coach} onStartChat={handleStartChat} />
                     </Grid>
                 ))}
