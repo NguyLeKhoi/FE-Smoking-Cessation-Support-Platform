@@ -19,3 +19,23 @@ export const getAllChatRooms = async () => {
         throw error;
     }
 };
+
+export const getChatRoomMessages = async (chatRoomId) => {
+    try {
+        const response = await api.get(`/chat/rooms/${chatRoomId}/messages`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching chat room messages:', error);
+        throw error;
+    }
+};
+
+export const endChatRoom = async (chatRoomId) => {
+    try {
+        const response = await api.post(`/chat/rooms/${chatRoomId}/end`);
+        return response.data;
+    } catch (error) {
+        console.error('Error ending chat room:', error);
+        throw error;
+    }
+};

@@ -7,6 +7,7 @@ import {
 import CoachInfo from '../../components/coach/CoachInfo';
 import ChatRoom from '../../components/coach/ChatRoom';
 import { useSocket } from '../../context/SocketContext';
+import ChatWindow from '../../components/coach/ChatWindow';
 
 const CoachListPage = () => {
     const [coaches, setCoaches] = useState([]);
@@ -15,6 +16,7 @@ const CoachListPage = () => {
     const [chatRooms, setChatRooms] = useState([]);
     const [chatRoomsLoading, setChatRoomsLoading] = useState(false);
     const socket = useSocket();
+    const [openChatRooms, setOpenChatRooms] = useState([]);
 
     useEffect(() => {
         const fetchCoaches = async () => {
@@ -57,8 +59,15 @@ const CoachListPage = () => {
     };
 
     const handleOpenChat = (room) => {
-        // Implement navigation to chat room page if needed
-        alert(`Open chat room: ${room.id}`);
+        setOpenChatRooms((prev) => {
+            if (prev.find(r => r.id === room.id)) return prev;
+            if (prev.length >= 2) return [prev[1], room];
+            return [...prev, room];
+        });
+    };
+
+    const handleCloseChat = (roomId) => {
+        setOpenChatRooms((prev) => prev.filter(r => r.id !== roomId));
     };
 
     // Example: join a room
@@ -109,7 +118,7 @@ const CoachListPage = () => {
                             <Grid item xs={12} sm={6} md={4} key={room.id}>
                                 <ChatRoom
                                     room={room}
-                                    onOpenChat={() => joinRoom(room.id)}
+                                    onOpenChat={() => handleOpenChat(room)}
                                 />
                             </Grid>
                         ))}
@@ -117,6 +126,15 @@ const CoachListPage = () => {
                 ) : (
                     <Typography>No chat rooms found.</Typography>
                 )}
+            </Box>
+            <Box sx={{ position: 'fixed', bottom: 16, right: 16, display: 'flex', gap: 2, zIndex: 1300 }}>
+                {openChatRooms.map(room => (
+                    <ChatWindow
+                        key={room.id}
+                        room={room}
+                        onClose={() => handleCloseChat(room.id)}
+                    />
+                ))}
             </Box>
             <Grid container spacing={4}>
                 {coaches.length === 0 && (
