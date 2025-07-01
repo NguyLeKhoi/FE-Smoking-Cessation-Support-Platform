@@ -8,6 +8,7 @@ import { Toaster } from 'react-hot-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
 import quitPlanService from '../services/quitPlanService';
 import Tooltip from '@mui/material/Tooltip';
+import smokingService from '../services/smokingService';
 
 export default function QuitPlanMainLayout({ children, showHeader = true, showFooter = true, onPlanCreated }) {
   const [authStatus, setAuthStatus] = useState(isAuthenticated());
@@ -17,6 +18,7 @@ export default function QuitPlanMainLayout({ children, showHeader = true, showFo
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [hasActivePlan, setHasActivePlan] = useState(false);
+  const [hasSmokingHabit, setHasSmokingHabit] = useState(true);
   const navigate = useNavigate();
 
   // Function to handle logout and update auth status
@@ -25,7 +27,16 @@ export default function QuitPlanMainLayout({ children, showHeader = true, showFo
     setAuthStatus(false);
   };
 
-  const handleOpenModal = () => setModalOpen(true);
+  const handleOpenModal = async () => {
+    setModalOpen(true);
+    // Kiểm tra smoking habit khi mở modal
+    try {
+      const habits = await smokingService.getMySmokingHabits();
+      setHasSmokingHabit(Array.isArray(habits) && habits.length > 0);
+    } catch {
+      setHasSmokingHabit(true); // fallback: không hiện nút quiz nếu lỗi
+    }
+  };
   const handleCloseModal = () => {
     setModalOpen(false);
     setReason('');
@@ -44,7 +55,14 @@ export default function QuitPlanMainLayout({ children, showHeader = true, showFo
       navigate('/quit-plan', { state: { result: response.data } });
       
     } catch (err) {
-      setError(err?.response?.data?.message || err?.message || 'Failed to create quit plan');
+      const errorMsg = err?.response?.data?.message || err?.message || 'Failed to create quit plan';
+      // Nếu lỗi là chưa có smoking habit thì chuyển sang nút quiz
+      if (errorMsg.toLowerCase().includes('smoking habit for user not found')) {
+        setHasSmokingHabit(false);
+        setError('');
+      } else {
+        setError(errorMsg);
+      }
     } finally {
       setLoading(false);
     }
@@ -112,27 +130,49 @@ export default function QuitPlanMainLayout({ children, showHeader = true, showFo
             <Typography id="create-quit-plan-modal" variant="h6" fontWeight={700} mb={2}>
               Create New Quit Plan
             </Typography>
-            <form onSubmit={handleCreatePlan}>
-              <TextField
-                label="Reason"
-                value={reason}
-                onChange={e => setReason(e.target.value)}
-                fullWidth
-                required
-                margin="normal"
-              />
-              <TextField
-                label="Plan Type"
-                value={planType}
-                onChange={e => setPlanType(e.target.value)}
-                fullWidth
-                required
-                margin="normal"
-              />
-              <Button type="submit" variant="contained" color="primary" disabled={loading} sx={{ mt: 2, width: '100%' }}>
-                {loading ? 'Creating...' : 'Create Quit Plan'}
-              </Button>
-            </form>
+            {/* Nếu chưa có smoking habit thì hiện nút quiz, ẩn form tạo plan */}
+            {!hasSmokingHabit ? (
+              <>
+                <Button
+                  variant="contained"
+                  sx={{ width: '100%', fontWeight: 700, bgcolor: '#000', color: '#fff', '&:hover': { bgcolor: '#222' } }}
+                  onClick={() => { setModalOpen(false); navigate('/smoking-quiz'); }}
+                >
+                  Take Smoking Quiz
+                </Button>
+                <Typography variant="body2" color="text.secondary" align="center" mt={2}>
+                  Take the smoking quiz to continue creating your quit plan.
+                </Typography>
+              </>
+            ) : (
+              <form onSubmit={handleCreatePlan}>
+                <TextField
+                  label="Reason"
+                  value={reason}
+                  onChange={e => setReason(e.target.value)}
+                  fullWidth
+                  required
+                  margin="normal"
+                />
+                <TextField
+                  select
+                  label="Plan Type"
+                  value={planType}
+                  onChange={e => setPlanType(e.target.value)}
+                  fullWidth
+                  required
+                  margin="normal"
+                  SelectProps={{ native: true }}
+                >
+                  <option value="standard">standard</option>
+                  <option value="aggressive">aggressive</option>
+                  <option value="slow">slow</option>
+                </TextField>
+                <Button type="submit" variant="contained" color="primary" disabled={loading} sx={{ mt: 2, width: '100%' }}>
+                  {loading ? 'Creating...' : 'Create Quit Plan'}
+                </Button>
+              </form>
+            )}
             {error && <Typography color="error" mt={2}>{error}</Typography>}
           </Paper>
         </Modal>
