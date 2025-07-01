@@ -5,9 +5,9 @@ import {
     Grid, Typography, Box, CircularProgress
 } from '@mui/material';
 import CoachInfo from '../../components/coach/CoachInfo';
-import ChatRoom from '../../components/coach/ChatRoom';
+import ChatRoom from '../../components/chat/ChatRoom';
 import { useSocket } from '../../context/SocketContext';
-import ChatWindow from '../../components/coach/ChatWindow';
+import ChatWindow from '../../components/chat/ChatWindow';
 import { jwtDecode } from 'jwt-decode';
 
 const CoachListPage = () => {
@@ -170,26 +170,8 @@ const CoachListPage = () => {
                 Meet Our Coaches
             </Typography>
             <Box sx={{ mb: 4 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                    <Typography variant="h5" fontWeight={600}>
-                        Your Chat Rooms
-                    </Typography>
-                    <button
-                        onClick={handleRefreshChatRooms}
-                        style={{
-                            padding: '8px 16px',
-                            backgroundColor: '#1976d2',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '4px',
-                            cursor: 'pointer'
-                        }}
-                    >
-                        Refresh
-                    </button>
-                </Box>
 
-                {chatRoomsLoading ? (
+                {/* {chatRoomsLoading ? (
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <CircularProgress size={20} />
                         <Typography>Loading chat rooms...</Typography>
@@ -213,7 +195,7 @@ const CoachListPage = () => {
                             Role: {role || 'Not determined'} | Rooms count: {chatRooms?.length || 0}
                         </Typography>
                     </Box>
-                )}
+                )} */}
             </Box>
             <Box sx={{ position: 'fixed', bottom: 16, right: 16, display: 'flex', gap: 2, zIndex: 1300 }}>
                 {openChatRooms.map(room => (

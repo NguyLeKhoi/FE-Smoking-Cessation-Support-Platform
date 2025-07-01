@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Box, Typography, TextField, Button, Paper, Avatar } from '@mui/material';
+import { Box, Typography, TextField, Button, Avatar } from '@mui/material';
 import { useSocket } from '../../context/SocketContext';
 import { getChatRoomMessages } from '../../services/chatService';
 import { getAllCoaches } from '../../services/coachService';
@@ -160,25 +160,17 @@ const ChatWindow = ({ room, onClose }) => {
     }
 
     return (
-        <Paper
-            elevation={3}
+        <Box
             sx={{
-                position: 'fixed',
-                bottom: 20,
-                right: 20,
-                width: 400,
-                height: 500,
-                bgcolor: 'background.paper',
-                color: 'text.primary',
-                borderRadius: 3,
-                boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.15)',
+                width: '100%',
+                height: '100%',
                 display: 'flex',
                 flexDirection: 'column',
-                overflow: 'hidden',
-                zIndex: 9999,
-                border: '1px solid',
-                borderColor: 'divider',
-                transition: 'all 0.3s ease-in-out',
+                bgcolor: 'background.paper',
+                color: 'text.primary',
+                borderRadius: 0,
+                border: 'none',
+                boxShadow: 'none',
             }}
         >
             {/* Header */}
@@ -191,13 +183,15 @@ const ChatWindow = ({ room, onClose }) => {
                     borderBottom: '1px solid',
                     borderColor: 'divider',
                     bgcolor: 'section.light',
+                    height: '60px',
+
                 }}
             >
                 <Box sx={{ display: 'flex', alignItems: 'center', flex: 1 }}>
                     <Avatar
                         src={displayUser?.avatar || ''}
                         alt={displayUser?.username || ''}
-                        sx={{ width: 30, height: 30, mr: 2 }}
+                        sx={{ width: 40, height: 40, mr: 2 }}
                     >
                         {displayUser?.username ? displayUser.username.charAt(0).toUpperCase() : '?'}
                     </Avatar>
@@ -224,7 +218,6 @@ const ChatWindow = ({ room, onClose }) => {
                 {messages.length === 0 && (
                     <Box sx={{
                         height: '100%',
-
                         display: 'flex',
                         flexDirection: 'column',
                         justifyContent: 'center',
@@ -236,25 +229,24 @@ const ChatWindow = ({ room, onClose }) => {
                         </Typography>
                     </Box>
                 )}
-                {messages.map((msg, idx) => {
+                {[...messages].sort((a, b) => new Date(a.sent_at) - new Date(b.sent_at)).map((msg, idx) => {
                     const isCurrentUser = msg.sender_id === currentUserId;
                     return (
                         <Box
                             key={msg.id || idx}
                             sx={{
                                 display: 'flex',
-                                alignItems: 'flex-start',
-                                justifyContent: isCurrentUser ? 'flex-end' : 'flex-start',
+                                flexDirection: 'column',
+                                alignItems: isCurrentUser ? 'flex-end' : 'flex-start',
                                 mb: 1,
                             }}
                         >
-                            <Paper
-                                elevation={0}
+                            <Box
                                 sx={{
                                     bgcolor: isCurrentUser ? 'primary.main' : 'section.light',
                                     color: isCurrentUser ? 'white' : 'text.primary',
-                                    borderRadius: 3,
-                                    p: '5px 20px',
+                                    borderRadius: 5,
+                                    p: '8px 20px',
                                     maxWidth: '80%',
                                     wordBreak: 'break-word',
                                     boxShadow: isCurrentUser
@@ -264,14 +256,15 @@ const ChatWindow = ({ room, onClose }) => {
                                     borderColor: isCurrentUser ? 'primary.main' : 'divider',
                                 }}
                             >
-                                <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                                    {getSenderName(msg)}
-                                </Typography>
                                 <Typography variant="body2">{msg.message}</Typography>
-                                <Typography variant="caption" color={isCurrentUser ? 'rgba(255,255,255,0.7)' : 'text.secondary'}>
-                                    {new Date(msg.sent_at).toLocaleTimeString()}
-                                </Typography>
-                            </Paper>
+                            </Box>
+                            <Typography
+                                variant="caption"
+                                color={isCurrentUser ? 'rgba(0,0,0,0.4)' : 'text.secondary'}
+                                sx={{ mt: 0.5, px: 1, textAlign: isCurrentUser ? 'right' : 'left', width: '100%' }}
+                            >
+                                {new Date(msg.sent_at).toLocaleTimeString()}
+                            </Typography>
                         </Box>
                     );
                 })}
@@ -295,10 +288,10 @@ const ChatWindow = ({ room, onClose }) => {
                     fullWidth
                     value={input}
                     onChange={e => setInput(e.target.value)}
-                    onKeyDown={e => e.key === 'Enter' && handleSend()}
+                    onKeyDown={e => e.key === 'Enter' && input.trim() && handleSend()}
                     sx={{
                         '& .MuiOutlinedInput-root': {
-                            borderRadius: 3,
+                            borderRadius: 5,
                             paddingRight: 0,
                             bgcolor: 'background.default',
                             color: 'text.primary',
@@ -326,7 +319,7 @@ const ChatWindow = ({ room, onClose }) => {
                     sx={{
                         bgcolor: 'primary.main',
                         ml: 1,
-                        borderRadius: 2,
+                        borderRadius: 5,
                         p: '8px 16px',
                         minWidth: 0,
                         '&:hover': {
@@ -347,7 +340,7 @@ const ChatWindow = ({ room, onClose }) => {
                     Send
                 </Button>
             </Box>
-        </Paper>
+        </Box>
     );
 };
 
