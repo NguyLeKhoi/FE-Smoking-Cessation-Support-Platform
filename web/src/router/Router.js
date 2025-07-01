@@ -38,6 +38,11 @@ import QuitPlanPage from '../pages/quit-plans/QuitPlanPage';
 import QuitPlanResultPage from '../pages/quit-plans/QuitPlanDetailPage';
 import PhaseRecordPage from '../pages/quit-plans/PhaseRecordPage';
 
+//coach
+import CoachListPage from '../pages/coach/CoachListPage';
+
+//chat
+import ChatPage from '../pages/chat/ChatPage';
 
 //admin
 import AdminDashboard from '../pages/admin/AdminDashboard';
@@ -95,6 +100,7 @@ export const routes = createBrowserRouter([
       </MainLayout>
     ),
   },
+  
   {
     path: '/my-blog',
     element: (
@@ -103,6 +109,7 @@ export const routes = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
+
   {
     path: '/achievements',
     element: (
@@ -142,6 +149,7 @@ export const routes = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
+
   {
     path: '/forgot-password',
     element: (
@@ -150,6 +158,7 @@ export const routes = createBrowserRouter([
       </AuthLayout>
     ),
   },
+
   {
     path: '/reset-password',
     element: (
@@ -158,6 +167,7 @@ export const routes = createBrowserRouter([
       </AuthLayout>
     ),
   },
+
   {
     path: '/smoking-quiz',
     element: (
@@ -166,6 +176,7 @@ export const routes = createBrowserRouter([
       </AuthLayout>
     ),
   },
+
   {
     path: '/membership-plans',
     element: (
@@ -174,6 +185,7 @@ export const routes = createBrowserRouter([
       </MainLayout>
     ),
   },
+
   {
     path: '/quit-plan',
     element: (
@@ -184,6 +196,7 @@ export const routes = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
+
   {
     path: '/quit-plan/:id',
     element: (
@@ -194,6 +207,7 @@ export const routes = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
+
   {
     path: '/quit-plan/:planId/phase/:phaseId',
     element: (
@@ -204,10 +218,34 @@ export const routes = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
+
   {
     path: '/payment/success',
     element: <PaymentSuccessPage />,
   },
+
+  {
+    path: '/coaches-list',
+    element: (
+      <ProtectedRoute>
+        <MainLayout>
+          <CoachListPage />
+        </MainLayout>
+      </ProtectedRoute>
+    ),
+  },
+
+  {
+    path: '/chat-page',
+    element: (
+      <ProtectedRoute>
+        <MainLayout showHeader={false} showFooter={false}>
+          <ChatPage />
+        </MainLayout>
+      </ProtectedRoute>
+    ),
+  },
+
   // Admin Routes
   {
     path: '/admin/*',

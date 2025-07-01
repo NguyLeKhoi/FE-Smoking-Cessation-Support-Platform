@@ -21,7 +21,6 @@ const BlogBanner = ({
     const getSubtitle = (content) => {
         if (!content) return null;
 
-        // Remove markdown formatting for subtitle
         const plainText = content
             .replace(/#{1,6}\s+/g, '') // Remove headers
             .replace(/\*\*(.*?)\*\*/g, '$1') // Remove bold
@@ -118,7 +117,7 @@ const BlogBanner = ({
                             </Typography>
                         )}
 
-                        {/* Subtitle - Now handles markdown content */}
+                        {/* Subtitle */}
                         {subtitle && (
                             <Typography
                                 variant="body1"
@@ -166,8 +165,8 @@ const BlogBanner = ({
                                 src={bannerImage}
                                 alt={title || "Featured post"}
                                 sx={{
-                                    width: '90%',
-                                    height: '350px',
+                                    width: '95%',
+                                    height: '360px',
                                     borderRadius: 8,
                                     display: 'block',
                                     maxHeight: '500px'

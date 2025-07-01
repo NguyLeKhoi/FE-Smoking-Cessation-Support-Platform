@@ -12,10 +12,7 @@ export const login = async (credentials) => {
     // Fetch user info after login and store userId
     let userId = null;
     try {
-      // Decode JWT to get userId if available, otherwise fetch from /users/me or /users/{id}
-      // Here, we assume you have a way to get the userId, e.g., from /users/me or /users/{id}
-      // If you have a /users/me endpoint, you can use it here instead of getUserById
-      // For now, let's assume you have to fetch it from /users/me
+      // Decode JWT to get userId if available
       const userInfo = await api.get('/users/me');
       userId = userInfo.data?.id;
       if (userId) {
@@ -71,9 +68,21 @@ export const logout = async () => {
     // Continue with frontend logout even if backend call fails
     // This might happen if the token is already invalid
   }
-  // Clear frontend tokens regardless of backend call success
+
+  // Clear all frontend tokens and user data
   localStorage.removeItem('accessToken');
-  console.log('Frontend tokens cleared.');
+  localStorage.removeItem('refreshToken');
+  localStorage.removeItem('userId');
+  localStorage.removeItem('username');
+  localStorage.removeItem('avatar');
+  localStorage.removeItem('userInfo');
+  localStorage.removeItem('user');
+  localStorage.removeItem('token');
+
+  // Clear sessionStorage as well
+  sessionStorage.removeItem('userData');
+
+  console.log('All frontend tokens and user data cleared.');
 };
 
 export const isAuthenticated = () => {

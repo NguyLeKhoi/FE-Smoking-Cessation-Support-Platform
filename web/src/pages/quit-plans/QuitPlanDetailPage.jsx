@@ -145,7 +145,11 @@ const QuitPlanResultPage = () => {
               <Typography variant="subtitle2" color="text.secondary">Money Saved</Typography>
               <Box display="flex" alignItems="center" justifyContent="center" gap={1} mt={1}>
                 <AttachMoneyIcon color="success" />
-                <Typography sx={{ fontSize: '1.5rem', fontWeight: 800 }}>{planStatistics.totalMoneySaved ?? '-'}</Typography>
+                <Typography sx={{ fontSize: '1.5rem', fontWeight: 800 }}>
+                  {typeof planStatistics.totalMoneySaved === 'number'
+                    ? planStatistics.totalMoneySaved.toFixed(2)
+                    : planStatistics.totalMoneySaved ?? '-'}
+                </Typography>
               </Box>
             </Paper>
           </Grid>

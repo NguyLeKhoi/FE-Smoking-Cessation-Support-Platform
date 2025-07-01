@@ -183,16 +183,18 @@ const MyBlogPage = () => {
                     </Box>
                 )}
 
-                {/* Create New Post Button - Right Side */}
-                <Button
-                    variant="contained"
-                    color="primary"
-                    startIcon={<AddIcon />}
-                    onClick={handleCreatePost}
-                    sx={{ flexShrink: 0 }}
-                >
-                    Create New Post
-                </Button>
+                {/* Create New Post Button  */}
+                {userPosts.length > 0 && (
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        startIcon={<AddIcon />}
+                        onClick={handleCreatePost}
+                        sx={{ flexShrink: 0 }}
+                    >
+                        Create New Post
+                    </Button>
+                )}
             </Box>
 
             {error && (
@@ -204,7 +206,7 @@ const MyBlogPage = () => {
             {!error && userPosts.length === 0 && (
                 <Card sx={{ p: 4, textAlign: 'center', mb: 2 }}>
                     <Typography variant="h6" color="text.secondary" gutterBottom>
-                        You haven't created any blog posts yet
+                        You haven't created any posts yet
                     </Typography>
                     <Typography variant="body1" color="text.secondary" paragraph>
                         Share your knowledge and experiences with the community by creating your first post.

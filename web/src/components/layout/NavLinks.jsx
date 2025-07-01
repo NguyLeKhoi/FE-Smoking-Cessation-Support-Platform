@@ -17,9 +17,14 @@ const NavLinks = () => {
             label: 'Blog'
         },
         {
+            path: '/coaches-list',
+            label: 'Coaches'
+        },
+        {
             path: '/membership-plans',
             label: 'Membership'
-        }
+        },
+      
     ];
 
     return (
