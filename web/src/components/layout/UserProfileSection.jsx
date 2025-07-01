@@ -26,25 +26,35 @@ const UserProfileSection = ({ authStatus, loadingMotivation, notifications, setN
 
     useEffect(() => {
         if (authStatus) {
-            const cachedUser = sessionStorage.getItem('userData');
-            if (cachedUser) {
-                setUserData(JSON.parse(cachedUser));
-                setLoading(false);
-                return;
-            }
             const fetchUserData = async () => {
                 try {
                     setLoading(true);
+                    // Clear any existing cached data first
+                    sessionStorage.removeItem('userData');
+
                     const response = await fetchCurrentUser();
-                    setUserData(response.data);
-                    sessionStorage.setItem('userData', JSON.stringify(response.data));
+                    if (response && response.data) {
+                        setUserData(response.data);
+                        sessionStorage.setItem('userData', JSON.stringify(response.data));
+                    } else {
+                        console.error('Invalid response format from fetchCurrentUser');
+                        setUserData(null);
+                    }
                 } catch (error) {
                     console.error('Error fetching user data for header:', error);
+                    setUserData(null);
+                    // Clear cached data on error
+                    sessionStorage.removeItem('userData');
                 } finally {
                     setLoading(false);
                 }
             };
             fetchUserData();
+        } else {
+            // Clear user data when not authenticated
+            setUserData(null);
+            setLoading(false);
+            sessionStorage.removeItem('userData');
         }
     }, [authStatus]);
 
@@ -84,7 +94,7 @@ const UserProfileSection = ({ authStatus, loadingMotivation, notifications, setN
                                 bgcolor: 'rgba(63, 51, 43, 0.04)',
                             },
                             '& .MuiOutlinedInput-input': {
-                                padding: '8px 14px 8px 0', 
+                                padding: '8px 14px 8px 0',
                             },
                         }}
                         InputProps={{

@@ -2,6 +2,9 @@ import React from 'react';
 import { Button, Typography, Box, Paper, Grid, TextField, Avatar, IconButton } from '@mui/material';
 import { format } from 'date-fns';
 import EditIcon from '@mui/icons-material/Edit';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
 const UserInfoSection = ({
     userData,
@@ -11,7 +14,7 @@ const UserInfoSection = ({
     handleInputChange,
     handleSave
 }) => {
-    // Format date of birth if available with additional checks
+
     const formattedDob = React.useMemo(() => {
         if (!userData.dob) return 'Not provided';
 
@@ -34,6 +37,30 @@ const UserInfoSection = ({
 
     // Preview the avatar URL when editing
     const avatarPreview = isEditing ? formData.avatar || userData.avatar : userData.avatar;
+
+    // Handle date change for the DatePicker
+    const handleDateChange = (newValue) => {
+        if (newValue) {
+            const formattedDate = format(newValue, 'yyyy-MM-dd');
+            handleInputChange({
+                target: {
+                    name: 'dob',
+                    value: formattedDate
+                }
+            });
+        }
+    };
+
+    // Convert string date to Date object for DatePicker
+    const getDateValue = () => {
+        if (formData.dob) {
+            return new Date(formData.dob);
+        }
+        if (userData.dob) {
+            return new Date(userData.dob);
+        }
+        return null;
+    };
 
     return (
         <Paper
@@ -128,7 +155,7 @@ const UserInfoSection = ({
                     </Typography>
                 </Box>
 
-                {/* User Information - Right Side */}
+                {/* User Information */}
                 <Box sx={{ flex: 1 }}>
                     {/* Personal Information */}
                     <Box sx={{
@@ -252,35 +279,30 @@ const UserInfoSection = ({
                                 />
                             </Box>
                             <Box sx={{ mb: 2 }}>
-                                <TextField
-                                    id="dob-field"
-                                    label="Date of Birth"
-                                    name="dob"
-                                    variant="standard"
-                                    value={formattedDob}
-                                    onChange={handleInputChange}
-                                    fullWidth
-                                    InputProps={{
-                                        readOnly: true,
-                                        // Apply styling for greyed out appearance when in edit mode
-                                        sx: isEditing ? {
-                                            color: 'text.disabled',
-                                            '& .MuiInput-underline:before': {
-                                                borderBottomColor: 'rgba(0, 0, 0, 0.12)'
-                                            },
-                                            '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
-                                                borderBottomColor: 'rgba(0, 0, 0, 0.12)'
+                                {isEditing ? (
+                                    <DatePicker
+                                        label="Date of Birth"
+                                        value={getDateValue()}
+                                        onChange={handleDateChange}
+                                        slotProps={{
+                                            textField: {
+                                                variant: "standard",
+                                                fullWidth: true,
+                                                helperText: "Select your date of birth"
                                             }
-                                        } : {}
-                                    }}
-                                    disabled={isEditing}
-                                    sx={{
-                                        // Ensure label color matches disabled state in edit mode
-                                        '& .MuiInputLabel-root': isEditing ? {
-                                            color: 'text.disabled'
-                                        } : {}
-                                    }}
-                                />
+                                        }}
+                                    />
+                                ) : (
+                                    <TextField
+                                        id="dob-field"
+                                        label="Date of Birth"
+                                        name="dob"
+                                        variant="standard"
+                                        value={formattedDob}
+                                        fullWidth
+                                        InputProps={{ readOnly: true }}
+                                    />
+                                )}
                             </Box>
                         </Grid>
                         <Grid item xs={12} sm={6}>

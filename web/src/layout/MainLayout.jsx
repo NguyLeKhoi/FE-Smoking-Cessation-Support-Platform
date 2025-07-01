@@ -4,13 +4,14 @@ import Footer from '../components/layout/Footer';
 import Chatbox from '../components/Chatbox';
 import { Box, IconButton } from '@mui/material';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
-import { isAuthenticated, logout } from '../services/authService'; 
+import { isAuthenticated, logout } from '../services/authService';
 import { Toaster } from 'react-hot-toast';
 import { useLocation } from 'react-router-dom';
 
 export default function MainLayout({ children, showHeader = true, showFooter = true, fab }) {
   const [isChatboxOpen, setIsChatboxOpen] = useState(false);
-  const [authStatus, setAuthStatus] = useState(isAuthenticated()); 
+  const [authStatus, setAuthStatus] = useState(isAuthenticated());
+  const location = useLocation();
 
   const toggleChatbox = () => {
     setIsChatboxOpen(!isChatboxOpen);
@@ -22,6 +23,8 @@ export default function MainLayout({ children, showHeader = true, showFooter = t
     setAuthStatus(false); // Update the auth status state
   };
 
+  const showChatbox = location.pathname !== '/chat-page';
+
   return (
     <>
       <Box sx={{
@@ -29,7 +32,7 @@ export default function MainLayout({ children, showHeader = true, showFooter = t
         display: 'flex',
         flexDirection: 'column',
         minHeight: '100vh',
-        backgroundColor: 'background.paper' 
+        backgroundColor: 'background.paper'
       }}>
         <Toaster />
         {showHeader && (
@@ -51,7 +54,7 @@ export default function MainLayout({ children, showHeader = true, showFooter = t
           sx={{
             flexGrow: 1,
             paddingTop: showHeader ? '64px' : 0,
-            backgroundColor: 'background.paper' 
+            backgroundColor: 'background.paper'
           }}
         >
           {React.Children.map(children, (child) => {
@@ -65,7 +68,7 @@ export default function MainLayout({ children, showHeader = true, showFooter = t
         {/* Floating Action Button or Chat button positioned fixed at bottom right */}
         {fab ? (
           <Box sx={{ position: 'fixed', bottom: 20, right: 20, zIndex: 1200 }}>{fab}</Box>
-        ) : !isChatboxOpen && (
+        ) : showChatbox && !isChatboxOpen && (
           <IconButton
             aria-label="open chat"
             onClick={toggleChatbox}
@@ -84,7 +87,7 @@ export default function MainLayout({ children, showHeader = true, showFooter = t
           </IconButton>
         )}
 
-        {isChatboxOpen && <Chatbox onClose={toggleChatbox} />}
+        {showChatbox && isChatboxOpen && <Chatbox onClose={toggleChatbox} />}
 
         {showFooter && <Footer />}
       </Box>
