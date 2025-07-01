@@ -3,6 +3,7 @@ import MainLayout from '../layout/MainLayout';
 import AuthLayout from '../layout/AuthLayout';
 import ProtectedRoute from '../components/ProtectedRoute';
 import QuitPlanMainLayout from '../layout/QuitPlanMainLayout';
+import AdminLayout from '../layout/AdminLayout';
 
 //auth
 import Loginpage from '../pages/auth/Loginpage';
@@ -10,6 +11,7 @@ import Signuppage from '../pages/auth/SignupPage';
 import ForgotPasswordPage from '../pages/auth/ForgotPasswordPage';
 import ResetPasswordPage from '../pages/auth/ResetPasswordPage';
 import LoginSuccessPage from '../pages/auth/LoginSuccessPage';
+import RegisterCoachPage from '../pages/auth/RegisterCoachPage';
 
 //main
 import Homepage from '../pages/main/Homepage';
@@ -233,13 +235,20 @@ export const routes = createBrowserRouter([
     path: '/admin/*',
     element: (
       <ProtectedRoute requireAdmin={true}>
-        <MainLayout>
+        <AdminLayout>
           <AdminDashboard />
-        </MainLayout>
+        </AdminLayout>
       </ProtectedRoute>
     ),
   },
-
+  {
+    path: '/register-coach',
+    element: (
+      <AuthLayout>
+        <RegisterCoachPage />
+      </AuthLayout>
+    ),
+  },
   {
     path: '*',
     element: (
