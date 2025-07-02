@@ -20,68 +20,80 @@ const CoachInfo = ({ coach, onStartChat }) => {
                     minHeight: "500px",
                     maxHeight: '500px',
                     width: 700,
+                    display: 'flex',
+                    flexDirection: 'column',
                 }}
             >
-                <Box sx={{ mb: 3 }}>
+                <Box sx={{ flex: 1 }}>
+                    <Box sx={{ mb: 3 }}>
+
+                        <Typography
+                            variant="body1"
+                            sx={{
+                                color: '#3f332b',
+                                fontWeight: 500,
+                            }}
+                        >
+                            {coach.specialization || ''}
+                        </Typography>
+
+                        <Typography
+                            variant="h4"
+                            sx={{
+                                fontWeight: 500,
+                                color: '#1e293b',
+                            }}
+                        >
+                            {coach.users?.username || 'Professional Coach'}
+                        </Typography>
+
+                    </Box>
 
                     <Typography
-                        variant="h4"
+                        variant="body1"
                         sx={{
-                            fontWeight: 600,
-                            color: '#1e293b',
+                            color: '#475569',
+                            lineHeight: 1.7,
+                            mb: 1,
+                            my: 1,
+                            fontSize: '1.1rem'
                         }}
                     >
-                        {coach.users?.username || 'Professional Coach'}
+                        {coach.bio || ''}
                     </Typography>
-                    <Typography
-                        variant="h6"
-                        sx={{
-                            color: '#3f332b',
-                            fontWeight: 600,
-                        }}
-                    >
-                        {coach.specialization || ''}
-                    </Typography>
-                </Box>
 
-                <Typography
-                    variant="body1"
-                    sx={{
-                        color: '#475569',
-                        lineHeight: 1.7,
-                        mb: 1,
-                        my: 1,
-                        fontSize: '1.1rem'
-                    }}
-                >
-                    {coach.bio || ''}
-                </Typography>
+                    {/* Stats */}
+                    {coach.experience_years && (
+                        <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+                            <Typography variant="body1" sx={{
+                                color: '#475569',
+                                lineHeight: 1.7,
+                                mb: 1,
+                                my: 1,
+                                fontSize: '1.1rem'
+                            }}>
+                                {coach.experience_years} {""}
+                                years experience
+                            </Typography>
+                        </Box>
+                    )}
 
-                {/* Stats */}
-                {coach.experience_years && (
-                    <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
-                        <Typography variant="h6" sx={{ color: '#1e293b' }}>
-                            {coach.experience_years} {""}
-                            years experience
+
+                    {/* Contact Info */}
+                    <Box sx={{ mb: 4 }}>
+                        <Typography variant="h6" sx={{ fontWeight: 500, color: '#1e293b', mb: 1 }}>
+                            Contact Information
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: '#64748b', mb: 1 }}>
+                            📧 {coach.users?.email || 'Available upon request'}
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: '#64748b', mb: 1 }}>
+                            📞 {coach.users?.phone_number || 'Available upon request'}
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: '#64748b' }}>
+                            🕒 {coach.working_hours || 'Mon-Fri 9:00-17:00'}
                         </Typography>
                     </Box>
-                )}
-
-
-                {/* Contact Info */}
-                <Box sx={{ mb: 4 }}>
-                    <Typography variant="h6" sx={{ fontWeight: 600, color: '#1e293b', mb: 2 }}>
-                        Contact Information
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: '#64748b', mb: 1 }}>
-                        📧 {coach.users?.email || 'Available upon request'}
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: '#64748b', mb: 1 }}>
-                        📞 {coach.users?.phone_number || 'Available upon request'}
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: '#64748b' }}>
-                        🕒 {coach.working_hours || 'Mon-Fri 9:00-17:00'}
-                    </Typography>
                 </Box>
 
                 <Button
@@ -97,6 +109,7 @@ const CoachInfo = ({ coach, onStartChat }) => {
                         fontWeight: 600,
                         textTransform: 'none',
                         fontSize: '1rem',
+                        marginTop: 'auto',
                         '&:hover': {
                             bgcolor: '#334155'
                         }
