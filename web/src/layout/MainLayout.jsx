@@ -3,7 +3,7 @@ import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import Chatbox from '../components/Chatbox';
 import { Box, IconButton } from '@mui/material';
-import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+import FaceRetouchingNaturalOutlinedIcon from '@mui/icons-material/FaceRetouchingNaturalOutlined';
 import { isAuthenticated, logout } from '../services/authService';
 import { Toaster } from 'react-hot-toast';
 import { useLocation } from 'react-router-dom';
@@ -83,7 +83,7 @@ export default function MainLayout({ children, showHeader = true, showFooter = t
               transition: 'right 0.3s ease-in-out',
             }}
           >
-            <ChatBubbleOutlineIcon />
+            <FaceRetouchingNaturalOutlinedIcon />
           </IconButton>
         )}
 
