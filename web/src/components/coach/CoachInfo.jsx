@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, Avatar, Typography, Chip, Button, Box } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
+import { Email, Phone, AccessTime } from '@mui/icons-material';
 
 const CoachInfo = ({ coach, onStartChat }) => {
     const navigate = useNavigate();
@@ -12,14 +13,14 @@ const CoachInfo = ({ coach, onStartChat }) => {
                 elevation={2}
                 sx={{
                     flex: 1,
-                    borderRadius: 4,
+                    borderRadius: 5,
                     p: 4,
-                    bgcolor: '#f8fafc',
+                    bgcolor: '#ffffff',
                     border: '1px solid rgba(0,0,0,0.08)',
                     height: 'fit-content',
                     minHeight: "500px",
                     maxHeight: '500px',
-                    width: 700,
+                    width: 500,
                     display: 'flex',
                     flexDirection: 'column',
                 }}
@@ -84,15 +85,24 @@ const CoachInfo = ({ coach, onStartChat }) => {
                         <Typography variant="h6" sx={{ fontWeight: 500, color: '#1e293b', mb: 1 }}>
                             Contact Information
                         </Typography>
-                        <Typography variant="body2" sx={{ color: '#64748b', mb: 1 }}>
-                            📧 {coach.users?.email || 'Available upon request'}
-                        </Typography>
-                        <Typography variant="body2" sx={{ color: '#64748b', mb: 1 }}>
-                            📞 {coach.users?.phone_number || 'Available upon request'}
-                        </Typography>
-                        <Typography variant="body2" sx={{ color: '#64748b' }}>
-                            🕒 {coach.working_hours || 'Mon-Fri 9:00-17:00'}
-                        </Typography>
+                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                            <Email sx={{ mr: 1, color: '#64748b', fontSize: '1.2rem' }} />
+                            <Typography variant="body2" sx={{ color: '#64748b' }}>
+                                {coach.users?.email || 'Available upon request'}
+                            </Typography>
+                        </Box>
+                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                            <Phone sx={{ mr: 1, color: '#64748b', fontSize: '1.2rem' }} />
+                            <Typography variant="body2" sx={{ color: '#64748b' }}>
+                                {coach.users?.phone_number || 'Available upon request'}
+                            </Typography>
+                        </Box>
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <AccessTime sx={{ mr: 1, color: '#64748b', fontSize: '1.2rem' }} />
+                            <Typography variant="body2" sx={{ color: '#64748b' }}>
+                                {coach.working_hours || 'Mon-Fri 9:00-17:00'}
+                            </Typography>
+                        </Box>
                     </Box>
                 </Box>
 
@@ -103,7 +113,7 @@ const CoachInfo = ({ coach, onStartChat }) => {
                     sx={{
                         bgcolor: '#1e293b',
                         color: 'white',
-                        borderRadius: 2,
+                        borderRadius: 5,
                         py: 1.5,
                         px: 4,
                         fontWeight: 600,
@@ -123,19 +133,20 @@ const CoachInfo = ({ coach, onStartChat }) => {
             <Card
                 elevation={2}
                 sx={{
-                    width: 400,
+                    width: 500,
                     height: 500,
-                    borderRadius: 4,
+                    borderRadius: 5,
                     overflow: 'hidden',
                     position: 'relative',
-                    background: '#ffd8ba',
+                    background: '#ffffff',
                     minHeight: "500px",
                     maxHeight: '600px',
+                    
                 }}
             >
 
 
-                {/* Avatar with Blob Clip */}
+                {/* Avatar */}
                 <Box
                     sx={{
                         position: 'absolute',
@@ -144,6 +155,7 @@ const CoachInfo = ({ coach, onStartChat }) => {
                         transform: 'translate(-50%, -50%)',
                         width: 280,
                         height: 280,
+                        
                     }}
                 >
                     <Avatar
@@ -152,11 +164,11 @@ const CoachInfo = ({ coach, onStartChat }) => {
                         sx={{
                             width: '100%',
                             height: '100%',
-                            bgcolor: 'rgba(255,255,255,0.3)',
+                            bgcolor: '#f0f0f0',
                             fontSize: '4rem',
                             fontWeight: 700,
-                            color: 'white',
-                            clipPath: 'url(#blobClip)',
+                            color: '#3f332b',
+                            borderRadius: '15%',
                         }}
                     >
                         {coach.users?.username ? coach.users.username.charAt(0).toUpperCase() : '?'}
@@ -177,16 +189,17 @@ const CoachInfo = ({ coach, onStartChat }) => {
                         to={`/profile/${coach.user_id}`}
                         variant="outlined"
                         sx={{
-                            color: 'white',
-                            borderColor: 'rgba(255,255,255,0.5)',
-                            borderRadius: 2,
+                            color: 'black',
+                            borderColor: '#000000',
+                            borderRadius: 5,
                             px: 3,
                             py: 1,
                             fontWeight: 600,
                             textTransform: 'none',
                             '&:hover': {
+                                color: 'white',
                                 borderColor: 'white',
-                                bgcolor: 'rgba(255,255,255,0.1)'
+                                bgcolor: '#000000'
                             }
                         }}
                     >

@@ -32,13 +32,10 @@ const UserInfoSection = ({
         }
     }, [userData.dob]);
 
-    // Determine if email and dob should be editable (only if they're empty)
     const isEmailEditable = !userData.email;
 
-    // Preview the avatar URL when editing
     const avatarPreview = isEditing ? formData.avatar || userData.avatar : userData.avatar;
 
-    // Handle date change for the DatePicker
     const handleDateChange = (newValue) => {
         if (newValue) {
             const formattedDate = format(newValue, 'yyyy-MM-dd');
