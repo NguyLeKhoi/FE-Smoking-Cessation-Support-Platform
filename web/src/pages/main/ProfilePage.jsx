@@ -7,7 +7,6 @@ import UserInfoSection from '../../components/profilePage/UserInfoSection';
 import StatisticsSection from '../../components/profilePage/StatisticsSection';
 import AchievementSection from '../../components/profilePage/AchievementSection';
 import LoadingPage from '../LoadingPage'
-import QuitPlanPage from '../quit-plans/QuitPlanPage';
 
 export default function ProfilePage({ handleLogout }) {
   const navigate = useNavigate();
@@ -213,9 +212,6 @@ export default function ProfilePage({ handleLogout }) {
           </Button>
         </Box>
       </Box>
-      <Routes>
-        <Route path="/quit-plan" element={<QuitPlanPage />} />
-      </Routes>
     </>
   );
 }

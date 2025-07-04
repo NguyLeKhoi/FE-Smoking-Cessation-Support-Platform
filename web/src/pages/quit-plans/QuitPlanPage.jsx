@@ -114,7 +114,21 @@ const QuitPlanPage = ({ setHasActivePlan }) => {
             <TableBody>
               <TableRow>
                 <TableCell align="center">{plan.reason}</TableCell>
-                <TableCell align="center">{plan.plan_type}</TableCell>
+                <TableCell align="center">
+                  <Typography
+                    fontWeight={900}
+                    sx={{
+                      color:
+                        String(plan.plan_type).toLowerCase() === 'standard' ? '#388e3c' :
+                        String(plan.plan_type).toLowerCase() === 'slow' ? '#1976d2' :
+                        String(plan.plan_type).toLowerCase() === 'aggressive' ? '#ff9800' :
+                        '#222',
+                      textTransform: 'uppercase',
+                    }}
+                  >
+                    {String(plan.plan_type).toUpperCase()}
+                  </Typography>
+                </TableCell>
                 <TableCell align="center">
                   <Box display="inline-flex" alignItems="center" gap={1}>
                     <HourglassEmptyIcon sx={{ fontSize: 18, color: plan.status === 'ACTIVE' ? '#43a047' : plan.status === 'PENDING' ? '#ff9800' : '#e53935' }} />
