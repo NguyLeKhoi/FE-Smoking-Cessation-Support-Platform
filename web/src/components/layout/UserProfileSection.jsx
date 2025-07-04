@@ -118,7 +118,7 @@ const UserProfileSection = ({ authStatus, loadingMotivation, notifications, setN
                         mr: 1,
                     }}
                 >
-                    Welcome back, {userData.username}!
+                    Welcome back, {userData.first_name}!
                 </Typography>
             );
         }
