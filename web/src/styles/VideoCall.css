@@ -1,0 +1,295 @@
+/* Modern Discord/Messenger-style video call UI */
+
+/* Hide ALL Default LiveKit Controls */
+.lk-control-bar,
+.lk-control-bar-container,
+.lk-button-bar,
+.lk-control-bar-wrapper,
+.lk-toolbar,
+.lk-chat-toggle,
+.lk-settings-toggle,
+.lk-disconnect-button,
+.lk-media-button,
+.lk-button,
+.lk-chat-modal,
+.lk-settings-modal,
+[data-testid="control-bar"],
+[data-testid="chat-toggle"],
+[data-testid="settings-toggle"],
+[data-testid="disconnect-button"],
+[data-testid="media-button"],
+[data-testid="button-bar"],
+/* Hide all buttons in the VideoConference component */
+div[class*="control"],
+div[class*="button"],
+button[class*="lk-"],
+/* Hide chat and settings panels */
+.lk-chat,
+.lk-chat-container,
+.lk-settings,
+.lk-settings-container {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  height: 0 !important;
+  width: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Ensure video conference takes full space without controls */
+.lk-video-conference {
+  height: 100% !important;
+  width: 100% !important;
+}
+
+.lk-video-conference > div:last-child {
+  display: none !important; /* Hide bottom control area */
+}
+
+/* Base LiveKit Room Styling */
+.lk-room-container {
+  height: 100%;
+  width: 100%;
+  position: relative;
+  background: linear-gradient(135deg, #0D1117 0%, #161B22 50%, #21262D 100%);
+  border-radius: 0px;
+  overflow: hidden;
+}
+
+/* Modern Participant Tiles */
+.lk-participant-tile {
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  background: linear-gradient(145deg, #21262D, #161B22);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.lk-participant-tile:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(88, 101, 242, 0.3);
+}
+
+/* Participant Avatar/Placeholder */
+.lk-participant-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #5865F2, #7289DA);
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 600;
+  position: relative;
+}
+
+.lk-participant-placeholder::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, transparent 40%, rgba(0, 0, 0, 0.2) 100%);
+}
+
+/* Modern Participant Name Badge */
+.lk-participant-name {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  z-index: 2;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Grid Layouts with Modern Spacing */
+.lk-focus-layout {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  gap: 16px;
+}
+
+.lk-grid-layout {
+  height: 100%;
+  display: grid;
+  gap: 16px;
+  padding: 20px;
+}
+
+.lk-grid-layout-1 {
+  grid-template-columns: 1fr;
+}
+
+.lk-grid-layout-2 {
+  grid-template-columns: 1fr 1fr;
+}
+
+.lk-grid-layout-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.lk-grid-layout-4 {
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+}
+
+.lk-grid-layout-5,
+.lk-grid-layout-6 {
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+}
+
+/* Video Element Styling */
+.lk-video-element {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 16px;
+}
+
+/* Audio Indicator - Modern Style */
+.lk-audio-indicator {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #00D26A;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 210, 106, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  animation: pulse-green 2s infinite;
+}
+
+.lk-audio-indicator.muted {
+  background: #F23F42;
+  box-shadow: 0 4px 12px rgba(242, 63, 66, 0.3);
+  animation: pulse-red 2s infinite;
+}
+
+/* Audio Level Visualization */
+.lk-audio-indicator::after {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: white;
+  border-radius: 50%;
+  opacity: 0.9;
+}
+
+.lk-audio-indicator.muted::after {
+  content: '✕';
+  background: none;
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  width: auto;
+  height: auto;
+}
+
+/* Custom Animations */
+@keyframes pulse-green {
+  0% { 
+    transform: scale(1);
+    box-shadow: 0 4px 12px rgba(0, 210, 106, 0.3);
+  }
+  50% { 
+    transform: scale(1.1);
+    box-shadow: 0 4px 20px rgba(0, 210, 106, 0.5);
+  }
+  100% { 
+    transform: scale(1);
+    box-shadow: 0 4px 12px rgba(0, 210, 106, 0.3);
+  }
+}
+
+@keyframes pulse-red {
+  0% { 
+    transform: scale(1);
+    box-shadow: 0 4px 12px rgba(242, 63, 66, 0.3);
+  }
+  50% { 
+    transform: scale(1.1);
+    box-shadow: 0 4px 20px rgba(242, 63, 66, 0.5);
+  }
+  100% { 
+    transform: scale(1);
+    box-shadow: 0 4px 12px rgba(242, 63, 66, 0.3);
+  }
+}
+
+/* Connection Quality Indicator */
+.lk-connection-quality {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 2;
+}
+
+.lk-connection-quality-excellent {
+  color: #00D26A;
+}
+
+.lk-connection-quality-good {
+  color: #FAB005;
+}
+
+.lk-connection-quality-poor {
+  color: #F23F42;
+}
+
+/* Speaking Indicator */
+.lk-participant-tile.lk-speaking {
+  border: 2px solid #00D26A;
+  box-shadow: 0 0 0 4px rgba(0, 210, 106, 0.2);
+  animation: speaking-glow 1s ease-in-out infinite alternate;
+}
+
+@keyframes speaking-glow {
+  from {
+    box-shadow: 0 0 0 4px rgba(0, 210, 106, 0.2);
+  }
+  to {
+    box-shadow: 0 0 0 8px rgba(0, 210, 106, 0.4);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .lk-grid-layout {
+    padding: 12px;
+    gap: 12px;
+  }
+  
+  .lk-participant-tile {
+    border-radius: 12px;
+  }
+  
+  .lk-participant-name {
+    bottom: 8px;
+    left: 8px;
+    padding: 6px 10px;
+    font-size: 0.75rem;
+  }
+  
+  .lk-focus-layout {
+    padding: 12px;
+    gap: 12px;
+  }
+} 

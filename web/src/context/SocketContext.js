@@ -12,7 +12,6 @@ export const SocketProvider = ({ children }) => {
     useEffect(() => {
         const socketInstance = io('http://localhost:8000/chat', {
             transports: ['websocket'],
-
             auth: {
                 token: token
             }
@@ -20,13 +19,8 @@ export const SocketProvider = ({ children }) => {
 
         setSocket(socketInstance);
 
-        // ✅ Lắng nghe sự kiện kết nối để debug
-        socketInstance.on('connect', () => {
-            console.log('✅ Socket connected:', socketInstance.id);
-        });
-
         socketInstance.on('connect_error', (err) => {
-            console.error('❌ Socket connection error:', err.message);
+            console.error('Socket connection error:', err.message);
         });
 
         return () => {
