@@ -46,6 +46,12 @@ api.interceptors.response.use(
           return api(originalRequest);
         }
       } catch (refreshError) {
+        // Disconnect socket if it exists
+        const socketInstance = window.socketInstance;
+        if (socketInstance && socketInstance.connected) {
+          socketInstance.disconnect();
+        }
+        
         // Clear tokens and redirect to login
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');

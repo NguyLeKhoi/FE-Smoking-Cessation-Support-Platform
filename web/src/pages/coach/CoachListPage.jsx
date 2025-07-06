@@ -16,7 +16,7 @@ const CoachListPage = () => {
     const [error, setError] = useState(null);
     const [chatRooms, setChatRooms] = useState([]);
     const [chatRoomsLoading, setChatRoomsLoading] = useState(false);
-    const socket = useSocket();
+    const { socket } = useSocket();
     const [openChatRooms, setOpenChatRooms] = useState([]);
     const [role, setRole] = useState(null);
 
