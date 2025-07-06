@@ -60,6 +60,11 @@ export const refreshToken = async () => {
 
 export const logout = async () => {
   try {
+    const socketInstance = window.socketInstance;
+    if (socketInstance && socketInstance.connected) {
+      socketInstance.disconnect();
+    }
+
     // Call the backend logout API
     await api.post('/auth/logout');
     console.log('Backend logout successful.');

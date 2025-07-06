@@ -15,7 +15,7 @@ const ChatWindow = ({ room, onClose }) => {
     const [isOtherUserOnline, setIsOtherUserOnline] = useState(false);
     const [isTyping, setIsTyping] = useState(false);
     const [otherUserTyping, setOtherUserTyping] = useState(false);
-    const socket = useSocket();
+    const { socket } = useSocket();
     const messagesEndRef = useRef(null);
     const typingTimeoutRef = useRef(null);
     

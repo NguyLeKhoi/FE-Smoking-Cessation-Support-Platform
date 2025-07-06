@@ -9,7 +9,7 @@ const ChatRoom = ({ room, onOpenChat }) => {
     const [loading, setLoading] = useState(true);
     const [lastMessage, setLastMessage] = useState(null);
     const [unauthorized, setUnauthorized] = useState(false);
-    const socket = useSocket();
+    const { socket } = useSocket();
 
     useEffect(() => {
         const fetchMessages = async () => {

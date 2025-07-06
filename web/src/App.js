@@ -11,7 +11,7 @@ import IncomingCallModal from './components/chat/IncomingCallModal';
 import VideoCall from './components/chat/VideoCall';
 
 const GlobalCallManager = () => {
-  const socket = useSocket();
+  const { socket } = useSocket();
   const [incomingCall, setIncomingCall] = useState(null);
   const [isInVideoCall, setIsInVideoCall] = useState(false);
   const [videoToken, setVideoToken] = useState(null);

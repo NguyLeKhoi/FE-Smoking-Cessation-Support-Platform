@@ -6,9 +6,11 @@ import GlowingDotsGrid from '../../components/animated/GlowingDotsGrid';
 import LoadingPage from '../LoadingPage';
 import HomeIcon from '@mui/icons-material/Home'; // Import the home icon
 import { jwtDecode } from 'jwt-decode';
+import { useSocket } from '../../context/SocketContext';
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const { refreshSocket } = useSocket();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -42,6 +44,9 @@ export default function LoginPage() {
     try {
       const response = await login(formData);
       if (response && response.accessToken) {
+        // Refresh socket connection with new token
+        refreshSocket();
+        
         // Decode token để kiểm tra role
         const decoded = jwtDecode(response.accessToken);
         if (decoded.role === 'admin') {
