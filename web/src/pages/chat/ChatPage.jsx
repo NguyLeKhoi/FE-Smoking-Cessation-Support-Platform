@@ -11,7 +11,7 @@ const ChatPage = () => {
     const [loading, setLoading] = useState(true);
     const [selectedRoom, setSelectedRoom] = useState(null);
     const [role, setRole] = useState(null);
-    const socket = useSocket();
+    const { socket } = useSocket();
 
     useEffect(() => {
         const accessToken = localStorage.getItem('accessToken');
