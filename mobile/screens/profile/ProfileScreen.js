@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -7,12 +7,53 @@ import {
   SafeAreaView,
   ScrollView,
   Image,
+  TextInput,
+  Button,
+  ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { logout } from '../service/authService';
+import userService from '../../service/userService';
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
+
+  const fetchUser = async () => {
+    setLoading(true);
+    try {
+      const data = await userService.fetchCurrentUser();
+      setUser(data);
+      setName(data.name || '');
+      setEmail(data.email || '');
+    } catch (error) {
+      Alert.alert('Lỗi', 'Không thể tải thông tin cá nhân');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await userService.updateCurrentUser({ name, email });
+      Alert.alert('Thành công', 'Đã cập nhật thông tin cá nhân');
+      fetchUser();
+    } catch (error) {
+      Alert.alert('Lỗi', 'Không thể cập nhật thông tin');
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const handleLogout = async () => {
     try {
@@ -27,7 +68,6 @@ const ProfileScreen = () => {
   const userData = {
     username: "johnsmith",
     role: "MEMBER",
-    email: "john.smith@example.com",
     phone_number: "+84 (555) 123-4567",
     dob: "1990-05-15",
     joined: "June 2023"
@@ -60,6 +100,9 @@ const ProfileScreen = () => {
     }
   ];
 
+  if (loading) return <ActivityIndicator size="large" style={{ flex: 1 }} />;
+  if (!user) return <Text>Không tìm thấy thông tin người dùng</Text>;
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
@@ -88,7 +131,13 @@ const ProfileScreen = () => {
                   <View style={styles.infoColumn}>
                     <View style={styles.infoItem}>
                       <Text style={styles.infoLabel}>Email</Text>
-                      <Text style={styles.infoValue}>{userData.email}</Text>
+                      <TextInput
+                        style={styles.input}
+                        value={email}
+                        onChangeText={setEmail}
+                        placeholder="Nhập email"
+                        keyboardType="email-address"
+                      />
                     </View>
                     <View style={styles.infoItem}>
                       <Text style={styles.infoLabel}>Phone Number</Text>
@@ -132,6 +181,8 @@ const ProfileScreen = () => {
           <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
             <Text style={styles.logoutButtonText}>Log Out</Text>
           </TouchableOpacity>
+
+          <Button title={saving ? 'Đang lưu...' : 'Lưu thay đổi'} onPress={handleSave} disabled={saving} />
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -293,6 +344,16 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 6,
+    padding: 8,
+    marginTop: 8,
+    marginBottom: 8,
+    fontSize: 16,
+    backgroundColor: '#fff',
   },
 });
 

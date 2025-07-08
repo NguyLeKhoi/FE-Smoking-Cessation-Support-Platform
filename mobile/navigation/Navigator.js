@@ -4,13 +4,19 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
-import BlogScreen from '../screen/BlogScreen';
-import ProfileScreen from '../screen/ProfileScreen';
-import LoginScreen from '../screen/LoginScreen';
-import SignUpScreen from '../screen/SignUpScreen';
-import ForgotPasswordScreen from '../screen/ForgotPasswordScreen';
-import AiChatbox from '../screen/AiChatbox';
+import BlogScreen from '../screens/blog/BlogScreen';
+import ProfileScreen from '../screens/profile/ProfileScreen';
+import LoginScreen from '../screens/auth/LoginScreen';
+import SignUpScreen from '../screens/auth/SignUpScreen';
+import ForgotPasswordScreen from '../screens/auth/ForgotPasswordScreen';
+import AiChatbox from '../screens/chat/AiChatbox';
 import { isAuthenticated } from '../service/authService';
+import BlogDetailScreen from '../screens/blog/BlogDetailScreen';
+import CreateBlogScreen from '../screens/blog/CreateBlogScreen';
+import EditBlogScreen from '../screens/blog/EditBlogScreen';
+import MembershipPlansScreen from '../screens/membership/MembershipPlansScreen';
+import SubscriptionScreen from '../screens/membership/SubscriptionScreen';
+import PaymentSuccessScreen from '../screens/membership/PaymentSuccessScreen';
 
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
@@ -119,6 +125,12 @@ const Navigator = () => {
         <Stack.Screen name="SignUp" component={SignUpScreen} />
         <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
         <Stack.Screen name="MainApp" component={DrawerNavigator} />
+        <Stack.Screen name="BlogDetail" component={BlogDetailScreen} />
+        <Stack.Screen name="CreateBlog" component={CreateBlogScreen} />
+        <Stack.Screen name="EditBlog" component={EditBlogScreen} />
+        <Stack.Screen name="MembershipPlans" component={MembershipPlansScreen} />
+        <Stack.Screen name="Subscription" component={SubscriptionScreen} />
+        <Stack.Screen name="PaymentSuccess" component={PaymentSuccessScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
