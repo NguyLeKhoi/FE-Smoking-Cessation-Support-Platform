@@ -24,6 +24,10 @@ const NavLinks = () => {
             path: '/membership-plans',
             label: 'Membership'
         },
+        {
+            path: '/quit-plan',
+            label: 'Quit Plan'
+        },
       
     ];
 

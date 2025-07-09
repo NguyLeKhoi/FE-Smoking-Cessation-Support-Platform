@@ -17,7 +17,6 @@ const menuItems = [
     { label: 'QUESTS', icon: <ExploreIcon fontSize="medium" />, hasNotification: true, path: '/quests' },
     { label: 'MY POSTS', icon: <ArticleIcon fontSize="medium" />, path: '/my-blog' },
     { label: 'PROFILE', icon: <PersonIcon fontSize="medium" />, path: '/profile' },
-    { label: 'QUIT PLAN', icon: <BlockIcon fontSize="medium" />, path: '/quit-plan' },
     { label: 'MORE', icon: <MoreHorizIcon fontSize="medium" />, path: '/more' },
 ];
 

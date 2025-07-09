@@ -13,6 +13,7 @@ export default function SignupPage() {
     email: '',
     password: '',
     confirmPassword: '',
+    phone_number: '',
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -52,6 +53,10 @@ export default function SignupPage() {
       setError('Please enter a valid email address');
       return false;
     }
+    if (!formData.phone_number.trim()) {
+      setError('Please enter your phone number');
+      return false;
+    }
     return true;
   };
 
@@ -70,6 +75,7 @@ export default function SignupPage() {
         username: formData.username,
         email: formData.email,
         password: formData.password,
+        phone_number: formData.phone_number,
       };
 
       console.log('Signup data being sent:', userData);
@@ -261,13 +267,13 @@ export default function SignupPage() {
                   />
                   <TextField
                     fullWidth
-                    label="Confirm Password"
-                    name="confirmPassword"
-                    type="password"
-                    value={formData.confirmPassword}
+                    label="Phone Number"
+                    name="phone_number"
+                    type="tel"
+                    value={formData.phone_number}
                     onChange={handleChange}
                     required
-                    autoComplete="new-password"
+                    autoComplete="tel"
                     sx={textFieldStyle}
                   />
                 </Box>

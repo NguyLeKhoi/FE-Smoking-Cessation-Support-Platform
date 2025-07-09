@@ -52,7 +52,7 @@ export default function LoginPage() {
         if (decoded.role === 'admin') {
           navigate('/admin');
         } else {
-          navigate('/');
+        navigate('/');
         }
       } else {
         setError('Login failed: Invalid credentials or server response.');

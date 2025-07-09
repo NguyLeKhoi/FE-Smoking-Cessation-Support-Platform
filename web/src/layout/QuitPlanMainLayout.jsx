@@ -8,6 +8,7 @@ import { Toaster } from 'react-hot-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
 import quitPlanService from '../services/quitPlanService';
 import Tooltip from '@mui/material/Tooltip';
+import CreateQuitPlanModal from '../components/quit-plans/CreateQuitPlanModal';
 
 export default function QuitPlanMainLayout({ children, showHeader = true, showFooter = true, onPlanCreated }) {
   const [authStatus, setAuthStatus] = useState(isAuthenticated());
@@ -17,6 +18,7 @@ export default function QuitPlanMainLayout({ children, showHeader = true, showFo
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [hasActivePlan, setHasActivePlan] = useState(false);
+  const [hasSmokingHabit, setHasSmokingHabit] = useState(true);
   const navigate = useNavigate();
 
   // Function to handle logout and update auth status
@@ -25,7 +27,10 @@ export default function QuitPlanMainLayout({ children, showHeader = true, showFo
     setAuthStatus(false);
   };
 
-  const handleOpenModal = () => setModalOpen(true);
+  const handleOpenModal = () => {
+    setModalOpen(true);
+    setHasSmokingHabit(true);
+  };
   const handleCloseModal = () => {
     setModalOpen(false);
     setReason('');
@@ -33,8 +38,7 @@ export default function QuitPlanMainLayout({ children, showHeader = true, showFo
     setError('');
   };
 
-  const handleCreatePlan = async (e) => {
-    e.preventDefault();
+  const handleCreatePlan = async ({ reason, planType }) => {
     setLoading(true);
     setError('');
     try {
@@ -42,7 +46,6 @@ export default function QuitPlanMainLayout({ children, showHeader = true, showFo
       if (onPlanCreated) await onPlanCreated();
       handleCloseModal();
       navigate('/quit-plan', { state: { result: response.data } });
-      
     } catch (err) {
       setError(err?.response?.data?.message || err?.message || 'Failed to create quit plan');
     } finally {
@@ -102,40 +105,17 @@ export default function QuitPlanMainLayout({ children, showHeader = true, showFo
           </span>
         </Tooltip>
         {/* Modal for creating a new quit plan */}
-        <Modal
+        <CreateQuitPlanModal
           open={modalOpen}
           onClose={handleCloseModal}
-          aria-labelledby="create-quit-plan-modal"
-          sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-        >
-          <Paper sx={{ p: 4, maxWidth: 400, width: '100%' }}>
-            <Typography id="create-quit-plan-modal" variant="h6" fontWeight={700} mb={2}>
-              Create New Quit Plan
-            </Typography>
-            <form onSubmit={handleCreatePlan}>
-              <TextField
-                label="Reason"
-                value={reason}
-                onChange={e => setReason(e.target.value)}
-                fullWidth
-                required
-                margin="normal"
-              />
-              <TextField
-                label="Plan Type"
-                value={planType}
-                onChange={e => setPlanType(e.target.value)}
-                fullWidth
-                required
-                margin="normal"
-              />
-              <Button type="submit" variant="contained" color="primary" disabled={loading} sx={{ mt: 2, width: '100%' }}>
-                {loading ? 'Creating...' : 'Create Quit Plan'}
-              </Button>
-            </form>
-            {error && <Typography color="error" mt={2}>{error}</Typography>}
-          </Paper>
-        </Modal>
+          onSubmit={handleCreatePlan}
+          loading={loading}
+          error={error}
+          hasSmokingHabit={hasSmokingHabit}
+          onTakeQuiz={() => { setModalOpen(false); navigate('/smoking-quiz'); }}
+          initialReason={reason}
+          initialPlanType={planType}
+        />
         {showFooter && <Footer />}
       </Box>
     </>
