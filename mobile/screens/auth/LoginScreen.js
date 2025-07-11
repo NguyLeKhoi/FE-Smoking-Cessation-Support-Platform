@@ -13,9 +13,9 @@ import {
   Image,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { login } from '../service/authService';
+import { login } from '../../service/authService';
 import { startAsync } from 'expo-auth-session';
-import { getGoogleLoginUrl } from '../service/authService';
+import { getGoogleLoginUrl } from '../../service/authService';
 
 const LoginScreen = () => {
   const navigation = useNavigation();

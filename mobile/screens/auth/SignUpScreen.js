@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
-import { signup } from '../service/authService';
+import { signup } from '../../service/authService';
 
 const SignUpScreen = ({ navigation }) => {
   const [form, setForm] = useState({

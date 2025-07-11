@@ -17,10 +17,42 @@ import EditBlogScreen from '../screens/blog/EditBlogScreen';
 import MembershipPlansScreen from '../screens/membership/MembershipPlansScreen';
 import SubscriptionScreen from '../screens/membership/SubscriptionScreen';
 import PaymentSuccessScreen from '../screens/membership/PaymentSuccessScreen';
+import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
+import { TouchableOpacity, Text } from 'react-native';
 
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
+
+// Placeholder screens
+const MyPostsScreen = () => null;
+const AchievementsScreen = () => null;
+
+// Sửa CustomDrawerContent để không còn nút '<'
+const CustomDrawerContent = (props) => (
+  <DrawerContentScrollView {...props}>
+    <DrawerItemList {...props} />
+  </DrawerContentScrollView>
+);
+
+const ProfileDrawer = createDrawerNavigator();
+const ProfileDrawerNavigator = () => (
+  <ProfileDrawer.Navigator
+    initialRouteName="ProfileInfo"
+    drawerContent={props => <CustomDrawerContent {...props} />}
+    screenOptions={{
+      drawerPosition: 'left',
+      drawerType: 'front',
+      drawerStyle: { width: 220 },
+      headerShown: false, // Ẩn header của drawer bên trong
+      swipeEdgeWidth: 40,
+    }}
+  >
+    <ProfileDrawer.Screen name="ProfileInfo" component={ProfileScreen} options={{ title: 'Personal Information' }} />
+    <ProfileDrawer.Screen name="MyPosts" component={MyPostsScreen} options={{ title: 'Bài viết của tôi' }} />
+    <ProfileDrawer.Screen name="Achievements" component={AchievementsScreen} options={{ title: 'Achievements' }} />
+  </ProfileDrawer.Navigator>
+);
 
 const TabNavigator = () => {
   return (
@@ -48,7 +80,7 @@ const TabNavigator = () => {
     >
       <Tab.Screen name="BlogTab" component={BlogScreen} options={{ title: 'Blog' }} />
       <Tab.Screen name="AiChatboxTab" component={AiChatbox} options={{ title: 'AI Coach' }} />
-      <Tab.Screen name="ProfileTab" component={ProfileScreen} options={{ title: 'Profile' }} />
+      <Tab.Screen name="ProfileTab" component={ProfileDrawerNavigator} options={{ title: 'Profile' }} />
     </Tab.Navigator>
   );
 };
