@@ -13,7 +13,7 @@ import BlockIcon from '@mui/icons-material/Block';
 
 
 const menuItems = [
-    { label: 'LEADERBOARDS', icon: <EmojiEventsIcon fontSize="medium" />, path: '/leaderboards' },
+    { label: 'LEADERBOARDS', icon: <EmojiEventsIcon fontSize="medium" />, path: '/leaderboard' },
     { label: 'QUESTS', icon: <ExploreIcon fontSize="medium" />, hasNotification: true, path: '/quests' },
     { label: 'MY POSTS', icon: <ArticleIcon fontSize="medium" />, path: '/my-blog' },
     { label: 'PROFILE', icon: <PersonIcon fontSize="medium" />, path: '/profile' },

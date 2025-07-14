@@ -16,9 +16,14 @@ import RegisterCoachPage from '../pages/auth/RegisterCoachPage';
 //main
 import Homepage from '../pages/main/Homepage';
 import BlogDetails from '../components/blog/BlogDetails';
-import ProfilePage from '../pages/main/ProfilePage';
 import SmokingQuizPage from '../pages/main/SmokingQuizPage';
 import PaymentSuccessPage from '../pages/main/PaymentSuccessPage';
+
+
+//profile
+import ProfilePage from '../pages/profile/ProfilePage';
+import MyBlogPage from '../pages/profile/MyBlogPage';
+import LeaderBoardPage from '../pages/profile/LeaderBoardPage';
 
 //achievements
 import AchievementsPage from '../pages/achievements/AchivementsPage';
@@ -29,7 +34,6 @@ import MembershipPlansPage from '../pages/main/MembershipPlansPage';
 
 //blog
 import Blog from '../pages/blog/Blog';
-import MyBlogPage from '../pages/blog/MyBlogPage';
 import EditBlogPage from '../pages/blog/EditBlogPage';
 import CreateBlogPage from '../pages/blog/CreateBlogPage';
 
@@ -60,6 +64,8 @@ export const routes = createBrowserRouter([
       </MainLayout>
     ),
   },
+
+  //auth
   {
     path: '/login',
     element: (
@@ -85,6 +91,25 @@ export const routes = createBrowserRouter([
     ),
   },
   {
+    path: '/forgot-password',
+    element: (
+      <AuthLayout>
+        <ForgotPasswordPage />
+      </AuthLayout>
+    ),
+  },
+
+  {
+    path: '/reset-password',
+    element: (
+      <AuthLayout>
+        <ResetPasswordPage />
+      </AuthLayout>
+    ),
+  },
+
+  //blog
+  {
     path: '/blog',
     element: (
       <MainLayout showFooter={false} >
@@ -100,24 +125,7 @@ export const routes = createBrowserRouter([
       </MainLayout>
     ),
   },
-  
-  {
-    path: '/my-blog',
-    element: (
-      <ProtectedRoute>
-        <MyBlogPage />
-      </ProtectedRoute>
-    ),
-  },
 
-  {
-    path: '/achievements',
-    element: (
-      <MainLayout showFooter={false} showHeader={false} >
-        <AchievementsPage />
-      </MainLayout>
-    ),
-  },
   {
     path: '/blog/edit/:postId',
     element: (
@@ -139,6 +147,7 @@ export const routes = createBrowserRouter([
     ),
   },
 
+  //profile
   {
     path: '/profile',
     element: (
@@ -149,25 +158,36 @@ export const routes = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
-
   {
-    path: '/forgot-password',
+    path: '/achievements',
     element: (
-      <AuthLayout>
-        <ForgotPasswordPage />
-      </AuthLayout>
+      <MainLayout showFooter={false} showHeader={false} >
+        <AchievementsPage />
+      </MainLayout>
+    ),
+  },
+  {
+    path: '/my-blog',
+    element: (
+      <ProtectedRoute>
+        <MyBlogPage />
+      </ProtectedRoute>
     ),
   },
 
   {
-    path: '/reset-password',
+    path: '/leaderboard',
     element: (
-      <AuthLayout>
-        <ResetPasswordPage />
-      </AuthLayout>
+      <ProtectedRoute>
+        <MainLayout showHeader={false} showFooter={false}>
+          <LeaderBoardPage />
+        </MainLayout>
+      </ProtectedRoute>
     ),
   },
 
+
+//quiz & quit plan
   {
     path: '/smoking-quiz',
     element: (
@@ -177,14 +197,7 @@ export const routes = createBrowserRouter([
     ),
   },
 
-  {
-    path: '/membership-plans',
-    element: (
-      <MainLayout>
-        <MembershipPlansPage />
-      </MainLayout>
-    ),
-  },
+
 
   {
     path: '/quit-plan',
@@ -219,10 +232,23 @@ export const routes = createBrowserRouter([
     ),
   },
 
+  //payment & membership
+
   {
     path: '/payment/success',
     element: <PaymentSuccessPage />,
   },
+
+  {
+    path: '/membership-plans',
+    element: (
+      <MainLayout>
+        <MembershipPlansPage />
+      </MainLayout>
+    ),
+  },
+
+  //coach
 
   {
     path: '/coaches-list',
