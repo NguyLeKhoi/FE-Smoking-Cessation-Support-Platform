@@ -10,96 +10,8 @@ import LoadingPage from '../LoadingPage'
 
 export default function ProfilePage({ handleLogout }) {
   const navigate = useNavigate();
-  const [userData, setUserData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({
-    email: '',
-    first_name: '',
-    last_name: '',
-    dob: '',
-    phone_number: '',
-    avatar: '',
-  });
-
-  useEffect(() => {
-    const loadUserProfile = async () => {
-      try {
-        setLoading(true);
-        const response = await fetchCurrentUser();
-        setUserData(response.data);
-        setFormData({
-          email: response.data.email || '',
-          first_name: response.data.first_name || '',
-          last_name: response.data.last_name || '',
-          dob: response.data.dob || '',
-          phone_number: response.data.phone_number || '',
-          avatar: response.data.avatar || '',
-        });
-      } catch (err) {
-        setError('Failed to load user profile. Please try again later.');
-        console.error('Error loading profile:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadUserProfile();
-  }, []);
 
   useEffect(() => { window.scrollTo({ top: 0 }); }, []);
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleEditToggle = () => {
-    setIsEditing(!isEditing);
-  };
-
-  const handleSave = async () => {
-    try {
-      const updatedUserData = {
-        first_name: formData.first_name,
-        last_name: formData.last_name,
-        phone_number: formData.phone_number,
-        avatar: formData.avatar,
-        dob: formData.dob
-      };
-
-      setLoading(true);
-      const response = await updateCurrentUser(updatedUserData);
-
-      setUserData(prevData => ({
-        ...prevData,
-        ...response.data,
-        dob: response.data.dob || prevData.dob
-      }));
-
-      setFormData(prevFormData => ({
-        ...prevFormData,
-        first_name: response.data.first_name || prevFormData.first_name,
-        last_name: response.data.last_name || prevFormData.last_name,
-        phone_number: response.data.phone_number || prevFormData.phone_number,
-        avatar: response.data.avatar || prevFormData.avatar,
-        email: prevFormData.email,
-        dob: response.data.dob || prevFormData.dob
-      }));
-
-      setIsEditing(false);
-      setError(null);
-    } catch (err) {
-      setError('Failed to update profile. Please try again.');
-      console.error('Error updating profile:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const onLogoutClick = () => {
     handleLogout();
@@ -133,18 +45,6 @@ export default function ProfilePage({ handleLogout }) {
     }
   ];
 
-  if (loading) {
-    return <LoadingPage />;
-  }
-
-  if (error) {
-    return <div className="profile-error">{error}</div>;
-  }
-
-  if (!userData) {
-    return <div className="profile-error">No profile data available</div>;
-  }
-
   return (
     <>
       <Box sx={{
@@ -153,8 +53,7 @@ export default function ProfilePage({ handleLogout }) {
         bgcolor: 'background.default',
         overflow: 'visible'
       }}>
-        {/* Pass userData to the ProfileSidebar */}
-        <ProfileSidebar userData={userData} />
+        <ProfileSidebar userData={null} />
 
         {/* Main content */}
         <Box sx={{
@@ -165,28 +64,16 @@ export default function ProfilePage({ handleLogout }) {
           bgcolor: 'background.paper',
           color: 'text.primary',
         }}>
+          <UserInfoSection />
 
-          {/* User Information Section */}
-          <UserInfoSection
-            userData={userData}
-            formData={formData}
-            isEditing={isEditing}
-            handleEditToggle={handleEditToggle}
-            handleInputChange={handleInputChange}
-            handleSave={handleSave}
-          />
-
-          {/* Statistics Section */}
           <StatisticsSection statisticsData={statisticsData} />
 
-          {/* Achievements Section */}
           <Box sx={{ mt: 5 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
             </Box>
             <AchievementSection />
           </Box>
 
-          {/* Logout Button */}
           <Button
             variant="contained"
             onClick={onLogoutClick}
