@@ -4,7 +4,7 @@ import { styled } from '@mui/material/styles';
 import { motion, AnimatePresence } from 'framer-motion';
 import Lottie from 'lottie-react';
 
-// import animations
+
 const animationMap = {
     'personalized-plan': () => import('../../assets/animations/personalized-plan.json'),
     'expert-coaching': () => import('../../assets/animations/coaching.json'),
@@ -13,7 +13,6 @@ const animationMap = {
     'health-benefits': () => import('../../assets/animations/health.json')
 };
 
-// Styled components
 const SlideContainer = styled(Paper)(({ theme, backgroundColor }) => ({
     minHeight: '500px',
     padding: theme.spacing(6, 4),
@@ -105,8 +104,6 @@ const LazyAnimation = ({ animationType }) => {
     useEffect(() => {
         let isMounted = true;
         setLoading(true);
-
-        // Only load animation if the component is mounted 
         if (animationType && animationMap[animationType]) {
             animationMap[animationType]()
                 .then(module => {
@@ -124,7 +121,6 @@ const LazyAnimation = ({ animationType }) => {
                 });
         }
 
-        // Cleanup function to prevent memory leaks
         return () => {
             isMounted = false;
         };
@@ -186,7 +182,6 @@ const FeatureSlide = ({ slideContent, activeSlide, direction, allSlides, slideOr
     const animationDirection = direction > 0 ? 1 : -1;
 
     const renderLeftSideContent = (slideData, slideId) => {
-        // Only proceed if this slide has a custom animation defined
         if (slideData.customAnimation) {
             return (
                 <Box sx={{

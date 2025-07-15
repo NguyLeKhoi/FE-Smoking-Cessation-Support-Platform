@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Paper, Avatar, CircularProgress, Button } from '@mui/material';
+import { Box, Typography, Paper, Avatar, CircularProgress, LinearProgress, Chip } from '@mui/material';
 import achievementsService from '../../services/achievementsService';
 import { useNavigate } from 'react-router-dom';
 import ProfileSidebar from '../../components/profilePage/ProfileSidebar';
 import { jwtDecode } from 'jwt-decode';
 
 const AchievementsPage = () => {
-    const [allAchievements, setAllAchievements] = useState([]);
-    const [userAchievements, setUserAchievements] = useState([]);
+    const [progressList, setProgressList] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
-        const fetchAchievements = async () => {
+        const fetchAchievementsProgress = async () => {
             const accessToken = localStorage.getItem('accessToken');
             let userId = null;
             if (accessToken) {
@@ -26,27 +25,16 @@ const AchievementsPage = () => {
                 return;
             }
             try {
-                const [allData, userData] = await Promise.all([
-                    achievementsService.getAllAchievements(),
-                    achievementsService.getUserAchievementsById(userId)
-                ]);
-                setAllAchievements(allData.data || []);
-                setUserAchievements(userData.data || []);
+                const progressData = await achievementsService.getUserAchievementsProgressById(userId);
+                setProgressList(Array.isArray(progressData.data) ? progressData.data : []);
             } catch (err) {
-                setError('Failed to load achievements');
+                setError('Failed to load achievement progress');
             } finally {
                 setLoading(false);
             }
         };
-        fetchAchievements();
+        fetchAchievementsProgress();
     }, []);
-
-    // Create a Set of user achievement IDs for fast lookup
-    // Support both id and achievement_id fields for robustness
-    const userAchievementIds = new Set([
-        ...userAchievements.map(a => a.id),
-        ...userAchievements.map(a => a.achievement_id)
-    ].filter(Boolean));
 
     return (
         <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.paper' }}>
@@ -65,35 +53,49 @@ const AchievementsPage = () => {
                         </Box>
                     ) : error ? (
                         <Box sx={{ p: 4, textAlign: 'center', color: 'error.main' }}>{error}</Box>
-                    ) : allAchievements.length === 0 ? (
+                    ) : progressList.length === 0 ? (
                         <Box sx={{ p: 4, textAlign: 'center', color: 'text.secondary' }}>No achievements yet.</Box>
                     ) : (
-                        allAchievements.map((ach, idx) => {
-                            const hasAchievement = userAchievementIds.has(ach.id);
-                            // Use ach.thumbnail as fallback for image
-                            const imageUrl = ach.image_url || ach.thumbnail;
+                        progressList.map((ach, idx) => {
+                            const isMet = ach.isMet;
+                            const progress = Math.min((Number(ach.progressValue) / Number(ach.threshold_value)) * 100, 100);
                             return (
                                 <Box
                                     key={ach.id || idx}
                                     sx={{
                                         p: 3,
-                                        borderBottom: idx !== allAchievements.length - 1 ? '1px solid' : 'none',
+                                        borderBottom: idx !== progressList.length - 1 ? '1px solid' : 'none',
                                         borderColor: 'divider',
                                         display: 'flex',
                                         alignItems: 'center',
                                         gap: 3,
-                                        opacity: hasAchievement ? 1 : 0.5,
-                                        filter: hasAchievement ? 'none' : 'grayscale(100%)',
                                     }}
                                 >
-                                    <Avatar src={imageUrl} alt={ach.name} sx={{ width: 50, height: 50, borderRadius: 2, mr: 2 }} />
+                                    <Avatar src={ach.image_url || ach.thumbnail} alt={ach.name} sx={{ width: 50, height: 50, borderRadius: 2, mr: 2, opacity: isMet ? 1 : 0.5, filter: isMet ? 'none' : 'grayscale(100%)' }} />
                                     <Box sx={{ flex: 1 }}>
                                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                                            <Typography variant="h6" sx={{ color: 'text.primary', fontWeight: 'bold' }}>{ach.name}</Typography>
-                                            {ach.point && <Typography variant="body2" sx={{ color: 'text.secondary' }}>{ach.point} pts</Typography>}
+                                            <Typography variant="h6" sx={{ color: 'text.primary', fontWeight: 'bold', opacity: isMet ? 1 : 0.5, filter: isMet ? 'none' : 'grayscale(100%)' }}>{ach.name}</Typography>
+                                            {Number(ach.progressValue) >= Number(ach.threshold_value) && (
+                                                <Chip label="completed" size="small" sx={{ fontWeight: 600, ml: 1, justifySelf: 'flex-end', bgcolor: '#63bd6f', color: 'white' }} />
+                                            )}
                                         </Box>
-                                        <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>{ach.description}</Typography>
-                                        <Typography variant="caption" sx={{ color: 'text.disabled' }}>{hasAchievement ? 'Obtained' : 'Not obtained yet'}</Typography>
+                                        <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1, opacity: isMet ? 1 : 0.5, filter: isMet ? 'none' : 'grayscale(100%)' }}>{ach.description}</Typography>
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                            <LinearProgress
+                                                variant="determinate"
+                                                value={progress}
+                                                sx={{
+                                                    flex: 1,
+                                                    height: 10,
+                                                    borderRadius: 5,
+                                                    bgcolor: isMet ? '#ffa426' : '#ffd8b9',
+                                                    '& .MuiLinearProgress-bar': { bgcolor: isMet ? '#ffa426' : '#ffd8b9' }
+                                                }}
+                                            />
+                                            <Typography variant="body2" sx={{ minWidth: 80, textAlign: 'right', color: isMet ? '#ffa426' : 'text.secondary' }}>
+                                                {`${Math.floor(Number(ach.progressValue))}/${ach.threshold_value}`}
+                                            </Typography>
+                                        </Box>
                                     </Box>
                                 </Box>
                             );
