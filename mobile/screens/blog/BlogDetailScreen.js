@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ActivityIndicator, Alert, Button } from 'react-native';
+import { View, ActivityIndicator, Alert, Button } from 'react-native';
 import blogService from '../../service/blogService';
+import BlogDetails from '../../components/blog/BlogDetails';
 
 const BlogDetailScreen = ({ route, navigation }) => {
   const { id } = route.params;
@@ -44,17 +45,31 @@ const BlogDetailScreen = ({ route, navigation }) => {
   };
 
   if (loading) return <ActivityIndicator size="large" style={{ flex: 1 }} />;
-  if (!blog) return <Text>Không tìm thấy bài viết</Text>;
+  if (!blog) return null;
+
+  // Ưu tiên các trường content, body, description
+  const blogContent = blog.content || blog.body || blog.description || '';
 
   return (
-    <View style={{ flex: 1, padding: 16 }}>
-      <Text style={{ fontSize: 22, fontWeight: 'bold', marginBottom: 8 }}>{blog.title}</Text>
-      <Text style={{ color: '#666', marginBottom: 8 }}>Tác giả: {blog.author?.name || 'Ẩn danh'}</Text>
-      <Text style={{ color: '#999', marginBottom: 16 }}>Ngày đăng: {blog.createdAt?.slice(0, 10) || ''}</Text>
-      <Text style={{ fontSize: 16, marginBottom: 24 }}>{blog.content}</Text>
-      <Button title="Sửa bài viết" onPress={() => navigation.navigate('EditBlog', { id: blog._id })} />
-      <View style={{ height: 12 }} />
-      <Button title={deleting ? 'Đang xóa...' : 'Xóa bài viết'} color="red" onPress={handleDelete} disabled={deleting} />
+    <View style={{ flex: 1 }}>
+      <BlogDetails
+        title={blog.data?.title}
+        author={
+          blog.data?.first_name
+            ? `${blog.data.first_name} ${blog.data.last_name || ''}`
+            : 'Ẩn danh'
+        }
+        createdAt={
+          blog.data?.created_at
+            ? blog.data.created_at.slice(0, 10)
+            : ''
+        }
+        content={blog.data?.content || blog.data?.body || blog.data?.description || ''}
+        thumbnail={blog.data?.thumbnail || blog.data?.cover || blog.data?.image}
+      />
+      {/* <Button title="Sửa bài viết" onPress={() => navigation.navigate('EditBlog', { id: blog._id || blog.id })} /> */}
+      {/* <View style={{ height: 12 }} /> */}
+      {/* <Button title={deleting ? 'Đang xóa...' : 'Xóa bài viết'} color="red" onPress={handleDelete} disabled={deleting} /> */}
     </View>
   );
 };

@@ -23,7 +23,7 @@ const SmokingQuizScreen = () => {
       const data = await smokingService.getQuizQuestions();
       setQuestions(data);
     } catch (error) {
-      Alert.alert('Lỗi', 'Không thể tải câu hỏi quiz');
+      Alert.alert('Error', 'Could not load quiz questions');
     } finally {
       setLoading(false);
     }
@@ -37,7 +37,7 @@ const SmokingQuizScreen = () => {
 
   const handleNext = () => {
     if (answers[current] == null) {
-      Alert.alert('Vui lòng chọn đáp án!');
+      Alert.alert('Please select an answer!');
       return;
     }
     if (current < questions.length - 1) {
@@ -53,7 +53,7 @@ const SmokingQuizScreen = () => {
       const res = await smokingService.submitQuiz({ answers });
       setResult(res);
     } catch (error) {
-      Alert.alert('Lỗi', 'Không thể gửi kết quả quiz');
+      Alert.alert('Error', 'Could not submit quiz result');
     } finally {
       setSubmitting(false);
     }

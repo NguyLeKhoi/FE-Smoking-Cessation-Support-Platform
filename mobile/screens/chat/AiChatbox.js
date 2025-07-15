@@ -11,7 +11,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import motivationService from '../service/motivationService';
+import motivationService from '../../service/motivationService';
 
 const AiChatbox = () => {
   const [message, setMessage] = useState('');

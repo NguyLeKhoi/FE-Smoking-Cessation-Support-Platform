@@ -19,7 +19,7 @@ const AchievementsScreen = () => {
       const data = await achievementsService.getAchievements();
       setAchievements(data);
     } catch (error) {
-      Alert.alert('Lỗi', 'Không thể tải danh sách thành tích');
+      Alert.alert('Error', 'Unable to load achievements list');
     } finally {
       setLoading(false);
     }
@@ -29,7 +29,7 @@ const AchievementsScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Thành tích của bạn</Text>
+      <Text style={styles.title}>Your Achievements</Text>
       <FlatList
         data={achievements}
         keyExtractor={item => item._id}
@@ -37,7 +37,7 @@ const AchievementsScreen = () => {
           <View style={styles.card}>
             <Text style={styles.name}>{item.name}</Text>
             <Text style={styles.desc}>{item.description}</Text>
-            <Text style={styles.date}>Ngày đạt: {item.achievedAt?.slice(0, 10) || ''}</Text>
+            <Text style={styles.date}>Achieved on: {item.achievedAt?.slice(0, 10) || ''}</Text>
           </View>
         )}
       />
