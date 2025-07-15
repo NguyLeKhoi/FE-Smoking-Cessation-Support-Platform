@@ -4,6 +4,7 @@ import achievementsService from '../../services/achievementsService';
 import { useNavigate } from 'react-router-dom';
 import ProfileSidebar from '../../components/profilePage/ProfileSidebar';
 import { jwtDecode } from 'jwt-decode';
+import AchievementStyle from '../../components/profilePage/AchievementStyle';
 
 const AchievementsPage = () => {
     const [progressList, setProgressList] = useState([]);
@@ -56,48 +57,19 @@ const AchievementsPage = () => {
                     ) : progressList.length === 0 ? (
                         <Box sx={{ p: 4, textAlign: 'center', color: 'text.secondary' }}>No achievements yet.</Box>
                     ) : (
-                        progressList.map((ach, idx) => {
+                        progressList.map((ach, idx, arr) => {
                             const isMet = ach.isMet;
                             const progress = Math.min((Number(ach.progressValue) / Number(ach.threshold_value)) * 100, 100);
+                            // console.log('Progress:', ach.name, progress, ach.progressValue, ach.threshold_value);
                             return (
-                                <Box
+                                <AchievementStyle
                                     key={ach.id || idx}
-                                    sx={{
-                                        p: 3,
-                                        borderBottom: idx !== progressList.length - 1 ? '1px solid' : 'none',
-                                        borderColor: 'divider',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: 3,
-                                    }}
-                                >
-                                    <Avatar src={ach.image_url || ach.thumbnail} alt={ach.name} sx={{ width: 50, height: 50, borderRadius: 2, mr: 2, opacity: isMet ? 1 : 0.5, filter: isMet ? 'none' : 'grayscale(100%)' }} />
-                                    <Box sx={{ flex: 1 }}>
-                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                                            <Typography variant="h6" sx={{ color: 'text.primary', fontWeight: 'bold', opacity: isMet ? 1 : 0.5, filter: isMet ? 'none' : 'grayscale(100%)' }}>{ach.name}</Typography>
-                                            {Number(ach.progressValue) >= Number(ach.threshold_value) && (
-                                                <Chip label="completed" size="small" sx={{ fontWeight: 600, ml: 1, justifySelf: 'flex-end', bgcolor: '#63bd6f', color: 'white' }} />
-                                            )}
-                                        </Box>
-                                        <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1, opacity: isMet ? 1 : 0.5, filter: isMet ? 'none' : 'grayscale(100%)' }}>{ach.description}</Typography>
-                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                            <LinearProgress
-                                                variant="determinate"
-                                                value={progress}
-                                                sx={{
-                                                    flex: 1,
-                                                    height: 10,
-                                                    borderRadius: 5,
-                                                    bgcolor: isMet ? '#ffa426' : '#ffd8b9',
-                                                    '& .MuiLinearProgress-bar': { bgcolor: isMet ? '#ffa426' : '#ffd8b9' }
-                                                }}
-                                            />
-                                            <Typography variant="body2" sx={{ minWidth: 80, textAlign: 'right', color: isMet ? '#ffa426' : 'text.secondary' }}>
-                                                {`${Math.floor(Number(ach.progressValue))}/${ach.threshold_value}`}
-                                            </Typography>
-                                        </Box>
-                                    </Box>
-                                </Box>
+                                    ach={ach}
+                                    isMet={isMet}
+                                    progress={progress}
+                                    idx={idx}
+                                    arr={arr}
+                                />
                             );
                         })
                     )}

@@ -3,6 +3,7 @@ import { Box, Typography, Paper, Avatar, CircularProgress, LinearProgress } from
 import achievementsService from '../../services/achievementsService';
 import { Link } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
+import AchievementStyle from './AchievementStyle';
 
 const AchievementSection = () => {
   const [progressList, setProgressList] = useState([]);
@@ -84,45 +85,14 @@ const AchievementSection = () => {
             return obtained.map((ach, idx, arr) => {
               const progress = Math.min((Number(ach.progressValue) / Number(ach.threshold_value)) * 100, 100);
               return (
-                <Box
+                <AchievementStyle
                   key={ach.id || idx}
-                  sx={{
-                    p: 3,
-                    borderBottom: idx !== arr.length - 1 ? '1px solid' : 'none',
-                    borderColor: 'divider',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 3,
-                    opacity: 1,
-                    filter: 'none',
-                    transition: 'opacity 0.3s, filter 0.3s',
-                    bgcolor: 'background.paper',
-                  }}
-                >
-                  <Avatar src={ach.image_url || ach.thumbnail} alt={ach.name} sx={{ width: 60, height: 60, borderRadius: 2, mr: 2 }} />
-                  <Box sx={{ flex: 1 }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                      <Typography variant="h6" sx={{ color: 'text.primary', fontWeight: 'bold' }}>{ach.name}</Typography>
-                    </Box>
-                    <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>{ach.description}</Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                      <LinearProgress
-                        variant="determinate"
-                        value={progress}
-                        sx={{
-                          flex: 1,
-                          height: 10,
-                          borderRadius: 5,
-                          bgcolor: '#ffd8b9',
-                          '& .MuiLinearProgress-bar': { bgcolor: '#ffa426' }
-                        }}
-                      />
-                      <Typography variant="body2" sx={{ minWidth: 80, textAlign: 'right', color: 'primary.main' }}>
-                        {Math.floor(Number(ach.progressValue))}/{ach.threshold_value}
-                      </Typography>
-                    </Box>
-                  </Box>
-                </Box>
+                  ach={ach}
+                  isMet={true}
+                  progress={progress}
+                  idx={idx}
+                  arr={arr}
+                />
               );
             });
           })()
