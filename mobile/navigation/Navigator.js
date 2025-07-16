@@ -19,6 +19,7 @@ import SubscriptionScreen from '../screens/membership/SubscriptionScreen';
 import PaymentSuccessScreen from '../screens/membership/PaymentSuccessScreen';
 import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
 import { TouchableOpacity, Text } from 'react-native';
+import MyBlogScreen from '../screens/blog/MyBlogScreen';
 
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
@@ -49,7 +50,7 @@ const ProfileDrawerNavigator = () => (
     }}
   >
     <ProfileDrawer.Screen name="ProfileInfo" component={ProfileScreen} options={{ title: 'Personal Information' }} />
-    <ProfileDrawer.Screen name="MyPosts" component={MyPostsScreen} options={{ title: 'Bài viết của tôi' }} />
+    <ProfileDrawer.Screen name="MyBlog" component={MyBlogScreen} options={{ title: 'Bài viết của tôi' }} />
     <ProfileDrawer.Screen name="Achievements" component={AchievementsScreen} options={{ title: 'Achievements' }} />
   </ProfileDrawer.Navigator>
 );
