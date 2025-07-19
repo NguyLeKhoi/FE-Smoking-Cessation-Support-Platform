@@ -9,6 +9,8 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  SafeAreaView,
+  StatusBar,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import motivationService from '../../service/motivationService';
@@ -85,11 +87,13 @@ const AiChatbox = () => {
   );
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
-    >
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
+      >
       <ScrollView
         ref={scrollViewRef}
         style={styles.messagesContainer}
@@ -140,7 +144,8 @@ const AiChatbox = () => {
           <Ionicons name="send" size={20} color="#fff" />
         </TouchableOpacity>
       </View>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 

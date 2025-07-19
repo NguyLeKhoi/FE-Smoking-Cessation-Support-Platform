@@ -1,7 +1,7 @@
 // QuitPlanListScreen.js
-// Màn hình danh sách kế hoạch bỏ thuốc mobile - Updated with better UI and create plan functionality
+// Mobile quit plan list screen with web-like UI
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { 
   View, 
   Text, 
@@ -12,9 +12,16 @@ import {
   StyleSheet,
   SafeAreaView,
   Modal,
-  TextInput
+  TextInput,
+  StatusBar
 } from 'react-native';
 import quitPlanService from '../../service/quitPlanService';
+
+const slogans = [
+  'Start your quit journey today and track your progress here!',
+  'Your determination today is your freedom tomorrow.',
+  'A smoke-free life is a healthier life. You can do it!',
+];
 
 const QuitPlanListScreen = ({ navigation }) => {
   const [plans, setPlans] = useState([]);
@@ -25,6 +32,15 @@ const QuitPlanListScreen = ({ navigation }) => {
   const [reason, setReason] = useState('');
   const [planType, setPlanType] = useState('standard');
 
+  // Get the first plan (like web implementation)
+  const plan = Array.isArray(plans) && plans.length > 0 ? plans[0] : null;
+  
+  // Fallback: if no plan but plans array exists, show first plan
+  const displayPlan = plan || (Array.isArray(plans) && plans.length > 0 ? plans[0] : null);
+  const randomSlogan = useMemo(() => slogans[Math.floor(Math.random() * slogans.length)], []);
+  
+
+
   useEffect(() => {
     fetchPlans();
     const unsubscribe = navigation.addListener('focus', fetchPlans);
@@ -34,10 +50,32 @@ const QuitPlanListScreen = ({ navigation }) => {
   const fetchPlans = async () => {
     setLoading(true);
     try {
-      const res = await quitPlanService.getAllQuitPlans();
-      setPlans(res.data || res); // handle both axios and fetch style
+      const response = await quitPlanService.getAllQuitPlans();
+      
+      // Handle different response structures
+      let plansData = [];
+      if (Array.isArray(response.data?.data?.data)) {
+        plansData = response.data.data.data;
+      } else if (Array.isArray(response.data?.data)) {
+        plansData = response.data.data;
+      } else if (Array.isArray(response.data)) {
+        plansData = response.data;
+      } else if (Array.isArray(response)) {
+        plansData = response;
+      }
+      
+      setPlans(plansData);
     } catch (error) {
-      Alert.alert('Lỗi', 'Không thể tải danh sách kế hoạch');
+      // Don't clear plans on 401 error, just show error
+      if (error.response?.status === 401) {
+        // Don't clear existing plans on 401 error
+        // Just show a warning but keep the UI functional
+        return;
+      }
+      
+      // Only clear plans on other errors
+      setPlans([]);
+      Alert.alert('Error', 'Failed to load quit plans');
     } finally {
       setLoading(false);
     }
@@ -90,15 +128,17 @@ const QuitPlanListScreen = ({ navigation }) => {
       setReason('');
       setPlanType('standard');
       
-      // Refresh plans list
-      fetchPlans();
+      // Refresh plans list first
+      await fetchPlans();
       
       Alert.alert('Success', 'Quit plan created successfully!');
       
-      // Navigate to the new plan detail
+      // Navigate to the new plan detail after refresh
       const newPlan = response.data?.data || response.data;
       if (newPlan) {
-        navigation.navigate('QuitPlanDetail', { id: newPlan.id || newPlan._id });
+        setTimeout(() => {
+          navigation.navigate('QuitPlanDetail', { id: newPlan.id || newPlan._id });
+        }, 500);
       }
     } catch (error) {
       Alert.alert('Error', 'Failed to create quit plan');
@@ -192,42 +232,100 @@ const QuitPlanListScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Quit Plans</Text>
-        <TouchableOpacity 
-          style={styles.createButton}
-          onPress={() => setShowCreateModal(true)}
-        >
-          <Text style={styles.createButtonText}>+ Create Plan</Text>
-        </TouchableOpacity>
-      </View>
-
+      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+      <View style={styles.content}>
+        
       {loading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#3f332b" />
-        </View>
-      ) : plans.length === 0 ? (
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyTitle}>No quit plans yet</Text>
-          <Text style={styles.emptySubtitle}>
-            Start your journey to quit smoking by creating a personalized plan.
-          </Text>
-          <TouchableOpacity 
-            style={styles.emptyCreateButton}
-            onPress={() => setShowCreateModal(true)}
-          >
-            <Text style={styles.emptyCreateButtonText}>Create Your First Plan</Text>
-          </TouchableOpacity>
-        </View>
-      ) : (
-        <FlatList
-          data={plans}
-          keyExtractor={item => item._id || item.id}
-          renderItem={renderPlanItem}
-          contentContainerStyle={styles.listContainer}
-          showsVerticalScrollIndicator={false}
-        />
-      )}
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#3f332b" />
+          </View>
+        ) : !displayPlan ? (
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyTitle}>You have no quit plan yet.</Text>
+            <Text style={styles.emptySubtitle}>
+              Start your journey to quit smoking by creating a personalized plan.
+            </Text>
+            <TouchableOpacity 
+              style={styles.emptyCreateButton}
+              onPress={() => setShowCreateModal(true)}
+            >
+              <Text style={styles.emptyCreateButtonText}>Create Quit Plan</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View style={styles.planTableContainer}>
+            {/* Table Header */}
+            <View style={styles.tableHeader}>
+              <View style={styles.tableHeaderCell}>
+                <Text style={styles.tableHeaderText}>Reason</Text>
+              </View>
+              <View style={styles.tableHeaderCell}>
+                <Text style={styles.tableHeaderText}>Type</Text>
+              </View>
+              <View style={styles.tableHeaderCell}>
+                <Text style={styles.tableHeaderText}>Status</Text>
+              </View>
+              <View style={styles.tableHeaderCell}>
+                <Text style={styles.tableHeaderText}>Duration</Text>
+              </View>
+              <View style={styles.tableHeaderCell}>
+                <Text style={styles.tableHeaderText}>Actions</Text>
+              </View>
+            </View>
+            
+            {/* Table Row */}
+            <View style={styles.tableRow}>
+              <View style={styles.tableCell}>
+                <Text style={styles.tableCellText}>{displayPlan.reason}</Text>
+              </View>
+              <View style={styles.tableCell}>
+                <Text style={[
+                  styles.tableCellText,
+                  { color: getPlanTypeColor(displayPlan.plan_type), fontWeight: 'bold' }
+                ]}>
+                  {String(displayPlan.plan_type).toUpperCase()}
+                </Text>
+              </View>
+              <View style={styles.tableCell}>
+                <Text style={[
+                  styles.tableCellText,
+                  { color: getStatusColor(displayPlan.status), fontWeight: 'bold' }
+                ]}>
+                  {displayPlan.status}
+                </Text>
+              </View>
+              <View style={styles.tableCell}>
+                <Text style={styles.tableCellText}>
+                  {displayPlan.start_date && displayPlan.expected_end_date
+                    ? `${new Date(displayPlan.start_date).toLocaleDateString()} - ${new Date(displayPlan.expected_end_date).toLocaleDateString()}`
+                    : '-'}
+                </Text>
+              </View>
+              <View style={styles.tableCell}>
+                <TouchableOpacity 
+                  style={styles.viewButton}
+                  onPress={() => handlePress(displayPlan)}
+                >
+                  <Text style={styles.viewButtonText}>View details</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.deleteButton}
+                  onPress={() => handleDeletePlan(displayPlan)}
+                  disabled={deletingId === (displayPlan._id || displayPlan.id)}
+                >
+                  {deletingId === (displayPlan._id || displayPlan.id) ? (
+                    <ActivityIndicator size="small" color="#e53935" />
+                  ) : (
+                    <Text style={styles.deleteButtonText}>×</Text>
+                  )}
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        )}
+        
+        <Text style={styles.sloganText}>{randomSlogan}</Text>
+      </View>
 
       {/* Create Plan Modal */}
       <Modal
@@ -316,7 +414,12 @@ const QuitPlanListScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f7f7ff',
+    backgroundColor: '#fff',
+  },
+  content: {
+    flex: 1,
+    padding: 20,
+    paddingTop: 10,
   },
   header: {
     flexDirection: 'row',
@@ -539,6 +642,66 @@ const styles = StyleSheet.create({
   },
   modalButtonTextPrimary: {
     color: '#fff',
+  },
+  // New table styles
+  planTableContainer: {
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    overflow: 'hidden',
+    marginBottom: 20,
+  },
+  tableHeader: {
+    flexDirection: 'row',
+    backgroundColor: '#f5f7fa',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+  },
+  tableHeaderCell: {
+    flex: 1,
+    padding: 12,
+    alignItems: 'center',
+  },
+  tableHeaderText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  tableRow: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+  },
+  tableCell: {
+    flex: 1,
+    padding: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  tableCellText: {
+    fontSize: 14,
+    color: '#333',
+    textAlign: 'center',
+  },
+  viewButton: {
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: '#3f332b',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 4,
+    marginBottom: 5,
+  },
+  viewButtonText: {
+    fontSize: 12,
+    color: '#3f332b',
+    fontWeight: '600',
+  },
+  sloganText: {
+    textAlign: 'center',
+    color: '#666',
+    fontSize: 16,
+    marginTop: 20,
+    fontStyle: 'italic',
   },
 });
 

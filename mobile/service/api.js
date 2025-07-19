@@ -99,19 +99,18 @@ const handleRefreshFailure = async () => {
 // Initialize auto refresh on app start
 const initializeAutoRefresh = async () => {
   const accessToken = await AsyncStorage.getItem('accessToken');
-  const refreshToken = await AsyncStorage.getItem('refreshToken');
   
-  if (accessToken && refreshToken) {
+  if (accessToken) {
     try {
       // Decode JWT to get expiration time
       const payload = JSON.parse(atob(accessToken.split('.')[1]));
       const expiresIn = payload.exp - Math.floor(Date.now() / 1000);
       
-      if (expiresIn > 300) { // If token expires in more than 5 minutes
-        setRefreshTokenTimer(expiresIn);
-      } else if (expiresIn > 0) { // If token expires soon, refresh immediately
-        refreshAccessToken().catch(handleRefreshFailure);
-      } else { // Token already expired
+      // For now, mobile will use access token only
+      // Auto refresh is disabled until backend supports refresh token for mobile
+      console.log('Mobile: Access token expires in', expiresIn, 'seconds');
+      
+      if (expiresIn <= 0) { // Token already expired
         handleRefreshFailure();
       }
     } catch (error) {
@@ -136,16 +135,11 @@ api.interceptors.response.use(
     const originalRequest = error.config;
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-      try {
-        const newToken = await refreshAccessToken();
-        if (newToken) {
-          originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
-          return api(originalRequest);
-        }
-      } catch (refreshError) {
-        handleRefreshFailure();
-        return Promise.reject(refreshError);
-      }
+      
+      // For mobile, don't clear tokens immediately on 401
+      // Let the UI handle the error gracefully
+      console.log('Mobile: 401 error detected, letting UI handle');
+      return Promise.reject(error);
     }
     return Promise.reject(error);
   }
@@ -159,28 +153,28 @@ export const debugTokenStatus = async () => {
     try {
       const payload = JSON.parse(atob(accessToken.split('.')[1]));
       const expiresIn = payload.exp - Math.floor(Date.now() / 1000);
+      console.log('Mobile: Access token expires in', expiresIn, 'seconds');
     } catch (error) {
-      // Silent error handling
+      console.log('Mobile: Error parsing token');
     }
+  } else {
+    console.log('Mobile: No access token found');
   }
 };
 
-// Test refresh token function for mobile
+// Test access token function for mobile
 export const testRefreshToken = async () => {
   try {
-    const refreshToken = await AsyncStorage.getItem('refreshToken');
-    if (!refreshToken) {
+    const accessToken = await AsyncStorage.getItem('accessToken');
+    if (!accessToken) {
       return false;
     }
     
-    const response = await axios.post(`${api.defaults.baseURL}/auth/refresh`, { refreshToken });
+    // For now, just check if access token exists and is valid
+    const payload = JSON.parse(atob(accessToken.split('.')[1]));
+    const expiresIn = payload.exp - Math.floor(Date.now() / 1000);
     
-    if (response.data.data?.accessToken) {
-      await AsyncStorage.setItem('accessToken', response.data.data.accessToken);
-      return true;
-    } else {
-      return false;
-    }
+    return expiresIn > 0; // Token is valid if not expired
   } catch (error) {
     return false;
   }

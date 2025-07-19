@@ -19,21 +19,13 @@ export const login = async (credentials) => {
       email: credentials.email,
       password: credentials.password,
     });
-    const { accessToken, refreshToken, expiresIn } = response.data.data;
+    const { accessToken } = response.data.data;
     
     // Save access token
     await AsyncStorage.setItem('accessToken', accessToken);
     
-    // Mobile needs refresh token in AsyncStorage
-    if (refreshToken) {
-      await AsyncStorage.setItem('refreshToken', refreshToken);
-    } else {
-      // If backend doesn't return refresh token, we need to handle this
-      throw new Error('Backend must return refresh token for mobile');
-    }
-    
-    // Start auto refresh after successful login
-    startAutoRefresh();
+    // Note: Backend doesn't return refresh token, so mobile will use access token only
+    // Auto refresh will be disabled until backend supports refresh token for mobile
     
     return response.data.data;
   } catch (error) {

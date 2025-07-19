@@ -131,7 +131,7 @@ const SmokingQuizScreen = ({ navigation }) => {
 
   const fetchExistingData = async () => {
     try {
-      setLoading(true);
+    setLoading(true);
       const response = await smokingService.getMySmokingHabits();
       
       if (response?.data?.length > 0) {
@@ -465,7 +465,7 @@ const SmokingQuizScreen = ({ navigation }) => {
             style={[styles.navButton, styles.primaryNavButton]} 
             onPress={handleNext}
             disabled={submitting}
-          >
+        >
             <Text style={[styles.navButtonText, styles.primaryNavButtonText]}>
               {submitting ? 'Submitting...' : 
                currentQuestion === questions.length - 1 ? 'Submit' : 'Next'}

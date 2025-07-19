@@ -4,35 +4,59 @@
 import api from './api';
 
 const quitPlanService = {
-  // Tạo kế hoạch bỏ thuốc
+  /**
+   * Create a new quit plan
+   * @param {Object} data - { reason: string, plan_type: string }
+   * @returns {Promise}
+   */
   createQuitPlan: async (data) => {
     return api.post('/quit-plans', data);
   },
-  // Tạo ghi nhận hàng ngày cho phase
+
+  /**
+   * Create a daily record for the active quit plan phase
+   * @param {Object} data - { cigarette_smoke: number, craving_level: number, health_status: string, record_date: string, phase_id: string }
+   * @returns {Promise}
+   */
   createDailyRecord: async (data) => {
     return api.post('/quit-plans/records', data);
   },
-  // Alias
+
+  // Alias for compatibility
   createPlanRecord: async (data) => {
     return quitPlanService.createDailyRecord(data);
   },
-  // Lấy kế hoạch theo id
+
+  /**
+   * Get a quit plan by ID
+   * @param {string} id
+   * @returns {Promise}
+   */
   getQuitPlanById: async (id) => {
     return api.get(`/quit-plans/${id}`);
   },
-  // Xóa kế hoạch
+
+  /**
+   * Delete a quit plan by ID
+   * @param {string} id
+   * @returns {Promise}
+   */
   deleteQuitPlan: async (id) => {
     return api.delete(`/quit-plans/${id}`);
   },
-  // Lấy tất cả kế hoạch của user
+
+  /**
+   * Get all quit plans for the current user
+   * @returns {Promise}
+   */
   getAllQuitPlans: async () => {
     return api.get('/quit-plans');
   },
-  // Lấy record của phase
+
   getPhaseRecords: (planId, phaseId) => {
     return api.get(`/plan-records/${planId}/${phaseId}`);
   },
-  // Lấy record của plan
+
   getPlanRecords: (planId) => {
     return api.get(`/plan-records/${planId}`);
   },
