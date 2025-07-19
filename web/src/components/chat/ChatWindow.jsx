@@ -9,6 +9,8 @@ import { jwtDecode } from 'jwt-decode';
 import VideoCall from './VideoCall';
 import OutgoingCallModal from './OutgoingCallModal';
 import ChatInput from './ChatInput';
+import CloseIcon from '@mui/icons-material/Close';
+import VideocamIcon from '@mui/icons-material/Videocam';
 
 const ChatWindow = ({ room, onClose }) => {
     const [messages, setMessages] = useState([]);
@@ -490,15 +492,14 @@ const ChatWindow = ({ room, onClose }) => {
                         }}
                         title={isOtherUserOnline ? 'Start video call' : `${displayUser?.username || 'User'} is offline`}
                     >
-                        <VideoCallIcon />
+                        <VideocamIcon />
                     </IconButton>
-                    <Button
-                        size="small"
+                    <IconButton
                         onClick={onClose}
-                        sx={{ ml: 0, alignSelf: 'flex-start', color: 'secondary.main' }}
+                        sx={{ ml: 0, alignSelf: 'center' }}
                     >
-                        Close
-                    </Button>
+                        <CloseIcon sx={{ m: 0, p: 0, color: 'black' }} />
+                    </IconButton>
                 </Box>
             </Box>
 

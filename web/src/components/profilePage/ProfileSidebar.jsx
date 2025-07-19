@@ -8,20 +8,21 @@ import PersonIcon from '@mui/icons-material/Person';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import ExploreIcon from '@mui/icons-material/Explore';
 import ArticleIcon from '@mui/icons-material/Article';
-import StorefrontIcon from '@mui/icons-material/Storefront';
-import BlockIcon from '@mui/icons-material/Block';
+import SmokingRoomsIcon from '@mui/icons-material/SmokingRooms';
+
 
 
 const menuItems = [
     { label: 'PROFILE', icon: <PersonIcon fontSize="medium" />, path: '/profile' },
     { label: 'LEADERBOARDS', icon: <EmojiEventsIcon fontSize="medium" />, path: '/leaderboard' },
+    { label: 'SMOKING HABIT', icon: <SmokingRoomsIcon fontSize="medium" />, path: '/my-smoking-habit' },
     { label: 'MY POSTS', icon: <ArticleIcon fontSize="medium" />, path: '/my-blog' },
     { label: 'QUESTS', icon: <ExploreIcon fontSize="medium" />, hasNotification: true, path: '/quests' },
     { label: 'MORE', icon: <MoreHorizIcon fontSize="medium" />, path: '/more' },
 ];
 
 const SidebarContainer = styled(Paper)(({ theme }) => ({
-    width: 240,
+    width: 250,
     height: '100vh',
     backgroundColor: theme.palette.background.paper,
     boxShadow: '4px 0px 10px rgba(0, 0, 0, 0.03)',
@@ -61,11 +62,11 @@ const IconText = styled(Typography)(({ theme }) => ({
 
 const ProfileSidebar = ({ userData }) => {
     const location = useLocation();
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();
     const [activeItem, setActiveItem] = useState(() => {
         const currentPath = location.pathname;
         const foundItem = menuItems.findIndex(item => currentPath.includes(item.path));
-        return foundItem >= 0 ? foundItem : 3; 
+        return foundItem >= 0 ? foundItem : 3;
     });
 
     const handleItemClick = (index) => {
@@ -73,7 +74,7 @@ const ProfileSidebar = ({ userData }) => {
         console.log(`Selected: ${menuItems[index].label} (${menuItems[index].path})`);
 
         if (menuItems[index].path === '/my-blog') {
-            const userId = userData?.id; 
+            const userId = userData?.id;
             navigate(`/my-blog?userId=${userId}`);
         } else if (index !== 3) {
             console.log("This feature is coming soon");
@@ -93,7 +94,7 @@ const ProfileSidebar = ({ userData }) => {
                     display: 'flex',
                     alignItems: 'center',
                     backgroundColor: '#FFFFFF',
-                    pt: 3, 
+                    pt: 3,
                     ml: 2,
                 }}
             >
@@ -114,7 +115,7 @@ const ProfileSidebar = ({ userData }) => {
             </Box>
 
             {/* Menu Section */}
-            <Box sx={{ p: 2, pt: 3 }}> 
+            <Box sx={{ p: 2, pt: 3 }}>
                 <Typography
                     variant="overline"
                     sx={{

@@ -110,7 +110,7 @@ const ChatPage = () => {
     };
 
     return (
-        <Box sx={{ display: 'flex', height: '100vh', bgcolor: 'background.default', overflow: 'hidden' }}>
+        <Box sx={{ display: 'flex', height: '100vh', bgcolor: 'background.paper', overflow: 'hidden' }}>
             <ChatSidebar
                 chatRooms={chatRooms}
                 loading={loading}

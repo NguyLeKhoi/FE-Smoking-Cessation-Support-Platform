@@ -24,6 +24,7 @@ import PaymentSuccessPage from '../pages/main/PaymentSuccessPage';
 import ProfilePage from '../pages/profile/ProfilePage';
 import MyBlogPage from '../pages/profile/MyBlogPage';
 import LeaderBoardPage from '../pages/profile/LeaderBoardPage';
+import SmokingHabitPage from '../pages/profile/SmokingHabitPage';
 
 //achievements
 import AchievementsPage from '../pages/achievements/AchivementsPage';
@@ -186,8 +187,19 @@ export const routes = createBrowserRouter([
     ),
   },
 
+  {
+    path: '/my-smoking-habit',
+    element: (
+      <ProtectedRoute>
+        <MainLayout showHeader={false} showFooter={false}>
+          <SmokingHabitPage />
+        </MainLayout>
+      </ProtectedRoute>
+    ),
+  },
 
-//quiz & quit plan
+
+  //quiz & quit plan
   {
     path: '/smoking-quiz',
     element: (

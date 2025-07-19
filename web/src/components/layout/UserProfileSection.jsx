@@ -12,7 +12,6 @@ import {
 } from '@mui/material';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import SearchIcon from '@mui/icons-material/Search';
 import NotificationsDropdown from './NotificationsDropdown';
 import { fetchCurrentUser } from '../../services/userService';
 
@@ -71,43 +70,8 @@ const UserProfileSection = ({ authStatus, loadingMotivation, notifications, setN
         );
     };
 
-    const handleSearch = (e) => {
-        if (e.key === 'Enter') {
-            console.log('Searching for:', searchQuery);
-        }
-    };
-
     const renderPathSpecificElement = () => {
-        if (currentPath === '/blog') {
-            return (
-                <Box sx={{ position: 'relative', display: { xs: 'none', md: 'flex' } }}>
-                    <TextField
-                        placeholder="Search a post..."
-                        size="small"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        onKeyPress={handleSearch}
-                        sx={{
-                            width: '280px',
-                            '& .MuiOutlinedInput-root': {
-                                borderRadius: '15px',
-                                bgcolor: 'rgba(63, 51, 43, 0.04)',
-                            },
-                            '& .MuiOutlinedInput-input': {
-                                padding: '8px 14px 8px 0',
-                            },
-                        }}
-                        InputProps={{
-                            startAdornment: (
-                                <InputAdornment position="start">
-                                    <SearchIcon sx={{ color: '#3f332b', fontSize: '1.2rem' }} />
-                                </InputAdornment>
-                            ),
-                        }}
-                    />
-                </Box>
-            );
-        } else if (currentPath === '/' && !loading && userData && userData.username) {
+        if (currentPath === '/' && !loading && userData && userData.username) {
             return (
                 <Typography
                     variant="subtitle1"
@@ -128,10 +92,7 @@ const UserProfileSection = ({ authStatus, loadingMotivation, notifications, setN
     return (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
             {loadingMotivation && <CircularProgress size={20} sx={{ color: '#3f332b', mr: 1 }} />}
-
-            {/* Path specific element (search or welcome) */}
             {renderPathSpecificElement()}
-
             {/* Admin Link */}
             {!loading && userData && userData.role === 'admin' && (
                 <Button
