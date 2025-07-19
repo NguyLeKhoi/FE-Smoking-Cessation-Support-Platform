@@ -9,6 +9,7 @@ import { routes } from './router/Router';
 import { SocketProvider, useSocket } from './context/SocketContext';
 import IncomingCallModal from './components/chat/IncomingCallModal';
 import VideoCall from './components/chat/VideoCall';
+import { startAutoRefresh, stopAutoRefresh, debugTokenStatus, testRefreshToken } from './services/api';
 
 const GlobalCallManager = () => {
   const { socket } = useSocket();
@@ -25,7 +26,7 @@ const GlobalCallManager = () => {
       const decoded = jwtDecode(accessToken);
       currentUserId = decoded.userId || decoded.id || decoded.sub;
     } catch (e) {
-      console.error('Error decoding token:', e);
+      // Silent error handling
     }
   }
 
@@ -54,7 +55,6 @@ const GlobalCallManager = () => {
 
   const acceptCall = () => {
     if (!socket || !incomingCall) {
-      console.error('Missing socket or incomingCall data');
       return;
     }
 
@@ -120,6 +120,30 @@ const GlobalCallManager = () => {
 };
 
 function App() {
+  useEffect(() => {
+    // Initialize auto refresh token on app start
+    const initializeApp = async () => {
+      try {
+        // Test refresh token functionality
+        const accessToken = localStorage.getItem('accessToken');
+        if (accessToken) {
+          await testRefreshToken();
+        }
+        
+        startAutoRefresh();
+      } catch (error) {
+        // Silent error handling
+      }
+    };
+
+    initializeApp();
+    
+    // Cleanup on app unmount
+    return () => {
+      stopAutoRefresh();
+    };
+  }, []);
+
   return (
     <ThemeProvider theme={theme}>
       <SocketProvider>

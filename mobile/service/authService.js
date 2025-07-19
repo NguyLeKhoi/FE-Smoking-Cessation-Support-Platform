@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import api from './api';
+import api, { startAutoRefresh, stopAutoRefresh } from './api';
 
 export const signup = async (userData) => {
   try {
@@ -19,11 +19,22 @@ export const login = async (credentials) => {
       email: credentials.email,
       password: credentials.password,
     });
-    const { accessToken, refreshToken } = response.data.data;
+    const { accessToken, refreshToken, expiresIn } = response.data.data;
+    
+    // Save access token
     await AsyncStorage.setItem('accessToken', accessToken);
+    
+    // Mobile needs refresh token in AsyncStorage
     if (refreshToken) {
       await AsyncStorage.setItem('refreshToken', refreshToken);
+    } else {
+      // If backend doesn't return refresh token, we need to handle this
+      throw new Error('Backend must return refresh token for mobile');
     }
+    
+    // Start auto refresh after successful login
+    startAutoRefresh();
+    
     return response.data.data;
   } catch (error) {
     if (error.response) {
@@ -38,22 +49,27 @@ export const refreshToken = async () => {
         const refreshToken = await AsyncStorage.getItem('refreshToken');
         if (!refreshToken) throw new Error('No refresh token available');
         const response = await api.post('/auth/refresh', { refreshToken });
-        const { accessToken } = response.data.data;
+        const { accessToken, expiresIn } = response.data.data;
         await AsyncStorage.setItem('accessToken', accessToken);
+        
+        // Restart auto refresh with new token
+        startAutoRefresh();
+        
         return accessToken;
     } catch (error) {
-        console.error('Error refreshing token:', error.response?.data || error);
         throw new Error('Failed to refresh token');
     }
 };
 
 export const logout = async () => {
   try {
+    // Stop auto refresh before logout
+    stopAutoRefresh();
+    
     // Attempt to call the backend logout API
     await api.post('/auth/logout');
   } catch (error) {
-    // Log the error but continue to clear local tokens
-    console.error('Error calling backend logout API:', error);
+    // Continue to clear local tokens regardless of backend call success or failure
   } finally {
     // Clear frontend tokens regardless of backend call success or failure
     await AsyncStorage.removeItem('accessToken');
