@@ -46,13 +46,13 @@ export default function LoginPage() {
       if (response && response.accessToken) {
         // Refresh socket connection with new token
         refreshSocket();
-        
+
         // Decode token để kiểm tra role
         const decoded = jwtDecode(response.accessToken);
         if (decoded.role === 'admin') {
           navigate('/admin');
         } else {
-        navigate('/');
+          navigate('/');
         }
       } else {
         setError('Login failed: Invalid credentials or server response.');
@@ -141,9 +141,7 @@ export default function LoginPage() {
             boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.05)',
             maxWidth: 500,
             mx: 'auto',
-            maxHeight: '90vh',
-            overflowY: 'auto',
-            position: 'relative', // Add relative positioning for absolute positioning of the home button
+            position: 'relative', 
           }}
         >
           {/* Home Icon Button - Added in top left */}

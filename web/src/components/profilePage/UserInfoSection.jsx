@@ -8,6 +8,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import mediaService from '../../services/mediaService';
 import { fetchCurrentUser, updateCurrentUser } from '../../services/userService';
+import { toast } from 'react-toastify';
 
 const UserInfoSection = ({ onUserUpdated }) => {
     const fileInputRef = useRef();
@@ -49,7 +50,16 @@ const UserInfoSection = ({ onUserUpdated }) => {
     }, []);
 
     const handleEditToggle = () => {
-        setIsEditing(!isEditing);
+        setIsEditing((prev) => {
+            const next = !prev;
+            if (next) {
+                setFormData((prevFormData) => ({
+                    ...prevFormData,
+                    avatar: userData?.avatar || ''
+                }));
+            }
+            return next;
+        });
     };
 
     const handleInputChange = (e) => {
@@ -89,7 +99,16 @@ const UserInfoSection = ({ onUserUpdated }) => {
             setError(null);
             if (onUserUpdated) onUserUpdated(response.data);
         } catch (err) {
-            setError('Failed to update profile. Please try again.');
+            // Show detailed error messages if available
+            let errorMsg = 'Failed to update profile. Please try again.';
+            if (err.response && err.response.data) {
+                if (Array.isArray(err.response.data.message)) {
+                    errorMsg = err.response.data.message.join(' ');
+                } else if (typeof err.response.data.message === 'string') {
+                    errorMsg = err.response.data.message;
+                }
+            }
+            setError(errorMsg);
             console.error('Error updating profile:', err);
         } finally {
             setLoading(false);
@@ -152,6 +171,15 @@ const UserInfoSection = ({ onUserUpdated }) => {
                 setFormData((prev) => ({ ...prev, avatar: newAvatarUrl }));
             }
         } catch (error) {
+            let errorMsg = 'Avatar upload failed. Please try again.';
+            if (error.response && error.response.data && error.response.data.message) {
+                if (error.response.data.message.includes('Inappropriate image content detected')) {
+                    errorMsg = 'Inappropriate image content detected. Please choose another image.';
+                } else {
+                    errorMsg = error.response.data.message;
+                }
+            }
+            toast.error(errorMsg);
             console.error('Avatar upload failed:', error);
         }
     };
