@@ -1,9 +1,7 @@
 import React from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import ProfileScreen from '../screens/profile/ProfileScreen';
-// Placeholder screens, bạn sẽ thay bằng màn hình thực tế sau
-const MyPostsScreen = () => null;
-const AchievementsScreen = () => null;
+import MyBlogScreen from '../screens/blog/MyBlogScreen';
 
 const ProfileDrawer = createDrawerNavigator();
 
@@ -14,12 +12,11 @@ const ProfileDrawerNavigator = () => (
       drawerPosition: 'left',
       drawerType: 'slide',
       drawerStyle: { width: 240 },
-      headerShown: true,
+      headerShown: false, // Hide header of profile drawer
     }}
   >
     <ProfileDrawer.Screen name="ProfileInfo" component={ProfileScreen} options={{ title: 'Personal Information' }} />
-    <ProfileDrawer.Screen name="MyPosts" component={MyPostsScreen} options={{ title: 'My posts' }} />
-    <ProfileDrawer.Screen name="Achievements" component={AchievementsScreen} options={{ title: 'Achievements' }} />
+    <ProfileDrawer.Screen name="MyPosts" component={MyBlogScreen} options={{ title: 'My posts' }} />
   </ProfileDrawer.Navigator>
 );
 

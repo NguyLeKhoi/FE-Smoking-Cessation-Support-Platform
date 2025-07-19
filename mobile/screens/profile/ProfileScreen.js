@@ -6,7 +6,9 @@ import {
   ScrollView, 
   TouchableOpacity, 
   Alert, 
-  ActivityIndicator
+  ActivityIndicator,
+  SafeAreaView,
+  StatusBar
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import userService from '../../service/userService';
@@ -150,7 +152,9 @@ const ProfileScreen = ({ navigation: propNavigation }) => {
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ paddingTop: 0 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#f7f7f7' }}>
+      <StatusBar barStyle="dark-content" backgroundColor="#f7f7f7" />
+      <ScrollView style={styles.container} contentContainerStyle={{ paddingTop: 10 }}>
       {/* Đã xóa nút mở drawer lớn ở ngoài */}
       {/* User Info Section */}
       <UserInfoSection
@@ -176,7 +180,8 @@ const ProfileScreen = ({ navigation: propNavigation }) => {
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Text style={styles.logoutButtonText}>Log Out</Text>
       </TouchableOpacity>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 

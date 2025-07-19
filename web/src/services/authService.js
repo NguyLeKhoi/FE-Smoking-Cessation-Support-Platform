@@ -1,14 +1,17 @@
-import api from './api';
+import api, { startAutoRefresh, stopAutoRefresh } from './api';
 import { getUserById } from './userService';
 
 export const login = async (credentials) => {
   try {
     const response = await api.post('/auth/login', { email: credentials.email, password: credentials.password });
-    const { accessToken, refreshToken } = response.data.data;
+    
+    const { accessToken } = response.data.data;
+    
     localStorage.setItem('accessToken', accessToken);
-    if (refreshToken) {
-      localStorage.setItem('refreshToken', refreshToken);
-    }
+    
+    // Start auto refresh after successful login
+    startAutoRefresh();
+    
     // Fetch user info after login and store userId
     let userId = null;
     try {
@@ -19,8 +22,7 @@ export const login = async (credentials) => {
         localStorage.setItem('userId', userId);
       }
     } catch (e) {
-      // fallback or log error
-      console.error('Failed to fetch user info after login:', e);
+      // Silent error handling
     }
     return response.data.data;
   } catch (error) {
@@ -45,21 +47,26 @@ export const signup = async (userData) => {
 
 export const refreshToken = async () => {
   try {
-    const refreshToken = localStorage.getItem('refreshToken');
-    if (!refreshToken) throw new Error('No refresh token available');
-
-    const response = await api.post('/auth/refresh', { refreshToken });
+    const response = await api.post('/auth/refresh', {}, {
+      withCredentials: true // Include cookies
+    });
     const { accessToken } = response.data.data;
     localStorage.setItem('accessToken', accessToken);
+    
+    // Restart auto refresh with new token
+    startAutoRefresh();
+    
     return accessToken;
   } catch (error) {
-    console.error('Error refreshing token:', error);
     throw new Error('Failed to refresh token');
   }
 };
 
 export const logout = async () => {
   try {
+    // Stop auto refresh before logout
+    stopAutoRefresh();
+    
     const socketInstance = window.socketInstance;
     if (socketInstance && socketInstance.connected) {
       socketInstance.disconnect();
@@ -67,16 +74,13 @@ export const logout = async () => {
 
     // Call the backend logout API
     await api.post('/auth/logout');
-    console.log('Backend logout successful.');
   } catch (error) {
-    console.error('Error calling backend logout API:', error);
     // Continue with frontend logout even if backend call fails
     // This might happen if the token is already invalid
   }
 
   // Clear all frontend tokens and user data
   localStorage.removeItem('accessToken');
-  localStorage.removeItem('refreshToken');
   localStorage.removeItem('userId');
   localStorage.removeItem('username');
   localStorage.removeItem('avatar');
@@ -86,8 +90,6 @@ export const logout = async () => {
 
   // Clear sessionStorage as well
   sessionStorage.removeItem('userData');
-
-  console.log('All frontend tokens and user data cleared.');
 };
 
 export const isAuthenticated = () => {

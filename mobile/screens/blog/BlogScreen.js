@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, FlatList, ActivityIndicator, Alert, Text } from 'react-native';
+import { View, FlatList, ActivityIndicator, Alert, Text, SafeAreaView, StatusBar } from 'react-native';
 import blogService from '../../service/blogService';
 import BlogCard from '../../components/blog/BlogCard';
 
@@ -42,7 +42,9 @@ const BlogScreen = ({ navigation }) => {
   if (loading) return <ActivityIndicator size="large" style={{ flex: 1 }} />;
 
   return (
-    <View style={{ flex: 1, padding: 16 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+      <View style={{ flex: 1, padding: 16, paddingTop: 10 }}>
       {/* <Button title="Tạo bài viết mới" onPress={() => navigation.navigate('CreateBlog')} /> */}
       {blogs.length === 0 ? (
         <Text style={{ marginTop: 32, textAlign: 'center' }}>Không có bài viết nào</Text>
@@ -61,7 +63,8 @@ const BlogScreen = ({ navigation }) => {
           )}
         />
       )}
-    </View>
+      </View>
+    </SafeAreaView>
   );
 };
 
