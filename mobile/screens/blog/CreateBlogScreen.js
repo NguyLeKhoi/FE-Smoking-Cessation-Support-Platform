@@ -65,7 +65,7 @@ const CreateBlogScreen = ({ navigation }) => {
       Alert.alert('Success', 'Blog post created successfully!');
       navigation.goBack();
     } catch (error) {
-      console.log('Create post error:', error?.response?.data || error.message || error);
+
       Alert.alert('Error', error?.response?.data?.message || error.message || 'Failed to create blog post.');
     } finally {
       setLoading(false);

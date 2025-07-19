@@ -36,7 +36,6 @@ const EditBlogScreen = ({ route, navigation }) => {
     const fetchBlog = async () => {
       try {
         const data = await blogService.getPostById(id);
-        console.log('EditBlogScreen - getPostById:', data);
         const post = data.data || data;
         setTitle(post.title || '');
         setContent(post.content || '');
