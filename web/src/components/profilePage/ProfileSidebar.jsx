@@ -22,7 +22,7 @@ const menuItems = [
 ];
 
 const SidebarContainer = styled(Paper)(({ theme }) => ({
-    width: 250,
+    width: 260,
     height: '100vh',
     backgroundColor: theme.palette.background.paper,
     boxShadow: '4px 0px 10px rgba(0, 0, 0, 0.03)',

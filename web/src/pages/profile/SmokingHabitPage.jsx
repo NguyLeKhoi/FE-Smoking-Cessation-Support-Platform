@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, CircularProgress, Paper, List, ListItem, ListItemText } from '@mui/material';
+import { Box, Typography, CircularProgress, List, ListItem, ListItemText, Chip, Stack, Paper } from '@mui/material';
 import smokingService from '../../services/smokingService';
 import ProfileSidebar from '../../components/profilePage/ProfileSidebar';
 import { fetchCurrentUser } from '../../services/userService';
+import EmojiObjectsIcon from '@mui/icons-material/EmojiObjects';
+import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 
 const SmokingHabitPage = () => {
     const [habit, setHabit] = useState(null);
@@ -30,13 +34,42 @@ const SmokingHabitPage = () => {
         fetchData();
     }, []);
 
+    const statBox = (label, value, icon, color = 'primary.main') => (
+        <Paper elevation={1} sx={{
+            p: 2, minWidth: 140, textAlign: 'center', bgcolor: 'section.light', borderRadius: 3, flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1
+        }}>
+            {icon}
+            <Typography variant="h6" fontWeight={700} color={color}>{value}</Typography>
+            <Typography variant="body2" color="text.secondary">{label}</Typography>
+        </Paper>
+    );
+
     const content = (
-        <Box sx={{ maxWidth: 600, mx: 'auto', mt: 4, p: 2 }}>
-            <Paper elevation={2} sx={{ p: 4, borderRadius: 3 }}>
-                <Typography variant="h4" fontWeight={700} gutterBottom>
-                    My Smoking Habit
-                </Typography>
-                <List>
+        <Box sx={{
+            width: '100%',
+            p: { xs: 2, md: 4 },
+            maxWidth: 900,
+            mx: 'auto',
+            mt: 4,
+            bgcolor: 'background.paper',
+            borderRadius: 4,
+            boxShadow: 2,
+        }}>
+            <Typography variant="h4" fontWeight={700} gutterBottom>
+                My Smoking Habit
+            </Typography>
+
+            {/* Key Stats Row */}
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3} sx={{ mb: 5, flexWrap: 'wrap' }}>
+                {statBox('Cigarettes/Day', habit?.cigarettes_per_day, <LocalFireDepartmentIcon color="error" />)}
+                {statBox('Years Smoking', habit?.smoking_years, <CalendarMonthIcon color="primary" />)}
+                {statBox('Daily Cost', habit?.daily_cost ? `$${habit.daily_cost}` : '-', <AttachMoneyIcon color="success" />)}
+            </Stack>
+
+            {/* Profile Details */}
+            <Box sx={{ mb: 4 }}>
+                <Typography variant="subtitle1" fontWeight={600} gutterBottom>Your Smoking Profile</Typography>
+                <List sx={{ maxWidth: 700 }}>
                     <ListItem>
                         <ListItemText primary="Cigarettes per pack" secondary={habit?.cigarettes_per_pack} />
                     </ListItem>
@@ -44,31 +77,42 @@ const SmokingHabitPage = () => {
                         <ListItemText primary="Price per pack" secondary={`$${habit?.price_per_pack}`} />
                     </ListItem>
                     <ListItem>
-                        <ListItemText primary="Cigarettes per day" secondary={habit?.cigarettes_per_day} />
-                    </ListItem>
-                    <ListItem>
-                        <ListItemText primary="Smoking years" secondary={habit?.smoking_years} />
-                    </ListItem>
-                    <ListItem>
-                        <ListItemText primary="Triggers" secondary={Array.isArray(habit?.triggers) ? habit.triggers.join(', ') : habit?.triggers} />
-                    </ListItem>
-                    <ListItem>
                         <ListItemText primary="Health issues" secondary={habit?.health_issues} />
-                    </ListItem>
-                    <ListItem>
-                        <ListItemText primary="Daily cost" secondary={`$${habit?.daily_cost}`} />
                     </ListItem>
                     <ListItem>
                         <ListItemText primary="Last updated" secondary={habit?.created_at ? new Date(habit.created_at).toLocaleString() : ''} />
                     </ListItem>
                 </List>
-                <Box sx={{ mt: 3 }}>
-                    <Typography variant="h6" fontWeight={600} gutterBottom>AI Feedback</Typography>
-                    <Paper elevation={0} sx={{ bgcolor: 'section.light', p: 2, borderRadius: 2 }}>
-                        <Typography variant="body1" sx={{ whiteSpace: 'pre-line' }}>{habit?.ai_feedback}</Typography>
-                    </Paper>
+            </Box>
+
+            {/* Triggers as Chips */}
+            <Box sx={{ mb: 5 }}>
+                <Typography variant="subtitle1" fontWeight={600} gutterBottom>Triggers</Typography>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                    {(Array.isArray(habit?.triggers) ? habit.triggers : (habit?.triggers ? [habit.triggers] : [])).map((trigger, idx) => (
+                        <Chip key={idx} label={trigger} color="secondary" variant="outlined" />
+                    ))}
                 </Box>
-            </Paper>
+            </Box>
+
+            {/* AI Feedback */}
+            <Box sx={{ mt: 3, maxWidth: 700 }}>
+                <Typography variant="subtitle1" fontWeight={600} gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <EmojiObjectsIcon sx={{ color: 'warning.main', verticalAlign: 'middle' }} />
+                    AI Feedback
+                </Typography>
+                <Box sx={{
+                    bgcolor: '#ffd8ba',
+                    p: 2,
+                    borderRadius: 2,
+                    border: '1px solid',
+                    borderColor: '#ffd8ba',
+                    mt: 1,
+                    boxShadow: 1,
+                }}>
+                    <Typography variant="body1" sx={{ whiteSpace: 'pre-line' }}>{habit?.ai_feedback}</Typography>
+                </Box>
+            </Box>
         </Box>
     );
 
