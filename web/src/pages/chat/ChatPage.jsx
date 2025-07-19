@@ -110,7 +110,7 @@ const ChatPage = () => {
     };
 
     return (
-        <Box sx={{ display: 'flex', height: 'calc(100vh - 64px)', bgcolor: 'background.default', overflow: 'hidden' }}>
+        <Box sx={{ display: 'flex', height: '100vh', bgcolor: 'background.default', overflow: 'hidden' }}>
             <ChatSidebar
                 chatRooms={chatRooms}
                 loading={loading}
@@ -119,7 +119,7 @@ const ChatPage = () => {
                 getRoomDisplayInfo={getRoomDisplayInfo}
             />
             {/* Right: Chat Window */}
-            <Box sx={{ flex: 1, display: 'flex', alignItems: 'stretch', justifyContent: 'center', bgcolor: 'background.default', overflow: 'hidden' }}>
+            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'stretch', justifyContent: 'center', bgcolor: 'background.default', overflow: 'hidden', height: '100%' }}>
                 {selectedRoom ? (
                     <Box sx={{ width: '100%', height: '100%' }}>
                         <ChatWindow room={selectedRoom} onClose={() => setSelectedRoom(null)} />

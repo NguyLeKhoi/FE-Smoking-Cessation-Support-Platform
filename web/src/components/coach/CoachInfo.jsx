@@ -1,10 +1,60 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, Avatar, Typography, Chip, Button, Box } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import { Email, Phone, AccessTime } from '@mui/icons-material';
+import { createChatRoom, getAllChatRooms } from '../../services/chatService';
+import { toast } from 'react-toastify';
 
-const CoachInfo = ({ coach, onStartChat }) => {
+const CoachInfo = ({ coach }) => {
     const navigate = useNavigate();
+    const [existingChatRoom, setExistingChatRoom] = useState(null);
+    const [checkingRoom, setCheckingRoom] = useState(true);
+
+    useEffect(() => {
+        const fetchChatRooms = async () => {
+            setCheckingRoom(true);
+            try {
+                const rooms = await getAllChatRooms();
+                const chatRoomsArray = Array.isArray(rooms) ? rooms : (rooms.data || []);
+                console.log('CoachInfo: chatRoomsArray', chatRoomsArray);
+                console.log('CoachInfo: coach.user_id', coach.user_id);
+                const foundRoom = chatRoomsArray.find(
+                    room =>
+                        room.coach &&
+                        room.coach.user &&
+                        room.coach.user.id === coach.user_id
+                );
+                if (foundRoom) {
+                    console.log('CoachInfo: found matching room', foundRoom);
+                }
+                setExistingChatRoom(foundRoom || null);
+            } catch (e) {
+                setExistingChatRoom(null);
+            } finally {
+                setCheckingRoom(false);
+            }
+        };
+        fetchChatRooms();
+    }, [coach.user_id]);
+
+    const handleStartConsultation = async () => {
+        if (existingChatRoom) {
+            navigate('/chat-page');
+            return;
+        }
+        try {
+            const response = await createChatRoom(coach.id);
+            const newRoom = response.data ? response.data : response;
+            if (!newRoom || !newRoom.id) {
+                toast.error('Failed to create chat room: No room ID returned.');
+                return;
+            }
+            toast.success('Chat room created successfully!');
+            navigate('/chat-page');
+        } catch (error) {
+            toast.error('Failed to create chat room: ' + (error.response?.data?.message || error.message));
+        }
+    };
 
     return (
         <Box sx={{ display: 'flex', gap: 3, width: '100%', maxWidth: 1000 }}>
@@ -14,7 +64,8 @@ const CoachInfo = ({ coach, onStartChat }) => {
                 sx={{
                     flex: 1,
                     borderRadius: 5,
-                    p: 4,
+                    p: 5,
+                    mb: 5,
                     bgcolor: '#ffffff',
                     border: '1px solid rgba(0,0,0,0.08)',
                     height: 'fit-content',
@@ -23,6 +74,7 @@ const CoachInfo = ({ coach, onStartChat }) => {
                     width: 500,
                     display: 'flex',
                     flexDirection: 'column',
+
                 }}
             >
                 <Box sx={{ flex: 1 }}>
@@ -109,7 +161,8 @@ const CoachInfo = ({ coach, onStartChat }) => {
                 <Button
                     variant="contained"
                     size="large"
-                    onClick={() => navigate('/chat-page', { state: { coachId: coach.id } })}
+                    onClick={handleStartConsultation}
+                    disabled={checkingRoom}
                     sx={{
                         bgcolor: '#1e293b',
                         color: 'white',
@@ -125,7 +178,11 @@ const CoachInfo = ({ coach, onStartChat }) => {
                         }
                     }}
                 >
-                    Start Consultation
+                    {checkingRoom
+                        ? 'Loading...'
+                        : existingChatRoom
+                            ? 'Continue Consultation'
+                            : 'Start Consultation'}
                 </Button>
             </Card>
 
@@ -141,7 +198,7 @@ const CoachInfo = ({ coach, onStartChat }) => {
                     background: '#ffffff',
                     minHeight: "500px",
                     maxHeight: '600px',
-                    
+
                 }}
             >
 
@@ -155,7 +212,7 @@ const CoachInfo = ({ coach, onStartChat }) => {
                         transform: 'translate(-50%, -50%)',
                         width: 280,
                         height: 280,
-                        
+
                     }}
                 >
                     <Avatar

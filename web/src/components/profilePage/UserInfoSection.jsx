@@ -10,6 +10,12 @@ import mediaService from '../../services/mediaService';
 import { fetchCurrentUser, updateCurrentUser } from '../../services/userService';
 import { toast } from 'react-toastify';
 
+const MEDIA_MESSAGES = {
+    INVALID_FILE_TYPE: 'Invalid file format.',
+    IMAGES_NOT_EMPTY: 'Images are required.',
+    UPLOAD_IMAGES_SUCCESSFULLY: 'Images uploaded successfully.',
+};
+
 const UserInfoSection = ({ onUserUpdated }) => {
     const fileInputRef = useRef();
     const [userData, setUserData] = useState(null);
@@ -158,7 +164,14 @@ const UserInfoSection = ({ onUserUpdated }) => {
     // Avatar upload handler
     const handleAvatarUpload = async (event) => {
         const file = event.target.files && event.target.files[0];
-        if (!file) return;
+        if (!file) {
+            toast.error(MEDIA_MESSAGES.IMAGES_NOT_EMPTY);
+            return;
+        }
+        if (!file.type.startsWith('image/')) {
+            toast.error(MEDIA_MESSAGES.INVALID_FILE_TYPE);
+            return;
+        }
         const formDataData = new FormData();
         formDataData.append('images', file);
         try {
@@ -169,6 +182,7 @@ const UserInfoSection = ({ onUserUpdated }) => {
             }
             if (newAvatarUrl) {
                 setFormData((prev) => ({ ...prev, avatar: newAvatarUrl }));
+                toast.success(MEDIA_MESSAGES.UPLOAD_IMAGES_SUCCESSFULLY);
             }
         } catch (error) {
             let errorMsg = 'Avatar upload failed. Please try again.';
