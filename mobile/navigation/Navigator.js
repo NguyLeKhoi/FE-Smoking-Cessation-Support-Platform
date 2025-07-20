@@ -27,6 +27,7 @@ import QuitPlanListScreen from '../screens/quit-plan/QuitPlanListScreen';
 import QuitPlanDetailScreen from '../screens/quit-plan/QuitPlanDetailScreen';
 import PhaseRecordScreen from '../screens/quit-plan/PhaseRecordScreen';
 import ProfileDrawerNavigator from '../navigation/ProfileDrawerNavigator';
+import AchievementsScreen from '../screens/achievements/AchievementsScreen';
 
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
@@ -208,6 +209,25 @@ const Navigator = () => {
           options={{
             headerShown: true,
             title: 'Blog Detail',
+            headerStyle: {
+              backgroundColor: '#ffffff',
+              elevation: 0,
+              shadowOpacity: 0,
+            },
+            headerTintColor: '#000000',
+            headerTitleStyle: {
+              fontWeight: 'bold',
+              color: '#000000',
+              fontSize: 18,
+            },
+          }}
+        />
+        <Stack.Screen
+          name="Achievements"
+          component={AchievementsScreen}
+          options={{
+            headerShown: true,
+            title: 'Achievements',
             headerStyle: {
               backgroundColor: '#ffffff',
               elevation: 0,

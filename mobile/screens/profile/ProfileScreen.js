@@ -173,7 +173,7 @@ const ProfileScreen = ({ navigation: propNavigation }) => {
       {/* Achievements Section */}
       <AchievementSection 
         achievements={achievements} 
-        onViewAll={() => navigation.navigate('Achievements')}
+        onViewAll={() => navigation.getParent()?.navigate('Achievements')}
       />
 
       {/* Logout Button */}
