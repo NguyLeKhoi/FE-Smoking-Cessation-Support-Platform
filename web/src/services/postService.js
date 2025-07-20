@@ -80,6 +80,23 @@ const postService = {
             toast(` Error deleting post: ${error.response?.data?.message || error.message}`);
             throw error;
         }
+    },
+
+    /**
+     * Approve or reject a post (admin)
+     * @param {string} id - Post ID
+     * @param {object} data - { approved: true/false, ... }
+     * @returns {Promise} - Result of approval
+     */
+    approvePost: async (id, data) => {
+        try {
+            const response = await api.post(`/posts/${id}/verify`, data);
+            toast(` Post ${data.status === 'APPROVED' ? 'approved' : 'rejected'} successfully!`);
+            return response.data;
+        } catch (error) {
+            toast(` Error approving post: ${error.response?.data?.message || error.message}`);
+            throw error;
+        }
     }
 };
 
