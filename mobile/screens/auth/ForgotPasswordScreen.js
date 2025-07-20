@@ -12,7 +12,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { forgotPassword } from '../service/authService';
+import { forgotPassword } from '../../service/authService';
 
 const ForgotPasswordScreen = () => {
   const navigation = useNavigation();

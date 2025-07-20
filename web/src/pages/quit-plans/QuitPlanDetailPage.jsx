@@ -10,6 +10,7 @@ import SmokingRoomsIcon from '@mui/icons-material/SmokingRooms';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import ErrorIcon from '@mui/icons-material/Error';
+import LinearProgress from '@mui/material/LinearProgress';
 
 import quitPlanService from '../../services/quitPlanService';
 import AddDailyRecordModal from '../../components/quit-plans/AddDailyRecordModal';
@@ -397,33 +398,58 @@ const QuitPlanResultPage = () => {
                           </Box>
                         )}
                         {tabValues[idx] === 1 && phase.statistics && (
-                          <Box mt={2} textAlign="center">
-                            <Box display="flex" flexDirection="row" justifyContent="center" alignItems="center" gap={5} mb={1}>
-                              <Box flex={1} display="flex" flexDirection="column" gap={2} alignItems="center">
-                                <Box display="flex" alignItems="center" gap={1.5} justifyContent="center">
-                                  <CheckCircleIcon sx={{ fontSize: 22, color: '#43a047', verticalAlign: 'middle' }} />
-                                  <Typography variant="body1" fontWeight={900}>Recorded:</Typography>
-                                  <Typography variant="body1" sx={{ fontWeight: 700, ml: 1, color: '#43a047' }}>{phase.statistics.recordedDays} days</Typography>
+                          <Box mt={2} textAlign="center" sx={{ maxHeight: 72, overflowY: 'auto' }}>
+                            {(() => {
+                              const total = phase.duration || 1;
+                              const recorded = phase.statistics.recordedDays || 0;
+                              const passed = phase.statistics.passedDays || 0;
+                              const missed = phase.statistics.missedDays || 0;
+                              const failed = phase.statistics.failedDays || 0;
+                              return (
+                                <Box display="flex" flexDirection="column" gap={1}>
+                                  <Box>
+                                    <Box display="flex" alignItems="center" justifyContent="space-between" mb={0.1}>
+                                      <Box display="flex" alignItems="center" gap={0.3}>
+                                        <CheckCircleIcon sx={{ color: '#43a047', fontSize: 15 }} />
+                                        <Typography fontWeight={900} fontSize={12}>Recorded</Typography>
+                                      </Box>
+                                      <Typography fontWeight={700} color="#43a047" fontSize={11}>{recorded} days ({Math.round((recorded/total)*100)}%)</Typography>
+                                    </Box>
+                                    <LinearProgress variant="determinate" value={Math.round((recorded/total)*100)} sx={{ height: 8, borderRadius: 4, background: '#e0f2f1', '& .MuiLinearProgress-bar': { backgroundColor: '#43a047' } }} />
+                                  </Box>
+                                  <Box>
+                                    <Box display="flex" alignItems="center" justifyContent="space-between" mb={0.1}>
+                                      <Box display="flex" alignItems="center" gap={0.3}>
+                                        <FavoriteIcon sx={{ color: '#1976d2', fontSize: 15 }} />
+                                        <Typography fontWeight={900} fontSize={12}>Passed</Typography>
+                                      </Box>
+                                      <Typography fontWeight={700} color="#1976d2" fontSize={11}>{passed} days ({Math.round((passed/total)*100)}%)</Typography>
+                                    </Box>
+                                    <LinearProgress variant="determinate" value={Math.round((passed/total)*100)} sx={{ height: 8, borderRadius: 4, background: '#e3f2fd', '& .MuiLinearProgress-bar': { backgroundColor: '#1976d2' } }} />
+                                  </Box>
+                                  <Box>
+                                    <Box display="flex" alignItems="center" justifyContent="space-between" mb={0.1}>
+                                      <Box display="flex" alignItems="center" gap={0.3}>
+                                        <BlockIcon sx={{ color: '#e53935', fontSize: 15 }} />
+                                        <Typography fontWeight={900} fontSize={12}>Missed</Typography>
+                                      </Box>
+                                      <Typography fontWeight={700} color="#e53935" fontSize={11}>{missed} days ({Math.round((missed/total)*100)}%)</Typography>
+                                    </Box>
+                                    <LinearProgress variant="determinate" value={Math.round((missed/total)*100)} sx={{ height: 8, borderRadius: 4, background: '#ffebee', '& .MuiLinearProgress-bar': { backgroundColor: '#e53935' } }} />
+                                  </Box>
+                                  <Box>
+                                    <Box display="flex" alignItems="center" justifyContent="space-between" mb={0.1}>
+                                      <Box display="flex" alignItems="center" gap={0.3}>
+                                        <ErrorIcon sx={{ color: '#ff9800', fontSize: 15 }} />
+                                        <Typography fontWeight={900} fontSize={12}>Failed</Typography>
+                                      </Box>
+                                      <Typography fontWeight={700} color="#ff9800" fontSize={11}>{failed} days ({Math.round((failed/total)*100)}%)</Typography>
+                                    </Box>
+                                    <LinearProgress variant="determinate" value={Math.round((failed/total)*100)} sx={{ height: 8, borderRadius: 4, background: '#fff3e0', '& .MuiLinearProgress-bar': { backgroundColor: '#ff9800' } }} />
+                                  </Box>
                                 </Box>
-                                <Box display="flex" alignItems="center" gap={1.5} justifyContent="center">
-                                  <FavoriteIcon sx={{ fontSize: 22, color: '#1976d2', verticalAlign: 'middle' }} />
-                                  <Typography variant="body1" fontWeight={900}>Passed:</Typography>
-                                  <Typography variant="body1" sx={{ fontWeight: 700, ml: 1, color: '#1976d2' }}>{phase.statistics.passedDays} days</Typography>
-                                </Box>
-                              </Box>
-                              <Box flex={1} display="flex" flexDirection="column" gap={2} alignItems="center">
-                                <Box display="flex" alignItems="center" gap={1.5} justifyContent="center">
-                                  <BlockIcon sx={{ fontSize: 22, color: '#e53935', verticalAlign: 'middle' }} />
-                                  <Typography variant="body1" fontWeight={900}>Missed:</Typography>
-                                  <Typography variant="body1" sx={{ fontWeight: 700, ml: 1, color: '#e53935' }}>{phase.statistics.missedDays} days</Typography>
-                                </Box>
-                                <Box display="flex" alignItems="center" gap={1.5} justifyContent="center">
-                                  <ErrorIcon sx={{ fontSize: 22, color: '#e53935', verticalAlign: 'middle' }} />
-                                  <Typography variant="body1" fontWeight={900}>Failed:</Typography>
-                                  <Typography variant="body1" sx={{ fontWeight: 700, ml: 1, color: '#e53935' }}>{phase.statistics.failedDays} days</Typography>
-                                </Box>
-                              </Box>
-                            </Box>
+                              );
+                            })()}
                           </Box>
                         )}
                         {/* Buttons: View records & Add daily record side by side */}

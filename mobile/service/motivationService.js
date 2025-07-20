@@ -5,10 +5,9 @@ const motivationService = {
         try {
             const response = await api.post('/motivation/chat', { message });
             return response.data;
-        } catch (error) {
-            console.error('Error sending message to motivation AI:', error);
-            throw error;
-        }
+          } catch (error) {
+    throw error;
+  }
     }
 };
 

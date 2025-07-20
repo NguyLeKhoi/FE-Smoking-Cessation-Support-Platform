@@ -11,11 +11,12 @@ import {
   ScrollView,
   ActivityIndicator,
   Image,
+  StatusBar,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { login } from '../service/authService';
+import { login } from '../../service/authService';
 import { startAsync } from 'expo-auth-session';
-import { getGoogleLoginUrl } from '../service/authService';
+import { getGoogleLoginUrl } from '../../service/authService';
 
 const LoginScreen = () => {
   const navigation = useNavigation();
@@ -49,6 +50,7 @@ const LoginScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor="#f6f5f3" />
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardAvoidingView}

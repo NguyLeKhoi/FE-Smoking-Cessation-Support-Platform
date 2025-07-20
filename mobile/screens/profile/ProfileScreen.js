@@ -1,189 +1,185 @@
 import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  SafeAreaView,
-  ScrollView,
-  Image,
-  TextInput,
-  Button,
+import { 
+  View, 
+  Text, 
+  StyleSheet, 
+  ScrollView, 
+  TouchableOpacity, 
+  Alert, 
   ActivityIndicator,
-  Alert,
+  SafeAreaView,
+  StatusBar
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { logout } from '../service/authService';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import userService from '../../service/userService';
+import achievementsService from '../../service/achievementsService';
+import StatisticsSection from '../../components/profile/StatisticsSection';
+import UserInfoSection from '../../components/profile/UserInfoSection';
+import AchievementSection from '../../components/profile/AchievementSection';
+import theme from '../../theme/theme';
+import { useNavigation } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 
-const ProfileScreen = () => {
+const ProfileScreen = ({ navigation: propNavigation }) => {
   const navigation = useNavigation();
   const [user, setUser] = useState(null);
+  const [achievements, setAchievements] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState({
+    first_name: '',
+    last_name: '',
+    email: '',
+    phone_number: '',
+    dob: '',
+    avatar: ''
+  });
 
   useEffect(() => {
-    fetchUser();
+    checkTokenAndFetch();
   }, []);
 
-  const fetchUser = async () => {
+  const checkTokenAndFetch = async () => {
+    const token = await AsyncStorage.getItem('accessToken');
+    if (!token) {
+      navigation.replace('Login');
+      return;
+    }
+    fetchData();
+  };
+
+  const fetchData = async () => {
     setLoading(true);
     try {
-      const data = await userService.fetchCurrentUser();
-      setUser(data);
-      setName(data.name || '');
-      setEmail(data.email || '');
+      const userData = await userService.fetchCurrentUser();
+      setUser(userData.data); // Sửa ở đây
+      setFormData({
+        first_name: userData.data.first_name || '',
+        last_name: userData.data.last_name || '',
+        email: userData.data.email || '',
+        phone_number: userData.data.phone_number || '',
+        dob: userData.data.dob || '',
+        avatar: userData.data.avatar || ''
+      });
+      
+      const achData = await achievementsService.getAchievements();
+      setAchievements(achData);
     } catch (error) {
-      Alert.alert('Lỗi', 'Không thể tải thông tin cá nhân');
+      Alert.alert('Error', 'Failed to load profile or achievements');
     } finally {
       setLoading(false);
     }
   };
 
+  const handleInputChange = (name, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  // Thêm hàm formatDate để chuẩn hóa ngày sinh
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    // Nếu đã là YYYY-MM-DD thì trả về luôn
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) return dateString;
+    // Nếu là ISO string thì cắt phần ngày
+    return dateString.split('T')[0];
+  };
+
   const handleSave = async () => {
-    setSaving(true);
     try {
-      await userService.updateCurrentUser({ name, email });
-      Alert.alert('Thành công', 'Đã cập nhật thông tin cá nhân');
-      fetchUser();
+      setLoading(true);
+      const updatedUserData = {
+        first_name: formData.first_name,
+        last_name: formData.last_name,
+        phone_number: formData.phone_number,
+        avatar: formData.avatar,
+        dob: formatDate(formData.dob), // Đảm bảo đúng định dạng
+      };
+
+      await userService.updateCurrentUser(updatedUserData);
+      await fetchData(); // Fetch lại user từ API để đồng bộ dữ liệu
+      setIsEditing(false);
+      Alert.alert('Success', 'Profile updated successfully');
     } catch (error) {
-      Alert.alert('Lỗi', 'Không thể cập nhật thông tin');
+      Alert.alert('Error', 'Failed to update profile');
     } finally {
-      setSaving(false);
+      setLoading(false);
     }
   };
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-      navigation.navigate('Login'); // Navigate to Login screen after logout
-    } catch (error) {
-      console.error('Logout failed:', error);
-      // Optionally, show an error message to the user
-    }
-  };
-
-  const userData = {
-    username: "johnsmith",
-    role: "MEMBER",
-    phone_number: "+84 (555) 123-4567",
-    dob: "1990-05-15",
-    joined: "June 2023"
+  const handleLogout = () => {
+    Alert.alert(
+      'Log Out',
+      'Are you sure you want to log out?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'Log Out', 
+          style: 'destructive',
+          onPress: () => {
+            // Clear tokens and navigate to login
+            // You'll need to implement this based on your auth system
+            navigation.navigate('Login');
+          }
+        }
+      ]
+    );
   };
 
   const statisticsData = [
-    {
-      icon: '💧',
-      value: '63',
-      label: 'Day streak',
-      iconColor: '#64748b'
-    },
-    {
-      icon: '⚡',
-      value: '18303',
-      label: 'Total XP',
-      iconColor: '#f59e0b'
-    },
-    {
-      icon: '🏅',
-      value: 'Gold',
-      label: 'Current league',
-      iconColor: '#f59e0b'
-    },
-    {
-      icon: '🏆',
-      value: '3',
-      label: 'Top 3 finishes',
-      iconColor: '#f59e0b'
-    }
+    { icon: '💧', value: '63', label: 'Day streak', color: '#64748b' },
+    { icon: '⚡', value: '18303', label: 'Total XP', color: '#f59e0b' },
+    { icon: '🏅', value: 'Gold', label: 'Current league', color: '#f59e0b' },
+    { icon: '🏆', value: '3', label: 'Top 3 finishes', color: '#f59e0b' }
   ];
 
-  if (loading) return <ActivityIndicator size="large" style={{ flex: 1 }} />;
-  if (!user) return <Text>Không tìm thấy thông tin người dùng</Text>;
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={theme.colors.primary} />
+      </View>
+    );
+  }
+
+  if (!user) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>No profile data available</Text>
+      </View>
+    );
+  }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scrollView}>
-        <View style={styles.scrollContent}>
-          {/* User Information Section */}
-          <View style={styles.userInfoCard}>
-            <View style={styles.userInfoContent}>
-              {/* Avatar Section - Left Side */}
-              <View style={styles.avatarSection}>
-                <View style={styles.avatarContainer}>
-                  <Text style={styles.avatarText}>
-                    {userData.username.charAt(0).toUpperCase()}
-                  </Text>
-                </View>
-                <Text style={styles.username}>{userData.username}</Text>
-                <Text style={styles.joinDate}>Member since {userData.joined}</Text>
-                <TouchableOpacity style={styles.editButton}>
-                  <Text style={styles.editButtonText}>Edit Profile</Text>
-                </TouchableOpacity>
-              </View>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#f7f7f7' }}>
+      <StatusBar barStyle="dark-content" backgroundColor="#f7f7f7" />
+      <ScrollView style={styles.container} contentContainerStyle={{ paddingTop: 10 }}>
+      {/* Đã xóa nút mở drawer lớn ở ngoài */}
+      {/* User Info Section */}
+      <UserInfoSection
+        user={user}
+        formData={formData}
+        isEditing={isEditing}
+        onEditToggle={() => setIsEditing(!isEditing)}
+        onInputChange={handleInputChange}
+        onSave={handleSave}
+        onOpenDrawer={() => navigation.openDrawer()}
+      />
 
-              {/* User Information - Right Side */}
-              <View style={styles.infoSection}>
-                <Text style={styles.sectionTitle}>Personal Information</Text>
-                <View style={styles.infoGrid}>
-                  <View style={styles.infoColumn}>
-                    <View style={styles.infoItem}>
-                      <Text style={styles.infoLabel}>Email</Text>
-                      <TextInput
-                        style={styles.input}
-                        value={email}
-                        onChangeText={setEmail}
-                        placeholder="Nhập email"
-                        keyboardType="email-address"
-                      />
-                    </View>
-                    <View style={styles.infoItem}>
-                      <Text style={styles.infoLabel}>Phone Number</Text>
-                      <Text style={styles.infoValue}>{userData.phone_number}</Text>
-                    </View>
-                  </View>
-                  <View style={styles.infoColumn}>
-                    <View style={styles.infoItem}>
-                      <Text style={styles.infoLabel}>Role</Text>
-                      <Text style={styles.infoValue}>{userData.role}</Text>
-                    </View>
-                    <View style={styles.infoItem}>
-                      <Text style={styles.infoLabel}>Date of Birth</Text>
-                      <Text style={styles.infoValue}>{userData.dob}</Text>
-                    </View>
-                  </View>
-                </View>
-              </View>
-            </View>
-          </View>
+      {/* Statistics Section */}
+      <StatisticsSection statisticsData={statisticsData} />
 
-          {/* Statistics Section */}
-          <View style={styles.statisticsSection}>
-            <Text style={styles.statisticsTitle}>Statistics</Text>
-            <View style={styles.statisticsGrid}>
-              {statisticsData.map((stat, index) => (
-                <View key={index} style={styles.statCard}>
-                  <Text style={[styles.statIcon, { color: stat.iconColor }]}>
-                    {stat.icon}
-                  </Text>
-                  <View style={styles.statContent}>
-                    <Text style={styles.statValue}>{stat.value}</Text>
-                    <Text style={styles.statLabel}>{stat.label}</Text>
-                  </View>
-                </View>
-              ))}
-            </View>
-          </View>
+      {/* Achievements Section */}
+      <AchievementSection 
+        achievements={achievements} 
+        onViewAll={() => navigation.navigate('Achievements')}
+      />
 
-          {/* Logout Button */}
-          <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-            <Text style={styles.logoutButtonText}>Log Out</Text>
-          </TouchableOpacity>
-
-          <Button title={saving ? 'Đang lưu...' : 'Lưu thay đổi'} onPress={handleSave} disabled={saving} />
-        </View>
+      {/* Logout Button */}
+      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+        <Text style={styles.logoutButtonText}>Log Out</Text>
+      </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
@@ -192,168 +188,36 @@ const ProfileScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f6f5f3',
+    backgroundColor: '#f7f7f7',
+    padding: 16,
   },
-  scrollView: {
+  loadingContainer: {
     flex: 1,
-    width: '100%',
-  },
-  scrollContent: {
-    flexGrow: 1,
     justifyContent: 'center',
-  },
-  userInfoCard: {
-    margin: 16,
-    padding: 24,
-    backgroundColor: '#ffffff',
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: 'rgba(0, 0, 0, 0.12)',
-  },
-  userInfoContent: {
-    flexDirection: 'row',
-    gap: 32,
-    flexWrap: 'wrap',
-  },
-  avatarSection: {
     alignItems: 'center',
-    width: 160,
   },
-  avatarContainer: {
-    width: 160,
-    height: 160,
-    borderRadius: 80,
-    backgroundColor: '#f0f0f0',
-    borderWidth: 4,
-    borderColor: '#1976d2',
-    alignItems: 'center',
+  errorContainer: {
+    flex: 1,
     justifyContent: 'center',
-    marginBottom: 16,
+    alignItems: 'center',
   },
-  avatarText: {
-    fontSize: 64,
-    color: '#000000',
-  },
-  username: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#000000',
-    marginBottom: 8,
-  },
-  joinDate: {
-    fontSize: 14,
-    color: 'rgba(0, 0, 0, 0.6)',
-    marginBottom: 16,
-  },
-  editButton: {
-    borderWidth: 1,
-    borderColor: 'rgba(0, 0, 0, 0.23)',
-    borderRadius: 8,
-    paddingHorizontal: 24,
-    paddingVertical: 8,
-  },
-  editButtonText: {
-    fontSize: 14,
-    color: '#000000',
-  },
-  infoSection: {
-    flex: 1,
-    minWidth: 250,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#000000',
-    marginBottom: 24,
-  },
-  infoGrid: {
-    flexDirection: 'row',
-    gap: 24,
-    justifyContent: 'space-between',
-  },
-  infoColumn: {
-    flex: 1,
-  },
-  infoItem: {
-    marginBottom: 16,
-  },
-  infoLabel: {
-    fontSize: 14,
-    color: 'rgba(0, 0, 0, 0.6)',
-    marginBottom: 4,
-  },
-  infoValue: {
+  errorText: {
     fontSize: 16,
-    color: '#000000',
-    fontWeight: '500',
-    flexWrap: 'wrap',
+    color: theme.colors.textSecondary,
   },
-  statisticsSection: {
-    margin: 16,
-  },
-  statisticsTitle: {
-    fontSize: 32,
-    fontWeight: '700',
-    color: '#000000',
-    marginBottom: 24,
-  },
-  statisticsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 16,
-    justifyContent: 'center',
-  },
-  statCard: {
-    flex: 1,
-    minWidth: '45%',
-    backgroundColor: '#ffffff',
-    borderRadius: 12,
-    padding: 24,
-    borderWidth: 1,
-    borderColor: 'rgba(0, 0, 0, 0.12)',
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 16,
-  },
-  statIcon: {
-    fontSize: 24,
-  },
-  statContent: {
-    flex: 1,
-  },
-  statValue: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#000000',
-    marginBottom: 4,
-  },
-  statLabel: {
-    fontSize: 14,
-    color: 'rgba(0, 0, 0, 0.6)',
-  },
+
   logoutButton: {
-    backgroundColor: 'black', // Red color for logout
-    borderRadius: 8,
-    paddingHorizontal: 24,
-    paddingVertical: 12,
+    backgroundColor: '#000000',
+    paddingVertical: 16,
+    borderRadius: 12,
     alignItems: 'center',
-    margin: 16,
-    marginTop: 32,
+    marginTop: 16,
+    marginBottom: 32,
   },
   logoutButtonText: {
     color: 'white',
     fontSize: 16,
-    fontWeight: 'bold',
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 6,
-    padding: 8,
-    marginTop: 8,
-    marginBottom: 8,
-    fontSize: 16,
-    backgroundColor: '#fff',
+    fontWeight: '600',
   },
 });
 
