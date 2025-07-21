@@ -45,15 +45,17 @@ const SmokingHabitPage = () => {
     );
 
     const content = (
-        <Box sx={{
+        <Paper elevation={0} sx={{
+            p: 3,
+            bgcolor: 'background.paper',
+            borderRadius: 3,
+            border: '1px solid',
+            borderColor: 'divider',
+            overflow: 'visible',
             width: '100%',
-            p: { xs: 2, md: 4 },
             maxWidth: 900,
             mx: 'auto',
             mt: 4,
-            bgcolor: 'background.paper',
-            borderRadius: 4,
-            boxShadow: 2,
         }}>
             <Typography variant="h4" fontWeight={700} gutterBottom>
                 My Smoking Habit
@@ -113,7 +115,7 @@ const SmokingHabitPage = () => {
                     <Typography variant="body1" sx={{ whiteSpace: 'pre-line' }}>{habit?.ai_feedback}</Typography>
                 </Box>
             </Box>
-        </Box>
+        </Paper>
     );
 
     if (loading) {

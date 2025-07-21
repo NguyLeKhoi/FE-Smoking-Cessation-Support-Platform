@@ -123,7 +123,14 @@ const LeaderBoardPage = () => {
                 <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 4, color: 'text.primary', textAlign: 'start' }}>
                     Leaderboards
                 </Typography>
-                <Paper elevation={0} sx={{ p: 3, bgcolor: 'background.paper', borderRadius: 3, border: '1px solid', borderColor: 'divider', overflow: 'visible', width: '100%' }}>
+                <Paper elevation={0} sx={{
+                    p: 3,
+                    bgcolor: 'background.paper',
+                    borderRadius: 3, border: '1px solid',
+                    borderColor: 'divider',
+                    overflow: 'visible',
+                    width: '100%'
+                }}>
                     <Box sx={{ width: '100%', overflowX: { xs: 'auto', md: 'visible' } }}>
                         <NavigationButtonGroup
                             navigationItems={navigationItems}
