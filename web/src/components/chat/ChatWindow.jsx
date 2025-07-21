@@ -1,5 +1,6 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
 import { Box, Typography, TextField, Button, Avatar, IconButton, Chip } from '@mui/material';
+import CircularProgress from '@mui/material/CircularProgress';
 import { VideoCall as VideoCallIcon } from '@mui/icons-material';
 import { useSocket } from '../../context/SocketContext';
 import { getChatRoomMessages } from '../../services/chatService';
@@ -7,6 +8,9 @@ import { getAllCoaches } from '../../services/coachService';
 import { jwtDecode } from 'jwt-decode';
 import VideoCall from './VideoCall';
 import OutgoingCallModal from './OutgoingCallModal';
+import ChatInput from './ChatInput';
+import CloseIcon from '@mui/icons-material/Close';
+import VideocamIcon from '@mui/icons-material/Videocam';
 
 const ChatWindow = ({ room, onClose }) => {
     const [messages, setMessages] = useState([]);
@@ -18,7 +22,13 @@ const ChatWindow = ({ room, onClose }) => {
     const { socket } = useSocket();
     const messagesEndRef = useRef(null);
     const typingTimeoutRef = useRef(null);
-    
+    const messagesContainerRef = useRef(null);
+    const [loadingMore, setLoadingMore] = useState(false);
+    const [initialLoading, setInitialLoading] = useState(true);
+    const [hasMore, setHasMore] = useState(true);
+    const [offset, setOffset] = useState(0);
+    const limit = 20;
+
     // Video call states
     const [isInVideoCall, setIsInVideoCall] = useState(false);
     const [videoToken, setVideoToken] = useState(null);
@@ -39,12 +49,10 @@ const ChatWindow = ({ room, onClose }) => {
         }
     }
 
-    // Determine which user info to display at the top
     const displayUser = role === 'coach'
         ? room.user
         : room.coach?.user;
 
-    // Fetch coach info using getAllCoaches
     useEffect(() => {
         const fetchCoach = async () => {
             try {
@@ -88,15 +96,54 @@ const ChatWindow = ({ room, onClose }) => {
         fetchCoach();
     }, [room.coach_id, room.coach?.user]);
 
-    // Fetch initial messages
+    // Fetch latest messages on mount
     useEffect(() => {
-        const fetchMessages = async () => {
-            const data = await getChatRoomMessages(room.id);
-            const arr = Array.isArray(data.data?.data) ? data.data.data : Array.isArray(data.data) ? data.data : [];
-            setMessages(arr);
+        const fetchLatestMessages = async () => {
+            setInitialLoading(true);
+            setLoadingMore(true);
+            try {
+                const data = await getChatRoomMessages(room.id, limit, 0);
+                const arr = Array.isArray(data.data?.data) ? data.data.data : Array.isArray(data.data) ? data.data : [];
+                setMessages(arr);
+                setOffset(arr.length);
+                setHasMore(arr.length === limit);
+                // Scroll to bottom after initial load
+                setTimeout(() => {
+                    if (messagesContainerRef.current) {
+                        messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+                    }
+                }, 100);
+            } finally {
+                setLoadingMore(false);
+                setInitialLoading(false);
+            }
         };
-        fetchMessages();
+        fetchLatestMessages();
     }, [room.id]);
+
+    // Load more messages when scrolled to top
+    const handleScroll = async (e) => {
+        if (loadingMore || !hasMore) return;
+        const container = e.target;
+        if (container.scrollTop === 0) {
+            setLoadingMore(true);
+            try {
+                const data = await getChatRoomMessages(room.id, limit, offset);
+                const arr = Array.isArray(data.data?.data) ? data.data.data : Array.isArray(data.data) ? data.data : [];
+                setMessages(prev => [...arr, ...prev]);
+                setOffset(prev => prev + arr.length);
+                setHasMore(arr.length === limit);
+                // Maintain scroll position after prepending
+                setTimeout(() => {
+                    if (messagesContainerRef.current && arr.length > 0) {
+                        messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight / (arr.length + 1);
+                    }
+                }, 100);
+            } finally {
+                setLoadingMore(false);
+            }
+        }
+    };
 
     // Listen for new messages via socket
     useEffect(() => {
@@ -113,7 +160,7 @@ const ChatWindow = ({ room, onClose }) => {
     // Listen for typing events
     useEffect(() => {
         if (!socket) return;
-        
+
         const handleUserTyping = (data) => {
             if (data.userId !== currentUserId) {
                 setOtherUserTyping(data.isTyping);
@@ -124,10 +171,12 @@ const ChatWindow = ({ room, onClose }) => {
         return () => socket.off('userTyping', handleUserTyping);
     }, [socket, currentUserId]);
 
-    // Scroll to bottom on new message
-    useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [messages]);
+    // Scroll to bottom on new message (if not loading more)
+    useLayoutEffect(() => {
+        if (!loadingMore && messagesContainerRef.current) {
+            messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+        }
+    }, [messages, loadingMore]);
 
     // Join room when component mounts
     useEffect(() => {
@@ -148,18 +197,18 @@ const ChatWindow = ({ room, onClose }) => {
     // Handle typing indicator
     const handleInputChange = (e) => {
         setInput(e.target.value);
-        
+
         if (!socket) return;
-        
+
         if (!isTyping) {
             setIsTyping(true);
             socket.emit('typing', { chat_room_id: room.id, isTyping: true });
         }
-        
+
         if (typingTimeoutRef.current) {
             clearTimeout(typingTimeoutRef.current);
         }
-        
+
         typingTimeoutRef.current = setTimeout(() => {
             setIsTyping(false);
             socket.emit('typing', { chat_room_id: room.id, isTyping: false });
@@ -177,7 +226,7 @@ const ChatWindow = ({ room, onClose }) => {
             return;
         }
         if (!input.trim()) return;
-        
+
         // Stop typing indicator
         if (isTyping) {
             setIsTyping(false);
@@ -186,7 +235,7 @@ const ChatWindow = ({ room, onClose }) => {
                 clearTimeout(typingTimeoutRef.current);
             }
         }
-        
+
         socket.emit('sendMessage', {
             chat_room_id: room.id,
             message: input,
@@ -254,7 +303,7 @@ const ChatWindow = ({ room, onClose }) => {
         const handleCallAccepted = (data) => {
             setIsCallStarting(false);
             setShowOutgoingCallModal(false);
-            
+
             // Use the token sent with the call-accepted event
             if (data.token) {
                 setVideoToken(data.token);
@@ -276,7 +325,7 @@ const ChatWindow = ({ room, onClose }) => {
             setIsCallStarting(false);
             setShowOutgoingCallModal(false);
         };
-        
+
         socket.on('call-accepted', handleCallAccepted);
         socket.on('call-rejected', handleCallRejected);
         socket.on('call-ended', handleCallEnded);
@@ -303,14 +352,14 @@ const ChatWindow = ({ room, onClose }) => {
             alert(`Cannot start video call. ${displayUser?.username || 'User'} is currently offline.`);
             return;
         }
-        
+
         setIsCallStarting(true);
         setShowOutgoingCallModal(true);
-        
+
         try {
             socket.emit('start-call', { chatRoomId: room.id }, (response) => {
                 setIsCallStarting(false);
-                
+
                 if (response?.event === 'error') {
                     alert('Error starting call: ' + response.data.message);
                     setShowOutgoingCallModal(false);
@@ -330,7 +379,7 @@ const ChatWindow = ({ room, onClose }) => {
 
     const endCall = () => {
         if (!socket) return;
-        
+
         socket.emit('end-call', { chatRoomId: room.id });
         setIsInVideoCall(false);
         setVideoToken(null);
@@ -340,7 +389,7 @@ const ChatWindow = ({ room, onClose }) => {
 
     const cancelOutgoingCall = () => {
         if (!socket) return;
-        
+
         socket.emit('end-call', { chatRoomId: room.id });
         setIsCallStarting(false);
         setShowOutgoingCallModal(false);
@@ -427,321 +476,275 @@ const ChatWindow = ({ room, onClose }) => {
                     </Box>
                 </Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <IconButton 
+                    <IconButton
                         onClick={startVideoCall}
                         disabled={isCallStarting || isInVideoCall || !isOtherUserOnline}
-                        sx={{ 
+                        sx={{
                             color: isOtherUserOnline ? 'primary.main' : 'action.disabled',
-                            '&:hover': { 
-                                bgcolor: isOtherUserOnline ? 'primary.main' : 'action.hover', 
-                                color: isOtherUserOnline ? 'white' : 'action.disabled' 
+                            '&:hover': {
+                                bgcolor: isOtherUserOnline ? 'primary.main' : 'action.hover',
+                                color: isOtherUserOnline ? 'white' : 'action.disabled'
                             },
-                            '&.Mui-disabled': { 
+                            '&.Mui-disabled': {
                                 color: 'action.disabled',
                                 cursor: 'not-allowed'
                             }
                         }}
                         title={isOtherUserOnline ? 'Start video call' : `${displayUser?.username || 'User'} is offline`}
                     >
-                        <VideoCallIcon />
+                        <VideocamIcon />
                     </IconButton>
-                    <Button 
-                        size="small" 
-                        onClick={onClose} 
-                        sx={{ ml: 0, alignSelf: 'flex-start', color: 'secondary.main' }}
+                    <IconButton
+                        onClick={onClose}
+                        sx={{ ml: 0, alignSelf: 'center' }}
                     >
-                        Close
-                    </Button>
+                        <CloseIcon sx={{ m: 0, p: 0, color: 'black' }} />
+                    </IconButton>
                 </Box>
             </Box>
 
             {/* Message Area */}
-            <Box
-                sx={{
-                    flexGrow: 1,
-                    overflowY: 'auto',
-                    p: 2,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 1.5,
-                    bgcolor: 'background.default',
-                }}
-            >
-                {messages.length === 0 && (
-                    <Box sx={{
-                        height: '100%',
+            {initialLoading ? (
+                <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 200 }}>
+                    <CircularProgress />
+                </Box>
+            ) : (
+                <Box
+                    ref={messagesContainerRef}
+                    onScroll={handleScroll}
+                    sx={{
+                        flexGrow: 1,
+                        overflowY: 'auto',
+                        p: 2,
                         display: 'flex',
                         flexDirection: 'column',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        opacity: 0.7
-                    }}>
-                        <Typography variant="body1" sx={{ color: 'text.secondary', textAlign: 'center' }}>
-                            No messages yet.
+                        gap: 1.5,
+                        bgcolor: 'background.default',
+                        position: 'relative',
+                    }}
+                >
+                    {loadingMore && (
+                        <Typography variant="caption" sx={{ textAlign: 'center', width: '100%', mb: 1 }}>
+                            Loading more messages...
                         </Typography>
-                    </Box>
-                )}
-                {[...messages].sort((a, b) => new Date(a.sent_at) - new Date(b.sent_at)).map((msg, idx) => {
-                    const isCurrentUser = msg.sender_id === currentUserId;
-                    const senderInfo = isCurrentUser ? 
-                        { username: 'You', avatar: null } : 
-                        (displayUser || { username: 'User', avatar: null });
-                    
-                    const isVideoCallMessage = msg.message && (
-                        msg.message.includes('📞 Video call started') ||
-                        msg.message.includes('Video call started') ||
-                        msg.message.includes('📞') ||
-                        msg.message.toLowerCase().includes('video call')
-                    );
-                    
-                    // Special styling for video call messages
-                    if (isVideoCallMessage) {
+                    )}
+                    {messages.length === 0 && (
+                        <Box sx={{
+                            height: '100%',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            opacity: 0.7
+                        }}>
+                            <Typography variant="body1" sx={{ color: 'text.secondary', textAlign: 'center' }}>
+                                No messages yet.
+                            </Typography>
+                        </Box>
+                    )}
+                    {[...messages].sort((a, b) => new Date(a.sent_at) - new Date(b.sent_at)).map((msg, idx) => {
+                        const isCurrentUser = msg.sender_id === currentUserId;
+                        const senderInfo = isCurrentUser ?
+                            { username: 'You', avatar: null } :
+                            (displayUser || { username: 'User', avatar: null });
+
+                        const isVideoCallMessage = msg.message && (
+                            msg.message.includes('📞 Video call started') ||
+                            msg.message.includes('Video call started') ||
+                            msg.message.includes('📞') ||
+                            msg.message.toLowerCase().includes('video call')
+                        );
+
+                        // Special styling for video call messages
+                        if (isVideoCallMessage) {
+                            return (
+                                <Box
+                                    key={msg.id || idx}
+                                    sx={{
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        mb: 2,
+                                        px: 2,
+                                    }}
+                                >
+                                    <Box
+                                        sx={{
+                                            background: 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #000000 100%)',
+                                            color: 'white',
+                                            borderRadius: 4,
+                                            p: 2,
+                                            maxWidth: '90%',
+                                            textAlign: 'center',
+                                            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5)',
+                                            border: '2px solid rgba(255, 255, 255, 0.15)',
+                                            position: 'relative',
+                                            overflow: 'hidden',
+                                            '&::before': {
+                                                content: '""',
+                                                position: 'absolute',
+                                                top: 0,
+                                                left: '-100%',
+                                                width: '100%',
+                                                height: '100%',
+                                                background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)',
+                                                animation: 'shimmer 2s infinite',
+                                            },
+                                            '@keyframes shimmer': {
+                                                '0%': { left: '-100%' },
+                                                '100%': { left: '100%' },
+                                            },
+                                        }}
+                                    >
+                                        <Typography
+                                            variant="body2"
+                                            sx={{
+                                                fontWeight: 600,
+                                                fontSize: '0.95rem',
+                                                textShadow: '0 1px 2px rgba(0,0,0,0.1)',
+                                            }}
+                                        >
+                                            {msg.message}
+                                        </Typography>
+                                        <Typography
+                                            variant="caption"
+                                            sx={{
+                                                mt: 0.5,
+                                                opacity: 0.9,
+                                                fontSize: '0.75rem',
+                                                display: 'block',
+                                            }}
+                                        >
+                                            {new Date(msg.sent_at).toLocaleTimeString()}
+                                        </Typography>
+                                    </Box>
+                                </Box>
+                            );
+                        }
+
+                        // Regular message styling
                         return (
                             <Box
                                 key={msg.id || idx}
                                 sx={{
                                     display: 'flex',
-                                    justifyContent: 'center',
-                                    mb: 2,
-                                    px: 2,
+                                    flexDirection: isCurrentUser ? 'row-reverse' : 'row',
+                                    alignItems: 'flex-start',
+                                    mb: 1,
+                                    gap: 1,
                                 }}
                             >
+                                {/* Avatar - only show for other users */}
+                                {!isCurrentUser && (
+                                    <Box sx={{ position: 'relative' }}>
+                                        <Avatar
+                                            src={senderInfo.avatar || ''}
+                                            alt={senderInfo.username || ''}
+                                            sx={{
+                                                width: 32,
+                                                height: 32,
+                                                bgcolor: 'white',
+                                                flexShrink: 0,
+                                                mt: 0.5
+                                            }}
+                                        >
+                                            {senderInfo.username ? senderInfo.username.charAt(0).toUpperCase() : '?'}
+                                        </Avatar>
+                                        {/* Online status indicator for message avatar */}
+                                        <Box
+                                            sx={{
+                                                position: 'absolute',
+                                                bottom: 0,
+                                                right: 0,
+                                                width: 10,
+                                                height: 10,
+                                                backgroundColor: isOtherUserOnline ? '#44ff44' : '#ccc',
+                                                border: '2px solid white',
+                                                borderRadius: '50%',
+                                                zIndex: 1,
+                                            }}
+                                        />
+                                    </Box>
+                                )}
+
+                                {/* Message Content */}
                                 <Box
                                     sx={{
-                                        background: 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #000000 100%)',
-                                        color: 'white',
-                                        borderRadius: 4,
-                                        p: 2,
-                                        maxWidth: '90%',
-                                        textAlign: 'center',
-                                        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5)',
-                                        border: '2px solid rgba(255, 255, 255, 0.15)',
-                                        position: 'relative',
-                                        overflow: 'hidden',
-                                        '&::before': {
-                                            content: '""',
-                                            position: 'absolute',
-                                            top: 0,
-                                            left: '-100%',
-                                            width: '100%',
-                                            height: '100%',
-                                            background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)',
-                                            animation: 'shimmer 2s infinite',
-                                        },
-                                        '@keyframes shimmer': {
-                                            '0%': { left: '-100%' },
-                                            '100%': { left: '100%' },
-                                        },
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: isCurrentUser ? 'flex-end' : 'flex-start',
+                                        maxWidth: isCurrentUser ? '80%' : '70%',
                                     }}
                                 >
-                                    <Typography 
-                                        variant="body2" 
-                                        sx={{ 
-                                            fontWeight: 600,
-                                            fontSize: '0.95rem',
-                                            textShadow: '0 1px 2px rgba(0,0,0,0.1)',
+                                    <Box
+                                        sx={{
+                                            bgcolor: isCurrentUser ? 'primary.main' : 'section.light',
+                                            color: isCurrentUser ? 'white' : 'text.primary',
+                                            borderRadius: 3,
+                                            p: '8px 16px',
+                                            wordBreak: 'break-word',
+                                            boxShadow: isCurrentUser
+                                                ? '0 2px 5px rgba(0, 0, 0, 0.1)'
+                                                : '0 2px 5px rgba(0, 0, 0, 0.05)',
+                                            border: '1px solid',
+                                            borderColor: isCurrentUser ? 'primary.main' : 'divider',
                                         }}
                                     >
-                                        {msg.message}
-                                    </Typography>
+                                        <Typography variant="body2">{msg.message}</Typography>
+                                    </Box>
                                     <Typography
                                         variant="caption"
-                                        sx={{ 
-                                            mt: 0.5,
-                                            opacity: 0.9,
-                                            fontSize: '0.75rem',
-                                            display: 'block',
-                                        }}
+                                        color="text.secondary"
+                                        sx={{ mt: 0.5, px: 1 }}
                                     >
                                         {new Date(msg.sent_at).toLocaleTimeString()}
                                     </Typography>
                                 </Box>
                             </Box>
                         );
-                    }
-                    
-                    // Regular message styling
-                    return (
-                        <Box
-                            key={msg.id || idx}
-                            sx={{
-                                display: 'flex',
-                                flexDirection: isCurrentUser ? 'row-reverse' : 'row',
-                                alignItems: 'flex-start',
-                                mb: 1,
-                                gap: 1,
-                            }}
-                        >
-                            {/* Avatar - only show for other users */}
-                            {!isCurrentUser && (
-                                <Box sx={{ position: 'relative' }}>
-                                    <Avatar
-                                        src={senderInfo.avatar || ''}
-                                        alt={senderInfo.username || ''}
-                                        sx={{ 
-                                            width: 32, 
-                                            height: 32,
-                                            bgcolor: 'white',
-                                            flexShrink: 0,
-                                            mt: 0.5
-                                        }}
-                                    >
-                                        {senderInfo.username ? senderInfo.username.charAt(0).toUpperCase() : '?'}
-                                    </Avatar>
-                                    {/* Online status indicator for message avatar */}
-                                    <Box
-                                        sx={{
-                                            position: 'absolute',
-                                            bottom: 0,
-                                            right: 0,
-                                            width: 10,
-                                            height: 10,
-                                            backgroundColor: isOtherUserOnline ? '#44ff44' : '#ccc',
-                                            border: '2px solid white',
-                                            borderRadius: '50%',
-                                            zIndex: 1,
-                                        }}
-                                    />
-                                </Box>
-                            )}
+                    })}
 
-                            {/* Message Content */}
-                            <Box
-                                sx={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    alignItems: isCurrentUser ? 'flex-end' : 'flex-start',
-                                    maxWidth: isCurrentUser ? '80%' : '70%',
-                                }}
+                    {/* Typing indicator */}
+                    {otherUserTyping && (
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, px: 1 }}>
+                            <Avatar
+                                src={displayUser?.avatar || ''}
+                                alt={displayUser?.username || ''}
+                                sx={{ width: 24, height: 24 }}
                             >
-                                <Box
-                                    sx={{
-                                        bgcolor: isCurrentUser ? 'primary.main' : 'section.light',
-                                        color: isCurrentUser ? 'white' : 'text.primary',
-                                        borderRadius: 3,
-                                        p: '8px 16px',
-                                        wordBreak: 'break-word',
-                                        boxShadow: isCurrentUser
-                                            ? '0 2px 5px rgba(0, 0, 0, 0.1)'
-                                            : '0 2px 5px rgba(0, 0, 0, 0.05)',
-                                        border: '1px solid',
-                                        borderColor: isCurrentUser ? 'primary.main' : 'divider',
-                                    }}
-                                >
-                                    <Typography variant="body2">{msg.message}</Typography>
-                                </Box>
-                                <Typography
-                                    variant="caption"
-                                    color="text.secondary"
-                                    sx={{ mt: 0.5, px: 1 }}
-                                >
-                                    {new Date(msg.sent_at).toLocaleTimeString()}
-                                </Typography>
-                            </Box>
+                                {displayUser?.username ? displayUser.username.charAt(0).toUpperCase() : '?'}
+                            </Avatar>
+                            <Chip
+                                label={`${displayUser?.username || 'User'} is typing...`}
+                                size="small"
+                                sx={{
+                                    bgcolor: 'action.hover',
+                                    color: 'text.secondary',
+                                    fontSize: '0.75rem',
+                                    animation: 'pulse 1.5s ease-in-out infinite',
+                                    '@keyframes pulse': {
+                                        '0%': { opacity: 0.6 },
+                                        '50%': { opacity: 1 },
+                                        '100%': { opacity: 0.6 },
+                                    },
+                                }}
+                            />
                         </Box>
-                    );
-                })}
-                
-                {/* Typing indicator */}
-                {otherUserTyping && (
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, px: 1 }}>
-                        <Avatar
-                            src={displayUser?.avatar || ''}
-                            alt={displayUser?.username || ''}
-                            sx={{ width: 24, height: 24 }}
-                        >
-                            {displayUser?.username ? displayUser.username.charAt(0).toUpperCase() : '?'}
-                        </Avatar>
-                        <Chip
-                            label={`${displayUser?.username || 'User'} is typing...`}
-                            size="small"
-                            sx={{
-                                bgcolor: 'action.hover',
-                                color: 'text.secondary',
-                                fontSize: '0.75rem',
-                                animation: 'pulse 1.5s ease-in-out infinite',
-                                '@keyframes pulse': {
-                                    '0%': { opacity: 0.6 },
-                                    '50%': { opacity: 1 },
-                                    '100%': { opacity: 0.6 },
-                                },
-                            }}
-                        />
-                    </Box>
-                )}
-                
-                <div ref={messagesEndRef} />
-            </Box>
+                    )}
+
+                    <div ref={messagesEndRef} />
+                </Box>
+            )}
 
             {/* Input Area */}
-            <Box
-                sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    p: 2,
-                    borderTop: '1px solid',
-                    borderColor: 'divider',
-                    bgcolor: 'section.light',
-                }}
-            >
-                <TextField
-                    placeholder="Type a message..."
-                    variant="outlined"
-                    fullWidth
-                    value={input}
-                    onChange={handleInputChange}
-                    onKeyDown={e => e.key === 'Enter' && input.trim() && handleSend()}
-                    sx={{
-                        '& .MuiOutlinedInput-root': {
-                            borderRadius: 5,
-                            paddingRight: 0,
-                            bgcolor: 'background.default',
-                            color: 'text.primary',
-                            borderColor: 'divider',
-                        },
-                        '& .MuiOutlinedInput-notchedOutline': {
-                            borderColor: 'divider',
-                        },
-                        '&:hover .MuiOutlinedInput-notchedOutline': {
-                            borderColor: 'primary.main',
-                        },
-                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                            borderColor: 'primary.main',
-                        },
-                        '& input': {
-                            padding: '12px 14px',
-                            fontSize: '0.875rem',
-                        }
-                    }}
+            {(!initialLoading) && (
+                <ChatInput
+                    input={input}
+                    setInput={setInput}
+                    handleSend={handleSend}
+                    handleInputChange={handleInputChange}
+                    disabled={initialLoading}
                 />
-                <Button
-                    variant="contained"
-                    onClick={handleSend}
-                    disabled={!input.trim()}
-                    sx={{
-                        bgcolor: 'primary.main',
-                        ml: 1,
-                        borderRadius: 5,
-                        p: '8px 16px',
-                        minWidth: 0,
-                        '&:hover': {
-                            bgcolor: 'primary.dark',
-                            transform: 'translateY(-2px)',
-                            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-                        },
-                        '&:active': {
-                            transform: 'translateY(0)',
-                            boxShadow: 'none',
-                        },
-                        '&.Mui-disabled': {
-                            bgcolor: 'action.disabledBackground',
-                        },
-                        transition: 'all 0.2s',
-                    }}
-                >
-                    Send
-                </Button>
-            </Box>
+            )}
 
             {/* Outgoing Call Modal */}
             <OutgoingCallModal

@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Paper, Avatar, CircularProgress } from '@mui/material';
+import { Box, Typography, Paper, Avatar, CircularProgress, LinearProgress } from '@mui/material';
 import achievementsService from '../../services/achievementsService';
 import { Link } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
+import AchievementStyle from './AchievementStyle';
 
 const AchievementSection = () => {
-  const [userAchievements, setUserAchievements] = useState([]);
+  const [progressList, setProgressList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchAchievements = async () => {
+    const fetchAchievementsProgress = async () => {
       const accessToken = localStorage.getItem('accessToken');
       let userId = null;
       if (accessToken) {
@@ -23,15 +24,15 @@ const AchievementSection = () => {
         return;
       }
       try {
-        const userAchievementsData = await achievementsService.getUserAchievementsById(userId);
-        setUserAchievements(userAchievementsData.data ? userAchievementsData.data.slice(0, 3) : []);
+        const progressData = await achievementsService.getUserAchievementsProgressById(userId);
+        setProgressList(Array.isArray(progressData.data) ? progressData.data : []);
       } catch (err) {
-        setError('Failed to load achievements');
+        setError('Failed to load achievement progress');
       } finally {
         setLoading(false);
       }
     };
-    fetchAchievements();
+    fetchAchievementsProgress();
   }, []);
 
   return (
@@ -60,7 +61,7 @@ const AchievementSection = () => {
           </Box>
         ) : error ? (
           <Box sx={{ p: 4, textAlign: 'center', color: 'error.main' }}>{error}</Box>
-        ) : userAchievements.length === 0 ? (
+        ) : progressList.length === 0 ? (
           <Box sx={{ p: 4, textAlign: 'center', color: 'text.secondary', }}>
             You have not obtained any achievements yet! {" "}
             <Typography
@@ -72,31 +73,29 @@ const AchievementSection = () => {
             </Typography>
           </Box>
         ) : (
-          userAchievements.map((ach, idx) => (
-            <Box
-              key={ach.id || idx}
-              sx={{
-                p: 3,
-                borderBottom: idx !== userAchievements.length - 1 ? '1px solid' : 'none',
-                borderColor: 'divider',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 3,
-              }}
-            >
-              <Avatar src={ach.image_url || ach.thumbnail} alt={ach.name} sx={{ width: 60, height: 60, borderRadius: 2, mr: 2 }} />
-              <Box sx={{ flex: 1 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                  <Typography variant="h6" sx={{ color: 'text.primary', fontWeight: 'bold' }}>{ach.name}</Typography>
-                  {ach.point && (
-                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>{ach.point} pts</Typography>
-                  )}
+          (() => {
+            const obtained = progressList.filter(ach => ach.isMet);
+            if (obtained.length === 0) {
+              return (
+                <Box sx={{ p: 4, textAlign: 'center', color: 'text.secondary' }}>
+                  You have not obtained any achievements yet!
                 </Box>
-                <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>{ach.description}</Typography>
-                <Typography variant="caption" sx={{ color: 'text.disabled' }}>{ach.earned_date ? `Obtained: ${new Date(ach.earned_date).toLocaleDateString()}` : ''}</Typography>
-              </Box>
-            </Box>
-          ))
+              );
+            }
+            return obtained.map((ach, idx, arr) => {
+              const progress = Math.min((Number(ach.progressValue) / Number(ach.threshold_value)) * 100, 100);
+              return (
+                <AchievementStyle
+                  key={ach.id || idx}
+                  ach={ach}
+                  isMet={true}
+                  progress={progress}
+                  idx={idx}
+                  arr={arr}
+                />
+              );
+            });
+          })()
         )}
       </Paper>
     </Box>

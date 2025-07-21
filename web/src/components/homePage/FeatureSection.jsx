@@ -8,6 +8,7 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import FeatureSlide from './FeatureSlide';
+import NavigationButtonGroup from './NavigationButtonGroup';
 
 const StyledNavButton = styled(Button)(({ theme, active }) => ({
     borderRadius: '12px',
@@ -130,24 +131,12 @@ const FeatureSection = () => {
                 </Typography>
 
                 {/* Navigation Buttons */}
-                <Box sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    flexWrap: 'wrap',
-                    mb: 4,
-                    px: 2,
-                    gap: 2
-                }}>
-                    {navigationItems.map((item) => (
-                        <StyledNavButton
-                            key={item.id}
-                            active={activeSlide === item.id}
-                            onClick={() => handleSlideChange(item.id)}
-                        >
-                            {item.label}
-                        </StyledNavButton>
-                    ))}
-                </Box>
+                <NavigationButtonGroup
+                    navigationItems={navigationItems}
+                    activeSlide={activeSlide}
+                    handleSlideChange={handleSlideChange}
+                    StyledNavButton={StyledNavButton}
+                />
 
                 {/* Slide Content with animation */}
                 <Box sx={{

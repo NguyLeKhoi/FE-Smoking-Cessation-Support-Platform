@@ -9,6 +9,8 @@ import ChatRoom from '../../components/chat/ChatRoom';
 import { useSocket } from '../../context/SocketContext';
 import ChatWindow from '../../components/chat/ChatWindow';
 import { jwtDecode } from 'jwt-decode';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 const CoachListPage = () => {
     const [coaches, setCoaches] = useState([]);
@@ -19,6 +21,7 @@ const CoachListPage = () => {
     const { socket } = useSocket();
     const [openChatRooms, setOpenChatRooms] = useState([]);
     const [role, setRole] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const accessToken = localStorage.getItem('accessToken');
@@ -36,6 +39,12 @@ const CoachListPage = () => {
     }, []);
 
     useEffect(() => {
+        if (role === 'coach') {
+            navigate('/chat-page', { replace: true });
+        }
+    }, [role, navigate]);
+
+    useEffect(() => {
         const fetchCoaches = async () => {
             try {
                 setLoading(true);
@@ -50,7 +59,6 @@ const CoachListPage = () => {
         fetchCoaches();
     }, []);
 
-    // Move chat room fetching logic to a function
     const fetchChatRooms = async () => {
         setChatRoomsLoading(true);
         try {
@@ -93,19 +101,29 @@ const CoachListPage = () => {
         try {
             console.log('Creating chat room for coach:', coachId);
             const response = await createChatRoom(coachId);
-            console.log('Create chat room response:', response);
+            console.log('Create chat room raw response:', response);
+            const newRoom = response.data ? response.data : response;
+            console.log('Processed newRoom:', newRoom);
 
-            // Show success message
-            alert('Chat room created successfully!');
+            if (!newRoom || !newRoom.id) {
+                toast.error('Failed to create chat room: No room ID returned.');
+                return;
+            }
 
-            // Add a small delay to ensure the backend has processed the creation
+            toast.success('Chat room created successfully!');
+
+            setOpenChatRooms((prev) => {
+                if (prev.find(r => r.id === newRoom.id)) return prev;
+                if (prev.length >= 2) return [prev[1], newRoom];
+                return [...prev, newRoom];
+            });
+
             setTimeout(() => {
-                fetchChatRooms(); // Refresh the chat room list after creation
+                fetchChatRooms();
             }, 500);
-
         } catch (error) {
             console.error('Error creating chat room:', error);
-            alert('Failed to create chat room: ' + (error.response?.data?.message || error.message));
+            toast.error('Failed to create chat room: ' + (error.response?.data?.message || error.message));
         }
     };
 
@@ -121,13 +139,6 @@ const CoachListPage = () => {
         setOpenChatRooms((prev) => prev.filter(r => r.id !== roomId));
     };
 
-    // Example: join a room
-    const joinRoom = (chatRoomId) => {
-        if (socket) {
-            socket.emit('joinRoom', { chat_room_id: chatRoomId });
-        }
-    };
-
     // Example: listen for new messages
     useEffect(() => {
         if (!socket) return;
@@ -140,12 +151,6 @@ const CoachListPage = () => {
         };
     }, [socket]);
 
-    // Add refresh function for manual refresh
-    const handleRefreshChatRooms = () => {
-        if (role) {
-            fetchChatRooms();
-        }
-    };
 
     const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
 
@@ -214,7 +219,7 @@ const CoachListPage = () => {
                 )}
                 {coaches.map((coach) => (
                     <Grid item xs={12} sm={8} md={6} key={coach.user_id}>
-                        <CoachInfo coach={coach} onStartChat={handleStartChat} />
+                        <CoachInfo coach={coach} />
                     </Grid>
                 ))}
             </Grid>

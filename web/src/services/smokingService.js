@@ -1,7 +1,6 @@
 import api from './api';
 
 const smokingService = {
-    // Create user's smoking habits
     createSmokingHabit: async (habitData) => {
         try {
             const formattedData = {
@@ -69,16 +68,6 @@ const smokingService = {
             return response.data;
         } catch (error) {
             console.error('Error fetching current user smoking habits:', error);
-            throw error;
-        }
-    },
-
-    deleteSmokingHabit: async (id) => {
-        try {
-            const response = await api.delete(`/smoking-habits/${id}`);
-            return response.data;
-        } catch (error) {
-            console.error(`Error deleting smoking habit with ID ${id}:`, error);
             throw error;
         }
     },

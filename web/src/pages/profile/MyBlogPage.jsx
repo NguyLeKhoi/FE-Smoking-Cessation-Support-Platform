@@ -14,7 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import AddIcon from '@mui/icons-material/Add';
 import postService from '../../services/postService';
 import { toast } from 'react-toastify';
-import LoadingPage from '../../pages/LoadingPage';
+import LoadingPage from '../LoadingPage';
 import ProfileSidebar from '../../components/profilePage/ProfileSidebar';
 import { fetchCurrentUser, fetchCurrentUserPosts } from '../../services/userService';
 import MyBlogCard from '../../components/blog/MyBlogCard';

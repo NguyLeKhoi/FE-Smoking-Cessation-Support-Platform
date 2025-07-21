@@ -44,6 +44,21 @@ const achievementsService = {
             throw error;
         }
     },
+
+    /**
+     * Get achievement progress for a specific user by ID
+     * @param {string} userId - User ID
+     * @returns {Promise} - Resolves to user's achievement progress
+     */
+    getUserAchievementsProgressById: async (userId) => {
+        try {
+            const response = await api.get(`/user-achievements/${userId}/progress`);
+            return response.data;
+        } catch (error) {
+            console.error(`Error fetching achievement progress for user ${userId}:`, error);
+            throw error;
+        }
+    },
 };
 
 export default achievementsService;

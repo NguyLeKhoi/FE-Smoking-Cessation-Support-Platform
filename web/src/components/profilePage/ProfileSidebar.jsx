@@ -8,21 +8,21 @@ import PersonIcon from '@mui/icons-material/Person';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import ExploreIcon from '@mui/icons-material/Explore';
 import ArticleIcon from '@mui/icons-material/Article';
-import StorefrontIcon from '@mui/icons-material/Storefront';
-import BlockIcon from '@mui/icons-material/Block';
+import SmokingRoomsIcon from '@mui/icons-material/SmokingRooms';
+
 
 
 const menuItems = [
-    { label: 'LEADERBOARDS', icon: <EmojiEventsIcon fontSize="medium" />, path: '/leaderboards' },
-    { label: 'QUESTS', icon: <ExploreIcon fontSize="medium" />, hasNotification: true, path: '/quests' },
-    { label: 'MY POSTS', icon: <ArticleIcon fontSize="medium" />, path: '/my-blog' },
     { label: 'PROFILE', icon: <PersonIcon fontSize="medium" />, path: '/profile' },
+    { label: 'LEADERBOARDS', icon: <EmojiEventsIcon fontSize="medium" />, path: '/leaderboard' },
+    { label: 'SMOKING HABIT', icon: <SmokingRoomsIcon fontSize="medium" />, path: '/my-smoking-habit' },
+    { label: 'MY POSTS', icon: <ArticleIcon fontSize="medium" />, path: '/my-blog' },
+    { label: 'QUESTS', icon: <ExploreIcon fontSize="medium" />, hasNotification: true, path: '/quests' },
     { label: 'MORE', icon: <MoreHorizIcon fontSize="medium" />, path: '/more' },
 ];
 
-// Custom styled components using theme colors
 const SidebarContainer = styled(Paper)(({ theme }) => ({
-    width: 240,
+    width: 260,
     height: '100vh',
     backgroundColor: theme.palette.background.paper,
     boxShadow: '4px 0px 10px rgba(0, 0, 0, 0.03)',
@@ -62,35 +62,30 @@ const IconText = styled(Typography)(({ theme }) => ({
 
 const ProfileSidebar = ({ userData }) => {
     const location = useLocation();
-    const navigate = useNavigate(); // Added useNavigate hook
+    const navigate = useNavigate();
     const [activeItem, setActiveItem] = useState(() => {
         const currentPath = location.pathname;
         const foundItem = menuItems.findIndex(item => currentPath.includes(item.path));
-        return foundItem >= 0 ? foundItem : 3; // Default to PROFILE (index 3)
+        return foundItem >= 0 ? foundItem : 3;
     });
 
     const handleItemClick = (index) => {
         setActiveItem(index);
         console.log(`Selected: ${menuItems[index].label} (${menuItems[index].path})`);
 
-        // Handle navigation based on the menu item
         if (menuItems[index].path === '/my-blog') {
-            // Navigate to user's blog posts page - use userData.id if available
-            const userId = userData?.id || 'dc0ef526-ec2b-4ff4-8aa0-308d0c8e499e'; // Use hardcoded ID as fallback
+            const userId = userData?.id;
             navigate(`/my-blog?userId=${userId}`);
-        } else if (index !== 3) { // For items other than PROFILE and MY BLOG
-            // Show toast or notification for "Coming Soon" features
+        } else if (index !== 3) {
             console.log("This feature is coming soon");
-            // You could add a toast notification here
         } else {
-            // Navigate to the default path for this menu item
             navigate(menuItems[index].path);
         }
     };
 
     return (
         <SidebarContainer elevation={0}>
-            {/* Logo Section - Now at the very top */}
+            {/* Logo */}
             <Box
                 component={RouterLink}
                 to="/"
@@ -99,7 +94,7 @@ const ProfileSidebar = ({ userData }) => {
                     display: 'flex',
                     alignItems: 'center',
                     backgroundColor: '#FFFFFF',
-                    pt: 3, // Add padding to the top and bottom
+                    pt: 3,
                     ml: 2,
                 }}
             >
@@ -120,7 +115,7 @@ const ProfileSidebar = ({ userData }) => {
             </Box>
 
             {/* Menu Section */}
-            <Box sx={{ p: 2, pt: 3 }}> {/* Add padding to the content container */}
+            <Box sx={{ p: 2, pt: 3 }}>
                 <Typography
                     variant="overline"
                     sx={{
