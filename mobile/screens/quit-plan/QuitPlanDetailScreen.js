@@ -19,6 +19,15 @@ import quitPlanService from '../../service/quitPlanService';
 import { Ionicons, MaterialCommunityIcons, MaterialIcons, FontAwesome } from '@expo/vector-icons';
 import * as Progress from 'react-native-progress';
 
+// Custom Progress Bar Component
+const ProgressBar = ({ progress, color, style }) => {
+  return (
+    <View style={[styles.progressBarContainer, style]}>
+      <View style={[styles.progressBarFill, { width: `${progress * 100}%`, backgroundColor: color }]} />
+    </View>
+  );
+};
+
 const QuitPlanDetailScreen = ({ route, navigation }) => {
   const { id } = route.params;
   const [plan, setPlan] = useState(null);
@@ -58,8 +67,7 @@ const QuitPlanDetailScreen = ({ route, navigation }) => {
     setError('');
     try {
       const response = await quitPlanService.getQuitPlanById(planId);
-      const planObj = response.data.data?.data || response.data.data;
-
+      const planObj = response.data?.data?.data || response.data?.data || response.data;
       setPlan(planObj);
       setExpandedPhases(new Array(planObj?.phases?.length || 0).fill(false));
     } catch (err) {
@@ -206,11 +214,11 @@ const QuitPlanDetailScreen = ({ route, navigation }) => {
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
       <ScrollView style={styles.scrollContainer}>
 
-        {/* Progress Circle */}
+        {/* Progress Circle - Updated to match web */}
         <View style={styles.progressContainer}>
           <Progress.Circle
-            size={200}
-            thickness={10}
+            size={250}
+            thickness={12}
             progress={percent / 100}
             showsText={false}
             color={'#4caf50'}
@@ -219,13 +227,13 @@ const QuitPlanDetailScreen = ({ route, navigation }) => {
             animated={true}
             style={{ marginBottom: 20 }}
           />
-          <View style={[StyleSheet.absoluteFill, { justifyContent: 'center', alignItems: 'center', height: 200 }]}>
+          <View style={[StyleSheet.absoluteFill, { justifyContent: 'center', alignItems: 'center', height: 250 }]}>
             <Text style={styles.progressText}>{completedPhases}/{totalPhases}</Text>
             <Text style={styles.progressLabel}>Phases completed</Text>
           </View>
         </View>
 
-        {/* Statistics Cards */}
+        {/* Statistics Cards - Updated to match web */}
         <View style={styles.statsContainer}>
           <View style={styles.statCard}>
             <Text style={styles.statCardLabel}>Money Saved</Text>
@@ -247,31 +255,46 @@ const QuitPlanDetailScreen = ({ route, navigation }) => {
           </View>
         </View>
 
-        {/* Plan Overview */}
+        {/* Plan Overview - Updated to match web */}
         <View style={styles.overviewContainer}>
-          <Text style={styles.sectionTitle}>Plan Overview</Text>
+          <View style={styles.sectionTitleContainer}>
+            <MaterialIcons name="flag" size={24} color="#3f332b" style={{ marginRight: 8 }} />
+            <Text style={styles.sectionTitle}>Plan Overview</Text>
+          </View>
 
           <View style={styles.overviewItem}>
-            <Text style={styles.overviewLabel}>Reason</Text>
+            <View style={styles.overviewLabelContainer}>
+              <MaterialCommunityIcons name="smoking" size={18} color="#3f332b" style={{ marginRight: 6 }} />
+              <Text style={styles.overviewLabel}>Reason</Text>
+            </View>
             <Text style={styles.overviewValue}>{plan.reason}</Text>
           </View>
 
           <View style={styles.overviewItem}>
-            <Text style={styles.overviewLabel}>Type</Text>
+            <View style={styles.overviewLabelContainer}>
+              <MaterialIcons name="flag" size={18} color="#3f332b" style={{ marginRight: 6 }} />
+              <Text style={styles.overviewLabel}>Type</Text>
+            </View>
             <Text style={[styles.overviewValue, { color: getPlanTypeColor(plan.plan_type) }]}>
               {String(plan.plan_type).toUpperCase()}
             </Text>
           </View>
 
           <View style={styles.overviewItem}>
-            <Text style={styles.overviewLabel}>Status</Text>
+            <View style={styles.overviewLabelContainer}>
+              <Ionicons name="hourglass" size={18} color="#3f332b" style={{ marginRight: 6 }} />
+              <Text style={styles.overviewLabel}>Status</Text>
+            </View>
             <Text style={[styles.overviewValue, { color: getStatusColor(plan.status) }]}>
               {plan.status}
             </Text>
           </View>
 
           <View style={styles.overviewItem}>
-            <Text style={styles.overviewLabel}>Duration</Text>
+            <View style={styles.overviewLabelContainer}>
+              <Ionicons name="calendar" size={18} color="#3f332b" style={{ marginRight: 6 }} />
+              <Text style={styles.overviewLabel}>Duration</Text>
+            </View>
             <Text style={styles.overviewValue}>
               {plan.start_date && plan.expected_end_date
                 ? `${new Date(plan.start_date).toLocaleDateString()} - ${new Date(plan.expected_end_date).toLocaleDateString()}`
@@ -280,9 +303,12 @@ const QuitPlanDetailScreen = ({ route, navigation }) => {
           </View>
         </View>
 
-        {/* Phases */}
+        {/* Phases - Updated to match web */}
         <View style={styles.phasesContainer}>
-          <Text style={styles.sectionTitle}>Phases</Text>
+          <View style={styles.sectionTitleContainer}>
+            <MaterialIcons name="flag" size={24} color="#3f332b" style={{ marginRight: 8 }} />
+            <Text style={styles.sectionTitle}>Phases</Text>
+          </View>
 
           {Array.isArray(phases) && phases.length > 0 ? (
             phases.map((phase, index) => {
@@ -318,7 +344,7 @@ const QuitPlanDetailScreen = ({ route, navigation }) => {
                   </TouchableOpacity>
                   {expandedPhases[index] && (
                     <View style={styles.phaseDetails}>
-                      {/* Tab switch */}
+                      {/* Tab switch - Updated to match web */}
                       <View style={styles.phaseTabs}>
                         <TouchableOpacity
                           style={[styles.phaseTab, tabValue === 0 && styles.phaseTabActive]}
@@ -335,7 +361,7 @@ const QuitPlanDetailScreen = ({ route, navigation }) => {
                           <Text style={[styles.phaseTabText, tabValue === 1 && styles.phaseTabTextActive]}>STATISTICS</Text>
                         </TouchableOpacity>
                       </View>
-                      {/* Tab content */}
+                      {/* Tab content - Updated to match web */}
                       {tabValue === 0 ? (
                         <View>
                           <View style={styles.phaseDetailRow}>
@@ -375,18 +401,72 @@ const QuitPlanDetailScreen = ({ route, navigation }) => {
                           </View>
                         </View>
                       ) : (
-  <View>
-                          <View style={styles.phaseStatsRow}>
-                            <View style={styles.phaseStatBox}><Ionicons name="checkmark-circle" size={18} color="#43a047" style={{ marginRight: 4 }} /><Text style={[styles.phaseStatLabel, { color: '#43a047' }]}>Recorded:</Text><Text style={[styles.phaseStatValue, { color: '#43a047' }]}>{stats.recordedDays ?? '-'}</Text></View>
-                            <View style={styles.phaseStatBox}><Ionicons name="close-circle" size={18} color="#e53935" style={{ marginRight: 4 }} /><Text style={[styles.phaseStatLabel, { color: '#e53935' }]}>Missed:</Text><Text style={[styles.phaseStatValue, { color: '#e53935' }]}>{stats.missedDays ?? '-'}</Text></View>
-                          </View>
-                          <View style={styles.phaseStatsRow}>
-                            <View style={styles.phaseStatBox}><FontAwesome name="heart" size={18} color="#1976d2" style={{ marginRight: 4 }} /><Text style={[styles.phaseStatLabel, { color: '#1976d2' }]}>Passed:</Text><Text style={[styles.phaseStatValue, { color: '#1976d2' }]}>{stats.passedDays ?? '-'}</Text></View>
-                            <View style={styles.phaseStatBox}><MaterialIcons name="error" size={18} color="#ff9800" style={{ marginRight: 4 }} /><Text style={[styles.phaseStatLabel, { color: '#ff9800' }]}>Failed:</Text><Text style={[styles.phaseStatValue, { color: '#ff9800' }]}>{stats.failedDays ?? '-'}</Text></View>
-                          </View>
+                        <View style={styles.statisticsContainer}>
+                          {(() => {
+                            const total = phase.duration || 1;
+                            const recorded = stats.recordedDays || 0;
+                            const passed = stats.passedDays || 0;
+                            const missed = stats.missedDays || 0;
+                            const failed = stats.failedDays || 0;
+                            return (
+                              <View style={styles.statisticsContent}>
+                                <View style={styles.statRow}>
+                                  <View style={styles.statHeader}>
+                                    <FontAwesome name="check-circle" size={15} color="#43a047" style={{ marginRight: 4 }} />
+                                    <Text style={[styles.statLabel, { color: '#43a047' }]}>Recorded</Text>
+                                  </View>
+                                  <Text style={[styles.statValue, { color: '#43a047' }]}>{recorded} days ({Math.round((recorded/total)*100)}%)</Text>
+                                </View>
+                                <ProgressBar 
+                                  progress={Math.round((recorded/total)*100) / 100} 
+                                  color="#43a047" 
+                                  style={styles.progressBar}
+                                />
+                                
+                                <View style={styles.statRow}>
+                                  <View style={styles.statHeader}>
+                                    <FontAwesome name="heart" size={15} color="#1976d2" style={{ marginRight: 4 }} />
+                                    <Text style={[styles.statLabel, { color: '#1976d2' }]}>Passed</Text>
+                                  </View>
+                                  <Text style={[styles.statValue, { color: '#1976d2' }]}>{passed} days ({Math.round((passed/total)*100)}%)</Text>
+                                </View>
+                                <ProgressBar 
+                                  progress={Math.round((passed/total)*100) / 100} 
+                                  color="#1976d2" 
+                                  style={styles.progressBar}
+                                />
+                                
+                                <View style={styles.statRow}>
+                                  <View style={styles.statHeader}>
+                                    <MaterialIcons name="block" size={15} color="#e53935" style={{ marginRight: 4 }} />
+                                    <Text style={[styles.statLabel, { color: '#e53935' }]}>Missed</Text>
+                                  </View>
+                                  <Text style={[styles.statValue, { color: '#e53935' }]}>{missed} days ({Math.round((missed/total)*100)}%)</Text>
+                                </View>
+                                <ProgressBar 
+                                  progress={Math.round((missed/total)*100) / 100} 
+                                  color="#e53935" 
+                                  style={styles.progressBar}
+                                />
+                                
+                                <View style={styles.statRow}>
+                                  <View style={styles.statHeader}>
+                                    <MaterialIcons name="error" size={15} color="#ff9800" style={{ marginRight: 4 }} />
+                                    <Text style={[styles.statLabel, { color: '#ff9800' }]}>Failed</Text>
+                                  </View>
+                                  <Text style={[styles.statValue, { color: '#ff9800' }]}>{failed} days ({Math.round((failed/total)*100)}%)</Text>
+                                </View>
+                                <ProgressBar 
+                                  progress={Math.round((failed/total)*100) / 100} 
+                                  color="#ff9800" 
+                                  style={styles.progressBar}
+                                />
+                              </View>
+                            );
+                          })()}
                         </View>
                       )}
-                      {/* Action buttons */}
+                      {/* Actions - Updated to match web */}
                       <View style={styles.phaseActionsRowModern}>
                         <TouchableOpacity
                           style={[styles.webViewRecordsButton, isDisabled && { opacity: 0.5 }]}
@@ -406,8 +486,8 @@ const QuitPlanDetailScreen = ({ route, navigation }) => {
                       </View>
                     </View>
                   )}
-  </View>
-);
+                </View>
+              );
             })
           ) : (
             <Text style={{ textAlign: 'center', color: '#888', marginVertical: 16 }}>No phases available</Text>
@@ -543,46 +623,49 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   progressCircle: {
-    width: 200,
-    height: 200,
-    borderRadius: 100,
+    width: 250,
+    height: 250,
+    borderRadius: 125,
     backgroundColor: '#fff',
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 8,
+    borderWidth: 12,
     borderColor: '#4caf50',
     marginBottom: 20,
   },
   progressText: {
-    fontSize: 32,
+    fontSize: 36,
     fontWeight: 'bold',
     color: '#3f332b',
   },
   progressLabel: {
-    fontSize: 14,
+    fontSize: 16,
     color: '#666',
     marginTop: 5,
+    fontWeight: '700',
   },
   statsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 30,
+    gap: 10,
   },
   statCard: {
     flex: 1,
     backgroundColor: '#fff',
     padding: 20,
     borderRadius: 16,
-    marginHorizontal: 5,
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 4,
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 8,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
   },
   statCardLabel: {
     fontSize: 14,
@@ -590,6 +673,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     fontWeight: '800',
     letterSpacing: 0.5,
+    textAlign: 'center',
   },
   statCardNumber: {
     fontSize: 24,
@@ -598,30 +682,54 @@ const styles = StyleSheet.create({
   },
   overviewContainer: {
     backgroundColor: '#fff',
-    padding: 20,
-    borderRadius: 12,
+    padding: 24,
+    borderRadius: 16,
     marginBottom: 30,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 5,
   },
   sectionTitle: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 15,
+    marginBottom: 20,
     color: '#3f332b',
+    textAlign: 'center',
+  },
+  sectionTitleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+    justifyContent: 'center',
   },
   overviewItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 10,
+    marginBottom: 16,
+    alignItems: 'center',
   },
   overviewLabel: {
     fontSize: 16,
     color: '#666',
-    fontWeight: '600',
+    fontWeight: '700',
+    flex: 1,
+  },
+  overviewLabelContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
   },
   overviewValue: {
     fontSize: 16,
     color: '#3f332b',
-    fontWeight: '600',
+    fontWeight: '700',
+    flex: 2,
+    textAlign: 'right',
   },
   phasesContainer: {
     marginBottom: 30,
@@ -632,11 +740,11 @@ const styles = StyleSheet.create({
     marginBottom: 18,
     overflow: 'hidden',
     shadowColor: '#000',
-    shadowOpacity: 0.10,
-    shadowRadius: 8,
-    elevation: 4,
-    borderWidth: 1.5,
-    borderColor: '#eee',
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 8,
+    borderWidth: 2,
+    borderColor: '#e0e0e0',
   },
   phaseHeader: {
     flexDirection: 'row',
@@ -652,12 +760,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 4,
     gap: 8,
+    flex: 1,
   },
   phaseInfo: {
     flex: 1,
   },
   phaseTitle: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: 'bold',
     color: '#222',
     marginBottom: 8,
@@ -742,33 +851,20 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     color: '#3f332b',
   },
-  limitContainer: {
-    backgroundColor: '#fff3e0',
-    borderWidth: 2,
-    borderColor: '#ff9800',
-    borderRadius: 8,
-    padding: 10,
-    marginBottom: 20,
-    alignItems: 'center',
-  },
-  limitText: {
-    color: '#d84315',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
   input: {
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 8,
     padding: 12,
-    marginBottom: 15,
     fontSize: 16,
+    marginBottom: 15,
   },
   pickerContainer: {
     marginBottom: 20,
   },
   pickerLabel: {
     fontSize: 16,
+    fontWeight: '600',
     marginBottom: 10,
     color: '#333',
   },
@@ -778,31 +874,31 @@ const styles = StyleSheet.create({
   },
   pickerOption: {
     flex: 1,
-    padding: 10,
+    padding: 12,
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 8,
-    marginHorizontal: 5,
     alignItems: 'center',
+    marginHorizontal: 4,
   },
   pickerOptionSelected: {
-    backgroundColor: 'black',
-    borderColor: 'black',
+    borderColor: '#3f332b',
+    backgroundColor: '#f5f5f5',
   },
   pickerOptionUnselected: {
-    backgroundColor: 'white',
-    borderColor: 'black',
+    borderColor: '#ddd',
+    backgroundColor: '#fff',
   },
   pickerOptionText: {
+    fontSize: 14,
+    fontWeight: '600',
     color: '#333',
   },
   pickerOptionTextSelected: {
-    color: 'white',
-    fontWeight: 'bold',
+    color: '#3f332b',
   },
   pickerOptionTextUnselected: {
-    color: 'black',
-    fontWeight: 'bold',
+    color: '#666',
   },
   modalButtons: {
     flexDirection: 'row',
@@ -813,142 +909,173 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#3f332b',
+    borderColor: '#000',
     marginHorizontal: 5,
     alignItems: 'center',
   },
   modalButtonPrimary: {
-    backgroundColor: 'black',
-    borderColor: 'black',
+    backgroundColor: '#000',
   },
   modalButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#3f332b',
+    color: '#000',
   },
   modalButtonTextPrimary: {
-    color: 'white',
+    color: '#fff',
+  },
+  limitContainer: {
+    backgroundColor: '#ffe0b2',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 15,
+    borderWidth: 2,
+    borderColor: '#ff9800',
+  },
+  limitText: {
+    fontSize: 16,
     fontWeight: 'bold',
+    color: '#d84315',
+    textAlign: 'center',
   },
   phaseTabs: {
     flexDirection: 'row',
-    justifyContent: 'center',
-    marginBottom: 16,
+    marginBottom: 20,
+    borderRadius: 8,
+    backgroundColor: '#f5f5f5',
+    padding: 4,
   },
   phaseTab: {
     flex: 1,
-    paddingVertical: 8,
-    borderBottomWidth: 2,
-    borderBottomColor: 'transparent',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 6,
     alignItems: 'center',
   },
   phaseTabActive: {
-    borderBottomColor: '#222',
+    backgroundColor: 'black',
   },
   phaseTabText: {
-    fontSize: 15,
-    color: '#888',
-    fontWeight: 'bold',
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#666',
   },
   phaseTabTextActive: {
-    color: '#222',
-  },
-  phaseStatsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 8,
-  },
-  phaseStatBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  phaseStatLabel: {
-    fontSize: 15,
-    fontWeight: 'bold',
-    marginRight: 4,
-  },
-  phaseStatValue: {
-    fontSize: 15,
-    fontWeight: 'bold',
-  },
-  phaseActionsRow: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    marginTop: 16,
-    gap: 10,
-  },
-  limitRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  limitBox: {
-    backgroundColor: '#fff8e1',
-    borderColor: '#ffb300',
-    borderWidth: 1.5,
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    marginBottom: 6,
-    marginLeft: 4,
-    shadowColor: '#ffb300',
-    shadowOpacity: 0.08,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  webViewRecordsButton: {
-    backgroundColor: '#fff',
-    borderColor: '#222',
-    borderWidth: 1.5,
-    borderRadius: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 18,
-    marginRight: 8,
-    shadowColor: '#000',
-    shadowOpacity: 0.08,
-    shadowRadius: 2,
-    elevation: 2,
-    alignItems: 'center',
-  },
-  webViewRecordsButtonText: {
-    color: '#222',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  webAddRecordButton: {
-    backgroundColor: 'black',
-    borderRadius: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 18,
-    shadowColor: '#1976d2',
-    shadowOpacity: 0.12,
-    shadowRadius: 2,
-    elevation: 2,
-    alignItems: 'center',
-  },
-  webAddRecordButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-    fontSize: 16,
+    color: '#fff',
   },
   phaseDetailRow: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 10,
+    alignItems: 'center',
+    marginBottom: 12,
   },
   phaseDetailLabel: {
     flexDirection: 'row',
     alignItems: 'center',
-    minWidth: 120,
+    flex: 1,
+  },
+  detailLabel: {
+    fontSize: 15,
+    color: '#666',
+    fontWeight: 'bold',
+  },
+  detailValue: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: '#3f332b',
+    flex: 1,
+    textAlign: 'right',
+  },
+  limitBox: {
+    backgroundColor: '#ffe0b2',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: '#ff9800',
+  },
+  limitText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#d84315',
   },
   phaseActionsRowModern: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
     marginTop: 20,
     gap: 10,
+  },
+  webViewRecordsButton: {
+    flex: 1,
+    backgroundColor: '#000',
+    borderWidth: 2,
+    borderColor: '#000',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  webViewRecordsButtonText: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#fff',
+  },
+  webAddRecordButton: {
+    flex: 1,
+    backgroundColor: '#000',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  webAddRecordButtonText: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#fff',
+  },
+  statisticsContainer: {
+    marginTop: 10,
+  },
+  statisticsContent: {
+    marginTop: 10,
+  },
+  statHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  statRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+    alignItems: 'center',
+  },
+  statLabel: {
+    fontSize: 12,
+    color: '#666',
+    fontWeight: '900',
+  },
+  statValue: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#3f332b',
+  },
+  progressBar: {
+    height: 8,
+    borderRadius: 4,
+    marginTop: 8,
+    marginBottom: 12,
+  },
+  progressBarContainer: {
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#e0e0e0',
+    overflow: 'hidden',
+    marginTop: 8,
+    marginBottom: 12,
+  },
+  progressBarFill: {
+    height: '100%',
+    borderRadius: 4,
   },
 });
 
