@@ -75,12 +75,12 @@ export default function AdminApprovePosts() {
     }
   };
 
-  const statusColor = (status) => {
-    if (status === 'Pending') return 'warning.main';
-    if (status === 'Approved') return 'success.main';
-    if (status === 'Rejected') return 'error.main';
-    return 'text.secondary';
-  };
+const statusColor = (status) => {
+  if (status === 'Pending') return 'warning.main';
+  if (status === 'Approved') return 'success.main';
+  if (status === 'Rejected') return 'error.main';
+  return 'text.secondary';
+};
 
   // tab: 0-Pending, 1-Updating, 2-Rejected, 3-All
   const filteredPosts = posts.filter(row => {
@@ -144,19 +144,19 @@ export default function AdminApprovePosts() {
         <Typography color="error" align="center" py={2}>{error}</Typography>
       ) : (
         <>
-          <TableContainer sx={{ width: '100%', maxWidth: '100%', mx: 0, bgcolor: '#fff', borderRadius: 2, boxShadow: 'none', border: '1px solid #e0e0e0' }}>
-            <Table>
-              <TableHead>
-                <TableRow sx={{ bgcolor: '#f5f7fa', borderRadius: 0 }}>
+      <TableContainer sx={{ width: '100%', maxWidth: '100%', mx: 0, bgcolor: '#fff', borderRadius: 2, boxShadow: 'none', border: '1px solid #e0e0e0' }}>
+        <Table>
+          <TableHead>
+            <TableRow sx={{ bgcolor: '#f5f7fa', borderRadius: 0 }}>
                   <TableCell align="center" sx={{ fontWeight: 900, borderBottom: '2px solid #e0e0e0', py: 2, color: '#111', fontSize: 17, width: 60 }}>No.</TableCell>
                   <TableCell align="left" sx={{ fontWeight: 900, borderBottom: '2px solid #e0e0e0', py: 2, color: '#111', fontSize: 17 }}>Title</TableCell>
-                  <TableCell align="left" sx={{ fontWeight: 900, borderBottom: '2px solid #e0e0e0', py: 2, color: '#111', fontSize: 17 }}><PersonIcon sx={{ mr: 1, color: '#111', fontSize: 22 }} /> Author</TableCell>
-                  <TableCell align="left" sx={{ fontWeight: 900, borderBottom: '2px solid #e0e0e0', py: 2, color: '#111', fontSize: 17 }}><DateRangeIcon sx={{ mr: 1, color: '#111', fontSize: 22 }} /> Created</TableCell>
-                  <TableCell align="left" sx={{ fontWeight: 900, borderBottom: '2px solid #e0e0e0', py: 2, color: '#111', fontSize: 17 }}><VerifiedUserIcon sx={{ mr: 1, color: '#111', fontSize: 22 }} /> Status</TableCell>
-                  <TableCell align="left" sx={{ fontWeight: 900, borderBottom: '2px solid #e0e0e0', py: 2, color: '#111', fontSize: 17 }}><SettingsIcon sx={{ mr: 1, color: '#111', fontSize: 22 }} /> Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
+              <TableCell align="left" sx={{ fontWeight: 900, borderBottom: '2px solid #e0e0e0', py: 2, color: '#111', fontSize: 17 }}><PersonIcon sx={{ mr: 1, color: '#111', fontSize: 22 }} /> Author</TableCell>
+              <TableCell align="left" sx={{ fontWeight: 900, borderBottom: '2px solid #e0e0e0', py: 2, color: '#111', fontSize: 17 }}><DateRangeIcon sx={{ mr: 1, color: '#111', fontSize: 22 }} /> Created</TableCell>
+              <TableCell align="left" sx={{ fontWeight: 900, borderBottom: '2px solid #e0e0e0', py: 2, color: '#111', fontSize: 17 }}><VerifiedUserIcon sx={{ mr: 1, color: '#111', fontSize: 22 }} /> Status</TableCell>
+              <TableCell align="left" sx={{ fontWeight: 900, borderBottom: '2px solid #e0e0e0', py: 2, color: '#111', fontSize: 17 }}><SettingsIcon sx={{ mr: 1, color: '#111', fontSize: 22 }} /> Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
                 {pagedPosts.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={6} align="center" sx={{ py: 5, color: '#888', fontSize: 17, fontWeight: 500 }}>
@@ -167,7 +167,7 @@ export default function AdminApprovePosts() {
                   pagedPosts.map((row, idx) => (
                     <TableRow key={row.id || idx} hover sx={{ transition: 'background 0.2s', '&:hover': { bgcolor: '#f7f7f7' } }}>
                       <TableCell align="center" sx={{ borderBottom: '1px solid #e0e0e0', py: 2, color: '#222', fontWeight: 600 }}>{idx + 1 + (page - 1) * PAGE_SIZE}</TableCell>
-                      <TableCell align="left" sx={{ borderBottom: '1px solid #e0e0e0', py: 2, color: '#222', fontWeight: 600 }}>{row.title}</TableCell>
+                <TableCell align="left" sx={{ borderBottom: '1px solid #e0e0e0', py: 2, color: '#222', fontWeight: 600 }}>{row.title}</TableCell>
                       <TableCell align="left" sx={{ borderBottom: '1px solid #e0e0e0', py: 2, color: '#222' }}>{
                         row.user?.first_name || row.user?.last_name
                           ? `${row.user?.first_name || ''} ${row.user?.last_name || ''}`.trim()
@@ -176,22 +176,22 @@ export default function AdminApprovePosts() {
                               : (row.author || row.username || row.user?.username || ''))
                       }</TableCell>
                       <TableCell align="left" sx={{ borderBottom: '1px solid #e0e0e0', py: 2, color: '#222' }}>{row.created || row.created_at || ''}</TableCell>
-                      <TableCell align="left" sx={{ borderBottom: '1px solid #e0e0e0', py: 2, color: '#222' }}>
-                        <Box component="span" fontWeight={700} color={statusColor(row.status)}>
-                          {row.status}
-                        </Box>
-                      </TableCell>
-                      <TableCell align="left" sx={{ borderBottom: '1px solid #e0e0e0', py: 2 }}>
+                <TableCell align="left" sx={{ borderBottom: '1px solid #e0e0e0', py: 2, color: '#222' }}>
+                  <Box component="span" fontWeight={700} color={statusColor(row.status)}>
+                    {row.status}
+                  </Box>
+                </TableCell>
+                <TableCell align="left" sx={{ borderBottom: '1px solid #e0e0e0', py: 2 }}>
                         <Button variant="outlined" size="small" onClick={() => handleView(row.id)} sx={{ textTransform: 'none', fontWeight: 600 }}>
                           View Post Detail
                         </Button>
-                      </TableCell>
-                    </TableRow>
+                </TableCell>
+              </TableRow>
                   ))
                 )}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          </TableBody>
+        </Table>
+      </TableContainer>
           {totalPages > 1 && (
             <Box display="flex" justifyContent="center" alignItems="center" mt={3}>
               <Pagination
