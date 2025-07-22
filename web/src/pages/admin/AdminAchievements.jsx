@@ -1,19 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Avatar, CircularProgress, Box, Pagination, Tooltip, IconButton, Button } from '@mui/material';
-import PersonIcon from '@mui/icons-material/Person';
-import NotesIcon from '@mui/icons-material/Notes';
-import CategoryIcon from '@mui/icons-material/Category';
-import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import AchievementUpdate from '../../components/admin/AchievementUpdate';
+import AchievementUpdate from '../../components/admin/achievements/AchievementUpdate';
 import achievementsService from '../../services/achievementsService';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import AchievementCreate from '../../components/admin/AchievementCreate';
+import AchievementCreate from '../../components/admin/achievements/AchievementCreate';
+import AchievementDelete from '../../components/admin/achievements/AchievementDelete';
 
 export default function AdminAchievements() {
     const [achievements, setAchievements] = useState([]);
@@ -25,6 +20,7 @@ export default function AdminAchievements() {
     const [selectedAchievement, setSelectedAchievement] = useState(null);
     const [modalOpen, setModalOpen] = useState(false);
     const [actionLoading, setActionLoading] = useState(false);
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
     useEffect(() => {
         achievementsService.getAllAchievements()
@@ -53,18 +49,18 @@ export default function AdminAchievements() {
         setModalOpen(true);
         handleActionClose();
     };
-    const handleDelete = async () => {
-        if (!selectedAchievement) return;
-        setActionLoading(true);
-        try {
-            await achievementsService.deleteAchievement(selectedAchievement.id);
-            setAchievements((prev) => prev.filter(a => a.id !== selectedAchievement.id));
-        } catch (err) {
-            // Optionally show error
-        } finally {
-            setActionLoading(false);
-            handleActionClose();
-        }
+    const handleDelete = () => {
+        setDeleteModalOpen(true);
+        handleActionClose();
+    };
+    const handleDeleteConfirm = (id) => {
+        setAchievements((prev) => prev.filter(a => a.id !== id));
+        setDeleteModalOpen(false);
+        setSelectedAchievement(null);
+    };
+    const handleDeleteModalClose = () => {
+        setDeleteModalOpen(false);
+        setSelectedAchievement(null);
     };
     const handleModalClose = () => {
         setModalOpen(false);
@@ -85,9 +81,40 @@ export default function AdminAchievements() {
 
     return (
         <>
-            <Box display="flex" justifyContent="space-between" alignItems="center">
-                <Typography variant="h5" mb={2} p={2} sx={{ fontWeight: 900, borderBottom: '1px solid #e0e0e0', bgcolor: '#fff', width: '100%', maxWidth: '100%', mx: 0, color: '#111' }}>Achievements Management</Typography>
-                <AchievementCreate onCreate={handleCreate} trigger={<Button variant="contained" color="primary" sx={{ mr: 2, mt: 1 }}>Add Achievement</Button>} />
+            <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+                sx={{
+                    bgcolor: '#fff',
+                    width: '100%',
+                    maxWidth: '100%',
+                    mx: 0,
+                }}
+            >
+                <Typography
+                    variant="h5"
+                    mb={2}
+                    p={2}
+                    sx={{ fontWeight: 900, color: '#111' }}
+                >
+                    Achievements Management
+                </Typography>
+                <AchievementCreate onCreate={handleCreate} trigger={<Button
+                    variant="contained"
+                    color="primary"
+                    sx={{
+                        mr: 2,
+                        mt: 1,
+                        mb: 2,
+                        whiteSpace: 'nowrap',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                    }}
+                >
+                    Add Achievement
+                </Button>
+                } />
             </Box>
             <TableContainer sx={{ width: '100%', maxWidth: '100%', mx: 0, bgcolor: '#fff', borderRadius: 2, boxShadow: 'none', border: '1px solid #e0e0e0' }}>
                 {loading ? (
@@ -192,6 +219,12 @@ export default function AdminAchievements() {
                 onClose={handleModalClose}
                 onUpdate={handleUpdate}
                 initialValues={selectedAchievement}
+            />
+            <AchievementDelete
+                open={deleteModalOpen}
+                onClose={handleDeleteModalClose}
+                onDelete={handleDeleteConfirm}
+                achievement={selectedAchievement}
             />
             {totalPages > 1 && (
                 <Box display="flex" justifyContent="center" alignItems="center" mt={3}>

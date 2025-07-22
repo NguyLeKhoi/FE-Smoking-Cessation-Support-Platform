@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { TextField, Button, Box, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
-import achievementsService from '../../services/achievementsService';
-import mediaService from '../../services/mediaService';
+import achievementsService from '../../../services/achievementsService';
+import mediaService from '../../../services/mediaService';
 import FormModal from './FormModal';
 
 export const achievement_type = {
@@ -110,12 +110,28 @@ export default function AchievementUpdate({ open, onClose, onUpdate, initialValu
                 label="Threshold Value"
                 name="threshold_value"
                 value={form.threshold_value}
-                onChange={handleChange}
+                onChange={(e) => {
+                    const { value } = e.target;
+                    if (value === '') {
+                        setForm((prev) => ({ ...prev, threshold_value: '' }));
+                    } else if (!isNaN(Number(value))) {
+                        let num = Math.max(0, Math.min(50, Number(value)));
+                        setForm((prev) => ({ ...prev, threshold_value: String(num) }));
+                    }
+                }}
+                onBlur={() => {
+                    setForm((prev) => ({
+                        ...prev,
+                        threshold_value:
+                            prev.threshold_value === ''
+                                ? ''
+                                : String(Math.max(0, Math.min(50, Number(prev.threshold_value)))),
+                    }));
+                }}
                 fullWidth
                 required
-                type="number"
-                min={0}
-                max={50}
+                type="text"
+                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
             />
 
             <Box>
