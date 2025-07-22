@@ -9,14 +9,14 @@ import {
 } from '@mui/material';
 import AdminMembership from './AdminMembership';
 import AdminApprovePosts from './AdminApprovePosts';
-import AdminStatisticsTable from './statistics/AdminStatisticsTable';
+import AdminAchievements from './AdminAchievements';
 import AdminCoach from './AdminCoach';
 import statisticsService from '../../services/statisticsService';
-import StatisticsCard from './statistics/StatisticsCard';
-import StatisticsAreaChart from './statistics/StatisticsAreaChart';
-import StatisticsLineChart from './statistics/StatisticsLineChart';
-import StatisticsBarChart from './statistics/StatisticsBarChart';
-import StatisticsPieChart from './statistics/StatisticsPieChart';
+import StatisticsCard from '../../components/admin/statistics/StatisticsCard';
+import StatisticsAreaChart from '../../components/admin/statistics/StatisticsAreaChart';
+import StatisticsLineChart from '../../components/admin/statistics/StatisticsLineChart';
+import StatisticsBarChart from '../../components/admin/statistics/StatisticsBarChart';
+import StatisticsPieChart from '../../components/admin/statistics/StatisticsPieChart';
 
 
 const tabList = [
@@ -133,7 +133,7 @@ export default function AdminDashboard() {
         )}
         {tab === 3 && (
           <Paper sx={sharedPaperSx}>
-            <AdminStatisticsTable tableContainerSx={sharedTableContainerSx} />
+            <AdminAchievements tableContainerSx={sharedTableContainerSx} />
           </Paper>
         )}
         {tab === 4 && (
