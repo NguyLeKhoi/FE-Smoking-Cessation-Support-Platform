@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import AdminMembership from './AdminMembership';
 import AdminApprovePosts from './AdminApprovePosts';
-import AdminStatisticsTable from './statistics/AdminStatisticsTable';
+import AdminAchievements from './AdminAchievements';
 import AdminCoach from './AdminCoach';
 import statisticsService from '../../services/statisticsService';
 import StatisticsCard from './statistics/StatisticsCard';
@@ -133,7 +133,7 @@ export default function AdminDashboard() {
         )}
         {tab === 3 && (
           <Paper sx={sharedPaperSx}>
-            <AdminStatisticsTable tableContainerSx={sharedTableContainerSx} />
+            <AdminAchievements tableContainerSx={sharedTableContainerSx} />
           </Paper>
         )}
         {tab === 4 && (
