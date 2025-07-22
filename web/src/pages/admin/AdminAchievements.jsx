@@ -13,6 +13,7 @@ import AchievementUpdate from '../../components/admin/AchievementUpdate';
 import achievementsService from '../../services/achievementsService';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import AchievementCreate from '../../components/admin/AchievementCreate';
 
 export default function AdminAchievements() {
     const [achievements, setAchievements] = useState([]);
@@ -24,7 +25,6 @@ export default function AdminAchievements() {
     const [selectedAchievement, setSelectedAchievement] = useState(null);
     const [modalOpen, setModalOpen] = useState(false);
     const [actionLoading, setActionLoading] = useState(false);
-    const [createModalOpen, setCreateModalOpen] = useState(false);
 
     useEffect(() => {
         achievementsService.getAllAchievements()
@@ -70,43 +70,24 @@ export default function AdminAchievements() {
         setModalOpen(false);
         setSelectedAchievement(null);
     };
-    const handleModalSubmit = async (updated) => {
-        if (!selectedAchievement) return;
-        setActionLoading(true);
-        try {
-            const res = await achievementsService.updateAchievement(selectedAchievement.id, updated);
-            setAchievements(prev =>
-                prev.map(a =>
-                    a.id === selectedAchievement.id ? { ...a, ...res.data } : a
-                )
-            );
-            setModalOpen(false);
-            setSelectedAchievement(null);
-        } catch (err) {
-            // Optionally show error
-        } finally {
-            setActionLoading(false);
-        }
+    // Remove handleModalSubmit and use onUpdate instead
+    const handleUpdate = (updatedAchievement) => {
+        setAchievements(prev =>
+            prev.map(a =>
+                a.id === updatedAchievement.id ? { ...a, ...updatedAchievement } : a
+            )
+        );
     };
 
-    const handleCreate = async (newAchievement) => {
-        setActionLoading(true);
-        try {
-            const res = await achievementsService.createAchievement(newAchievement);
-            setAchievements(prev => [res, ...prev]);
-            setCreateModalOpen(false);
-        } finally {
-            setActionLoading(false);
-        }
+    const handleCreate = (newAchievement) => {
+        setAchievements(prev => [...prev, newAchievement]);
     };
 
     return (
         <>
             <Box display="flex" justifyContent="space-between" alignItems="center">
                 <Typography variant="h5" mb={2} p={2} sx={{ fontWeight: 900, borderBottom: '1px solid #e0e0e0', bgcolor: '#fff', width: '100%', maxWidth: '100%', mx: 0, color: '#111' }}>Achievements Management</Typography>
-                <Button variant="contained" color="primary" sx={{ mr: 2, mt: 1 }} onClick={() => setCreateModalOpen(true)}>
-                    Add Achievement
-                </Button>
+                <AchievementCreate onCreate={handleCreate} trigger={<Button variant="contained" color="primary" sx={{ mr: 2, mt: 1 }}>Add Achievement</Button>} />
             </Box>
             <TableContainer sx={{ width: '100%', maxWidth: '100%', mx: 0, bgcolor: '#fff', borderRadius: 2, boxShadow: 'none', border: '1px solid #e0e0e0' }}>
                 {loading ? (
@@ -233,14 +214,8 @@ export default function AdminAchievements() {
             <AchievementUpdate
                 open={modalOpen}
                 onClose={handleModalClose}
-                onSubmit={handleModalSubmit}
+                onUpdate={handleUpdate}
                 initialValues={selectedAchievement}
-            />
-            <AchievementUpdate
-                open={createModalOpen}
-                onClose={() => setCreateModalOpen(false)}
-                onSubmit={handleCreate}
-                initialValues={{}}
             />
             {totalPages > 1 && (
                 <Box display="flex" justifyContent="center" alignItems="center" mt={3}>

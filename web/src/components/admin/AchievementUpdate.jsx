@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, Box } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, Box, CircularProgress } from '@mui/material';
+import achievementsService from '../../services/achievementsService';
 
-export default function AchievementUpdate({ open, onClose, onSubmit, initialValues = {} }) {
+export default function AchievementUpdate({ open, onClose, onUpdate, initialValues = {} }) {
     const [form, setForm] = useState({
         name: '',
         description: '',
@@ -9,6 +10,7 @@ export default function AchievementUpdate({ open, onClose, onSubmit, initialValu
         achievement_type: '',
         threshold_value: '',
     });
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (initialValues) {
@@ -27,8 +29,18 @@ export default function AchievementUpdate({ open, onClose, onSubmit, initialValu
         setForm((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = () => {
-        onSubmit && onSubmit(form);
+    const handleSubmit = async () => {
+        if (!initialValues.id) return;
+        setLoading(true);
+        try {
+            const res = await achievementsService.updateAchievement(initialValues.id, form);
+            onUpdate && onUpdate(res.data);
+            onClose && onClose();
+        } catch (err) {
+            // Optionally show error
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -81,8 +93,10 @@ export default function AchievementUpdate({ open, onClose, onSubmit, initialValu
                 </Box>
             </DialogContent>
             <DialogActions>
-                <Button onClick={onClose} color="inherit">Cancel</Button>
-                <Button onClick={handleSubmit} color="primary" variant="contained">Save</Button>
+                <Button onClick={onClose} color="inherit" disabled={loading}>Cancel</Button>
+                <Button onClick={handleSubmit} color="primary" variant="contained" disabled={loading}>
+                    {loading ? <CircularProgress size={24} /> : 'Save'}
+                </Button>
             </DialogActions>
         </Dialog>
     );
