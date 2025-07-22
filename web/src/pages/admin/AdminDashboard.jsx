@@ -5,6 +5,7 @@ import {
   Tabs,
   Tab,
   Grid,
+  Divider,
 } from '@mui/material';
 import AdminMembership from './AdminMembership';
 import AdminApprovePosts from './AdminApprovePosts';
@@ -85,7 +86,7 @@ export default function AdminDashboard() {
           <>
             <StatisticsCard stats={stats} loading={loading} error={error} />
 
-            <Box sx={{ display: 'flex', flexDirection: 'row', width: '100%', gap: 2, my: 4 }}>
+            <Box sx={{ display: 'flex', flexDirection: 'row', width: '100%', gap: 3, my: 4 }}>
               <Box sx={{ width: '45%' }}>
                 <StatisticsPieChart totalPostsByStatus={stats?.totalPostsByStatus || {}} />
               </Box>
@@ -95,12 +96,12 @@ export default function AdminDashboard() {
                   totalRecordsByIsPass={stats?.totalRecordsByIsPass || {}}
                 />
               </Box>
-
             </Box>
 
+            <Divider sx={{ border: '0.5px solid #e0e0e0', my: 2, boxShadow: 'none', }} />
 
             {!loading && !error && stats && (
-              <Box sx={{ my: 4 }}>
+              <Box sx={{ my: 10 }}>
                 <StatisticsAreaChart
                   moneySavedByMonth={stats.moneySavedByMonth}
                   cigarettesNotSmokedByMonth={stats.cigarettesNotSmokedByMonth}
@@ -109,10 +110,12 @@ export default function AdminDashboard() {
               </Box>
             )}
 
-
+            <Divider sx={{ border: '0.5px solid #e0e0e0', my: 2 }} />
 
             {!loading && !error && stats && (
-              <StatisticsLineChart revenueFromMembershipsByMonth={stats?.revenueFromMembershipsByMonth || []} />
+              <Box sx={{ mt: 8 }}>
+                <StatisticsLineChart revenueFromMembershipsByMonth={stats?.revenueFromMembershipsByMonth || []} />
+              </Box>
             )}
 
 

@@ -74,7 +74,7 @@ export default function StatisticsCard({ stats, loading, error }) {
                     <Grid item xs={12} sm={6} md={4} key={stat.label}>
                         <Box
                             sx={{
-                                width: 300,
+                                width: 400,
                                 height: 180,
                                 bgcolor: '#fff',
                                 display: 'flex',
@@ -105,7 +105,7 @@ export default function StatisticsCard({ stats, loading, error }) {
                     <Grid item xs={12} sm={6} md={4} key={stat.label}>
                         <Box
                             sx={{
-                                width: 300,
+                                width: 400,
                                 height: 180,
                                 bgcolor: '#fff',
                                 display: 'flex',
