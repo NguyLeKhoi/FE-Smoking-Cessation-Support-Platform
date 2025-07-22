@@ -1,5 +1,28 @@
 import api from './api';
 import { toast } from 'react-toastify';
+import { ACHIEVEMENTS_MESSAGES } from '../constants/serviceMessages';
+
+const showAchievementError = (error) => {
+    const data = error?.response?.data;
+
+    if (Array.isArray(data?.message)) {
+        // Show a toast for each error message
+        data.message.forEach(m => {
+            if (Object.values(ACHIEVEMENTS_MESSAGES).includes(m.message)) {
+                toast.error(m.message);
+            } else {
+                toast.error(m.message || 'An unexpected error occurred.');
+            }
+        });
+    } else {
+        const msg = data?.message || error.message;
+        if (Object.values(ACHIEVEMENTS_MESSAGES).includes(msg)) {
+            toast.error(msg);
+        } else {
+            toast.error(msg || 'An unexpected error occurred.');
+        }
+    }
+};
 
 const achievementsService = {
     /**
@@ -11,7 +34,7 @@ const achievementsService = {
             const response = await api.get('/achievements');
             return response.data;
         } catch (error) {
-            toast(`Error fetching achievements: ${error.response?.data?.message || error.message}`);
+            showAchievementError(error);
             console.error('Error fetching achievements:', error);
             throw error;
         }
@@ -27,7 +50,7 @@ const achievementsService = {
             const response = await api.get(`/achievements/${id}`);
             return response.data;
         } catch (error) {
-            toast(`Error fetching achievement: ${error.response?.data?.message || error.message}`);
+            showAchievementError(error);
             console.error(`Error fetching achievement with ID ${id}:`, error);
             throw error;
         }
@@ -43,7 +66,7 @@ const achievementsService = {
             const response = await api.get(`/user-achievements/${userId}`);
             return response.data;
         } catch (error) {
-            toast(`Error fetching achievements for user: ${error.response?.data?.message || error.message}`);
+            showAchievementError(error);
             console.error(`Error fetching achievements for user ${userId}:`, error);
             throw error;
         }
@@ -59,7 +82,7 @@ const achievementsService = {
             const response = await api.get(`/user-achievements/${userId}/progress`);
             return response.data;
         } catch (error) {
-            toast(`Error fetching achievement progress: ${error.response?.data?.message || error.message}`);
+            showAchievementError(error);
             console.error(`Error fetching achievement progress for user ${userId}:`, error);
             throw error;
         }
@@ -73,10 +96,10 @@ const achievementsService = {
     createAchievement: async (achievementData) => {
         try {
             const response = await api.post('/achievements', achievementData);
-            toast('Achievement created successfully!');
+            toast.success('Achievement created successfully!');
             return response.data;
         } catch (error) {
-            toast(`Error creating achievement: ${error.response?.data?.message || error.message}`);
+            showAchievementError(error);
             console.error('Error creating achievement:', error);
             throw error;
         }
@@ -91,10 +114,10 @@ const achievementsService = {
     updateAchievement: async (id, updateData) => {
         try {
             const response = await api.patch(`/achievements/${id}`, updateData);
-            toast('Achievement updated successfully!');
+            toast.success('Achievement updated successfully!');
             return response.data;
         } catch (error) {
-            toast(`Error updating achievement: ${error.response?.data?.message || error.message}`);
+            showAchievementError(error);
             console.error(`Error updating achievement with ID ${id}:`, error);
             throw error;
         }
@@ -108,10 +131,10 @@ const achievementsService = {
     deleteAchievement: async (id) => {
         try {
             const response = await api.delete(`/achievements/${id}`);
-            toast('Achievement deleted successfully!');
+            toast.success('Achievement deleted successfully!');
             return response.data;
         } catch (error) {
-            toast(`Error deleting achievement: ${error.response?.data?.message || error.message}`);
+            showAchievementError(error);
             console.error(`Error deleting achievement with ID ${id}:`, error);
             throw error;
         }

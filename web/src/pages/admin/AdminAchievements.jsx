@@ -103,36 +103,12 @@ export default function AdminAchievements() {
                         <TableHead>
                             <TableRow sx={{ bgcolor: '#f5f7fa', borderRadius: 0 }}>
                                 <TableCell align="left" sx={{ fontWeight: 900, borderBottom: '2px solid #e0e0e0', py: 2, color: '#111', fontSize: 15, lineHeight: 1.6 }}>Image</TableCell>
-                                <TableCell align="left" sx={{ fontWeight: 900, borderBottom: '2px solid #e0e0e0', py: 2, color: '#111', fontSize: 15, lineHeight: 1.6 }}>
-                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                        <PersonIcon sx={{ color: '#111', fontSize: 18 }} /> Name
-                                    </Box>
-                                </TableCell>
-                                <TableCell align="left" sx={{ fontWeight: 900, borderBottom: '2px solid #e0e0e0', py: 2, color: '#111', fontSize: 15, lineHeight: 1.6 }}>
-                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                        <NotesIcon sx={{ color: '#111', fontSize: 18 }} /> Description
-                                    </Box>
-                                </TableCell>
-                                <TableCell align="left" sx={{ fontWeight: 900, borderBottom: '2px solid #e0e0e0', py: 2, color: '#111', fontSize: 15, lineHeight: 1.6 }}>
-                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                        <CategoryIcon sx={{ color: '#111', fontSize: 18 }} /> Type
-                                    </Box>
-                                </TableCell>
-                                <TableCell align="left" sx={{ fontWeight: 900, borderBottom: '2px solid #e0e0e0', py: 2, color: '#111', fontSize: 15, lineHeight: 1.6 }}>
-                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                        <TrendingUpIcon sx={{ color: '#111', fontSize: 18 }} /> Threshold
-                                    </Box>
-                                </TableCell>
-                                <TableCell align="left" sx={{ fontWeight: 900, borderBottom: '2px solid #e0e0e0', py: 2, color: '#111', fontSize: 15, lineHeight: 1.6 }}>
-                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                        <EmojiEventsIcon sx={{ color: '#111', fontSize: 18 }} /> Point
-                                    </Box>
-                                </TableCell>
-                                <TableCell align="left" sx={{ fontWeight: 900, borderBottom: '2px solid #e0e0e0', py: 2, color: '#111', fontSize: 15, lineHeight: 1.6 }}>
-                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                        <CalendarTodayIcon sx={{ color: '#111', fontSize: 18 }} /> Created At
-                                    </Box>
-                                </TableCell>
+                                <TableCell align="left" sx={{ fontWeight: 900, borderBottom: '2px solid #e0e0e0', py: 2, color: '#111', fontSize: 15, lineHeight: 1.6 }}>Name</TableCell>
+                                <TableCell align="left" sx={{ fontWeight: 900, borderBottom: '2px solid #e0e0e0', py: 2, color: '#111', fontSize: 15, lineHeight: 1.6 }}>Description</TableCell>
+                                <TableCell align="left" sx={{ fontWeight: 900, borderBottom: '2px solid #e0e0e0', py: 2, color: '#111', fontSize: 15, lineHeight: 1.6 }}>Type</TableCell>
+                                <TableCell align="left" sx={{ fontWeight: 900, borderBottom: '2px solid #e0e0e0', py: 2, color: '#111', fontSize: 15, lineHeight: 1.6 }}>Threshold</TableCell>
+                                <TableCell align="left" sx={{ fontWeight: 900, borderBottom: '2px solid #e0e0e0', py: 2, color: '#111', fontSize: 15, lineHeight: 1.6 }}>Point</TableCell>
+                                <TableCell align="left" sx={{ fontWeight: 900, borderBottom: '2px solid #e0e0e0', py: 2, color: '#111', fontSize: 15, lineHeight: 1.6 }}>Created At</TableCell>
                                 <TableCell align="center" sx={{ fontWeight: 900, borderBottom: '2px solid #e0e0e0', py: 2, color: '#111', fontSize: 15, lineHeight: 1.6, width: 80 }}>Actions</TableCell>
                             </TableRow>
                         </TableHead>
