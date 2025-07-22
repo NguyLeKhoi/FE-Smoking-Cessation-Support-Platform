@@ -4,15 +4,19 @@ import {
   Paper,
   Tabs,
   Tab,
+  Grid,
 } from '@mui/material';
 import AdminMembership from './AdminMembership';
 import AdminApprovePosts from './AdminApprovePosts';
-import AdminStatisticsTable from './AdminStatisticsTable';
+import AdminStatisticsTable from './statistics/AdminStatisticsTable';
 import AdminCoach from './AdminCoach';
 import statisticsService from '../../services/statisticsService';
-import StatisticsCard from './StatisticsCard';
-import StatisticsLineChart from './StatisticsLineChart';
-import StatisticsBarChart from './StatisticsBarChart';
+import StatisticsCard from './statistics/StatisticsCard';
+import StatisticsAreaChart from './statistics/StatisticsAreaChart';
+import StatisticsLineChart from './statistics/StatisticsLineChart';
+import StatisticsBarChart from './statistics/StatisticsBarChart';
+import StatisticsPieChart from './statistics/StatisticsPieChart';
+
 
 const tabList = [
   { label: 'Dashboard' },
@@ -79,12 +83,25 @@ export default function AdminDashboard() {
       <Box sx={{ width: '100%', p: 0, maxWidth: '100%', mx: 0 }}>
         {tab === 0 && (
           <>
-            {/* Stats Cards */}
             <StatisticsCard stats={stats} loading={loading} error={error} />
-            {/* Stacked Line Chart */}
+
+            <Box sx={{ display: 'flex', flexDirection: 'row', width: '100%', gap: 2, my: 4 }}>
+              <Box sx={{ width: '45%' }}>
+                <StatisticsPieChart totalPostsByStatus={stats?.totalPostsByStatus || {}} />
+              </Box>
+              <Box sx={{ width: '55%' }}>
+                <StatisticsBarChart
+                  totalQuitPlansByStatus={stats?.totalQuitPlansByStatus || {}}
+                  totalRecordsByIsPass={stats?.totalRecordsByIsPass || {}}
+                />
+              </Box>
+
+            </Box>
+
+
             {!loading && !error && stats && (
               <Box sx={{ my: 4 }}>
-                <StatisticsLineChart
+                <StatisticsAreaChart
                   moneySavedByMonth={stats.moneySavedByMonth}
                   cigarettesNotSmokedByMonth={stats.cigarettesNotSmokedByMonth}
                   revenueFromMembershipsByMonth={stats.revenueFromMembershipsByMonth}
@@ -92,12 +109,13 @@ export default function AdminDashboard() {
               </Box>
             )}
 
-            {/* Table Section */}
+
+
             {!loading && !error && stats && (
-              <StatisticsBarChart totalPostsByStatus={stats.totalPostsByStatus} />
+              <StatisticsLineChart revenueFromMembershipsByMonth={stats?.revenueFromMembershipsByMonth || []} />
             )}
-            {/* Or: Always render, but with fallback */}
-            <StatisticsBarChart totalPostsByStatus={stats?.totalPostsByStatus || {}} />
+
+
           </>
         )}
         {tab === 1 && (

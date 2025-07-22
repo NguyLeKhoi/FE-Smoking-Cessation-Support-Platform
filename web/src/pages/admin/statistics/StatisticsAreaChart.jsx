@@ -1,19 +1,18 @@
 import React from 'react';
 import ReactECharts from 'echarts-for-react';
 
-export default function StatisticsLineChart({ moneySavedByMonth = [], cigarettesNotSmokedByMonth = [], revenueFromMembershipsByMonth = [] }) {
+export default function StatisticsAreaChart({ moneySavedByMonth = [], cigarettesNotSmokedByMonth = [], revenueFromMembershipsByMonth = [] }) {
     // Extract months (assume all arrays have the same months in the same order)
     const months = moneySavedByMonth.map(item => item.month);
     const moneySaved = moneySavedByMonth.map(item => item.total);
     const cigarettesNotSmoked = cigarettesNotSmokedByMonth.map(item => item.total);
-    const revenue = revenueFromMembershipsByMonth.map(item => item.total);
 
     const option = {
         tooltip: {
             trigger: 'axis',
         },
         legend: {
-            data: ['Money Saved', 'Cigarettes Not Smoked', 'Revenue From Memberships'],
+            data: ['Money Saved', 'Cigarettes Not Smoked'],
             top: 10,
         },
         grid: {
@@ -45,14 +44,6 @@ export default function StatisticsLineChart({ moneySavedByMonth = [], cigarettes
                 stack: 'Total',
                 areaStyle: {},
                 data: cigarettesNotSmoked,
-                smooth: true,
-            },
-            {
-                name: 'Revenue From Memberships',
-                type: 'line',
-                stack: 'Total',
-                areaStyle: {},
-                data: revenue,
                 smooth: true,
             },
         ],
