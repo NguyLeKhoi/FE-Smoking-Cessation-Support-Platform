@@ -19,6 +19,7 @@ import AchievementSection from '../../components/profile/AchievementSection';
 import theme from '../../theme/theme';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import { DrawerActions } from '@react-navigation/native';
 
 const ProfileScreen = ({ navigation: propNavigation }) => {
   const navigation = useNavigation();
@@ -173,7 +174,7 @@ const ProfileScreen = ({ navigation: propNavigation }) => {
       {/* Achievements Section */}
       <AchievementSection 
         achievements={achievements} 
-        onViewAll={() => navigation.getParent()?.navigate('Achievements')}
+        onViewAll={() => navigation.dispatch(DrawerActions.jumpTo('Achievements'))}
       />
 
       {/* Logout Button */}

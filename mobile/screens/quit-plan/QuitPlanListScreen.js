@@ -42,7 +42,7 @@ const QuitPlanListScreen = ({ navigation }) => {
   // Fallback: if no plan but plans array exists, show first plan
   const displayPlan = plan || (Array.isArray(plans) && plans.length > 0 ? plans[0] : null);
   const randomSlogan = useMemo(() => slogans[Math.floor(Math.random() * slogans.length)], []);
-
+  
   // Calculate plan info (total days and phases)
   const getPlanInfo = (plan) => {
     if (!plan) return { totalDays: 0, numPhases: 0 };
@@ -215,10 +215,10 @@ const QuitPlanListScreen = ({ navigation }) => {
     if (plan.type === 'slogan') return null;
     return (
       <View style={styles.swipeRowBackRight}>
-        <TouchableOpacity
+    <TouchableOpacity 
           style={[styles.swipeActionBtn, styles.swipeViewBtn]}
           onPress={() => handlePress(plan)}
-        >
+    >
           <Ionicons name="eye" size={20} color="#fff" />
         </TouchableOpacity>
         <TouchableOpacity

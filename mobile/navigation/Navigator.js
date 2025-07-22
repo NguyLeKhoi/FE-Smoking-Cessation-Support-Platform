@@ -28,6 +28,7 @@ import QuitPlanDetailScreen from '../screens/quit-plan/QuitPlanDetailScreen';
 import PhaseRecordScreen from '../screens/quit-plan/PhaseRecordScreen';
 import ProfileDrawerNavigator from '../navigation/ProfileDrawerNavigator';
 import AchievementsScreen from '../screens/achievements/AchievementsScreen';
+import LeaderboardScreen from '../screens/leaderboard/LeaderboardScreen';
 
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
@@ -99,9 +100,9 @@ const DrawerNavigator = () => {
   return (
     <Drawer.Navigator
       initialRouteName="TabNavigator"
-    drawerContent={props => <CustomDrawerContent {...props} />}
-    screenOptions={{
-        headerShown: true, // Bật header
+      drawerContent={props => <CustomDrawerContent {...props} />}
+      screenOptions={{
+        headerShown: true,
         headerStyle: {
           backgroundColor: '#ffffff',
           elevation: 0,
@@ -129,7 +130,7 @@ const DrawerNavigator = () => {
         component={TabNavigator}
         options={{
           title: 'Zerotine',
-          drawerItemStyle: { display: 'none' }, // Ẩn default drawer item
+          drawerItemStyle: { display: 'none' },
         }}
       />
     </Drawer.Navigator>
@@ -149,6 +150,8 @@ const TabNavigator = () => {
             iconName = focused ? 'person' : 'person-outline';
           } else if (route.name === 'AiChatboxTab') {
             iconName = focused ? 'chatbubble' : 'chatbubble-outline';
+          } else if (route.name === 'LeaderboardTab') {
+            iconName = focused ? 'trophy' : 'trophy-outline';
           }
 
           return <Ionicons name={iconName} size={size} color={color} />;
@@ -162,6 +165,7 @@ const TabNavigator = () => {
     >
       <Tab.Screen name="BlogTab" component={BlogScreen} options={{ title: 'Blog' }} />
       <Tab.Screen name="AiChatboxTab" component={AiChatbox} options={{ title: 'AI Coach' }} />
+      <Tab.Screen name="LeaderboardTab" component={LeaderboardScreen} options={{ title: 'Leaderboard' }} />
       <Tab.Screen name="ProfileTab" component={ProfileDrawerNavigator} options={{ title: 'Profile' }} />
     </Tab.Navigator>
   );
