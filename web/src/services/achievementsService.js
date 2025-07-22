@@ -59,6 +59,52 @@ const achievementsService = {
             throw error;
         }
     },
+
+    /**
+     * Create a new achievement
+     * @param {Object} achievementData - Data for the new achievement
+     * @returns {Promise} - Resolves to the created achievement
+     */
+    createAchievement: async (achievementData) => {
+        try {
+            const response = await api.post('/achievements', achievementData);
+            return response.data;
+        } catch (error) {
+            console.error('Error creating achievement:', error);
+            throw error;
+        }
+    },
+
+    /**
+     * Update an achievement by ID
+     * @param {string} id - Achievement ID
+     * @param {Object} updateData - Data to update
+     * @returns {Promise} - Resolves to the updated achievement
+     */
+    updateAchievement: async (id, updateData) => {
+        try {
+            const response = await api.patch(`/achievements/${id}`, updateData);
+            return response.data;
+        } catch (error) {
+            console.error(`Error updating achievement with ID ${id}:`, error);
+            throw error;
+        }
+    },
+
+    /**
+     * Delete an achievement by ID
+     * @param {string} id - Achievement ID
+     * @returns {Promise} - Resolves to the delete response
+     */
+    deleteAchievement: async (id) => {
+        try {
+            const response = await api.delete(`/achievements/${id}`);
+            return response.data;
+        } catch (error) {
+            console.error(`Error deleting achievement with ID ${id}:`, error);
+            throw error;
+        }
+    },
 };
 
 export default achievementsService;
