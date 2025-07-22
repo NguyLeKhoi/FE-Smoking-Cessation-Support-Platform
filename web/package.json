@@ -17,6 +17,8 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.9.0",
     "date-fns": "^4.1.0",
+    "echarts": "^5.6.0",
+    "echarts-for-react": "^3.0.2",
     "gsap": "^3.13.0",
     "jwt-decode": "^4.0.0",
     "livekit-client": "^2.15.2",
