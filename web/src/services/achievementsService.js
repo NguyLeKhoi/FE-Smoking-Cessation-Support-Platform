@@ -1,4 +1,5 @@
 import api from './api';
+import { toast } from 'react-toastify';
 
 const achievementsService = {
     /**
@@ -10,6 +11,7 @@ const achievementsService = {
             const response = await api.get('/achievements');
             return response.data;
         } catch (error) {
+            toast(`Error fetching achievements: ${error.response?.data?.message || error.message}`);
             console.error('Error fetching achievements:', error);
             throw error;
         }
@@ -25,6 +27,7 @@ const achievementsService = {
             const response = await api.get(`/achievements/${id}`);
             return response.data;
         } catch (error) {
+            toast(`Error fetching achievement: ${error.response?.data?.message || error.message}`);
             console.error(`Error fetching achievement with ID ${id}:`, error);
             throw error;
         }
@@ -40,6 +43,7 @@ const achievementsService = {
             const response = await api.get(`/user-achievements/${userId}`);
             return response.data;
         } catch (error) {
+            toast(`Error fetching achievements for user: ${error.response?.data?.message || error.message}`);
             console.error(`Error fetching achievements for user ${userId}:`, error);
             throw error;
         }
@@ -55,6 +59,7 @@ const achievementsService = {
             const response = await api.get(`/user-achievements/${userId}/progress`);
             return response.data;
         } catch (error) {
+            toast(`Error fetching achievement progress: ${error.response?.data?.message || error.message}`);
             console.error(`Error fetching achievement progress for user ${userId}:`, error);
             throw error;
         }
@@ -68,8 +73,10 @@ const achievementsService = {
     createAchievement: async (achievementData) => {
         try {
             const response = await api.post('/achievements', achievementData);
+            toast('Achievement created successfully!');
             return response.data;
         } catch (error) {
+            toast(`Error creating achievement: ${error.response?.data?.message || error.message}`);
             console.error('Error creating achievement:', error);
             throw error;
         }
@@ -84,8 +91,10 @@ const achievementsService = {
     updateAchievement: async (id, updateData) => {
         try {
             const response = await api.patch(`/achievements/${id}`, updateData);
+            toast('Achievement updated successfully!');
             return response.data;
         } catch (error) {
+            toast(`Error updating achievement: ${error.response?.data?.message || error.message}`);
             console.error(`Error updating achievement with ID ${id}:`, error);
             throw error;
         }
@@ -99,8 +108,10 @@ const achievementsService = {
     deleteAchievement: async (id) => {
         try {
             const response = await api.delete(`/achievements/${id}`);
+            toast('Achievement deleted successfully!');
             return response.data;
         } catch (error) {
+            toast(`Error deleting achievement: ${error.response?.data?.message || error.message}`);
             console.error(`Error deleting achievement with ID ${id}:`, error);
             throw error;
         }
