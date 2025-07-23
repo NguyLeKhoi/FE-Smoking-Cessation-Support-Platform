@@ -129,12 +129,41 @@ const ProfileScreen = ({ navigation: propNavigation }) => {
     );
   };
 
-  const statisticsData = [
-    { icon: '💧', value: '63', label: 'Day streak', color: '#64748b' },
-    { icon: '⚡', value: '18303', label: 'Total XP', color: '#f59e0b' },
-    { icon: '🏅', value: 'Gold', label: 'Current league', color: '#f59e0b' },
-    { icon: '🏆', value: '3', label: 'Top 3 finishes', color: '#f59e0b' }
-  ];
+  // Map user data to statistics data (matching web implementation)
+  const mapUserToStatisticsData = (user) => {
+    if (!user) return [];
+    
+    return [
+      {
+        icon: '💧',
+        value: user.streak?.toString() || '0',
+        label: 'Day streak',
+        color: '#64748b',
+      },
+      {
+        icon: '⚡',
+        value: user.point?.toString() || '0',
+        label: 'Total XP',
+        color: '#f59e0b',
+      },
+      {
+        icon: '🏅',
+        value: 'Gold',
+        label: 'Current league',
+        color: '#f59e0b',
+      },
+      {
+        icon: '🏆',
+        value: user.leaderboard && user.leaderboard[0] ? user.leaderboard[0].rank.toString() : '0',
+        label: user.leaderboard && user.leaderboard[0] 
+          ? `Top ${user.leaderboard[0].rank} finishes of ${user.leaderboard[0].rank_type}`
+          : 'Top finishes',
+        color: '#f59e0b',
+      },
+    ];
+  };
+
+  const statisticsData = mapUserToStatisticsData(user);
 
   if (loading) {
     return (

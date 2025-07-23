@@ -125,8 +125,10 @@ const QuitPlanResultPage = () => {
   const planStatistics = planObj?.statistics || {};
   // Use new progress percentage and completed/total phases
   const totalPhases = planProgress.totalPhases ?? phases.length;
-  const completedPhases = planProgress.completedPhases ?? phases.filter(phase => String(phase.status).toLowerCase() === 'completed').length;
-  const percent = planProgress.progressPercentage ?? (totalPhases > 0 ? Math.round((completedPhases / totalPhases) * 100) : 0);
+  const completedPhases = planProgress.passPhases ?? phases.filter(phase => String(phase.status).toLowerCase() === 'completed').length;
+  
+  // Always calculate percentage based on actual completed phases
+  const percent = totalPhases > 0 ? Math.round((completedPhases / totalPhases) * 100) : 0;
 
   const handleTogglePhase = (index) => {
     const newExpandedPhases = [...expandedPhases];

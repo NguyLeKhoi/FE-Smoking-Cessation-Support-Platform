@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Box, Typography, IconButton, CircularProgress, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Box, Typography, IconButton, Button, CircularProgress,Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EventIcon from '@mui/icons-material/Event';
 import FlagIcon from '@mui/icons-material/Flag';
@@ -9,6 +9,7 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import SettingsIcon from '@mui/icons-material/Settings';
 import quitPlanService from '../../services/quitPlanService';
 import { useNavigate, useLocation } from 'react-router-dom';
+import LoadingPage from '../LoadingPage';
 
 const getPhaseStatus = (phases) => {
   if (!Array.isArray(phases)) return {};
@@ -83,9 +84,7 @@ const QuitPlanPage = ({ setHasActivePlan }) => {
         Quit Plan
       </Typography>
       {fetchingPlans ? (
-        <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
-          <CircularProgress />
-        </Box>
+        <LoadingPage />
       ) : !plan ? (
         <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" minHeight="60vh">
           <Typography variant="h5" fontWeight={700} mb={2} align="center">

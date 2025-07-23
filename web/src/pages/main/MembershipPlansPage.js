@@ -47,7 +47,7 @@ const MembershipPlansPage = () => {
       const res = await subscriptionService.createPayment({ plan_id: planId });
       const url = res?.data?.data?.data?.checkoutUrl;
       if (url) {
-        window.open(url, '_blank');
+        window.location.href = url; 
       }
     } catch (err) {
       alert('Could not create payment link. Please try again.');
