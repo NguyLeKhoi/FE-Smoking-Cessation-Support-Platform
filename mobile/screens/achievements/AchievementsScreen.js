@@ -1,25 +1,23 @@
-// AchievementsScreen.js
-// Màn hình thành tích mobile
-
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, ActivityIndicator, Alert, StyleSheet, Image } from 'react-native';
+import { View, ScrollView, StyleSheet, ActivityIndicator, Text, TouchableOpacity, RefreshControl } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import achievementsService from '../../service/achievementsService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { jwtDecode } from 'jwt-decode';
+import theme from '../../theme/theme';
+import AchievementSection from '../../components/profile/AchievementSection';
 
 const AchievementsScreen = () => {
-  const [allAchievements, setAllAchievements] = useState([]);
-  const [userAchievements, setUserAchievements] = useState([]);
+  const [achievements, setAchievements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     fetchAchievements();
   }, []);
 
   const fetchAchievements = async () => {
-    setLoading(true);
-    setError(null);
     try {
       const accessToken = await AsyncStorage.getItem('accessToken');
       let userId = null;
@@ -29,86 +27,144 @@ const AchievementsScreen = () => {
       }
       if (!userId) {
         setError('User ID not found');
-        setLoading(false);
         return;
       }
-      const [allData, userData] = await Promise.all([
+
+      const [achievementsResponse, userAchievementsResponse] = await Promise.all([
         achievementsService.getAllAchievements(),
         achievementsService.getUserAchievementsById(userId)
       ]);
-      setAllAchievements(allData.data || allData || []);
-      setUserAchievements(userData.data || userData || []);
+
+      // Ensure we have arrays to work with
+      const allAchievements = Array.isArray(achievementsResponse.data) 
+        ? achievementsResponse.data 
+        : achievementsResponse.achievements || [];
+      
+      const userAchievements = Array.isArray(userAchievementsResponse.data)
+        ? userAchievementsResponse.data
+        : userAchievementsResponse.achievements || [];
+
+      // Process and combine achievements
+      const processedAchievements = allAchievements.map(achievement => {
+        const userAchievement = userAchievements.find(ua => 
+          ua.id === achievement.id || ua.achievement_id === achievement.id
+        );
+        return {
+          ...achievement,
+          progress: userAchievement ? userAchievement.progress || 0 : 0,
+          target: achievement.target || achievement.requirement || 100,
+          completed: userAchievement ? userAchievement.completed || false : false,
+          earned_date: userAchievement ? userAchievement.earned_date || null : null
+        };
+      });
+
+      setAchievements(processedAchievements);
+      setError(null);
     } catch (err) {
       setError('Failed to load achievements');
+      console.error('Error fetching achievements:', err);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
 
-  // Tạo Set chứa id các achievement user đã đạt
-  const userAchievementIds = new Set([
-    ...userAchievements.map(a => a.id),
-    ...userAchievements.map(a => a.achievement_id)
-  ].filter(Boolean));
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchAchievements();
+  };
 
-  if (loading) return <ActivityIndicator size="large" style={{ flex: 1 }} />;
-  if (error) return <Text style={{ color: 'red', textAlign: 'center', marginTop: 40 }}>{error}</Text>;
+  if (loading && !refreshing) {
+    return (
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.paper }]}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={theme.colors.primary} />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (error) {
+    return (
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.paper }]}>
+        <View style={styles.errorContainer}>
+          <Text style={[styles.errorText, { color: theme.colors.error }]}>{error}</Text>
+          <TouchableOpacity 
+            style={[styles.retryButton, { backgroundColor: theme.colors.primary }]}
+            onPress={fetchAchievements}
+          >
+            <Text style={styles.retryButtonText}>Retry</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>All Achievements</Text>
-      <FlatList
-        data={allAchievements}
-        keyExtractor={item => item.id || item._id}
-        renderItem={({ item, index }) => {
-          const hasAchievement = userAchievementIds.has(item.id);
-          const imageUrl = item.image_url;
-          return (
-            <View
-              style={[
-                styles.card,
-                !hasAchievement && styles.cardNotObtained,
-                index !== allAchievements.length - 1 && styles.cardBorder
-              ]}
-            >
-              <Image
-                source={{ uri: imageUrl }}
-                style={[
-                  styles.avatar,
-                  !hasAchievement && styles.avatarNotObtained
-                ]}
-                resizeMode="cover"
-              />
-              <View style={{ flex: 1 }}>
-                <View style={styles.cardHeader}>
-                  <Text style={styles.cardTitle}>{item.name}</Text>
-                  {item.point ? <Text style={styles.cardPoints}>{item.point} pts</Text> : null}
-                </View>
-                <Text style={styles.cardDescription}>{item.description}</Text>
-                <Text style={styles.cardStatus}>{hasAchievement ? 'Obtained' : 'Not obtained yet'}</Text>
-              </View>
-            </View>
-          );
-        }}
-        ListEmptyComponent={<Text style={styles.empty}>No achievements yet.</Text>}
-      />
-    </View>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.paper }]}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[theme.colors.primary]}
+          />
+        }
+      >
+        <View style={styles.header}>
+          <Text style={styles.title}>All Achievements</Text>
+        </View>
+        <AchievementSection 
+          achievements={achievements}
+          onViewAll={() => {}} // No-op since we're already in the all achievements view
+        />
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    paddingHorizontal: 12,
-    paddingTop: 16,
+  },
+  scrollContent: {
+    padding: 16,
+  },
+  header: {
+    marginBottom: 16,
   },
   title: {
     fontSize: 26,
     fontWeight: 'bold',
-    marginBottom: 18,
     color: '#222',
+    marginBottom: 18,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  errorText: {
+    fontSize: 16,
+    marginBottom: 16,
     textAlign: 'center',
+  },
+  retryButton: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 8,
+  },
+  retryButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
   },
   card: {
     flexDirection: 'row',
@@ -134,7 +190,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#eee',
   },
   avatarNotObtained: {
-    // Grayscale effect (Android/iOS):
     tintColor: '#bbb',
   },
   cardHeader: {
@@ -164,7 +219,11 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#aaa',
   },
-  empty: { textAlign: 'center', color: '#888', marginTop: 40 },
+  empty: { 
+    textAlign: 'center', 
+    color: '#888', 
+    marginTop: 40 
+  },
 });
 
 export default AchievementsScreen; 

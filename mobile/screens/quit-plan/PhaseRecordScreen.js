@@ -136,9 +136,9 @@ const PhaseRecordScreen = ({ route, navigation }) => {
                 <View style={styles.recordHeader}>
                   <View style={styles.recordDateContainer}>
                     <Ionicons name="calendar" size={18} color="#1976d2" style={{ marginRight: 6 }} />
-                    <Text style={styles.recordDate}>
-                      {record.record_date ? new Date(record.record_date).toLocaleDateString() : '-'}
-                    </Text>
+                  <Text style={styles.recordDate}>
+                    {record.record_date ? new Date(record.record_date).toLocaleDateString() : '-'}
+                  </Text>
                   </View>
                   <View style={styles.resultContainer}>
                     <Text style={styles.statusIcon}>
@@ -154,14 +154,14 @@ const PhaseRecordScreen = ({ route, navigation }) => {
                   <View style={styles.detailRow}>
                     <View style={styles.detailItem}>
                       <MaterialCommunityIcons name="smoking" size={16} color="#388e3c" style={{ marginRight: 6 }} />
-                      <Text style={styles.detailLabel}>Cigarettes:</Text>
-                      <Text style={styles.detailValue}>{record.cigarette_smoke}</Text>
-                    </View>
-                    
+                    <Text style={styles.detailLabel}>Cigarettes:</Text>
+                    <Text style={styles.detailValue}>{record.cigarette_smoke}</Text>
+                  </View>
+                  
                     <View style={styles.detailItem}>
                       <FontAwesome name="heart" size={16} color="#e53935" style={{ marginRight: 6 }} />
                       <Text style={styles.detailLabel}>Craving:</Text>
-                      <Text style={styles.detailValue}>{record.craving_level}/10</Text>
+                    <Text style={styles.detailValue}>{record.craving_level}/10</Text>
                     </View>
                   </View>
                   
@@ -178,8 +178,8 @@ const PhaseRecordScreen = ({ route, navigation }) => {
                       <MaterialIcons name="local-hospital" size={16} color="#607d8b" style={{ marginRight: 6 }} />
                       <Text style={styles.detailLabel}>Health:</Text>
                       <Text style={[styles.detailValue, { color: getHealthStatusColor(record.health_status) }]}>
-                        {record.health_status}
-                      </Text>
+                      {record.health_status}
+                    </Text>
                     </View>
                   </View>
                 </View>
