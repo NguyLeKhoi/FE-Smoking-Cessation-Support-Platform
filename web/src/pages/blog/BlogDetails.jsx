@@ -18,10 +18,11 @@ import BookmarkIcon from '@mui/icons-material/Bookmark';
 import ShareIcon from '@mui/icons-material/Share';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
-import MarkdownRenderer from '../blog/MarkdownRenderer';
+import MarkdownRenderer from '../../components/blog/MarkdownRenderer';
 import postService from '../../services/postService';
 import { formatDistanceToNow } from 'date-fns';
-import LoadingPage from '../../pages/LoadingPage';
+import LoadingPage from '../LoadingPage';
+import CommentsSection from '../../components/blog/CommentsSection';
 
 const BlogDetails = () => {
     const { id } = useParams();
@@ -280,8 +281,6 @@ const BlogDetails = () => {
                             lineHeight: 1.7,
                             color: '#242424',
                             letterSpacing: '0.01em',
-
-                            // Override default styles for blog reading experience
                             '& p': {
                                 mb: 3,
                                 fontSize: 'inherit',
@@ -338,7 +337,7 @@ const BlogDetails = () => {
                                 backgroundColor: 'grey.100',
                                 padding: '3px 6px',
                                 borderRadius: 1,
-                                fontFamily: 'monospace', // Keep monospace for code
+                                fontFamily: 'monospace',
                                 fontSize: '0.9em',
                             },
                             '& pre': {
@@ -392,6 +391,7 @@ const BlogDetails = () => {
                     />
                 </Box>
                 <Divider sx={{ my: 5 }} />
+                <CommentsSection />
             </Container>
         </Box>
     );
