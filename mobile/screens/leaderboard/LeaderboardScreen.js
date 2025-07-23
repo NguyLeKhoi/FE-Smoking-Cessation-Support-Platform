@@ -159,8 +159,20 @@ const LeaderboardScreen = () => {
                                 </View>
                             </View>
                             <View style={styles.scoreContainer}>
-                                <Text style={styles.score}>{entry.score ?? 0}</Text>
-                                <Text style={styles.scoreLabel}>XP</Text>
+                                <View style={styles.scoreRow}>
+                                    <View style={styles.scoreItem}>
+                                        <Text style={styles.score}>{entry.score ?? 0}</Text>
+                                        <Text style={styles.scoreLabel}>Score</Text>
+                                    </View>
+                                    {(activeType === 'relapse_free_streak' || activeType === 'community_support') && (
+                                        <View style={styles.valueItem}>
+                                            <Text style={styles.value}>{entry.value ?? 0}</Text>
+                                            <Text style={styles.valueLabel}>
+                                                {activeType === 'relapse_free_streak' ? 'days' : 'blogs'}
+                                            </Text>
+                                        </View>
+                                    )}
+                                </View>
                             </View>
                         </View>
                     )) : (
@@ -294,6 +306,14 @@ const styles = StyleSheet.create({
     scoreContainer: {
         alignItems: 'center',
     },
+    scoreRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 16,
+    },
+    scoreItem: {
+        alignItems: 'center',
+    },
     score: {
         fontSize: 16,
         fontWeight: 'bold',
@@ -303,6 +323,19 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: '#666',
         marginTop: 2,
+    },
+    valueItem: {
+        alignItems: 'center',
+    },
+    value: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#333',
+    },
+    valueLabel: {
+        fontSize: 10,
+        color: '#888',
+        marginTop: 1,
     },
     errorContainer: {
         padding: 20,
