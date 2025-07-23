@@ -1,48 +1,64 @@
-import React, { useState, useEffect } from 'react';
-import { Button, Box } from '@mui/material';
-import { useNavigate, Route, Routes } from 'react-router-dom';
-import { fetchCurrentUser, updateCurrentUser } from '../../services/userService';
-import ProfileSidebar from '../../components/profilePage/ProfileSidebar';
-import UserInfoSection from '../../components/profilePage/UserInfoSection';
-import StatisticsSection from '../../components/profilePage/StatisticsSection';
-import AchievementSection from '../../components/profilePage/AchievementSection';
-import LoadingPage from '../LoadingPage'
+import React, { useState, useEffect } from "react";
+import { Button, Box } from "@mui/material";
+import { useNavigate, Route, Routes } from "react-router-dom";
+import {
+  fetchCurrentUser,
+  updateCurrentUser,
+} from "../../services/userService";
+import ProfileSidebar from "../../components/profilePage/ProfileSidebar";
+import UserInfoSection from "../../components/profilePage/UserInfoSection";
+import StatisticsSection from "../../components/profilePage/StatisticsSection";
+import AchievementSection from "../../components/profilePage/AchievementSection";
+import LoadingPage from "../LoadingPage";
+import { HttpStatusCode } from "axios";
 
 export default function ProfilePage({ handleLogout }) {
   const navigate = useNavigate();
-
-  useEffect(() => { window.scrollTo({ top: 0 }); }, []);
+  const [statisticsData, setStatisticsData] = useState([]);
+  useEffect(() => {
+    window.scrollTo({ top: 0 });
+  }, []);
 
   const onLogoutClick = () => {
     handleLogout();
-    navigate('/login');
+    navigate("/login");
   };
 
-  const statisticsData = [
+  useEffect(() => {
+    const loadUserProfile = async () => {
+      const response = await fetchCurrentUser();
+      if (response.statusCode === HttpStatusCode.Ok) {
+        const stats = mapUserToStatisticsData(response.data);
+        setStatisticsData(stats);
+      }
+    };
+    loadUserProfile();
+  }, []);
+  const mapUserToStatisticsData = (user) => [
     {
-      icon: '💧',
-      value: '63',
-      label: 'Day streak',
-      iconColor: '#64748b'
+      icon: "💧",
+      value: user.streak?.toString() || "0",
+      label: "Day streak",
+      color: "#64748b",
     },
     {
-      icon: '⚡',
-      value: '18303',
-      label: 'Total XP',
-      iconColor: '#f59e0b'
+      icon: "⚡",
+      value: user.point?.toString() || "0",
+      label: "Total XP",
+      color: "#f59e0b",
     },
     {
-      icon: '🏅',
-      value: 'Gold',
-      label: 'Current league',
-      iconColor: '#f59e0b'
+      icon: "🏅",
+      value: "Gold",
+      label: "Current league",
+      color: "#f59e0b",
     },
     {
-      icon: '🏆',
-      value: '3',
-      label: 'Top 3 finishes',
-      iconColor: '#f59e0b'
-    }
+      icon: "🏆",
+      value: user.leaderboard[0].rank.toString(),
+      label: `Top ${user.leaderboard[0].rank} finishes of  ${user.leaderboard[0].rank_type}`,
+      color: "#f59e0b",
+    },
   ];
 
   return (
