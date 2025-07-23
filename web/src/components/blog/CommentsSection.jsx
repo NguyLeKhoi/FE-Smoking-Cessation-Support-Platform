@@ -3,12 +3,16 @@ import postService from '../../services/postService';
 import commentsService from '../../services/commentsService';
 import CommentCard from './CommentsCard';
 import { Box, Typography, Button, Avatar, TextField, Stack, CircularProgress } from '@mui/material';
+import { fetchCurrentUser } from '../../services/userService';
+import { useNavigate } from 'react-router-dom';
 
 function CommentsSection({ postId }) {
     const [comments, setComments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [newComment, setNewComment] = useState('');
     const [submitting, setSubmitting] = useState(false);
+    const [currentUser, setCurrentUser] = useState(null);
+    const navigate = useNavigate();
 
     const fetchComments = () => {
         setLoading(true);
@@ -35,6 +39,15 @@ function CommentsSection({ postId }) {
         // eslint-disable-next-line
     }, [postId]);
 
+    useEffect(() => {
+        fetchCurrentUser()
+            .then(res => {
+                // Handle both {data: {...}} and {...}
+                setCurrentUser(res?.data || res);
+            })
+            .catch(() => setCurrentUser(null));
+    }, []);
+
     const handleAddComment = async () => {
         if (!newComment.trim()) return;
         setSubmitting(true);
@@ -54,34 +67,46 @@ function CommentsSection({ postId }) {
             {/* Header */}
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <Typography variant="h6" fontWeight={700} sx={{ flexGrow: 1 }}>
-                    Top comments ({comments.length})
+                    Comments ({comments.length})
                 </Typography>
-                <Button variant="outlined" size="small" sx={{ borderRadius: 2, textTransform: 'none' }}>
-                    Subscribe
-                </Button>
             </Box>
             {/* Add comment */}
             <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 3 }}>
-                <Avatar src="https://ui-avatars.com/api/?name=You" alt="avatar" sx={{ width: 40, height: 40, mr: 2 }} />
+                <Avatar
+                    src={currentUser?.avatar || 'https://ui-avatars.com/api/?name=User'}
+                    alt="avatar"
+                    sx={{ width: 40, height: 40, mr: 2 }}
+                />
                 <TextField
                     multiline
                     minRows={2}
-                    placeholder="Add to the discussion"
+                    placeholder={
+                        currentUser
+                            ? "Add to the discussion"
+                            : "Login to join the discussion"
+                    }
                     value={newComment}
                     onChange={e => setNewComment(e.target.value)}
                     sx={{ flex: 1, mr: 2 }}
                     size="small"
-                    disabled={submitting}
+                    disabled={!currentUser || submitting}
                 />
                 <Button
                     variant="contained"
-                    onClick={handleAddComment}
+                    onClick={currentUser ? handleAddComment : () => navigate('/login')}
                     sx={{ borderRadius: 2, minWidth: 80 }}
-                    disabled={submitting || !newComment.trim()}
+                    disabled={!currentUser || submitting || !newComment.trim()}
                 >
-                    {submitting ? <CircularProgress size={20} color="inherit" /> : 'Post'}
+                    {currentUser
+                        ? (submitting ? <CircularProgress size={20} color="inherit" /> : 'Post')
+                        : 'Login now'}
                 </Button>
             </Box>
+            {!currentUser && (
+                <Typography color="primary" sx={{ mb: 2, ml: 7, cursor: 'pointer' }} onClick={() => navigate('/login')}>
+                    Login now to join the discussion!
+                </Typography>
+            )}
             {/* Comments list */}
             <Box>
                 {loading ? (

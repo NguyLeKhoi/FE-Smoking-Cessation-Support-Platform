@@ -9,7 +9,7 @@ function formatDate(dateString) {
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
-const CommentCard = ({ comment }) => {
+const CommentCard = ({ comment, onReplyClick }) => {
     const user = comment.users || {};
     return (
         <Box
@@ -17,7 +17,7 @@ const CommentCard = ({ comment }) => {
                 display: 'flex',
                 alignItems: 'flex-start',
                 bgcolor: '#fff',
-                borderRadius: 2,
+                borderRadius: 4,
                 boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
                 p: 2.5,
                 pr: 3,
@@ -54,7 +54,7 @@ const CommentCard = ({ comment }) => {
                         <FavoriteBorderIcon fontSize="small" sx={{ mr: 0.5 }} />
                         <Typography variant="body2">2 likes</Typography>
                     </Box>
-                    <Box sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }} onClick={onReplyClick}>
                         <ChatBubbleOutlineIcon fontSize="small" sx={{ mr: 0.5 }} />
                         <Typography variant="body2">Reply</Typography>
                     </Box>
