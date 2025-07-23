@@ -6,6 +6,7 @@ import {
 } from '@mui/material';
 import CoachInfo from '../../components/coach/CoachInfo';
 import ChatRoom from '../../components/chat/ChatRoom';
+import LoadingPage from '../LoadingPage';
 import { useSocket } from '../../context/SocketContext';
 import ChatWindow from '../../components/chat/ChatWindow';
 import { jwtDecode } from 'jwt-decode';
@@ -156,9 +157,7 @@ const CoachListPage = () => {
 
     if (loading) {
         return (
-            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 8 }}>
-                <CircularProgress />
-            </Box>
+           <LoadingPage/>
         );
     }
 

@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, CircularProgress, Avatar, Button } from '@mui/material';
+import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Avatar, Button } from '@mui/material';
+import LoadingPage from '../LoadingPage';
 import { styled } from '@mui/material/styles';
 import leaderBoardService from '../../services/leaderBoardService';
 import ProfileSidebar from '../../components/profilePage/ProfileSidebar';
@@ -140,9 +141,7 @@ const LeaderBoardPage = () => {
                         />
                     </Box>
                     {loading ? (
-                        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', p: 4 }}>
-                            <CircularProgress />
-                        </Box>
+                        <LoadingPage />
                     ) : error ? (
                         <Box sx={{ p: 4, textAlign: 'center', color: 'error.main' }}>{error}</Box>
                     ) : (

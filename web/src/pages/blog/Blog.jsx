@@ -22,6 +22,7 @@ import CustomCard from '../../components/blog/CustomCard';
 import BlogBanner from '../../components/blog/BlogBanner';
 import MarkdownRenderer from '../../components/blog/MarkdownRenderer';
 import postService from '../../services/postService';
+import LoadingPage from '../LoadingPage';
 import { generateSlug } from '../../utils/slugUtils';
 import { isAuthenticated } from '../../services/authService';
 
@@ -166,9 +167,7 @@ const Blog = () => {
                     />
                 ) : (
                     loading ? (
-                        <Box sx={{ height: 400, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <CircularProgress />
-                        </Box>
+                      <LoadingPage/>
                     ) : (
                         <BlogBanner
                             title="our commitment to helping you quit"

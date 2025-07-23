@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Box, Typography, Paper, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import LoadingPage from '../LoadingPage';
 import quitPlanService from '../../services/quitPlanService';
 import EventIcon from '@mui/icons-material/Event';
 import SmokingRoomsIcon from '@mui/icons-material/SmokingRooms';
@@ -76,9 +77,7 @@ function PhaseRecordPage() {
         </Typography>
       </Box>
       {loading ? (
-        <Box display="flex" justifyContent="center" alignItems="center" minHeight="40vh">
-          <CircularProgress />
-        </Box>
+        <LoadingPage />
       ) : error ? (
         <Typography color="error" align="center">{error}</Typography>
       ) : records.length === 0 ? (

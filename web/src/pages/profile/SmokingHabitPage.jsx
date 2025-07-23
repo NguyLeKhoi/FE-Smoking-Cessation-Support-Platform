@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, CircularProgress, List, ListItem, ListItemText, Chip, Stack, Paper } from '@mui/material';
+import { Box, Typography, List, ListItem, ListItemText, Chip, Stack, Paper } from '@mui/material';
+import LoadingPage from '../LoadingPage';
 import smokingService from '../../services/smokingService';
 import ProfileSidebar from '../../components/profilePage/ProfileSidebar';
 import { fetchCurrentUser } from '../../services/userService';
@@ -120,14 +121,7 @@ const SmokingHabitPage = () => {
     );
 
     if (loading) {
-        return (
-            <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.default' }}>
-                <ProfileSidebar userData={userData} />
-                <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'background.paper' }}>
-                    <CircularProgress />
-                </Box>
-            </Box>
-        );
+        return <LoadingPage />;
     }
 
     if (error) {
