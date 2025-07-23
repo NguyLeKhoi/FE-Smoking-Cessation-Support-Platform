@@ -97,6 +97,36 @@ const postService = {
             toast(` Error approving post: ${error.response?.data?.message || error.message}`);
             throw error;
         }
+    },
+
+    /**
+     * Get comments for a post
+     * @param {string} postId - Post ID
+     * @returns {Promise} - Array of comments
+     */
+    getCommentsByPostId: async (postId) => {
+        try {
+            const response = await api.get(`/posts/${postId}/comments`);
+            return response.data;
+        } catch (error) {
+            toast(` Error fetching comments: ${error.response?.data?.message || error.message}`);
+            throw error;
+        }
+    },
+
+    /**
+     * Get reactions for a post
+     * @param {string} postId - Post ID
+     * @returns {Promise} - Array of reactions
+     */
+    getReactionsByPostId: async (postId) => {
+        try {
+            const response = await api.get(`/posts/${postId}/reactions`);
+            return response.data;
+        } catch (error) {
+            toast(` Error fetching reactions: ${error.response?.data?.message || error.message}`);
+            throw error;
+        }
     }
 };
 
