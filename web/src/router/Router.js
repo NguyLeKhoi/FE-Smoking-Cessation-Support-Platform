@@ -15,7 +15,7 @@ import RegisterCoachPage from '../pages/auth/RegisterCoachPage';
 
 //main
 import Homepage from '../pages/main/Homepage';
-import BlogDetails from '../components/blog/BlogDetails';
+import BlogDetails from '../pages/blog/BlogDetails';
 import SmokingQuizPage from '../pages/main/SmokingQuizPage';
 import PaymentSuccessPage from '../pages/main/PaymentSuccessPage';
 
