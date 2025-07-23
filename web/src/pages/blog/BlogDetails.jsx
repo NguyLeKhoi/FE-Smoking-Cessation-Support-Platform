@@ -391,7 +391,7 @@ const BlogDetails = () => {
                     />
                 </Box>
                 <Divider sx={{ my: 5 }} />
-                <CommentsSection />
+                {post.id && <CommentsSection postId={post.id} />}
             </Container>
         </Box>
     );

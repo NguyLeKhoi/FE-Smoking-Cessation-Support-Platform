@@ -1,105 +1,104 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import postService from '../../services/postService';
+import commentsService from '../../services/commentsService';
+import CommentCard from './CommentsCard';
+import { Box, Typography, Button, Avatar, TextField, Stack, CircularProgress } from '@mui/material';
 
-const mockComments = [
-    {
-        id: 1,
-        user: {
-            name: 'Capin Judicael Akpado',
-            avatar: 'https://ui-avatars.com/api/?name=Capin+Judicael+Akpado',
-            badge: true,
-        },
-        date: 'Jul 20',
-        text: 'Okay !',
-        likes: 2,
-        replies: [],
-    },
-    {
-        id: 2,
-        user: {
-            name: 'Anna kowoski',
-            avatar: 'https://ui-avatars.com/api/?name=Anna+kowoski',
-            badge: false,
-        },
-        date: 'Jul 18',
-        text: 'Intresting Concept, MCP is indeed taking over the whole IT Space!!!',
-        likes: 2,
-        replies: [],
-    },
-    {
-        id: 3,
-        user: {
-            name: 'Om Shree',
-            avatar: 'https://ui-avatars.com/api/?name=Om+Shree',
-            badge: false,
-        },
-        date: 'Jul 19',
-        text: 'True 😁',
-        likes: 1,
-        replies: [],
-    },
-];
-
-function CommentsSection() {
-    const [comments, setComments] = useState(mockComments);
+function CommentsSection({ postId }) {
+    const [comments, setComments] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [newComment, setNewComment] = useState('');
+    const [submitting, setSubmitting] = useState(false);
 
-    const handleAddComment = () => {
+    const fetchComments = () => {
+        setLoading(true);
+        postService.getCommentsByPostId(postId)
+            .then(data => {
+                let commentsArray = [];
+                if (Array.isArray(data)) {
+                    commentsArray = data;
+                } else if (Array.isArray(data?.data)) {
+                    commentsArray = data.data;
+                } else if (Array.isArray(data?.comments)) {
+                    commentsArray = data.comments;
+                }
+                setComments(commentsArray);
+                console.log('Fetched comments:', commentsArray);
+            })
+            .catch(() => setComments([]))
+            .finally(() => setLoading(false));
+    };
+
+    useEffect(() => {
+        if (!postId) return;
+        fetchComments();
+        // eslint-disable-next-line
+    }, [postId]);
+
+    const handleAddComment = async () => {
         if (!newComment.trim()) return;
-        const comment = {
-            id: Date.now(),
-            user: {
-                name: 'You',
-                avatar: 'https://ui-avatars.com/api/?name=You',
-                badge: false,
-            },
-            date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-            text: newComment,
-            likes: 0,
-            replies: [],
-        };
-        setComments([comment, ...comments]);
-        setNewComment('');
+        setSubmitting(true);
+        try {
+            await commentsService.createComment({ content: newComment, post_id: postId });
+            setNewComment('');
+            fetchComments();
+        } catch (e) {
+            // Error toast handled in service
+        } finally {
+            setSubmitting(false);
+        }
     };
 
     return (
-        <div className="comments-section">
-            <div className="comments-header">
-                <h2>Top comments ({comments.length})</h2>
-                <button className="subscribe-btn">Subscribe</button>
-            </div>
-            <div className="add-comment">
-                <img src="https://ui-avatars.com/api/?name=You" alt="avatar" className="avatar" />
-                <textarea
+        <Box sx={{ mt: 6 }}>
+            {/* Header */}
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <Typography variant="h6" fontWeight={700} sx={{ flexGrow: 1 }}>
+                    Top comments ({comments.length})
+                </Typography>
+                <Button variant="outlined" size="small" sx={{ borderRadius: 2, textTransform: 'none' }}>
+                    Subscribe
+                </Button>
+            </Box>
+            {/* Add comment */}
+            <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 3 }}>
+                <Avatar src="https://ui-avatars.com/api/?name=You" alt="avatar" sx={{ width: 40, height: 40, mr: 2 }} />
+                <TextField
+                    multiline
+                    minRows={2}
                     placeholder="Add to the discussion"
                     value={newComment}
                     onChange={e => setNewComment(e.target.value)}
+                    sx={{ flex: 1, mr: 2 }}
+                    size="small"
+                    disabled={submitting}
                 />
-                <button className="add-btn" onClick={handleAddComment}>Post</button>
-            </div>
-            <div className="comments-list">
-                {comments.map(comment => (
-                    <div className="comment-card" key={comment.id}>
-                        <img src={comment.user.avatar} alt="avatar" className="avatar" />
-                        <div className="comment-content">
-                            <div className="comment-header">
-                                <span className="comment-user">{comment.user.name}</span>
-                                {comment.user.badge && <span className="badge">✦✦</span>}
-                                <span className="comment-date">• {comment.date}</span>
-                                <span className="comment-options">⋯</span>
-                            </div>
-                            <div className="comment-text">{comment.text}</div>
-                            <div className="comment-actions">
-                                <span className="like-btn">♡ {comment.likes} likes</span>
-                                <span className="reply-btn">Reply</span>
-                            </div>
-                        </div>
-                    </div>
-                ))}
-            </div>
-            <div className="comments-footer">
-                <a href="#">Code of Conduct</a> · <a href="#">Report abuse</a>
-            </div>
-        </div>
+                <Button
+                    variant="contained"
+                    onClick={handleAddComment}
+                    sx={{ borderRadius: 2, minWidth: 80 }}
+                    disabled={submitting || !newComment.trim()}
+                >
+                    {submitting ? <CircularProgress size={20} color="inherit" /> : 'Post'}
+                </Button>
+            </Box>
+            {/* Comments list */}
+            <Box>
+                {loading ? (
+                    <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+                        <CircularProgress size={28} />
+                    </Box>
+                ) : comments.length === 0 ? (
+                    <Typography color="text.secondary" sx={{ py: 3, textAlign: 'center' }}>
+                        No comments yet.
+                    </Typography>
+                ) : (
+                    comments.map((comment, idx) => (
+                        <CommentCard key={idx} comment={comment} />
+                    ))
+                )}
+            </Box>
+        </Box>
     );
 }
 
