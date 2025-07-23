@@ -1,16 +1,36 @@
 import React from 'react';
-import { Box, Avatar, Typography, IconButton, Stack } from '@mui/material';
+import { Box, Avatar, Typography, IconButton, Stack, Menu, MenuItem } from '@mui/material';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+import commentsService from '../../services/commentsService';
 
 function formatDate(dateString) {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
-const CommentCard = ({ comment, onReplyClick }) => {
+const CommentCard = ({ comment, onReplyClick, onDelete }) => {
     const user = comment.users || {};
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const open = Boolean(anchorEl);
+
+    const handleMenuOpen = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleMenuClose = () => {
+        setAnchorEl(null);
+    };
+    const handleDelete = async () => {
+        handleMenuClose();
+        try {
+            await commentsService.deleteComment(comment.id);
+            if (onDelete) onDelete();
+        } catch (e) {
+            // Error toast handled in service
+        }
+    };
+
     return (
         <Box
             sx={{
@@ -42,18 +62,41 @@ const CommentCard = ({ comment, onReplyClick }) => {
                         {formatDate(comment.created_at)}
                     </Typography>
                     <Box sx={{ flexGrow: 1 }} />
-                    <IconButton size="small" sx={{ color: '#888' }}>
+                    <IconButton size="small" sx={{ color: '#888' }} onClick={handleMenuOpen}>
                         <MoreHorizIcon fontSize="small" />
                     </IconButton>
+                    <Menu
+                        anchorEl={anchorEl}
+                        open={open}
+                        onClose={handleMenuClose}
+                        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                        sx={{
+                            '& .MuiPaper-root': {
+                                borderRadius: '10px',
+                            },
+                        }}
+                    >
+                        <MenuItem
+                            onClick={handleDelete}
+                            sx={{
+                                '&:hover': {
+                                    fontWeight: 500,
+                                    backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                                    borderRadius: '10px',
+                                    color: '#E55050'
+                                },
+                            }}
+                        >
+                            Delete comment
+                        </MenuItem>
+                    </Menu>
+
                 </Box>
                 <Typography sx={{ my: 1, fontSize: '1.08em', color: '#222' }}>
                     {comment.content}
                 </Typography>
                 <Stack direction="row" alignItems="center" spacing={2} sx={{ color: '#666', fontSize: '1em', mt: 1 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
-                        <FavoriteBorderIcon fontSize="small" sx={{ mr: 0.5 }} />
-                        <Typography variant="body2">2 likes</Typography>
-                    </Box>
                     <Box sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }} onClick={onReplyClick}>
                         <ChatBubbleOutlineIcon fontSize="small" sx={{ mr: 0.5 }} />
                         <Typography variant="body2">Reply</Typography>

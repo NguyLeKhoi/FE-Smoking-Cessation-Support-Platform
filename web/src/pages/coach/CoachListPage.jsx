@@ -169,7 +169,7 @@ const CoachListPage = () => {
     console.log('Chat rooms length:', chatRooms?.length);
 
     return (
-        <Box sx={{ maxWidth: 1100, mx: 'auto', mt: 1, px: 2 }}>
+        <Box sx={{ maxWidth: 1400, mx: 'auto', mt: 1, px: 2 }}>
             <Typography variant="h4" fontWeight={700} gutterBottom align="center">
                 Meet Our Coaches
             </Typography>

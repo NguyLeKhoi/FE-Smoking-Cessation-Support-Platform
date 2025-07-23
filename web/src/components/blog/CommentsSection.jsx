@@ -12,6 +12,7 @@ function CommentsSection({ postId }) {
     const [newComment, setNewComment] = useState('');
     const [submitting, setSubmitting] = useState(false);
     const [currentUser, setCurrentUser] = useState(null);
+    const [replyTo, setReplyTo] = useState(null);
     const navigate = useNavigate();
 
     const fetchComments = () => {
@@ -36,13 +37,11 @@ function CommentsSection({ postId }) {
     useEffect(() => {
         if (!postId) return;
         fetchComments();
-        // eslint-disable-next-line
     }, [postId]);
 
     useEffect(() => {
         fetchCurrentUser()
             .then(res => {
-                // Handle both {data: {...}} and {...}
                 setCurrentUser(res?.data || res);
             })
             .catch(() => setCurrentUser(null));
@@ -52,25 +51,35 @@ function CommentsSection({ postId }) {
         if (!newComment.trim()) return;
         setSubmitting(true);
         try {
-            await commentsService.createComment({ content: newComment, post_id: postId });
+            await commentsService.createComment({
+                content: newComment,
+                post_id: postId,
+                parent_comment_id: replyTo ? replyTo.id : undefined
+            });
             setNewComment('');
+            setReplyTo(null);
             fetchComments();
         } catch (e) {
-            // Error toast handled in service
         } finally {
             setSubmitting(false);
         }
     };
 
+    const handleReply = (comment) => {
+        setReplyTo(comment);
+    };
+
+    const handleCancelReply = () => {
+        setReplyTo(null);
+    };
+
     return (
         <Box sx={{ mt: 6 }}>
-            {/* Header */}
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <Typography variant="h6" fontWeight={700} sx={{ flexGrow: 1 }}>
                     Comments ({comments.length})
                 </Typography>
             </Box>
-            {/* Add comment */}
             <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 3 }}>
                 <Avatar
                     src={currentUser?.avatar || 'https://ui-avatars.com/api/?name=User'}
@@ -85,20 +94,20 @@ function CommentsSection({ postId }) {
                             ? "Add to the discussion"
                             : "Login to join the discussion"
                     }
-                    value={newComment}
-                    onChange={e => setNewComment(e.target.value)}
+                    value={!replyTo ? newComment : ''}
+                    onChange={e => { if (!replyTo) setNewComment(e.target.value); }}
                     sx={{ flex: 1, mr: 2 }}
                     size="small"
-                    disabled={!currentUser || submitting}
+                    disabled={!currentUser || submitting || !!replyTo}
                 />
                 <Button
                     variant="contained"
                     onClick={currentUser ? handleAddComment : () => navigate('/login')}
                     sx={{ borderRadius: 2, minWidth: 80 }}
-                    disabled={!currentUser || submitting || !newComment.trim()}
+                    disabled={!currentUser || submitting || !newComment.trim() || !!replyTo}
                 >
                     {currentUser
-                        ? (submitting ? <CircularProgress size={20} color="inherit" /> : 'Post')
+                        ? (submitting && !replyTo ? <CircularProgress size={20} color="inherit" /> : 'Post')
                         : 'Login now'}
                 </Button>
             </Box>
@@ -107,7 +116,7 @@ function CommentsSection({ postId }) {
                     Login now to join the discussion!
                 </Typography>
             )}
-            {/* Comments list */}
+            {/* Comments list with reply input below target comment */}
             <Box>
                 {loading ? (
                     <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
@@ -119,7 +128,45 @@ function CommentsSection({ postId }) {
                     </Typography>
                 ) : (
                     comments.map((comment, idx) => (
-                        <CommentCard key={idx} comment={comment} />
+                        <React.Fragment key={comment.id}>
+                            <CommentCard comment={comment} onReplyClick={() => handleReply(comment)} />
+                            {replyTo && replyTo.id === comment.id && (
+                                <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 3, ml: 6 }}>
+                                    <Avatar
+                                        src={currentUser?.avatar || 'https://ui-avatars.com/api/?name=User'}
+                                        alt="avatar"
+                                        sx={{ width: 36, height: 36, mr: 2 }}
+                                    />
+                                    <TextField
+                                        multiline
+                                        minRows={2}
+                                        placeholder={
+                                            currentUser
+                                                ? `Reply to ${replyTo.users?.first_name || ''} ${replyTo.users?.last_name || ''}`
+                                                : "Login to join the discussion"
+                                        }
+                                        value={newComment}
+                                        onChange={e => setNewComment(e.target.value)}
+                                        sx={{ flex: 1, mr: 2 }}
+                                        size="small"
+                                        disabled={!currentUser || submitting}
+                                    />
+                                    <Button
+                                        variant="contained"
+                                        onClick={currentUser ? handleAddComment : () => navigate('/login')}
+                                        sx={{ borderRadius: 2, minWidth: 80 }}
+                                        disabled={!currentUser || submitting || !newComment.trim()}
+                                    >
+                                        {currentUser
+                                            ? (submitting ? <CircularProgress size={20} color="inherit" /> : 'Post')
+                                            : 'Login now'}
+                                    </Button>
+                                    <Button size="small" onClick={handleCancelReply} sx={{ ml: 1, textTransform: 'none' }}>
+                                        Cancel
+                                    </Button>
+                                </Box>
+                            )}
+                        </React.Fragment>
                     ))
                 )}
             </Box>
