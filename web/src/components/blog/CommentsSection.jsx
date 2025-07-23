@@ -73,6 +73,10 @@ function CommentsSection({ postId }) {
         setReplyTo(null);
     };
 
+    const handleDeleteComment = (commentId) => {
+        setComments(prev => prev.filter(comment => comment.id !== commentId));
+    };
+
     return (
         <Box sx={{ mt: 6 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
@@ -116,7 +120,7 @@ function CommentsSection({ postId }) {
                     Login now to join the discussion!
                 </Typography>
             )}
-            {/* Comments list with reply input below target comment */}
+
             <Box>
                 {loading ? (
                     <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
@@ -129,7 +133,7 @@ function CommentsSection({ postId }) {
                 ) : (
                     comments.map((comment, idx) => (
                         <React.Fragment key={comment.id}>
-                            <CommentCard comment={comment} onReplyClick={() => handleReply(comment)} />
+                            <CommentCard comment={comment} onReplyClick={() => handleReply(comment)} onDelete={() => handleDeleteComment(comment.id)} />
                             {replyTo && replyTo.id === comment.id && (
                                 <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 3, ml: 6 }}>
                                     <Avatar

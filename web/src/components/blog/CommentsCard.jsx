@@ -98,7 +98,7 @@ const CommentCard = ({ comment, onReplyClick, onDelete }) => {
                 </Typography>
                 <Stack direction="row" alignItems="center" spacing={2} sx={{ color: '#666', fontSize: '1em', mt: 1 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }} onClick={onReplyClick}>
-                        <ChatBubbleOutlineIcon fontSize="small" sx={{ mr: 0.5 }} />
+                        <ChatBubbleOutlineIcon fontSize="small" sx={{ mr: 0.5, width: '15px', height: '15px' }} />
                         <Typography variant="body2">Reply</Typography>
                     </Box>
                 </Stack>
