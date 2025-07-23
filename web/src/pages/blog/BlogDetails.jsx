@@ -23,6 +23,7 @@ import postService from '../../services/postService';
 import { formatDistanceToNow } from 'date-fns';
 import LoadingPage from '../LoadingPage';
 import CommentsSection from '../../components/blog/CommentsSection';
+import PostReactions from '../../components/blog/PostReactions';
 
 const BlogDetails = () => {
     const { id } = useParams();
@@ -391,6 +392,7 @@ const BlogDetails = () => {
                     />
                 </Box>
                 <Divider sx={{ my: 5 }} />
+                {post.id && <PostReactions postId={post.id} />}
                 {post.id && <CommentsSection postId={post.id} />}
             </Container>
         </Box>
