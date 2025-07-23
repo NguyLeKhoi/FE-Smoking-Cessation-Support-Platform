@@ -26,7 +26,8 @@ const SmokingHabitPage = () => {
                 setHabit(habitRes.data || habitRes);
                 setUserData(userRes.data || userRes);
             } catch (e) {
-                setError('Failed to load your smoking habit data.');
+                const backendMsg = e?.response?.data?.message;
+                setError(backendMsg || 'Failed to load your smoking habit data.');
             } finally {
                 setLoading(false);
             }
@@ -130,14 +131,51 @@ const SmokingHabitPage = () => {
     }
 
     if (error) {
-        return (
-            <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.default' }}>
-                <ProfileSidebar userData={userData} />
-                <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'background.paper' }}>
-                    <Typography color="error">{error}</Typography>
+        if (error === 'Smoking habit for user not found') {
+            return (
+                <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.default' }}>
+                    <ProfileSidebar userData={userData} />
+                    <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'background.paper' }}>
+                        <Paper elevation={0} sx={{ p: 4, borderRadius: 3, border: '1px solid', borderColor: 'divider', maxWidth: 500, mx: 'auto', textAlign: 'center' }}>
+                            <Typography variant="h5" fontWeight={700} gutterBottom>
+                                Take a quiz now <br/> to understand your habit of smoking
+                            </Typography>
+                            <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+                                Complete our quick assessment to get personalized feedback and insights about your smoking habits.
+                            </Typography>
+                            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                                <button
+                                    onClick={() => window.location.href = '/smoking-quiz'}
+                                    style={{
+                                        padding: '12px 32px',
+                                        borderRadius: '12px',
+                                        background: '#3f332b',
+                                        color: 'white',
+                                        fontWeight: 600,
+                                        fontSize: '1.1rem',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        boxShadow: '0 4px 0 #3f332b40',
+                                        transition: 'all 0.2s',
+                                    }}
+                                >
+                                    Take Smoking Habit Quiz
+                                </button>
+                            </Box>
+                        </Paper>
+                    </Box>
                 </Box>
-            </Box>
-        );
+            );
+        } else {
+            return (
+                <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.default' }}>
+                    <ProfileSidebar userData={userData} />
+                    <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'background.paper' }}>
+                        <Typography color="error">{error}</Typography>
+                    </Box>
+                </Box>
+            );
+        }
     }
 
     return (

@@ -59,7 +59,6 @@ const formReducer = (state, action) => {
     }
 };
 
-// Button styles 
 const buttonStyles = {
     base: {
         display: 'flex',
@@ -108,9 +107,6 @@ const SmokingQuiz = () => {
         toast(message);
     }, []);
 
-    /**
-     * Generic field change handler
-     */
     const handleChange = useCallback((e) => {
         const { name, value } = e.target;
         dispatch({ type: 'UPDATE_FIELD', field: name, value });
@@ -213,19 +209,23 @@ const SmokingQuiz = () => {
                 });
 
             } catch (apiError) {
-                console.error('API error, proceeding with submitted data:', apiError);
-                setResult({
-                    ...dataToSubmit,
-                    ai_feedback: "We couldn't generate personalized feedback at this time, but here's your smoking assessment based on the data you provided."
-                });
-                showToast("We couldn't connect to our AI service, but your assessment is still available.", 'warning');
+                const apiMsg = apiError?.response?.data?.message;
+                if (apiMsg) {
+                    toast.error(apiMsg);
+                    setError(apiMsg);
+                } else {
+                    console.error('API error, proceeding with submitted data:', apiError);
+                    setResult({
+                        ...dataToSubmit,
+                        ai_feedback: "We couldn't generate personalized feedback at this time, but here's your smoking assessment based on the data you provided."
+                    });
+                    showToast("We couldn't connect to our AI service, but your assessment is still available.", 'warning');
+                }
             }
 
             setShowForm(false);
             setQuizCompleted(true);
         } catch (error) {
-            console.error('Error submitting smoking assessment:', error);
-
             // Handle API error responses
             if (error.response?.data) {
                 const errorData = error.response.data;
@@ -241,9 +241,8 @@ const SmokingQuiz = () => {
                 } else if (typeof errorData.message === 'string') {
                     errorMessage = errorData.message;
                 }
-
+                toast.error(errorMessage);
                 setError(errorMessage);
-                showToast(errorMessage);
             } else {
                 const errorMsg = 'There was an error submitting your assessment. Please try again.';
                 setError(errorMsg);

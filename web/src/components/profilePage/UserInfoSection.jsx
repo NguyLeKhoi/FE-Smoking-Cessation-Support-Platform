@@ -18,6 +18,8 @@ const MEDIA_MESSAGES = {
 
 const UserInfoSection = ({ onUserUpdated }) => {
     const fileInputRef = useRef();
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState("");
     const [userData, setUserData] = useState(null);
     const [formData, setFormData] = useState({
         email: '',
@@ -45,6 +47,7 @@ const UserInfoSection = ({ onUserUpdated }) => {
                     phone_number: response.data.phone_number || '',
                     avatar: response.data.avatar || '',
                 });
+        setPreviewUrl(response.data.avatar);
             } catch (err) {
                 setError('Failed to load user profile. Please try again later.');
                 console.error('Error loading profile:', err);
@@ -78,44 +81,85 @@ const UserInfoSection = ({ onUserUpdated }) => {
 
     const handleSave = async () => {
         try {
+      setLoading(true);
+
+      let newAvatarUrl = formData.avatar;
+      if (selectedFile) {
+        const formDataData = new FormData();
+        formDataData.append("images", selectedFile);
+
+        try {
+          const res = await mediaService.uploadImages(formDataData);
+          if (
+            res &&
+            Array.isArray(res.data) &&
+            res.data.length > 0 &&
+            res.data[0].url
+          ) {
+            newAvatarUrl = res.data[0].url;
+            console.log("new avatar: ", newAvatarUrl);
+            toast.success(MEDIA_MESSAGES.UPLOAD_IMAGES_SUCCESSFULLY);
+          }
+        } catch (error) {
+          let errorMsg = "Avatar upload failed. Please try again.";
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.message
+          ) {
+            if (
+              error.response.data.message.includes(
+                "Inappropriate image content detected"
+              )
+            ) {
+              errorMsg =
+                "Inappropriate image content detected. Please choose another image.";
+            } else {
+              errorMsg = error.response.data.message;
+            }
+          }
+          toast.error(errorMsg);
+          console.error("Avatar upload failed:", error);
+          return;
+        }
+      }
+
             const updatedUserData = {
                 first_name: formData.first_name,
                 last_name: formData.last_name,
                 phone_number: formData.phone_number,
-                avatar: formData.avatar,
-                dob: formData.dob
+        avatar: newAvatarUrl,
+        ...(formData.dob ? { dob: formData.dob } : {}),
             };
-            setLoading(true);
+
             const response = await updateCurrentUser(updatedUserData);
-            setUserData(prevData => ({
+      setUserData((prevData) => ({
                 ...prevData,
                 ...response.data,
-                dob: response.data.dob || prevData.dob
             }));
-            setFormData(prevFormData => ({
+
+      setFormData((prevFormData) => ({
                 ...prevFormData,
-                first_name: response.data.first_name || prevFormData.first_name,
-                last_name: response.data.last_name || prevFormData.last_name,
-                phone_number: response.data.phone_number || prevFormData.phone_number,
-                avatar: response.data.avatar || prevFormData.avatar,
+        ...response.data,
                 email: prevFormData.email,
-                dob: response.data.dob || prevFormData.dob
             }));
+
+      setSelectedFile(null);
             setIsEditing(false);
             setError(null);
+
             if (onUserUpdated) onUserUpdated(response.data);
         } catch (err) {
-            // Show detailed error messages if available
-            let errorMsg = 'Failed to update profile. Please try again.';
+      let errorMsg = "Failed to update profile. Please try again.";
             if (err.response && err.response.data) {
                 if (Array.isArray(err.response.data.message)) {
-                    errorMsg = err.response.data.message.join(' ');
-                } else if (typeof err.response.data.message === 'string') {
+          errorMsg = err.response.data.message.join(" ");
+        } else if (typeof err.response.data.message === "string") {
                     errorMsg = err.response.data.message;
                 }
             }
             setError(errorMsg);
-            console.error('Error updating profile:', err);
+      console.error("Error updating profile:", err);
         } finally {
             setLoading(false);
         }
@@ -137,7 +181,8 @@ const UserInfoSection = ({ onUserUpdated }) => {
     }, [userData?.dob]);
 
     const isEmailEditable = !userData?.email;
-    const avatarPreview = isEditing ? formData.avatar || userData?.avatar : userData?.avatar;
+  const avatarPreview =
+    previewUrl || (isEditing ? formData.avatar : userData?.avatar);
 
     const handleDateChange = (newValue) => {
         if (newValue) {
@@ -162,40 +207,18 @@ const UserInfoSection = ({ onUserUpdated }) => {
     };
 
     // Avatar upload handler
-    const handleAvatarUpload = async (event) => {
+  const handleAvatarChange = async (event) => {
         const file = event.target.files && event.target.files[0];
         if (!file) {
             toast.error(MEDIA_MESSAGES.IMAGES_NOT_EMPTY);
             return;
         }
-        if (!file.type.startsWith('image/')) {
+    if (!file.type.startsWith("image/")) {
             toast.error(MEDIA_MESSAGES.INVALID_FILE_TYPE);
             return;
         }
-        const formDataData = new FormData();
-        formDataData.append('images', file);
-        try {
-            const res = await mediaService.uploadImages(formDataData);
-            let newAvatarUrl = '';
-            if (res && Array.isArray(res.data) && res.data.length > 0 && res.data[0].url) {
-                newAvatarUrl = res.data[0].url;
-            }
-            if (newAvatarUrl) {
-                setFormData((prev) => ({ ...prev, avatar: newAvatarUrl }));
-                toast.success(MEDIA_MESSAGES.UPLOAD_IMAGES_SUCCESSFULLY);
-            }
-        } catch (error) {
-            let errorMsg = 'Avatar upload failed. Please try again.';
-            if (error.response && error.response.data && error.response.data.message) {
-                if (error.response.data.message.includes('Inappropriate image content detected')) {
-                    errorMsg = 'Inappropriate image content detected. Please choose another image.';
-                } else {
-                    errorMsg = error.response.data.message;
-                }
-            }
-            toast.error(errorMsg);
-            console.error('Avatar upload failed:', error);
-        }
+    setPreviewUrl(URL.createObjectURL(file));
+    setSelectedFile(file);
     };
 
     if (loading) {
@@ -231,7 +254,7 @@ const UserInfoSection = ({ onUserUpdated }) => {
                 }}>
                     {avatarPreview ? (
                         <Avatar
-                            src={avatarPreview}
+              src={previewUrl}
                             alt={userData.username || 'User'}
                             sx={{
                                 width: 160,
@@ -272,7 +295,7 @@ const UserInfoSection = ({ onUserUpdated }) => {
                                 type="file"
                                 accept="image/*"
                                 style={{ display: 'none' }}
-                                onChange={handleAvatarUpload}
+                onChange={handleAvatarChange}
                             />
                             <IconButton
                                 onClick={() => fileInputRef.current && fileInputRef.current.click()}

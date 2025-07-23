@@ -57,29 +57,85 @@ const CoachInfo = ({ coach }) => {
     };
 
     return (
-        <Box sx={{ display: 'flex', gap: 3, width: '100%', maxWidth: 1000 }}>
-            {/* Left Section - Coach Info */}
-            <Card
-                elevation={2}
+        <Card
+            elevation={2}
+            sx={{
+                display: 'flex',
+                flexDirection: { xs: 'column', md: 'row' },
+                alignItems: 'stretch',
+                borderRadius: 5,
+                p: 5,
+                mb: 5,
+                bgcolor: '#ffffff',
+                border: '1px solid rgba(0,0,0,0.08)',
+                width: 1000,
+                height: 500
+
+            }}
+        >
+            {/* Avatar and View Profile Button (Left) */}
+            <Box
                 sx={{
-                    flex: 1,
-                    borderRadius: 5,
-                    p: 5,
-                    mb: 5,
-                    bgcolor: '#ffffff',
-                    border: '1px solid rgba(0,0,0,0.08)',
-                    height: 'fit-content',
-                    minHeight: "500px",
-                    maxHeight: '500px',
-                    width: 500,
+                    width: { xs: '100%', md: 320 },
+                    minWidth: 220,
                     display: 'flex',
                     flexDirection: 'column',
-
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    position: 'relative',
+                    pr: { md: 4 },
+                    mb: { xs: 3, md: 0 },
                 }}
             >
-                <Box sx={{ flex: 1 }}>
-                    <Box sx={{ mb: 3 }}>
+                <Avatar
+                    src={coach.users?.avatar || ''}
+                    alt={coach.users?.username || 'Coach'}
+                    sx={{
+                        width: 180,
+                        height: 180,
+                        bgcolor: coach.users?.avatar ? '#f0f0f0' : '#e0e0e0',
+                        fontSize: '4rem',
+                        fontWeight: 700,
+                        color: '#3f332b',
+                        borderRadius: '15%',
+                        mb: 3,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}
+                >
+                    {coach.users?.avatar
+                        ? (coach.users?.username ? coach.users.username.charAt(0).toUpperCase() : '?')
+                        : <span style={{ fontSize: '3rem' }}>C</span>
+                    }
+                </Avatar>
+                <Button
+                    component={Link}
+                    to={`/profile/${coach.user_id}`}
+                    variant="outlined"
+                    sx={{
+                        color: 'black',
+                        borderColor: '#000000',
+                        borderRadius: 5,
+                        px: 3,
+                        py: 1,
+                        fontWeight: 600,
+                        textTransform: 'none',
+                        '&:hover': {
+                            color: 'white',
+                            borderColor: 'white',
+                            bgcolor: '#000000'
+                        }
+                    }}
+                >
+                    View Full Profile
+                </Button>
+            </Box>
 
+            {/* Coach Info (Right) */}
+            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <Box>
+                    <Box sx={{ mb: 3 }}>
                         <Typography
                             variant="body1"
                             sx={{
@@ -87,9 +143,8 @@ const CoachInfo = ({ coach }) => {
                                 fontWeight: 500,
                             }}
                         >
-                            {coach.specialization || ''}
+                            {coach.specialization || 'Certified Coach'}
                         </Typography>
-
                         <Typography
                             variant="h4"
                             sx={{
@@ -99,9 +154,7 @@ const CoachInfo = ({ coach }) => {
                         >
                             {coach.users?.username || 'Professional Coach'}
                         </Typography>
-
                     </Box>
-
                     <Typography
                         variant="body1"
                         sx={{
@@ -112,9 +165,8 @@ const CoachInfo = ({ coach }) => {
                             fontSize: '1.1rem'
                         }}
                     >
-                        {coach.bio || ''}
+                        {coach.bio || 'No bio provided.'}
                     </Typography>
-
                     {/* Stats */}
                     {coach.experience_years && (
                         <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
@@ -130,8 +182,6 @@ const CoachInfo = ({ coach }) => {
                             </Typography>
                         </Box>
                     )}
-
-
                     {/* Contact Info */}
                     <Box sx={{ mb: 4 }}>
                         <Typography variant="h6" sx={{ fontWeight: 500, color: '#1e293b', mb: 1 }}>
@@ -157,7 +207,6 @@ const CoachInfo = ({ coach }) => {
                         </Box>
                     </Box>
                 </Box>
-
                 <Button
                     variant="contained"
                     size="large"
@@ -173,6 +222,7 @@ const CoachInfo = ({ coach }) => {
                         textTransform: 'none',
                         fontSize: '1rem',
                         marginTop: 'auto',
+                        alignSelf: 'flex-start',
                         '&:hover': {
                             bgcolor: '#334155'
                         }
@@ -184,87 +234,8 @@ const CoachInfo = ({ coach }) => {
                             ? 'Continue Consultation'
                             : 'Start Consultation'}
                 </Button>
-            </Card>
-
-            {/* Right Section - Avatar with Animated Blob */}
-            <Card
-                elevation={2}
-                sx={{
-                    width: 500,
-                    height: 500,
-                    borderRadius: 5,
-                    overflow: 'hidden',
-                    position: 'relative',
-                    background: '#ffffff',
-                    minHeight: "500px",
-                    maxHeight: '600px',
-
-                }}
-            >
-
-
-                {/* Avatar */}
-                <Box
-                    sx={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        width: 280,
-                        height: 280,
-
-                    }}
-                >
-                    <Avatar
-                        src={coach.users?.avatar || ''}
-                        alt={coach.users?.username || 'Coach'}
-                        sx={{
-                            width: '100%',
-                            height: '100%',
-                            bgcolor: '#f0f0f0',
-                            fontSize: '4rem',
-                            fontWeight: 700,
-                            color: '#3f332b',
-                            borderRadius: '15%',
-                        }}
-                    >
-                        {coach.users?.username ? coach.users.username.charAt(0).toUpperCase() : '?'}
-                    </Avatar>
-                </Box>
-
-                {/* View Profile Button */}
-                <Box
-                    sx={{
-                        position: 'absolute',
-                        bottom: 30,
-                        left: '50%',
-                        transform: 'translateX(-50%)'
-                    }}
-                >
-                    <Button
-                        component={Link}
-                        to={`/profile/${coach.user_id}`}
-                        variant="outlined"
-                        sx={{
-                            color: 'black',
-                            borderColor: '#000000',
-                            borderRadius: 5,
-                            px: 3,
-                            py: 1,
-                            fontWeight: 600,
-                            textTransform: 'none',
-                            '&:hover': {
-                                color: 'white',
-                                borderColor: 'white',
-                                bgcolor: '#000000'
-                            }
-                        }}
-                    >
-                        View Full Profile
-                    </Button>
-                </Box>
-            </Card>
-        </Box>
+            </Box>
+        </Card>
     );
 };
 
