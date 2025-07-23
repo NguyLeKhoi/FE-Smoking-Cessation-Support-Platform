@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Email, Phone, AccessTime } from '@mui/icons-material';
 import { createChatRoom, getAllChatRooms } from '../../services/chatService';
 import { toast } from 'react-toastify';
+import CoachFeedback from './CoachFeedback';
 
 const CoachInfo = ({ coach }) => {
     const navigate = useNavigate();
@@ -68,15 +69,17 @@ const CoachInfo = ({ coach }) => {
                 mb: 5,
                 bgcolor: '#ffffff',
                 border: '1px solid rgba(0,0,0,0.08)',
-                width: 1000,
-                height: 500
-
+                width: '100%',
+                maxWidth: 1400,
+                height: { xs: 'auto', md: 700 },
+                mx: 'auto',
             }}
         >
-            {/* Avatar and View Profile Button (Left) */}
+            {/* Avatar and Start Consultation Button (Left) */}
             <Box
                 sx={{
-                    width: { xs: '100%', md: 320 },
+                    flexBasis: { xs: '100%', md: '36%' },
+                    flexGrow: 1,
                     minWidth: 220,
                     display: 'flex',
                     flexDirection: 'column',
@@ -110,30 +113,37 @@ const CoachInfo = ({ coach }) => {
                     }
                 </Avatar>
                 <Button
-                    component={Link}
-                    to={`/profile/${coach.user_id}`}
-                    variant="outlined"
+                    variant="contained"
+                    size="large"
+                    onClick={handleStartConsultation}
+                    disabled={checkingRoom}
                     sx={{
-                        color: 'black',
-                        borderColor: '#000000',
+                        bgcolor: '#1e293b',
+                        color: 'white',
                         borderRadius: 5,
-                        px: 3,
-                        py: 1,
+                        py: 1.5,
+                        px: 4,
                         fontWeight: 600,
                         textTransform: 'none',
+                        fontSize: '1rem',
+                        marginTop: 2,
+                        alignSelf: 'center',
+                        width: 250,
                         '&:hover': {
-                            color: 'white',
-                            borderColor: 'white',
-                            bgcolor: '#000000'
+                            bgcolor: '#334155'
                         }
                     }}
                 >
-                    View Full Profile
+                    {checkingRoom
+                        ? 'Loading...'
+                        : existingChatRoom
+                            ? 'Continue Consultation'
+                            : 'Start Consultation'}
                 </Button>
             </Box>
 
             {/* Coach Info (Right) */}
-            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            <Box sx={{ flexBasis: { xs: '100%', md: '64%' }, flexGrow: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <Box>
                     <Box sx={{ mb: 3 }}>
                         <Typography
@@ -154,6 +164,11 @@ const CoachInfo = ({ coach }) => {
                         >
                             {coach.users?.username || 'Professional Coach'}
                         </Typography>
+                        {/* Coach Feedback */}
+                        <CoachFeedback
+                            averageStars={coach.averageStars || { "1": 0, "2": 0, "3": 0, "4": 0, "5": 0 }}
+                            averageRating={coach.averageRating || 0}
+                        />
                     </Box>
                     <Typography
                         variant="body1"
@@ -177,8 +192,9 @@ const CoachInfo = ({ coach }) => {
                                 my: 1,
                                 fontSize: '1.1rem'
                             }}>
+                                Expert for: {""}
                                 {coach.experience_years} {""}
-                                years experience
+                                years
                             </Typography>
                         </Box>
                     )}
@@ -207,33 +223,6 @@ const CoachInfo = ({ coach }) => {
                         </Box>
                     </Box>
                 </Box>
-                <Button
-                    variant="contained"
-                    size="large"
-                    onClick={handleStartConsultation}
-                    disabled={checkingRoom}
-                    sx={{
-                        bgcolor: '#1e293b',
-                        color: 'white',
-                        borderRadius: 5,
-                        py: 1.5,
-                        px: 4,
-                        fontWeight: 600,
-                        textTransform: 'none',
-                        fontSize: '1rem',
-                        marginTop: 'auto',
-                        alignSelf: 'flex-start',
-                        '&:hover': {
-                            bgcolor: '#334155'
-                        }
-                    }}
-                >
-                    {checkingRoom
-                        ? 'Loading...'
-                        : existingChatRoom
-                            ? 'Continue Consultation'
-                            : 'Start Consultation'}
-                </Button>
             </Box>
         </Card>
     );
