@@ -1,10 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { Container, TextField, Button, Typography, Box, Alert, Link, Grid, IconButton } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import { signup } from '../../services/authService';
-import GlowingDotsGrid from '../../components/animated/GlowingDotsGrid'; // Add this import
-import LoadingPage from '../LoadingPage'; // Import LoadingPage
-import HomeIcon from '@mui/icons-material/Home'; // Import the home icon
+import React, { useState, useEffect } from "react";
+import {
+  Container,
+  TextField,
+  Button,
+  Typography,
+  Box,
+  Alert,
+  Link,
+  Grid,
+  IconButton,
+} from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { signup } from "../../services/authService";
+import GlowingDotsGrid from "../../components/animated/GlowingDotsGrid"; // Add this import
+import LoadingPage from "../LoadingPage"; // Import LoadingPage
+import HomeIcon from "@mui/icons-material/Home"; // Import the home icon
+import { toast } from "react-toastify";
+import { HttpStatusCode } from "axios";
 
 export default function SignupPage() {
   const navigate = useNavigate();
@@ -41,10 +53,10 @@ export default function SignupPage() {
   };
 
   const validateForm = () => {
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
-      return false;
-    }
+    // if (formData.password !== formData.confirmPassword) {
+    //   setError('Passwords do not match');
+    //   return false;
+    // }
     if (formData.password.length < 6) {
       setError('Password must be at least 6 characters long');
       return false;
@@ -81,9 +93,9 @@ export default function SignupPage() {
       console.log('Signup data being sent:', userData);
 
       const response = await signup(userData);
-
-      if (response.success) {
-        navigate('/login');
+      if (response.statusCode === HttpStatusCode.Created) {
+        toast.success("Signup successfully");
+        navigate("/login");
       } else {
         setError('Failed to create account');
       }
