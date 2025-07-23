@@ -17,6 +17,21 @@ const commentsService = {
             throw error;
         }
     },
+    /**
+     * Delete a comment by ID
+     * @param {string|number} commentId - The ID of the comment to delete
+     * @returns {Promise} - The response from the API
+     */
+    deleteComment: async (commentId) => {
+        try {
+            const response = await api.delete(`/comments/${commentId}`);
+            toast('Comment deleted successfully!');
+            return response.data;
+        } catch (error) {
+            toast(`Error deleting comment: ${error.response?.data?.message || error.message}`);
+            throw error;
+        }
+    },
 };
 
 export default commentsService;

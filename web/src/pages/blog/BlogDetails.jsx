@@ -10,19 +10,15 @@ import {
   Button,
   Stack,
 } from "@mui/material";
-import remarkGfm from "remark-gfm";
-import { Link as RouterLink, useParams, useNavigate } from "react-router-dom";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import { useParams, useNavigate } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import ShareIcon from "@mui/icons-material/Share";
-import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
-import ThumbUpOutlinedIcon from "@mui/icons-material/ThumbUpOutlined";
+import MarkdownRenderer from "../../components/blog/MarkdownRenderer";
 import postService from "../../services/postService";
-import { formatDistanceToNow } from "date-fns";
-import LoadingPage from "../../pages/LoadingPage";
-import rehypeRaw from "rehype-raw";
-import ReactMarkdown from "react-markdown";
+import LoadingPage from "../LoadingPage";
+import CommentsSection from "../../components/blog/CommentsSection";
+import PostReactions from "../../components/blog/PostReactions";
 
 const BlogDetails = () => {
   const { id } = useParams();
@@ -282,10 +278,128 @@ const BlogDetails = () => {
             />
           </Box>
         )}
-        <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
-          {post.content}
-        </ReactMarkdown>
+
+        {/* Post content - Use both MarkdownRenderer with custom styling and ReactMarkdown */}
+        <Box sx={{ mb: 5 }}>
+          <MarkdownRenderer
+            content={post.content}
+            sx={{
+              fontSize: { xs: "1.1rem", md: "1.2rem" },
+              lineHeight: 1.7,
+              color: "#242424",
+              letterSpacing: "0.01em",
+              "& p": {
+                mb: 3,
+                fontSize: "inherit",
+                lineHeight: "inherit",
+              },
+              "& h1": {
+                fontSize: "2.25rem",
+                fontWeight: 700,
+                mt: 6,
+                mb: 3,
+                letterSpacing: "-0.02em",
+              },
+              "& h2": {
+                fontSize: "1.75rem",
+                fontWeight: 700,
+                mt: 5,
+                mb: 3,
+                letterSpacing: "-0.01em",
+              },
+              "& h3": {
+                fontSize: "1.35rem",
+                fontWeight: 600,
+                mt: 4,
+                mb: 2,
+              },
+              "& h4": {
+                fontSize: "1.15rem",
+                fontWeight: 600,
+                mt: 3,
+                mb: 2,
+              },
+              "& ul, & ol": {
+                pl: 4,
+                mb: 3,
+                "& li": {
+                  mb: 1,
+                  fontSize: "inherit",
+                  lineHeight: "inherit",
+                },
+              },
+              "& blockquote": {
+                borderLeft: "4px solid #ddd",
+                paddingLeft: 3,
+                margin: "2rem 0",
+                fontStyle: "italic",
+                color: "text.secondary",
+                fontSize: "1.1rem",
+                "& p": {
+                  fontSize: "inherit",
+                  fontStyle: "inherit",
+                },
+              },
+              "& code": {
+                backgroundColor: "grey.100",
+                padding: "3px 6px",
+                borderRadius: 1,
+                fontFamily: "monospace",
+                fontSize: "0.9em",
+              },
+              "& pre": {
+                backgroundColor: "grey.100",
+                padding: 3,
+                borderRadius: 1,
+                overflow: "auto",
+                mb: 3,
+                "& code": {
+                  backgroundColor: "transparent",
+                  padding: 0,
+                  fontSize: "0.875rem",
+                },
+              },
+              "& img": {
+                maxWidth: "100%",
+                height: "auto",
+                borderRadius: 2,
+                my: 3,
+                display: "block",
+                margin: "2rem auto",
+              },
+              "& a": {
+                color: "primary.main",
+                textDecoration: "underline",
+                "&:hover": {
+                  textDecoration: "none",
+                },
+              },
+              "& table": {
+                width: "100%",
+                borderCollapse: "collapse",
+                mb: 3,
+                fontSize: "1rem",
+                "& th, & td": {
+                  border: "1px solid #ddd",
+                  padding: 2,
+                  textAlign: "left",
+                },
+                "& th": {
+                  backgroundColor: "grey.100",
+                  fontWeight: 600,
+                },
+              },
+              "& hr": {
+                border: "none",
+                borderTop: "1px solid #eee",
+                my: 4,
+              },
+            }}
+          />
+        </Box>
         <Divider sx={{ my: 5 }} />
+        {post.id && <PostReactions postId={post.id} />}
+        {post.id && <CommentsSection postId={post.id} />}
       </Container>
     </Box>
   );
