@@ -91,7 +91,7 @@ const LeaderBoardPage = () => {
     const [leaderboards, setLeaderboards] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [activeType, setActiveType] = useState('money_saved');
+    const [activeType, setActiveType] = useState('total_score');
 
     useEffect(() => {
         const fetchLeaderboard = async () => {
