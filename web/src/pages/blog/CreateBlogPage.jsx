@@ -83,7 +83,6 @@ const CreateBlogPage = () => {
     } else if (formData.content.trim().length < 10) {
       errors.content = "Content must be at least 10 characters long";
     }
-
     if (!formData.type) {
       errors.type = "Post type is required";
     }
@@ -310,8 +309,15 @@ const CreateBlogPage = () => {
                   </FormControl>
                 </Box>
 
-                <BlogEditor content={content} setContent={setContent} />
-
+                <Box>
+                  <FormControl error={!!formErrors.content}>
+                    <BlogEditor content={content} setContent={setContent} />
+                    {/* <FormHelperText error={!!formErrors.content}> */}
+                    <FormHelperText>
+                      {formErrors.content || "Type your post content here."}
+                    </FormHelperText>
+                  </FormControl>
+                </Box>
                 {/* Thumbnail Field */}
                 <TextField
                   label="Thumbnail URL"
@@ -326,9 +332,7 @@ const CreateBlogPage = () => {
                   variant="outlined"
                   placeholder="https://example.com/image.jpg"
                 />
-
                 <Divider />
-
                 {/* Action Buttons */}
                 <Box
                   sx={{ display: "flex", gap: 2, justifyContent: "flex-end" }}
