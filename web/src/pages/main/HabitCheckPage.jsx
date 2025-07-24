@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import smokingService from '../../services/smokingService';
 import Lottie from 'lottie-react';
 import catNoir from '../../assets/animations/cat_noir.json';
+import LoadingPage from '../LoadingPage';
+import BlackButton from '../../components/buttons/BlackButton';
+import WhiteButton from '../../components/buttons/WhiteButton';
 
 const HabitCheckPage = () => {
     const navigate = useNavigate();
@@ -29,14 +32,30 @@ const HabitCheckPage = () => {
         checkQuitPlan();
     }, [navigate]);
 
-    if (loading) return <div>Loading...</div>;
+    if (loading) return <LoadingPage />;
     if (hasActiveQuitPlan) {
         return (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
-                <Lottie animationData={catNoir} style={{ width: 320, height: 320 }} loop={true} />
-                <div style={{ marginTop: 24, fontSize: 20, fontWeight: 600, color: '#333', textAlign: 'center' }}>
-                    You already have an active quit plan!<br />
-                    Keep up the great work!
+            <div style={{ minHeight: '100vh', width: '100vw', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', flexDirection: 'column', paddingTop: 200 }}>
+                <div style={{ zIndex: 2, fontSize: 30, fontWeight: 600, color: '#333', textAlign: 'center', position: 'relative' }}>
+                    You already have an active Quit Plan!<br />
+                    Complete current Plan to take another quiz.
+                </div>
+                <div style={{ zIndex: 2, marginTop: 32, display: 'flex', flexDirection: 'column', gap: 16, alignItems: 'center' }}>
+                    <BlackButton
+                        onClick={() => navigate('/')}
+                        sx={{ minWidth: 260, fontWeight: 700, fontSize: '1.1rem', py: 1.5 }}
+                    >
+                        Back to Home Page
+                    </BlackButton>
+                    <WhiteButton
+                        onClick={() => navigate('/quit-plan')}
+                        sx={{ minWidth: 260, fontWeight: 700, fontSize: '1.1rem', py: 1.5, border: '1px solid #3f332b', color: '#3f332b', bgcolor: 'white' }}
+                    >
+                        View my Quit Plan
+                    </WhiteButton>
+                </div>
+                <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, display: 'flex', justifyContent: 'center', zIndex: 1, pointerEvents: 'none' }}>
+                    <Lottie animationData={catNoir} style={{ width: 700, height: 720 }} loop={true} />
                 </div>
             </div>
         );

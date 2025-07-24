@@ -6,6 +6,7 @@ import quitSign from '../../assets/animations/quit-sign.json';
 import QuotesCarousel from '../../components/homePage/QuotesCarousel';
 import FeatureSection from '../../components/homePage/FeatureSection';
 import smokingService from '../../services/smokingService';
+import BlackButton from '../../components/buttons/BlackButton';
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -65,7 +66,7 @@ export default function HomePage() {
                 justifyContent: { xs: 'center', md: 'center' },
                 width: '100%'
               }}>
-                <Button
+                <BlackButton
                   onClick={async () => {
                     try {
                       const res = await smokingService.getHasActiveQuitPlan();
@@ -80,29 +81,10 @@ export default function HomePage() {
                       navigate('/smoking-quiz');
                     }
                   }}
-                  variant="contained"
-                  disableElevation
-                  sx={{
-                    mt: 2,
-                    py: 1.5,
-                    bgcolor: '#000000',
-                    color: 'white',
-                    borderRadius: '12px',
-                    boxShadow: '0 4px 0 #00000080',
-                    fontSize: '1.2rem',
-                    '&:hover': {
-                      bgcolor: '#000000cd',
-                      boxShadow: '0 2px 0 #00000080',
-                      transform: 'translateY(2px)',
-                    },
-                    '&:active': {
-                      boxShadow: '0 0 0 #00000080',
-                      transform: 'translateY(4px)',
-                    },
-                  }}
+                  sx={{ mt: 2 }}
                 >
                   Take a Quiz
-                </Button>
+                </BlackButton>
               </Box>
             </Grid>
 
