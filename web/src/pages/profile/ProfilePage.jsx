@@ -7,14 +7,14 @@ import {
 } from "../../services/userService";
 import ProfileSidebar from "../../components/profilePage/ProfileSidebar";
 import UserInfoSection from "../../components/profilePage/UserInfoSection";
-import StatisticsSection from "../../components/profilePage/StatisticsSection";
+import StatisticsSection, { mapUserToStatisticsData } from "../../components/profilePage/StatisticsSection";
 import AchievementSection from "../../components/profilePage/AchievementSection";
 import LoadingPage from "../LoadingPage";
 import { HttpStatusCode } from "axios";
 
 export default function ProfilePage({ handleLogout }) {
   const navigate = useNavigate();
-  const [statisticsData, setStatisticsData] = useState([]);
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [loadingUserInfo, setLoadingUserInfo] = useState(true);
   const [loadingAchievements, setLoadingAchievements] = useState(true);
@@ -33,8 +33,7 @@ export default function ProfilePage({ handleLogout }) {
       try {
         const response = await fetchCurrentUser();
         if (response.statusCode === HttpStatusCode.Ok) {
-          const stats = mapUserToStatisticsData(response.data);
-          setStatisticsData(stats);
+          setUser(response.data);
         }
       } finally {
         setLoading(false);
@@ -42,37 +41,6 @@ export default function ProfilePage({ handleLogout }) {
     };
     loadUserProfile();
   }, []);
-  const mapUserToStatisticsData = (user) => [
-    {
-      icon: "💧",
-      value: user.streak?.toString() || "0",
-      label: "Day streak",
-      color: "#64748b",
-    },
-    {
-      icon: "⚡",
-      value: user.point?.toString() || "0",
-      label: "Total XP",
-      color: "#f59e0b",
-    },
-    {
-      icon: "🏅",
-      value: "Gold",
-      label: "Current league",
-      color: "#f59e0b",
-    },
-    {
-      icon: "🏆",
-      value: user.leaderboard[0]?.rank?.toString() || 0,
-      label:
-        user.leaderboard[0]?.rank != null
-          ? `Top ${user.leaderboard[0].rank} finishes of ${user.leaderboard[0]?.rank_type || ""
-          }`
-          : "No ranking data",
-
-      color: "#f59e0b",
-    },
-  ];
 
   // Always render the components so their useEffects run
   return (
@@ -98,7 +66,7 @@ export default function ProfilePage({ handleLogout }) {
           color: 'text.primary',
         }}>
           <UserInfoSection onLoaded={() => { console.log('[ProfilePage] setLoadingUserInfo(false)'); setLoadingUserInfo(false); }} />
-          <StatisticsSection statisticsData={statisticsData} />
+          <StatisticsSection user={user} />
           <Box sx={{ mt: 5 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
             </Box>
