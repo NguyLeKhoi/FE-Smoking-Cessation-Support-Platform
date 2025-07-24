@@ -21,18 +21,44 @@ export default function AddDailyRecordModal({ open, onClose, onSubmit, limitCiga
   const [cigaretteSmoke, setCigaretteSmoke] = useState('');
   const [cravingLevel, setCravingLevel] = useState('');
   const [healthStatus, setHealthStatus] = useState('GOOD');
+
+  // Format date to YYYY-MM-DD in Vietnam timezone (UTC+7)
+  const formatVietnamDate = (date) => {
+    // Get current time in Vietnam timezone (UTC+7)
+    const now = new Date();
+    // Get timezone offset in minutes, then convert to hours
+    const timezoneOffset = now.getTimezoneOffset() / 60;
+    // Calculate Vietnam time (UTC+7)
+    const vietnamOffset = 7;
+    const offsetDiff = timezoneOffset + vietnamOffset;
+    // Create new date with Vietnam timezone adjustment
+    const vietnamDate = new Date(date.getTime() + (offsetDiff * 60 * 60 * 1000));
+    // Format as YYYY-MM-DD
+    return vietnamDate.toISOString().split('T')[0];
+  };
+
   const [recordDate, setRecordDate] = useState(() => {
-    const today = new Date();
-    return today.toISOString().slice(0, 10);
+    return formatVietnamDate(new Date());
   });
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    // Create date object in local timezone
+    const localDate = new Date(recordDate);
+    // Get timezone offset in minutes, then convert to hours
+    const timezoneOffset = localDate.getTimezoneOffset() / 60;
+    // Calculate Vietnam time (UTC+7)
+    const vietnamOffset = 7;
+    const offsetDiff = timezoneOffset + vietnamOffset;
+    // Create date with Vietnam timezone
+    const vietnamDate = new Date(localDate.getTime() + (offsetDiff * 60 * 60 * 1000));
+    
     const payload = {
       cigarette_smoke: Number(cigaretteSmoke),
       craving_level: Number(cravingLevel),
       health_status: healthStatus,
-      record_date: new Date(recordDate).toISOString(),
+      // Format as ISO string with timezone offset for Vietnam (UTC+7)
+      record_date: vietnamDate.toISOString(),
     };
     console.log('Add Daily Record payload:', payload);
     onSubmit(payload);
@@ -42,7 +68,7 @@ export default function AddDailyRecordModal({ open, onClose, onSubmit, limitCiga
     setCigaretteSmoke('');
     setCravingLevel('');
     setHealthStatus('GOOD');
-    setRecordDate(new Date().toISOString().slice(0, 10));
+    setRecordDate(formatVietnamDate(new Date()));
     onClose();
   };
 
