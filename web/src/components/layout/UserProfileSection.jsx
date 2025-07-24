@@ -76,21 +76,21 @@ const UserProfileSection = ({
   };
 
   const renderPathSpecificElement = () => {
-    if (currentPath === "/" && !loading && userData && userData.username) {
-      return (
-        <Typography
-          variant="subtitle1"
-          sx={{
-            display: { xs: "none", md: "block" },
-            color: "#3f332b",
-            fontWeight: 500,
-            mr: 1,
-          }}
-        >
-          Welcome back, {userData.first_name}!
-        </Typography>
-      );
-    }
+    // if (currentPath === "/" && !loading && userData && userData.username) {
+    //   return (
+    //     <Typography
+    //       variant="subtitle1"
+    //       sx={{
+    //         display: { xs: "none", md: "block" },
+    //         color: "#3f332b",
+    //         fontWeight: 500,
+    //         mr: 1,
+    //       }}
+    //     >
+    //       Welcome back, {userData.first_name}!
+    //     </Typography>
+    //   );
+    // }
     return <></>;
   };
 

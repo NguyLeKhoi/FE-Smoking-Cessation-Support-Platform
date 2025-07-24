@@ -13,8 +13,16 @@ const Header = ({ authStatus }) => {
   const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(0);
   const [notifications, setNotifications] = useState([]);
-  const [token, setToken] = useState(localStorage.getItem("accessToken"));
-  const [userId, setUserId] = useState("");
+  const token = localStorage.getItem('accessToken');
+  let sub = null;
+  if (typeof token === 'string' && token) {
+    try {
+      const decoded = jwtDecode(token);
+      sub = decoded.sub || decoded.id || decoded.user_id;
+    } catch (e) {
+      sub = null;
+    }
+  }
   // Use the motivation service component
   const { loadingMotivation } = MotivationService({ setNotifications });
 
@@ -31,21 +39,21 @@ const Header = ({ authStatus }) => {
 
   useEffect(() => {
     fetchNotifications();
-    const { sub } = jwtDecode(token);
-    setUserId(sub);
-    const socket = io("http://localhost:8000/notification", {
-      query: { userId: sub },
-    });
+    if (sub) {
+      const socket = io("http://localhost:8000/notification", {
+        query: { userId: sub },
+      });
 
-    socket.on("notification", async (data) => {
-      toast.info(`${data.title}: ${data.content}`);
-      await fetchNotifications();
-    });
+      socket.on("notification", async (data) => {
+        toast.info(`${data.title}: ${data.content}`);
+        await fetchNotifications();
+      });
 
-    return () => {
-      socket.disconnect();
-    };
-  }, [fetchNotifications]);
+      return () => {
+        socket.disconnect();
+      };
+    }
+  }, [fetchNotifications, sub]);
 
   useEffect(() => {
     const handleScroll = () => {

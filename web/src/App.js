@@ -21,12 +21,12 @@ const GlobalCallManager = () => {
   // Get current user info
   let currentUserId = null;
   const accessToken = localStorage.getItem('accessToken');
-  if (accessToken) {
+  let decoded = null;
+  if (typeof accessToken === 'string' && accessToken) {
     try {
-      const decoded = jwtDecode(accessToken);
-      currentUserId = decoded.userId || decoded.id || decoded.sub;
+      decoded = jwtDecode(accessToken);
     } catch (e) {
-      // Silent error handling
+      decoded = null;
     }
   }
 
@@ -76,22 +76,22 @@ const GlobalCallManager = () => {
     socket.on('call-accepted-token', handleCallAcceptedToken);
     socket.on('error', handleErrorEvent);
 
-    socket.emit('accept-call', { 
-      chatRoomId: incomingCall.roomId, 
-      caller: incomingCall.caller 
+    socket.emit('accept-call', {
+      chatRoomId: incomingCall.roomId,
+      caller: incomingCall.caller
     });
   };
 
   const rejectCall = () => {
     if (!socket || !incomingCall) return;
-    
+
     socket.emit('reject-call', { callerId: incomingCall.caller.id });
     setIncomingCall(null);
   };
 
   const endCall = () => {
     if (!socket || !currentRoomId) return;
-    
+
     socket.emit('end-call', { chatRoomId: currentRoomId });
     setIsInVideoCall(false);
     setVideoToken(null);
@@ -129,7 +129,7 @@ function App() {
         if (accessToken) {
           await testRefreshToken();
         }
-        
+
         startAutoRefresh();
       } catch (error) {
         // Silent error handling
@@ -137,7 +137,7 @@ function App() {
     };
 
     initializeApp();
-    
+
     // Cleanup on app unmount
     return () => {
       stopAutoRefresh();

@@ -17,6 +17,7 @@ import RegisterCoachPage from '../pages/auth/RegisterCoachPage';
 import Homepage from '../pages/main/Homepage';
 import BlogDetails from '../pages/blog/BlogDetails';
 import SmokingQuizPage from '../pages/main/SmokingQuizPage';
+import HabitCheckPage from '../pages/main/HabitCheckPage';
 import PaymentSuccessPage from '../pages/main/PaymentSuccessPage';
 import PaymentCancelPage from '../pages/main/PaymentCancelPage';
 
@@ -209,8 +210,14 @@ export const routes = createBrowserRouter([
       </AuthLayout>
     ),
   },
-
-
+  {
+    path: '/habit-check',
+    element: (
+      <AuthLayout>
+        <HabitCheckPage />
+      </AuthLayout>
+    ),
+  },
 
   {
     path: '/quit-plan',

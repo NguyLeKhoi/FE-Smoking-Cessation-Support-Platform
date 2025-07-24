@@ -5,6 +5,8 @@ import Lottie from 'lottie-react';
 import quitSign from '../../assets/animations/quit-sign.json';
 import QuotesCarousel from '../../components/homePage/QuotesCarousel';
 import FeatureSection from '../../components/homePage/FeatureSection';
+import smokingService from '../../services/smokingService';
+import BlackButton from '../../components/buttons/BlackButton';
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -64,52 +66,44 @@ export default function HomePage() {
                 justifyContent: { xs: 'center', md: 'center' },
                 width: '100%'
               }}>
-                <Button
-                  onClick={() => navigate('/smoking-quiz')}
-                  variant="contained"
-                  disableElevation
-                  sx={{
-                    mt: 2,
-                    py: 1.5,
-                    bgcolor: '#000000',
-                    color: 'white',
-                    borderRadius: '12px',
-                    boxShadow: '0 4px 0 #00000080',
-                    fontSize: '1.2rem',
-                    '&:hover': {
-                      bgcolor: '#000000cd',
-                      boxShadow: '0 2px 0 #00000080',
-                      transform: 'translateY(2px)',
-                    },
-                    '&:active': {
-                      boxShadow: '0 0 0 #00000080',
-                      transform: 'translateY(4px)',
-                    },
+                <BlackButton
+                  onClick={async () => {
+                    try {
+                      const [activeRes, habitRes] = await Promise.all([
+                        smokingService.getHasActiveQuitPlan(),
+                        smokingService.getMySmokingHabits().catch(e => e)
+                      ]);
+                      const active = activeRes?.data?.hasActiveQuitPlan ?? activeRes?.hasActiveQuitPlan;
+                      // If user has an active quit plan, go to habit-check
+                      if (active === true) {
+                        navigate('/habit-check');
+                        return;
+                      }
+                      // If getMySmokingHabits returns an error with 404 and specific message, go to smoking-quiz
+                      if (habitRes instanceof Error && habitRes.message === 'Smoking habit for user not found') {
+                        navigate('/smoking-quiz');
+                        return;
+                      }
+                      // If getMySmokingHabits returns data, go to habit-check
+                      if (habitRes && habitRes.data) {
+                        navigate('/habit-check');
+                        return;
+                      }
+                      // Fallback
+                      navigate('/smoking-quiz');
+                    } catch (e) {
+                      navigate('/smoking-quiz');
+                    }
                   }}
+                  sx={{ mt: 2 }}
                 >
                   Take a Quiz
-                </Button>
+                </BlackButton>
               </Box>
             </Grid>
 
             <Grid sx={{ gridColumn: { xs: 'span 12', md: 'span 6' }, display: 'flex', justifyContent: 'center', position: 'relative' }}>
               <Box sx={{ position: 'relative', width: '100%', maxWidth: 500, height: 400 }}>
-
-                {/* Main image */}
-                {/* <Box
-                  sx={{
-                    position: 'relative',
-                    bottom: 30,
-                    left: 70,
-                    width: 500,
-                    height: 500,
-                    background: `url(${homepageImage})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    borderRadius: 2,
-                    zIndex: 3,
-                  }}
-                /> */}
 
                 <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                   <Box

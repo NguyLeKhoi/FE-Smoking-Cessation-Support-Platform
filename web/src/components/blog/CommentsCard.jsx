@@ -1,19 +1,38 @@
 import React from 'react';
 import { Box, Avatar, Typography, IconButton, Stack, Menu, MenuItem } from '@mui/material';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import commentsService from '../../services/commentsService';
+import { jwtDecode } from 'jwt-decode';
 
 function formatDate(dateString) {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
-const CommentCard = ({ comment, onReplyClick, onDelete }) => {
+// Safe JWT decode helper
+function safeDecodeUserId() {
+    try {
+        const token = localStorage.getItem('accessToken');
+        if (typeof token === 'string' && token) {
+            const decoded = jwtDecode(token);
+            return decoded.id || decoded.user_id || decoded.sub || null;
+        }
+    } catch (e) {
+        // Silent fail
+    }
+    return null;
+}
+
+const CommentCard = ({ comment, onReplyClick, onDelete, replyCount }) => {
     const user = comment.users || {};
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
+
+    // Get current user id from JWT safely
+    const currentUserId = safeDecodeUserId();
+    // Check if comment.user_id matches current user
+    const isAuthor = currentUserId && comment.user_id && String(currentUserId) === String(comment.user_id);
 
     const handleMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
@@ -62,7 +81,7 @@ const CommentCard = ({ comment, onReplyClick, onDelete }) => {
                         {formatDate(comment.created_at)}
                     </Typography>
                     <Box sx={{ flexGrow: 1 }} />
-                    <IconButton size="small" sx={{ color: '#888' }} onClick={handleMenuOpen}>
+                    <IconButton size="small" sx={{ color: '#888' }} onClick={handleMenuOpen} disabled={!isAuthor}>
                         <MoreHorizIcon fontSize="small" />
                     </IconButton>
                     <Menu
@@ -77,19 +96,21 @@ const CommentCard = ({ comment, onReplyClick, onDelete }) => {
                             },
                         }}
                     >
-                        <MenuItem
-                            onClick={handleDelete}
-                            sx={{
-                                '&:hover': {
-                                    fontWeight: 500,
-                                    backgroundColor: 'rgba(0, 0, 0, 0.04)',
-                                    borderRadius: '10px',
-                                    color: '#E55050'
-                                },
-                            }}
-                        >
-                            Delete comment
-                        </MenuItem>
+                        {isAuthor && (
+                            <MenuItem
+                                onClick={handleDelete}
+                                sx={{
+                                    '&:hover': {
+                                        fontWeight: 500,
+                                        backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                                        borderRadius: '10px',
+                                        color: '#E55050'
+                                    },
+                                }}
+                            >
+                                Delete comment
+                            </MenuItem>
+                        )}
                     </Menu>
 
                 </Box>
@@ -97,9 +118,23 @@ const CommentCard = ({ comment, onReplyClick, onDelete }) => {
                     {comment.content}
                 </Typography>
                 <Stack direction="row" alignItems="center" spacing={2} sx={{ color: '#666', fontSize: '1em', mt: 1 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }} onClick={onReplyClick}>
-                        <ChatBubbleOutlineIcon fontSize="small" sx={{ mr: 0.5 }} />
+                    <Box sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer', position: 'relative' }} onClick={onReplyClick}>
+                        <ChatBubbleOutlineIcon fontSize="small" sx={{ mr: 0.5, width: '15px', height: '15px' }} />
                         <Typography variant="body2">Reply</Typography>
+                        {replyCount > 0 && (
+                            <Box component="span" sx={{
+                                ml: 0.5,
+                                px: 1,
+                                fontSize: '0.8em',
+                                bgcolor: '#f0f0f0',
+                                color: '#555',
+                                borderRadius: '8px',
+                                fontWeight: 600,
+                                display: 'inline-block',
+                                minWidth: 18,
+                                textAlign: 'center',
+                            }}>{replyCount}</Box>
+                        )}
                     </Box>
                 </Stack>
             </Box>

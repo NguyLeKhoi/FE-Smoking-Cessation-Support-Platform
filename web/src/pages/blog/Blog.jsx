@@ -17,7 +17,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import EmailIcon from '@mui/icons-material/Email';
 import AddIcon from '@mui/icons-material/Add';
-import Banner2 from '../../assets/banner2.jpg';
+
 import CustomCard from '../../components/blog/CustomCard';
 import BlogBanner from '../../components/blog/BlogBanner';
 import MarkdownRenderer from '../../components/blog/MarkdownRenderer';
@@ -149,7 +149,7 @@ const Blog = () => {
                     <BlogBanner
                         title={featuredPost.title || "Cessation Access & Support"}
                         subtitle={featuredPost.content}
-                        bannerImage={featuredPost.thumbnail || Banner2}
+                        bannerImage={featuredPost.thumbnail}
                         date={featuredPost.publishDate || featuredPost.created_at
                             ? new Date(featuredPost.publishDate || featuredPost.created_at).toLocaleDateString('en-US', {
                                 month: 'short',
@@ -167,13 +167,9 @@ const Blog = () => {
                     />
                 ) : (
                     loading ? (
-                      <LoadingPage/>
+                        <LoadingPage />
                     ) : (
-                        <BlogBanner
-                            title="our commitment to helping you quit"
-                            subtitle="We provide evidence-based strategies and supportive tools to help you on your journey to becoming smoke-free."
-                            bannerImage={Banner2}
-                        />
+                        <BlogBanner />
                     )
                 )}
 

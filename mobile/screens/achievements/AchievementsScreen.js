@@ -20,9 +20,16 @@ const AchievementsScreen = () => {
   const fetchAchievements = async () => {
     try {
       const accessToken = await AsyncStorage.getItem('accessToken');
+      let decoded = null;
+      if (typeof accessToken === 'string' && accessToken) {
+        try {
+          decoded = jwtDecode(accessToken);
+        } catch (e) {
+          decoded = null;
+        }
+      }
       let userId = null;
-      if (accessToken) {
-        const decoded = jwtDecode(accessToken);
+      if (decoded) {
         userId = decoded.sub || decoded.id || decoded.user_id;
       }
       if (!userId) {
@@ -36,17 +43,17 @@ const AchievementsScreen = () => {
       ]);
 
       // Ensure we have arrays to work with
-      const allAchievements = Array.isArray(achievementsResponse.data) 
-        ? achievementsResponse.data 
+      const allAchievements = Array.isArray(achievementsResponse.data)
+        ? achievementsResponse.data
         : achievementsResponse.achievements || [];
-      
+
       const userAchievements = Array.isArray(userAchievementsResponse.data)
         ? userAchievementsResponse.data
         : userAchievementsResponse.achievements || [];
 
       // Process and combine achievements
       const processedAchievements = allAchievements.map(achievement => {
-        const userAchievement = userAchievements.find(ua => 
+        const userAchievement = userAchievements.find(ua =>
           ua.id === achievement.id || ua.achievement_id === achievement.id
         );
         return {
@@ -89,7 +96,7 @@ const AchievementsScreen = () => {
       <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.paper }]}>
         <View style={styles.errorContainer}>
           <Text style={[styles.errorText, { color: theme.colors.error }]}>{error}</Text>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={[styles.retryButton, { backgroundColor: theme.colors.primary }]}
             onPress={fetchAchievements}
           >
@@ -115,9 +122,9 @@ const AchievementsScreen = () => {
         <View style={styles.header}>
           <Text style={styles.title}>All Achievements</Text>
         </View>
-        <AchievementSection 
+        <AchievementSection
           achievements={achievements}
-          onViewAll={() => {}} // No-op since we're already in the all achievements view
+          onViewAll={() => { }} // No-op since we're already in the all achievements view
         />
       </ScrollView>
     </SafeAreaView>
@@ -219,10 +226,10 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#aaa',
   },
-  empty: { 
-    textAlign: 'center', 
-    color: '#888', 
-    marginTop: 40 
+  empty: {
+    textAlign: 'center',
+    color: '#888',
+    marginTop: 40
   },
 });
 

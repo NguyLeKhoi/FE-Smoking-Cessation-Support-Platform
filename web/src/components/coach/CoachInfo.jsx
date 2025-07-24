@@ -1,15 +1,25 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Avatar, Typography, Chip, Button, Box } from '@mui/material';
+import { Card, Avatar, Typography, Chip, Button, Box, Divider } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import { Email, Phone, AccessTime } from '@mui/icons-material';
 import { createChatRoom, getAllChatRooms } from '../../services/chatService';
 import { toast } from 'react-toastify';
 import CoachFeedback from './CoachFeedback';
+import BlackButton from '../buttons/BlackButton';
+import WriteFeedbackBox from './WriteFeedbackBox';
 
 const CoachInfo = ({ coach }) => {
     const navigate = useNavigate();
     const [existingChatRoom, setExistingChatRoom] = useState(null);
     const [checkingRoom, setCheckingRoom] = useState(true);
+    const [newFeedback, setNewFeedback] = useState('');
+    const [submittingFeedback, setSubmittingFeedback] = useState(false);
+    const [currentUser, setCurrentUser] = useState(null);
+
+    useEffect(() => {
+        const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+        setCurrentUser(userInfo && userInfo.id ? userInfo : null);
+    }, []);
 
     useEffect(() => {
         const fetchChatRooms = async () => {
@@ -63,15 +73,14 @@ const CoachInfo = ({ coach }) => {
             sx={{
                 display: 'flex',
                 flexDirection: { xs: 'column', md: 'row' },
-                alignItems: 'stretch',
+                alignItems: { xs: 'stretch', md: 'flex-start' },
                 borderRadius: 5,
                 p: 5,
                 mb: 5,
                 bgcolor: '#ffffff',
                 border: '1px solid rgba(0,0,0,0.08)',
                 width: '100%',
-                maxWidth: 1400,
-                height: { xs: 'auto', md: 700 },
+                height: { xs: 'auto', md: 720 },
                 mx: 'auto',
             }}
         >
@@ -80,7 +89,8 @@ const CoachInfo = ({ coach }) => {
                 sx={{
                     flexBasis: { xs: '100%', md: '36%' },
                     flexGrow: 1,
-                    minWidth: 220,
+                    width: '100%',
+                    minWidth: 500,
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
@@ -94,8 +104,8 @@ const CoachInfo = ({ coach }) => {
                     src={coach.users?.avatar || ''}
                     alt={coach.users?.username || 'Coach'}
                     sx={{
-                        width: 180,
-                        height: 180,
+                        width: 300,
+                        height: 300,
                         bgcolor: coach.users?.avatar ? '#f0f0f0' : '#e0e0e0',
                         fontSize: '4rem',
                         fontWeight: 700,
@@ -112,116 +122,111 @@ const CoachInfo = ({ coach }) => {
                         : <span style={{ fontSize: '3rem' }}>C</span>
                     }
                 </Avatar>
-                <Button
-                    variant="contained"
-                    size="large"
-                    onClick={handleStartConsultation}
-                    disabled={checkingRoom}
-                    sx={{
-                        bgcolor: '#1e293b',
-                        color: 'white',
-                        borderRadius: 5,
-                        py: 1.5,
-                        px: 4,
-                        fontWeight: 600,
-                        textTransform: 'none',
-                        fontSize: '1rem',
-                        marginTop: 2,
-                        alignSelf: 'center',
-                        width: 250,
-                        '&:hover': {
-                            bgcolor: '#334155'
-                        }
-                    }}
-                >
-                    {checkingRoom
-                        ? 'Loading...'
-                        : existingChatRoom
-                            ? 'Continue Consultation'
-                            : 'Start Consultation'}
-                </Button>
+
             </Box>
 
             {/* Coach Info (Right) */}
             <Box sx={{ flexBasis: { xs: '100%', md: '64%' }, flexGrow: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                <Box>
-                    <Box sx={{ mb: 3 }}>
-                        <Typography
-                            variant="body1"
-                            sx={{
-                                color: '#3f332b',
-                                fontWeight: 500,
-                            }}
-                        >
-                            {coach.specialization || 'Certified Coach'}
-                        </Typography>
-                        <Typography
-                            variant="h4"
-                            sx={{
-                                fontWeight: 500,
-                                color: '#1e293b',
-                            }}
-                        >
-                            {coach.users?.username || 'Professional Coach'}
-                        </Typography>
-                        {/* Coach Feedback */}
-                        <CoachFeedback
-                            averageStars={coach.averageStars || { "1": 0, "2": 0, "3": 0, "4": 0, "5": 0 }}
-                            averageRating={coach.averageRating || 0}
-                        />
-                    </Box>
-                    <Typography
-                        variant="body1"
-                        sx={{
-                            color: '#475569',
-                            lineHeight: 1.7,
-                            mb: 1,
-                            my: 1,
-                            fontSize: '1.1rem'
-                        }}
-                    >
-                        {coach.bio || 'No bio provided.'}
-                    </Typography>
-                    {/* Stats */}
-                    {coach.experience_years && (
-                        <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
-                            <Typography variant="body1" sx={{
-                                color: '#475569',
-                                lineHeight: 1.7,
-                                mb: 1,
-                                my: 1,
-                                fontSize: '1.1rem'
-                            }}>
-                                Expert for: {""}
-                                {coach.experience_years} {""}
-                                years
+                <Box sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 3, p: 3 }}>
+                    {/* Name, Specialization, and Button (row, 50/50) */}
+                    <Box sx={{ mb: 2, display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                        <Box sx={{ flex: 1 }}>
+                            <Typography
+                                variant="body1"
+                                sx={{ color: '#3f332b', fontWeight: 500 }}
+                            >
+                                {coach.specialization || 'Certified Coach'}
+                            </Typography>
+                            <Typography
+                                variant="h4"
+                                fontWeight={600}
+                                gutterBottom
+                                align="left"
+                                sx={{ color: '#1e293b' }}
+                            >
+                                {coach.users?.username || 'Professional Coach'}
                             </Typography>
                         </Box>
-                    )}
-                    {/* Contact Info */}
-                    <Box sx={{ mb: 4 }}>
-                        <Typography variant="h6" sx={{ fontWeight: 500, color: '#1e293b', mb: 1 }}>
-                            Contact Information
-                        </Typography>
-                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                            <Email sx={{ mr: 1, color: '#64748b', fontSize: '1.2rem' }} />
-                            <Typography variant="body2" sx={{ color: '#64748b' }}>
-                                {coach.users?.email || 'Available upon request'}
-                            </Typography>
-                        </Box>
-                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                            <Phone sx={{ mr: 1, color: '#64748b', fontSize: '1.2rem' }} />
-                            <Typography variant="body2" sx={{ color: '#64748b' }}>
-                                {coach.users?.phone_number || 'Available upon request'}
-                            </Typography>
-                        </Box>
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <AccessTime sx={{ mr: 1, color: '#64748b', fontSize: '1.2rem' }} />
-                            <Typography variant="body2" sx={{ color: '#64748b' }}>
-                                {coach.working_hours || 'Mon-Fri 9:00-17:00'}
-                            </Typography>
+                        <Box sx={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
+                            <BlackButton
+                                size="large"
+                                onClick={handleStartConsultation}
+                                disabled={checkingRoom}
+                                sx={{
+                                    py: 1.5,
+                                    px: 4,
+                                    fontWeight: 600,
+                                    textTransform: 'none',
+                                    fontSize: '1rem',
+                                    marginTop: 0,
+                                    alignSelf: 'center',
+                                    width: 300,
+                                }}
+                            >
+                                {checkingRoom
+                                    ? 'Loading...'
+                                    : existingChatRoom
+                                        ? 'Continue Consultation'
+                                        : 'Start Consultation'}
+                            </BlackButton>
                         </Box>
                     </Box>
+                    {/* Bio, Experience, and Contact Info section (intact) */}
+                    <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 0, alignItems: { md: 'flex-start' } }}>
+                        {/* Left: Bio and Experience */}
+                        <Box sx={{ flex: 1, pr: { md: 3 }, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
+                            <Typography
+                                variant="body1"
+                                sx={{ color: '#475569', lineHeight: 1.7, mb: 1, my: 1, fontSize: '1.1rem' }}
+                            >
+                                {coach.bio || 'No bio provided.'}
+                            </Typography>
+                            {coach.experience_years && (
+                                <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+                                    <Typography variant="body1" sx={{ color: '#475569', lineHeight: 1.7, mb: 1, my: 1, fontSize: '1.1rem' }}>
+                                        Expert for: {""}
+                                        {coach.experience_years} {""}
+                                        years
+                                    </Typography>
+                                </Box>
+                            )}
+                        </Box>
+                        {/* Divider */}
+                        <Divider orientation="vertical" flexItem sx={{ mx: 3, display: { xs: 'none', md: 'block' }, border: '0.5px solid', borderColor: 'divider' }} />
+                        {/*Contact Info */}
+                        <Box sx={{ flex: 1, pl: { md: 3 }, display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                            <Typography variant="h6" sx={{ fontWeight: 500, color: '#1e293b', mb: 1 }}>
+                                Contact Information
+                            </Typography>
+                            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                                <Email sx={{ mr: 1, color: '#64748b', fontSize: '1.2rem' }} />
+                                <Typography variant="body2" sx={{ color: '#64748b', fontSize: '1.15rem' }}>
+                                    {coach.users?.email || 'Available upon request'}
+                                </Typography>
+                            </Box>
+                            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                                <Phone sx={{ mr: 1, color: '#64748b', fontSize: '1.2rem' }} />
+                                <Typography variant="body2" sx={{ color: '#64748b', fontSize: '1.15rem' }}>
+                                    {coach.users?.phone_number || 'Available upon request'}
+                                </Typography>
+                            </Box>
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                <AccessTime sx={{ mr: 1, color: '#64748b', fontSize: '1.2rem' }} />
+                                <Typography variant="body2" sx={{ color: '#64748b', fontSize: '1.15rem' }}>
+                                    {coach.working_hours || 'Mon-Fri 9:00-17:00'}
+                                </Typography>
+                            </Box>
+                        </Box>
+                    </Box>
+                    {/* CoachFeedback below all info sections */}
+                    <CoachFeedback
+                        averageStars={coach.averageStars || { "1": 0, "2": 0, "3": 0, "4": 0, "5": 0 }}
+                        averageRating={coach.averageRating || 0}
+                        newFeedback={newFeedback}
+                        setNewFeedback={setNewFeedback}
+                        submitting={submittingFeedback}
+                        setSubmitting={setSubmittingFeedback}
+                    />
                 </Box>
             </Box>
         </Card>

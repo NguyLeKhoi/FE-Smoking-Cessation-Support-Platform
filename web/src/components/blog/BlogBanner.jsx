@@ -17,7 +17,7 @@ const BlogBanner = ({
     slug,
     id
 }) => {
-    // Extract subtitle from markdown content
+
     const getSubtitle = (content) => {
         if (!content) return null;
 

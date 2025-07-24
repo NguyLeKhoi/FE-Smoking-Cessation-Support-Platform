@@ -8,7 +8,6 @@ import NavigationButtonGroup from '../../components/homePage/NavigationButtonGro
 
 const navigationItems = [
     { id: 'total_score', label: 'Total Score' },
-    { id: 'money_saved', label: 'Money Saved' },
     { id: 'relapse_free_streak', label: 'Relapse-Free Streak' },
     { id: 'community_support', label: 'Community Support' },
 ];
@@ -92,7 +91,7 @@ const LeaderBoardPage = () => {
     const [leaderboards, setLeaderboards] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [activeType, setActiveType] = useState('money_saved');
+    const [activeType, setActiveType] = useState('total_score');
 
     useEffect(() => {
         const fetchLeaderboard = async () => {

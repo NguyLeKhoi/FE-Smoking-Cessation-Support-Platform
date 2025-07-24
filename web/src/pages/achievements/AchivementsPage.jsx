@@ -15,9 +15,16 @@ const AchievementsPage = () => {
     useEffect(() => {
         const fetchAchievementsProgress = async () => {
             const accessToken = localStorage.getItem('accessToken');
+            let decoded = null;
+            if (typeof accessToken === 'string' && accessToken) {
+                try {
+                    decoded = jwtDecode(accessToken);
+                } catch (e) {
+                    decoded = null;
+                }
+            }
             let userId = null;
-            if (accessToken) {
-                const decoded = jwtDecode(accessToken);
+            if (decoded) {
                 userId = decoded.sub || decoded.id || decoded.user_id;
             }
             if (!userId) {

@@ -5,17 +5,26 @@ import { Link } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import AchievementStyle from './AchievementStyle';
 
-const AchievementSection = () => {
+const AchievementSection = ({ onLoaded = () => { } }) => {
+  console.log('[AchievementSection] Rendered');
   const [progressList, setProgressList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    console.log('[AchievementSection] useEffect running');
     const fetchAchievementsProgress = async () => {
       const accessToken = localStorage.getItem('accessToken');
+      let decoded = null;
+      if (typeof accessToken === 'string' && accessToken) {
+        try {
+          decoded = jwtDecode(accessToken);
+        } catch (e) {
+          decoded = null;
+        }
+      }
       let userId = null;
-      if (accessToken) {
-        const decoded = jwtDecode(accessToken);
+      if (decoded) {
         userId = decoded.sub || decoded.id || decoded.user_id;
       }
       if (!userId) {
@@ -30,6 +39,8 @@ const AchievementSection = () => {
         setError('Failed to load achievement progress');
       } finally {
         setLoading(false);
+        console.log('[AchievementSection] Finished loading, calling onLoaded');
+        onLoaded();
       }
     };
     fetchAchievementsProgress();
