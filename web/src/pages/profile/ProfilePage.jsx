@@ -55,8 +55,14 @@ export default function ProfilePage({ handleLogout }) {
     },
     {
       icon: "🏆",
-      value: user.leaderboard[0].rank.toString(),
-      label: `Top ${user.leaderboard[0].rank} finishes of  ${user.leaderboard[0].rank_type}`,
+      value: user.leaderboard[0]?.rank?.toString() || 0,
+      label:
+        user.leaderboard[0]?.rank != null
+          ? `Top ${user.leaderboard[0].rank} finishes of ${
+              user.leaderboard[0]?.rank_type || ""
+            }`
+          : "No ranking data",
+
       color: "#f59e0b",
     },
   ];

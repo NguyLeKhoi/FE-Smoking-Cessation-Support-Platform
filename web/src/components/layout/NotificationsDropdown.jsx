@@ -1,37 +1,56 @@
-import React, { useState } from 'react';
-import { Box, Typography, Paper, IconButton, List, ListItem, ListItemText, Divider, Tabs, Tab, Button } from '@mui/material';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import CloseIcon from '@mui/icons-material/Close';
+import React, { useState } from "react";
+import {
+  Box,
+  Typography,
+  Paper,
+  IconButton,
+  List,
+  ListItem,
+  ListItemText,
+  Divider,
+  Tabs,
+  Tab,
+  Button,
+} from "@mui/material";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import CloseIcon from "@mui/icons-material/Close";
 
 const NotificationsDropdown = ({ notifications, onClose, onMarkAllAsRead }) => {
   const [tabValue, setTabValue] = useState(0); // 0 for All, 1 for Unread
-
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
   };
 
-  const filteredNotifications = tabValue === 0
-    ? notifications
-    : notifications.filter(notification => !notification.read);
+  const filteredNotifications =
+    tabValue === 0
+      ? notifications
+      : notifications.filter((notification) => !notification.is_read);
 
   return (
     <Paper
       sx={{
-        position: 'absolute',
-        top: '60px', // Adjust based on your header height
-        right: '10px',
+        position: "absolute",
+        top: "60px", // Adjust based on your header height
+        right: "10px",
         width: 360,
         maxHeight: 450,
-        overflowY: 'auto',
-        bgcolor: 'background.paper',
+        overflowY: "auto",
+        bgcolor: "background.paper",
         boxShadow: 3,
-        borderRadius: '8px',
+        borderRadius: "8px",
         zIndex: 1300, // Ensure it's above the header
-        display: 'flex',
-        flexDirection: 'column',
+        display: "flex",
+        flexDirection: "column",
       }}
     >
-      <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <Box
+        sx={{
+          p: 2,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
         <Typography variant="h6">Notifications</Typography>
         <IconButton onClick={onClose} size="small">
           <CloseIcon />
@@ -39,16 +58,27 @@ const NotificationsDropdown = ({ notifications, onClose, onMarkAllAsRead }) => {
       </Box>
       <Divider />
 
-      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs value={tabValue} onChange={handleTabChange} aria-label="notification tabs" variant="fullWidth">
+      <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+        <Tabs
+          value={tabValue}
+          onChange={handleTabChange}
+          aria-label="notification tabs"
+          variant="fullWidth"
+        >
           <Tab label="All Notifications" />
-          <Tab label={`Unread (${notifications.filter(n => !n.read).length})`} />
+          <Tab
+            label={`Unread (${notifications.filter((n) => !n.is_read).length})`}
+          />
         </Tabs>
       </Box>
       <Divider />
 
       {filteredNotifications.length === 0 ? (
-        <Typography variant="body2" color="text.secondary" sx={{ p: 2, textAlign: 'center' }}>
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          sx={{ p: 2, textAlign: "center" }}
+        >
           No notifications.
         </Typography>
       ) : (
@@ -58,8 +88,10 @@ const NotificationsDropdown = ({ notifications, onClose, onMarkAllAsRead }) => {
               <ListItem
                 alignItems="flex-start"
                 sx={{
-                  bgcolor: notification.read ? 'transparent' : 'action.hover', // Highlight unread
-                  '&:hover': { bgcolor: 'action.selected' },
+                  bgcolor: notification.is_read
+                    ? "transparent"
+                    : "action.hover", // Highlight unread
+                  "&:hover": { bgcolor: "action.selected" },
                   px: 2,
                   py: 1.5,
                 }}
@@ -71,14 +103,14 @@ const NotificationsDropdown = ({ notifications, onClose, onMarkAllAsRead }) => {
                       component="span"
                       variant="body2"
                       color="text.primary"
-                      fontWeight={notification.read ? 'normal' : 'bold'}
+                      fontWeight={notification.is_read ? "normal" : "bold"}
                     >
-                      {notification.message}
+                      {notification.content}
                     </Typography>
                   }
                   secondary={
                     <Typography
-                      sx={{ display: 'inline' }}
+                      sx={{ display: "inline" }}
                       component="span"
                       variant="caption"
                       color="text.secondary"
@@ -88,18 +120,27 @@ const NotificationsDropdown = ({ notifications, onClose, onMarkAllAsRead }) => {
                   }
                 />
               </ListItem>
-              {index < filteredNotifications.length - 1 && <Divider component="li" />}
+              {index < filteredNotifications.length - 1 && (
+                <Divider component="li" />
+              )}
             </React.Fragment>
           ))}
         </List>
       )}
 
       {notifications.length > 0 && (
-        <Box sx={{ p: 1, display: 'flex', justifyContent: 'flex-end', bgcolor: 'background.paper' }}>
+        <Box
+          sx={{
+            p: 1,
+            display: "flex",
+            justifyContent: "flex-end",
+            bgcolor: "background.paper",
+          }}
+        >
           <Button
             startIcon={<CheckCircleOutlineIcon />}
             onClick={onMarkAllAsRead}
-            disabled={notifications.filter(n => !n.read).length === 0}
+            disabled={notifications.filter((n) => !n.is_read).length === 0}
           >
             Mark all as read
           </Button>
@@ -109,4 +150,4 @@ const NotificationsDropdown = ({ notifications, onClose, onMarkAllAsRead }) => {
   );
 };
 
-export default NotificationsDropdown; 
+export default NotificationsDropdown;

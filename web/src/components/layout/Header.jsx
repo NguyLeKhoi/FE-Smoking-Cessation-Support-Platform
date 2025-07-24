@@ -1,17 +1,51 @@
-import React, { useState, useEffect } from 'react';
-import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
-import { useNavigate, Link as RouterLink } from 'react-router-dom';
-import NavLinks from './NavLinks';
-import UserProfileSection from './UserProfileSection';
-import MotivationService from './MotivationMessage';
+import React, { useState, useEffect } from "react";
+import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
+import { useNavigate, Link as RouterLink } from "react-router-dom";
+import NavLinks from "./NavLinks";
+import UserProfileSection from "./UserProfileSection";
+import MotivationService from "./MotivationMessage";
+import { io } from "socket.io-client";
+import notificationService from "../../services/notificationService";
+import { jwtDecode } from "jwt-decode";
+import { toast } from "react-toastify";
 
 const Header = ({ authStatus }) => {
   const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(0);
   const [notifications, setNotifications] = useState([]);
-
+  const [token, setToken] = useState(localStorage.getItem("accessToken"));
+  const [userId, setUserId] = useState("");
   // Use the motivation service component
   const { loadingMotivation } = MotivationService({ setNotifications });
+
+  const fetchNotifications = async () => {
+    if (token) {
+      try {
+        const res = await notificationService.getNotifications();
+        setNotifications(res.data);
+      } catch (err) {
+        console.error("Lỗi khi lấy thông báo:", err);
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchNotifications();
+    const { sub } = jwtDecode(token);
+    setUserId(sub);
+    const socket = io("http://localhost:8000/notification", {
+      query: { userId: sub },
+    });
+
+    socket.on("notification", async (data) => {
+      toast.info(`${data.title}: ${data.content}`);
+      await fetchNotifications();
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [fetchNotifications]);
 
   useEffect(() => {
     const handleScroll = () => {
