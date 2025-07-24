@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import postService from '../../services/postService';
 import commentsService from '../../services/commentsService';
-import CommentCard from './CommentsCard';
-import { Box, Typography, Button, Avatar, TextField, Stack, CircularProgress } from '@mui/material';
 import { fetchCurrentUser } from '../../services/userService';
+import { Box, Typography, Button, Avatar, TextField, CircularProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import CommentCard from './CommentsCard';
 
 function CommentsSection({ postId }) {
     const [comments, setComments] = useState([]);
@@ -88,7 +88,6 @@ function CommentsSection({ postId }) {
         return map;
     };
 
-    // Recursively render comments and their replies
     const renderComments = (parentId = null, level = 0) => {
         if (!commentsByParent[parentId]) return null;
         return commentsByParent[parentId].map((comment) => {
@@ -178,6 +177,7 @@ function CommentsSection({ postId }) {
                     sx={{ flex: 1, mr: 2 }}
                     size="small"
                     disabled={!currentUser || submitting || !!replyTo}
+
                 />
                 <Button
                     variant="contained"

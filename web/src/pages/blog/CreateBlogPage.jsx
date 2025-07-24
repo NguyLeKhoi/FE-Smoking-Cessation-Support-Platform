@@ -11,8 +11,6 @@ import {
   Breadcrumbs,
   Link,
   Divider,
-  Tabs,
-  Tab,
   FormControl,
   InputLabel,
   Select,
@@ -20,15 +18,12 @@ import {
   FormHelperText,
 } from "@mui/material";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SaveIcon from "@mui/icons-material/Save";
 import HomeIcon from "@mui/icons-material/Home";
 import CreateIcon from "@mui/icons-material/Create";
-import PreviewIcon from "@mui/icons-material/Preview";
-import CodeIcon from "@mui/icons-material/Code";
 import postService from "../../services/postService";
 import { toast } from "react-toastify";
-import BlogEditor from "./BlogEditor";
+import BlogEditor from "../../components/blog/BlogEditor";
 
 const CreateBlogPage = () => {
   const navigate = useNavigate();
@@ -38,11 +33,11 @@ const CreateBlogPage = () => {
     title: "",
     content: "",
     thumbnail: "",
-    type: "", // Added type field
+    type: "", 
   });
   const [formErrors, setFormErrors] = useState({});
   const [content, setContent] = useState("");
-  // Post type options - Updated to match your constants
+
   const postTypes = [
     { value: "health_benefits", label: "Health Benefits" },
     { value: "success_stories", label: "Success Stories" },
@@ -122,12 +117,8 @@ const CreateBlogPage = () => {
 
     try {
       setSaving(true);
-
-      // Call the createPost API
       const newPost = await postService.createPost(finalData);
       console.log("Post created successfully:", newPost);
-
-      // Navigate back to blog list page
       navigate("/my-blog");
     } catch (error) {
       console.error("Failed to create post:", error);

@@ -1,7 +1,6 @@
 import React from 'react';
 import { Box, Avatar, Typography, IconButton, Stack, Menu, MenuItem } from '@mui/material';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import commentsService from '../../services/commentsService';
 import { jwtDecode } from 'jwt-decode';
