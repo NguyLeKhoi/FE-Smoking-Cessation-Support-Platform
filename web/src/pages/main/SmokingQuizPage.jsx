@@ -311,8 +311,8 @@ const SmokingQuiz = () => {
         const fetchExistingData = async () => {
             try {
                 setLoading(true);
-                // Only fetch if quiz is not completed, otherwise it's handled by handleSubmit
-                if (!quizCompleted) {
+                // Only fetch if quiz is not completed and not currently taking the quiz (showForm is false)
+                if (!quizCompleted && !showForm) {
                     const response = await smokingService.getMySmokingHabits();
                     if (response?.data?.length > 0) {
                         // Sort data by created_at in descending order to get the most recent record
@@ -357,7 +357,7 @@ const SmokingQuiz = () => {
         };
 
         fetchExistingData();
-    }, [quizCompleted, processHealthIssues, showToast]);
+    }, [quizCompleted, processHealthIssues, showToast, showForm]);
 
     /**
      * body overflow based onresults display

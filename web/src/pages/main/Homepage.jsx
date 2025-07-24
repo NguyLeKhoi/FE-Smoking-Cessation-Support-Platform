@@ -69,15 +69,29 @@ export default function HomePage() {
                 <BlackButton
                   onClick={async () => {
                     try {
-                      const res = await smokingService.getHasActiveQuitPlan();
-                      const active = res?.data?.hasActiveQuitPlan ?? res?.hasActiveQuitPlan;
-                      if (active === false) {
-                        navigate('/smoking-quiz');
-                      } else {
+                      const [activeRes, habitRes] = await Promise.all([
+                        smokingService.getHasActiveQuitPlan(),
+                        smokingService.getMySmokingHabits().catch(e => e)
+                      ]);
+                      const active = activeRes?.data?.hasActiveQuitPlan ?? activeRes?.hasActiveQuitPlan;
+                      // If user has an active quit plan, go to habit-check
+                      if (active === true) {
                         navigate('/habit-check');
+                        return;
                       }
+                      // If getMySmokingHabits returns an error with 404 and specific message, go to smoking-quiz
+                      if (habitRes instanceof Error && habitRes.message === 'Smoking habit for user not found') {
+                        navigate('/smoking-quiz');
+                        return;
+                      }
+                      // If getMySmokingHabits returns data, go to habit-check
+                      if (habitRes && habitRes.data) {
+                        navigate('/habit-check');
+                        return;
+                      }
+                      // Fallback
+                      navigate('/smoking-quiz');
                     } catch (e) {
-                      // fallback: go to quiz if error
                       navigate('/smoking-quiz');
                     }
                   }}
@@ -90,22 +104,6 @@ export default function HomePage() {
 
             <Grid sx={{ gridColumn: { xs: 'span 12', md: 'span 6' }, display: 'flex', justifyContent: 'center', position: 'relative' }}>
               <Box sx={{ position: 'relative', width: '100%', maxWidth: 500, height: 400 }}>
-
-                {/* Main image */}
-                {/* <Box
-                  sx={{
-                    position: 'relative',
-                    bottom: 30,
-                    left: 70,
-                    width: 500,
-                    height: 500,
-                    background: `url(${homepageImage})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    borderRadius: 2,
-                    zIndex: 3,
-                  }}
-                /> */}
 
                 <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                   <Box

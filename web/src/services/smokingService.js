@@ -1,4 +1,26 @@
 import api from './api';
+import { SMOKING_HABITS_MESSAGES } from '../constants/serviceMessages';
+import { toast } from 'react-toastify';
+
+const showSmokingHabitError = (error) => {
+    const data = error?.response?.data;
+    if (Array.isArray(data?.message)) {
+        data.message.forEach(m => {
+            if (Object.values(SMOKING_HABITS_MESSAGES).includes(m.message)) {
+                toast.error(m.message);
+            } else {
+                toast.error(m.message || 'An unexpected error occurred.');
+            }
+        });
+    } else {
+        const msg = data?.message || error.message;
+        if (Object.values(SMOKING_HABITS_MESSAGES).includes(msg)) {
+            toast.error(msg);
+        } else {
+            toast.error(msg || 'An unexpected error occurred.');
+        }
+    }
+};
 
 const smokingService = {
     createSmokingHabit: async (habitData) => {
@@ -13,7 +35,7 @@ const smokingService = {
                     ? habitData.health_issues
                     : (Array.isArray(habitData.health_issues)
                         ? habitData.health_issues.join(', ')
-                        : 'No health issues reported')
+                        : SMOKING_HABITS_MESSAGES.HABIT_NOT_FOUND)
             };
 
             console.log('Formatted data being sent to API:', formattedData);
@@ -44,11 +66,11 @@ const smokingService = {
                     ? response.data.health_issues
                     : (typeof formattedData.health_issues === 'string'
                         ? formattedData.health_issues
-                        : 'No health issues reported')
+                        : SMOKING_HABITS_MESSAGES.HABIT_NOT_FOUND)
             };
         } catch (error) {
+            showSmokingHabitError(error);
             console.error('Error creating smoking habit:', error);
-
             // Still return the user's input data even if the API call fails
             return {
                 ...habitData,
@@ -56,8 +78,8 @@ const smokingService = {
                     ? habitData.health_issues
                     : (Array.isArray(habitData.health_issues)
                         ? habitData.health_issues.join(', ')
-                        : 'No health issues reported'),
-                ai_feedback: 'API request failed. This is your smoking assessment based on the data you provided.'
+                        : SMOKING_HABITS_MESSAGES.HABIT_NOT_FOUND),
+                ai_feedback: SMOKING_HABITS_MESSAGES.HABIT_NOT_FOUND
             };
         }
     },
@@ -67,8 +89,9 @@ const smokingService = {
             const response = await api.get('/smoking-habits/me');
             return response.data;
         } catch (error) {
+            showSmokingHabitError(error);
             console.error('Error fetching current user smoking habits:', error);
-            throw error;
+            throw new Error(SMOKING_HABITS_MESSAGES.HABIT_NOT_FOUND);
         }
     },
 
@@ -77,6 +100,7 @@ const smokingService = {
             const response = await api.get('/smoking-habits/me/has-active-quitplan');
             return response.data;
         } catch (error) {
+            showSmokingHabitError(error);
             console.error('Error fetching has-active-quitplan:', error);
             throw error;
         }

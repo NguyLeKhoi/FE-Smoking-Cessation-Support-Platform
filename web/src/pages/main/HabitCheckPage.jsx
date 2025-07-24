@@ -37,8 +37,8 @@ const HabitCheckPage = () => {
         return (
             <div style={{ minHeight: '100vh', width: '100vw', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
                 <div style={{ zIndex: 2, fontSize: 30, fontWeight: 600, color: '#333', textAlign: 'center', position: 'relative' }}>
-                    You already have an active Quit Plan!<br />
-                    Complete current Plan to take another quiz.
+                    You already took the quiz!<br />
+                    Complete a Quit Plan to take another quiz!
                 </div>
                 <div style={{ zIndex: 2, marginTop: 32, display: 'flex', flexDirection: 'column', gap: 16, alignItems: 'center' }}>
                     <BlackButton
