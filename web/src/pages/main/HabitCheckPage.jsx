@@ -35,7 +35,7 @@ const HabitCheckPage = () => {
     if (loading) return <LoadingPage />;
     if (hasActiveQuitPlan) {
         return (
-            <div style={{ minHeight: '100vh', width: '100vw', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', flexDirection: 'column', paddingTop: 200 }}>
+            <div style={{ minHeight: '100vh', width: '100vw', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
                 <div style={{ zIndex: 2, fontSize: 30, fontWeight: 600, color: '#333', textAlign: 'center', position: 'relative' }}>
                     You already have an active Quit Plan!<br />
                     Complete current Plan to take another quiz.
@@ -54,8 +54,11 @@ const HabitCheckPage = () => {
                         View my Quit Plan
                     </WhiteButton>
                 </div>
-                <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, display: 'flex', justifyContent: 'center', zIndex: 1, pointerEvents: 'none' }}>
-                    <Lottie animationData={catNoir} style={{ width: 700, height: 720 }} loop={true} />
+                <div style={{ position: 'fixed', right: 0, top: 0, display: 'flex', justifyContent: 'flex-end', zIndex: 1, pointerEvents: 'none', transform: 'rotate(180deg)' }}>
+                    <Lottie animationData={catNoir} style={{ width: 700, height: 620 }} loop={true} />
+                </div>
+                <div style={{ position: 'fixed', left: 0, bottom: 0, display: 'flex', justifyContent: 'flex-start', zIndex: 1, pointerEvents: 'none' }}>
+                    <Lottie animationData={catNoir} style={{ width: 600, height: 620 }} loop={true} />
                 </div>
             </div>
         );
