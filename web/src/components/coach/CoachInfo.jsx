@@ -5,11 +5,23 @@ import { Email, Phone, AccessTime } from '@mui/icons-material';
 import { createChatRoom, getAllChatRooms } from '../../services/chatService';
 import { toast } from 'react-toastify';
 import CoachFeedback from './CoachFeedback';
+import BlackButton from '../buttons/BlackButton';
+import WriteFeedbackBox from './WriteFeedbackBox';
 
 const CoachInfo = ({ coach }) => {
     const navigate = useNavigate();
     const [existingChatRoom, setExistingChatRoom] = useState(null);
     const [checkingRoom, setCheckingRoom] = useState(true);
+    const [newFeedback, setNewFeedback] = useState('');
+    const [submittingFeedback, setSubmittingFeedback] = useState(false);
+    const [currentUser, setCurrentUser] = useState(null);
+
+    useEffect(() => {
+        // Optionally fetch current user from context or API
+        // For now, try to get from localStorage
+        const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+        setCurrentUser(userInfo && userInfo.id ? userInfo : null);
+    }, []);
 
     useEffect(() => {
         const fetchChatRooms = async () => {
@@ -63,7 +75,7 @@ const CoachInfo = ({ coach }) => {
             sx={{
                 display: 'flex',
                 flexDirection: { xs: 'column', md: 'row' },
-                alignItems: 'stretch',
+                alignItems: { xs: 'stretch', md: 'flex-start' },
                 borderRadius: 5,
                 p: 5,
                 mb: 5,
@@ -80,7 +92,8 @@ const CoachInfo = ({ coach }) => {
                 sx={{
                     flexBasis: { xs: '100%', md: '36%' },
                     flexGrow: 1,
-                    minWidth: 220,
+                    width: '100%',
+                    minWidth: 500,
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
@@ -94,8 +107,8 @@ const CoachInfo = ({ coach }) => {
                     src={coach.users?.avatar || ''}
                     alt={coach.users?.username || 'Coach'}
                     sx={{
-                        width: 180,
-                        height: 180,
+                        width: 300,
+                        height: 300,
                         bgcolor: coach.users?.avatar ? '#f0f0f0' : '#e0e0e0',
                         fontSize: '4rem',
                         fontWeight: 700,
@@ -112,14 +125,11 @@ const CoachInfo = ({ coach }) => {
                         : <span style={{ fontSize: '3rem' }}>C</span>
                     }
                 </Avatar>
-                <Button
-                    variant="contained"
+                <BlackButton
                     size="large"
                     onClick={handleStartConsultation}
                     disabled={checkingRoom}
                     sx={{
-                        bgcolor: '#1e293b',
-                        color: 'white',
                         borderRadius: 5,
                         py: 1.5,
                         px: 4,
@@ -128,10 +138,7 @@ const CoachInfo = ({ coach }) => {
                         fontSize: '1rem',
                         marginTop: 2,
                         alignSelf: 'center',
-                        width: 250,
-                        '&:hover': {
-                            bgcolor: '#334155'
-                        }
+                        width: 300,
                     }}
                 >
                     {checkingRoom
@@ -139,7 +146,7 @@ const CoachInfo = ({ coach }) => {
                         : existingChatRoom
                             ? 'Continue Consultation'
                             : 'Start Consultation'}
-                </Button>
+                </BlackButton>
             </Box>
 
             {/* Coach Info (Right) */}
@@ -157,18 +164,13 @@ const CoachInfo = ({ coach }) => {
                         </Typography>
                         <Typography
                             variant="h4"
-                            sx={{
-                                fontWeight: 500,
-                                color: '#1e293b',
-                            }}
+                            fontWeight={600}
+                            gutterBottom
+                            align="left"
+                            sx={{ color: '#1e293b' }}
                         >
                             {coach.users?.username || 'Professional Coach'}
                         </Typography>
-                        {/* Coach Feedback */}
-                        <CoachFeedback
-                            averageStars={coach.averageStars || { "1": 0, "2": 0, "3": 0, "4": 0, "5": 0 }}
-                            averageRating={coach.averageRating || 0}
-                        />
                     </Box>
                     <Typography
                         variant="body1"
@@ -205,23 +207,28 @@ const CoachInfo = ({ coach }) => {
                         </Typography>
                         <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                             <Email sx={{ mr: 1, color: '#64748b', fontSize: '1.2rem' }} />
-                            <Typography variant="body2" sx={{ color: '#64748b' }}>
+                            <Typography variant="body2" sx={{ color: '#64748b', fontSize: '1.15rem' }}>
                                 {coach.users?.email || 'Available upon request'}
                             </Typography>
                         </Box>
                         <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                             <Phone sx={{ mr: 1, color: '#64748b', fontSize: '1.2rem' }} />
-                            <Typography variant="body2" sx={{ color: '#64748b' }}>
+                            <Typography variant="body2" sx={{ color: '#64748b', fontSize: '1.15rem' }}>
                                 {coach.users?.phone_number || 'Available upon request'}
                             </Typography>
                         </Box>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
                             <AccessTime sx={{ mr: 1, color: '#64748b', fontSize: '1.2rem' }} />
-                            <Typography variant="body2" sx={{ color: '#64748b' }}>
+                            <Typography variant="body2" sx={{ color: '#64748b', fontSize: '1.15rem' }}>
                                 {coach.working_hours || 'Mon-Fri 9:00-17:00'}
                             </Typography>
                         </Box>
                     </Box>
+                    {/* Coach Feedback */}
+                    <CoachFeedback
+                        averageStars={coach.averageStars || { "1": 0, "2": 0, "3": 0, "4": 0, "5": 0 }}
+                        averageRating={coach.averageRating || 0}
+                    />
                 </Box>
             </Box>
         </Card>

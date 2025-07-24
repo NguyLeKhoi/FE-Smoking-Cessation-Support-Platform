@@ -34,7 +34,7 @@ const CoachListPage = () => {
                 decoded = null;
             }
         }
-        setRole(decoded?.role || null); 
+        setRole(decoded?.role || null);
     }, []);
 
     useEffect(() => {
@@ -48,7 +48,9 @@ const CoachListPage = () => {
             try {
                 setLoading(true);
                 const data = await getAllCoaches();
-                setCoaches(data.data || []);
+                // Sort coaches by number of feedbacks 
+                const sortedCoaches = (data.data || []).sort((a, b) => (b.feedbacks?.length || 0) - (a.feedbacks?.length || 0));
+                setCoaches(sortedCoaches);
             } catch (err) {
                 setError('Failed to fetch coaches.');
             } finally {
@@ -168,9 +170,9 @@ const CoachListPage = () => {
 
     return (
         <Box sx={{ maxWidth: 1400, mx: 'auto', mt: 1, px: 2 }}>
-            <Typography variant="h4" fontWeight={700} gutterBottom align="center">
+            {/* <Typography variant="h4" fontWeight={700} gutterBottom align="center">
                 Meet Our Coaches
-            </Typography>
+            </Typography> */}
             <Box sx={{ mb: 4 }}>
 
                 {/* {chatRoomsLoading ? (
