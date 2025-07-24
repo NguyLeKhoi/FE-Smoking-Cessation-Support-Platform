@@ -66,7 +66,7 @@ function CommentsSection({ postId }) {
     };
 
     const handleReply = (comment) => {
-        setReplyTo(comment);
+        setReplyTo(prev => (prev && prev.id === comment.id ? null : comment));
     };
 
     const handleCancelReply = () => {
@@ -76,6 +76,81 @@ function CommentsSection({ postId }) {
     const handleDeleteComment = (commentId) => {
         setComments(prev => prev.filter(comment => comment.id !== commentId));
     };
+
+    // Group comments by parent_comment_id
+    const groupComments = (comments) => {
+        const map = {};
+        comments.forEach(comment => {
+            const parentId = comment.parent_comment_id || null;
+            if (!map[parentId]) map[parentId] = [];
+            map[parentId].push(comment);
+        });
+        return map;
+    };
+
+    // Recursively render comments and their replies
+    const renderComments = (parentId = null, level = 0) => {
+        if (!commentsByParent[parentId]) return null;
+        return commentsByParent[parentId].map((comment) => {
+            const replies = commentsByParent[comment.id] || [];
+            return (
+                <Box key={comment.id} sx={{
+                    ml: level * 4,
+                    mt: level > 0 ? 1 : 0,
+                    position: 'relative',
+                    pl: level > 0 ? 2 : 0,
+                    borderLeft: 'none',
+                }}>
+                    <CommentCard
+                        comment={comment}
+                        onDelete={() => handleDeleteComment(comment.id)}
+                        onReplyClick={() => handleReply(comment)}
+                        replyCount={replies.length}
+                    />
+                    {replyTo && replyTo.id === comment.id && (
+                        <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 3, ml: 6 }}>
+                            <Avatar
+                                src={currentUser?.avatar || 'https://ui-avatars.com/api/?name=User'}
+                                alt="avatar"
+                                sx={{ width: 36, height: 36, mr: 2 }}
+                            />
+                            <TextField
+                                multiline
+                                minRows={2}
+                                placeholder={
+                                    currentUser
+                                        ? `Reply to ${replyTo.users?.first_name || ''} ${replyTo.users?.last_name || ''}`
+                                        : "Login to join the discussion"
+                                }
+                                value={newComment}
+                                onChange={e => setNewComment(e.target.value)}
+                                sx={{ flex: 1, mr: 2 }}
+                                size="small"
+                                disabled={!currentUser || submitting}
+                            />
+                            <Button
+                                variant="contained"
+                                onClick={currentUser ? handleAddComment : () => navigate('/login')}
+                                sx={{ borderRadius: 2, minWidth: 80 }}
+                                disabled={!currentUser || submitting || !newComment.trim()}
+                            >
+                                {currentUser
+                                    ? (submitting ? <CircularProgress size={20} color="inherit" /> : 'Post')
+                                    : 'Login now'}
+                            </Button>
+                            <Button size="small" onClick={handleCancelReply} sx={{ ml: 1, textTransform: 'none' }}>
+                                Cancel
+                            </Button>
+                        </Box>
+                    )}
+                    {renderComments(comment.id, level + 1)}
+                </Box>
+            );
+        });
+    };
+
+    // Memoize grouped comments for performance
+    const commentsByParent = React.useMemo(() => groupComments(comments), [comments]);
 
     return (
         <Box sx={{ mt: 6 }}>
@@ -131,47 +206,7 @@ function CommentsSection({ postId }) {
                         No comments yet.
                     </Typography>
                 ) : (
-                    comments.map((comment, idx) => (
-                        <React.Fragment key={comment.id}>
-                            <CommentCard comment={comment} onReplyClick={() => handleReply(comment)} onDelete={() => handleDeleteComment(comment.id)} />
-                            {replyTo && replyTo.id === comment.id && (
-                                <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 3, ml: 6 }}>
-                                    <Avatar
-                                        src={currentUser?.avatar || 'https://ui-avatars.com/api/?name=User'}
-                                        alt="avatar"
-                                        sx={{ width: 36, height: 36, mr: 2 }}
-                                    />
-                                    <TextField
-                                        multiline
-                                        minRows={2}
-                                        placeholder={
-                                            currentUser
-                                                ? `Reply to ${replyTo.users?.first_name || ''} ${replyTo.users?.last_name || ''}`
-                                                : "Login to join the discussion"
-                                        }
-                                        value={newComment}
-                                        onChange={e => setNewComment(e.target.value)}
-                                        sx={{ flex: 1, mr: 2 }}
-                                        size="small"
-                                        disabled={!currentUser || submitting}
-                                    />
-                                    <Button
-                                        variant="contained"
-                                        onClick={currentUser ? handleAddComment : () => navigate('/login')}
-                                        sx={{ borderRadius: 2, minWidth: 80 }}
-                                        disabled={!currentUser || submitting || !newComment.trim()}
-                                    >
-                                        {currentUser
-                                            ? (submitting ? <CircularProgress size={20} color="inherit" /> : 'Post')
-                                            : 'Login now'}
-                                    </Button>
-                                    <Button size="small" onClick={handleCancelReply} sx={{ ml: 1, textTransform: 'none' }}>
-                                        Cancel
-                                    </Button>
-                                </Box>
-                            )}
-                        </React.Fragment>
-                    ))
+                    renderComments()
                 )}
             </Box>
         </Box>
