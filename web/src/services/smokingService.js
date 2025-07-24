@@ -4,8 +4,10 @@ import { toast } from 'react-toastify';
 
 const showSmokingHabitError = (error) => {
     const data = error?.response?.data;
+    const skipMsg = SMOKING_HABITS_MESSAGES.USER_HABIT_NOT_FOUND;
     if (Array.isArray(data?.message)) {
         data.message.forEach(m => {
+            if (m.message === skipMsg) return;
             if (Object.values(SMOKING_HABITS_MESSAGES).includes(m.message)) {
                 toast.error(m.message);
             } else {
@@ -14,6 +16,7 @@ const showSmokingHabitError = (error) => {
         });
     } else {
         const msg = data?.message || error.message;
+        if (msg === skipMsg) return;
         if (Object.values(SMOKING_HABITS_MESSAGES).includes(msg)) {
             toast.error(msg);
         } else {
@@ -48,16 +51,14 @@ const smokingService = {
             }
 
             const response = await api.post('/smoking-habits', formattedData);
+            toast.success('Smoking habit profile created successfully!');
 
-            // Return the user's input data if the API response doesn't include it
             if (!response.data) {
                 return {
                     ...formattedData,
                     ai_feedback: ''
                 };
             }
-
-            // If API response is valid but might have missing fields, merge with submitted data
             return {
                 ...formattedData,
                 ...response.data,

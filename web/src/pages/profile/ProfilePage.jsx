@@ -15,6 +15,9 @@ import { HttpStatusCode } from "axios";
 export default function ProfilePage({ handleLogout }) {
   const navigate = useNavigate();
   const [statisticsData, setStatisticsData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [loadingUserInfo, setLoadingUserInfo] = useState(true);
+  const [loadingAchievements, setLoadingAchievements] = useState(true);
   useEffect(() => {
     window.scrollTo({ top: 0 });
   }, []);
@@ -26,10 +29,15 @@ export default function ProfilePage({ handleLogout }) {
 
   useEffect(() => {
     const loadUserProfile = async () => {
-      const response = await fetchCurrentUser();
-      if (response.statusCode === HttpStatusCode.Ok) {
-        const stats = mapUserToStatisticsData(response.data);
-        setStatisticsData(stats);
+      setLoading(true);
+      try {
+        const response = await fetchCurrentUser();
+        if (response.statusCode === HttpStatusCode.Ok) {
+          const stats = mapUserToStatisticsData(response.data);
+          setStatisticsData(stats);
+        }
+      } finally {
+        setLoading(false);
       }
     };
     loadUserProfile();
@@ -58,25 +66,28 @@ export default function ProfilePage({ handleLogout }) {
       value: user.leaderboard[0]?.rank?.toString() || 0,
       label:
         user.leaderboard[0]?.rank != null
-          ? `Top ${user.leaderboard[0].rank} finishes of ${
-              user.leaderboard[0]?.rank_type || ""
-            }`
+          ? `Top ${user.leaderboard[0].rank} finishes of ${user.leaderboard[0]?.rank_type || ""
+          }`
           : "No ranking data",
 
       color: "#f59e0b",
     },
   ];
 
+  // Always render the components so their useEffects run
   return (
     <>
+      {(loading || loadingUserInfo || loadingAchievements) && <LoadingPage />}
       <Box sx={{
         display: 'flex',
         minHeight: '100vh',
         bgcolor: 'background.default',
-        overflow: 'visible'
+        overflow: 'visible',
+        // Hide content if loading
+        opacity: (loading || loadingUserInfo || loadingAchievements) ? 0 : 1,
+        pointerEvents: (loading || loadingUserInfo || loadingAchievements) ? 'none' : 'auto',
       }}>
         <ProfileSidebar userData={null} />
-
         {/* Main content */}
         <Box sx={{
           flexGrow: 1,
@@ -86,16 +97,13 @@ export default function ProfilePage({ handleLogout }) {
           bgcolor: 'background.paper',
           color: 'text.primary',
         }}>
-          <UserInfoSection />
-
+          <UserInfoSection onLoaded={() => { console.log('[ProfilePage] setLoadingUserInfo(false)'); setLoadingUserInfo(false); }} />
           <StatisticsSection statisticsData={statisticsData} />
-
           <Box sx={{ mt: 5 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
             </Box>
-            <AchievementSection />
+            <AchievementSection onLoaded={() => { console.log('[ProfilePage] setLoadingAchievements(false)'); setLoadingAchievements(false); }} />
           </Box>
-
           <Button
             variant="contained"
             onClick={onLogoutClick}
