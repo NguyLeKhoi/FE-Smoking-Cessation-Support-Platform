@@ -5,6 +5,7 @@ import Lottie from 'lottie-react';
 import quitSign from '../../assets/animations/quit-sign.json';
 import QuotesCarousel from '../../components/homePage/QuotesCarousel';
 import FeatureSection from '../../components/homePage/FeatureSection';
+import smokingService from '../../services/smokingService';
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -65,7 +66,20 @@ export default function HomePage() {
                 width: '100%'
               }}>
                 <Button
-                  onClick={() => navigate('/smoking-quiz')}
+                  onClick={async () => {
+                    try {
+                      const res = await smokingService.getHasActiveQuitPlan();
+                      const active = res?.data?.hasActiveQuitPlan ?? res?.hasActiveQuitPlan;
+                      if (active === false) {
+                        navigate('/smoking-quiz');
+                      } else {
+                        navigate('/habit-check');
+                      }
+                    } catch (e) {
+                      // fallback: go to quiz if error
+                      navigate('/smoking-quiz');
+                    }
+                  }}
                   variant="contained"
                   disableElevation
                   sx={{

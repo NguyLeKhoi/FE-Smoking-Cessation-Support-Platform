@@ -225,6 +225,11 @@ const SmokingQuiz = () => {
 
             setShowForm(false);
             setQuizCompleted(true);
+
+            // Only fetch after quiz is completed
+            const habits = await smokingService.getMySmokingHabits();
+            console.log("Fetched habits after quiz completion:", habits);
+
         } catch (error) {
             // Handle API error responses
             if (error.response?.data) {
@@ -252,7 +257,7 @@ const SmokingQuiz = () => {
             setSubmitting(false);
             setLoading(false);
         }
-    }, [formData, prepareDataForSubmission, showToast]);
+    }, [formData, prepareDataForSubmission, showToast, quizCompleted]);
 
     const handleNext = useCallback(() => {
         if (!validateCurrentField()) {
@@ -306,38 +311,39 @@ const SmokingQuiz = () => {
         const fetchExistingData = async () => {
             try {
                 setLoading(true);
-                const response = await smokingService.getMySmokingHabits();
+                // Only fetch if quiz is not completed, otherwise it's handled by handleSubmit
+                if (!quizCompleted) {
+                    const response = await smokingService.getMySmokingHabits();
+                    if (response?.data?.length > 0) {
+                        // Sort data by created_at in descending order to get the most recent record
+                        const sortedRecords = [...response.data].sort((a, b) => {
+                            return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+                        });
 
-                if (quizCompleted && response?.data?.length > 0) {
-                    // Sort data by created_at in descending order to get the most recent record
-                    const sortedRecords = [...response.data].sort((a, b) => {
-                        return new Date(b.created_at || 0) - new Date(a.created_at || 0);
-                    });
+                        // Get the most recent record
+                        const latestRecord = sortedRecords[0];
+                        console.log("Selected most recent record:", latestRecord);
 
-                    // Get the most recent record
-                    const latestRecord = sortedRecords[0];
-                    console.log("Selected most recent record:", latestRecord);
+                        // Initialize form with fetched data
+                        dispatch({
+                            type: 'INITIALIZE',
+                            data: {
+                                cigarettes_per_pack: latestRecord.cigarettes_per_pack,
+                                price_per_pack: latestRecord.price_per_pack,
+                                cigarettes_per_day: latestRecord.cigarettes_per_day,
+                                smoking_years: latestRecord.smoking_years,
+                                triggers: Array.isArray(latestRecord.triggers) ? latestRecord.triggers : [],
+                                health_issues: processHealthIssues(latestRecord)
+                            }
+                        });
 
-                    // Initialize form with fetched data
-                    dispatch({
-                        type: 'INITIALIZE',
-                        data: {
-                            cigarettes_per_pack: latestRecord.cigarettes_per_pack,
-                            price_per_pack: latestRecord.price_per_pack,
-                            cigarettes_per_day: latestRecord.cigarettes_per_day,
-                            smoking_years: latestRecord.smoking_years,
-                            triggers: Array.isArray(latestRecord.triggers) ? latestRecord.triggers : [],
-                            health_issues: processHealthIssues(latestRecord)
-                        }
-                    });
-
-                    setResult(latestRecord);
-                    setShowForm(false);
-
-                } else {
-                    dispatch({ type: 'RESET' });
-                    setShowForm(true);
-                    setResult(null);
+                        setResult(latestRecord);
+                        setShowForm(false);
+                    } else {
+                        dispatch({ type: 'RESET' });
+                        setShowForm(true);
+                        setResult(null);
+                    }
                 }
             } catch (err) {
                 console.error("Error fetching smoking habits:", err);
