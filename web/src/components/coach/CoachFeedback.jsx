@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Typography, LinearProgress } from '@mui/material';
+import { Box, Typography, LinearProgress, Card } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
 import WriteFeedbackBox from './WriteFeedbackBox';
 
@@ -10,7 +10,7 @@ const CoachFeedback = ({ averageStars = {}, averageRating = 0 }) => {
     const [submitting, setSubmitting] = useState(false);
 
     return (
-        <Box sx={{ mt: 2, mb: 2 }}>
+        <Card sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 3, p: 3, mt: 3, mb: 1 }}>
             <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', gap: 0 }}>
                 {/*Average Rating */}
                 <Box sx={{ flex: '0 0 20%', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'flex-start', minWidth: 70 }}>
@@ -56,7 +56,7 @@ const CoachFeedback = ({ averageStars = {}, averageRating = 0 }) => {
                     }, 1000);
                 }}
             />
-        </Box>
+        </Card>
     );
 };
 
