@@ -48,8 +48,15 @@ export default function LoginPage() {
         refreshSocket();
 
         // Decode token để kiểm tra role
-        const decoded = jwtDecode(response.accessToken);
-        if (decoded.role === 'admin') {
+        let decoded = null;
+        if (typeof response.accessToken === 'string' && response.accessToken) {
+          try {
+            decoded = jwtDecode(response.accessToken);
+          } catch (e) {
+            decoded = null;
+          }
+        }
+        if (decoded && decoded.role === 'admin') {
           navigate('/admin');
         } else {
           navigate('/');
@@ -141,7 +148,7 @@ export default function LoginPage() {
             boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.05)',
             maxWidth: 500,
             mx: 'auto',
-            position: 'relative', 
+            position: 'relative',
           }}
         >
           {/* Home Icon Button - Added in top left */}

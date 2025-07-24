@@ -132,7 +132,7 @@ const SmokingHabitPage = () => {
                     <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'background.paper' }}>
                         <Paper elevation={0} sx={{ p: 4, borderRadius: 3, border: '1px solid', borderColor: 'divider', maxWidth: 500, mx: 'auto', textAlign: 'center' }}>
                             <Typography variant="h5" fontWeight={700} gutterBottom>
-                                Take a quiz now <br/> to understand your habit of smoking
+                                Take a quiz now
                             </Typography>
                             <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
                                 Complete our quick assessment to get personalized feedback and insights about your smoking habits.

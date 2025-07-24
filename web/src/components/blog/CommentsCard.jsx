@@ -10,22 +10,27 @@ function formatDate(dateString) {
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
+// Safe JWT decode helper
+function safeDecodeUserId() {
+    try {
+        const token = localStorage.getItem('accessToken');
+        if (typeof token === 'string' && token) {
+            const decoded = jwtDecode(token);
+            return decoded.id || decoded.user_id || decoded.sub || null;
+        }
+    } catch (e) {
+        // Silent fail
+    }
+    return null;
+}
+
 const CommentCard = ({ comment, onReplyClick, onDelete, replyCount }) => {
     const user = comment.users || {};
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
 
-    // Get current user id from JWT
-    let currentUserId = null;
-    try {
-        const token = localStorage.getItem('accessToken');
-        if (token) {
-            const decoded = jwtDecode(token);
-            currentUserId = decoded.id || decoded.user_id || decoded.sub;
-        }
-    } catch (e) {
-        currentUserId = null;
-    }
+    // Get current user id from JWT safely
+    const currentUserId = safeDecodeUserId();
     // Check if comment.user_id matches current user
     const isAuthor = currentUserId && comment.user_id && String(currentUserId) === String(comment.user_id);
 

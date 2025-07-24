@@ -18,9 +18,11 @@ const PostReactions = ({ postId }) => {
     useEffect(() => {
         try {
             const token = localStorage.getItem('accessToken');
-            if (token) {
+            if (typeof token === 'string' && token) {
                 const decoded = jwtDecode(token);
                 setCurrentUserId(decoded.id || decoded.user_id || decoded.sub);
+            } else {
+                setCurrentUserId(null);
             }
         } catch (e) {
             setCurrentUserId(null);

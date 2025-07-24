@@ -26,17 +26,15 @@ const CoachListPage = () => {
 
     useEffect(() => {
         const accessToken = localStorage.getItem('accessToken');
-        if (accessToken) {
+        let decoded = null;
+        if (typeof accessToken === 'string' && accessToken) {
             try {
-                const decoded = jwtDecode(accessToken);
-                setRole(decoded.role); // e.g., 'user' or 'coach'
+                decoded = jwtDecode(accessToken);
             } catch (e) {
-                console.error('Failed to decode accessToken:', e);
-                setRole(null);
+                decoded = null;
             }
-        } else {
-            setRole(null);
         }
+        setRole(decoded?.role || null); 
     }, []);
 
     useEffect(() => {
@@ -157,7 +155,7 @@ const CoachListPage = () => {
 
     if (loading) {
         return (
-           <LoadingPage/>
+            <LoadingPage />
         );
     }
 

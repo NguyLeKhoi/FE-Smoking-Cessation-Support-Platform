@@ -71,6 +71,16 @@ const smokingService = {
             throw error;
         }
     },
+
+    getHasActiveQuitPlan: async () => {
+        try {
+            const response = await api.get('/smoking-habits/me/has-active-quitplan');
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching has-active-quitplan:', error);
+            throw error;
+        }
+    },
 };
 
 export default smokingService;

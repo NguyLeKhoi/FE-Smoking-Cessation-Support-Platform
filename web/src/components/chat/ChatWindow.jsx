@@ -39,13 +39,14 @@ const ChatWindow = ({ room, onClose }) => {
     let currentUserId = null;
     let role = null;
     const accessToken = localStorage.getItem('accessToken');
-    if (accessToken) {
+    if (typeof accessToken === 'string' && accessToken) {
         try {
             const decoded = jwtDecode(accessToken);
             currentUserId = decoded.userId || decoded.id || decoded.sub;
             role = decoded.role;
         } catch (e) {
-            console.error('Error decoding token:', e);
+            currentUserId = null;
+            role = null;
         }
     }
 

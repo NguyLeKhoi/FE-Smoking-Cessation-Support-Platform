@@ -15,16 +15,15 @@ const ChatPage = () => {
 
     useEffect(() => {
         const accessToken = localStorage.getItem('accessToken');
-        if (accessToken) {
+        let decoded = null;
+        if (typeof accessToken === 'string' && accessToken) {
             try {
-                const decoded = jwtDecode(accessToken);
-                setRole(decoded.role);
+                decoded = jwtDecode(accessToken);
             } catch (e) {
-                setRole(null);
+                decoded = null;
             }
-        } else {
-            setRole(null);
         }
+        setRole(decoded?.role || null);
     }, []);
 
     useEffect(() => {
