@@ -8,6 +8,7 @@ import CoachFeedback from './CoachFeedback';
 import BlackButton from '../buttons/BlackButton';
 import WriteFeedbackBox from './WriteFeedbackBox';
 import feedbackService from '../../services/feedbackService';
+import FeedbackCard from './FeedbackCard';
 
 const CoachInfo = ({ coach }) => {
     const navigate = useNavigate();
@@ -142,6 +143,13 @@ const CoachInfo = ({ coach }) => {
                     }
                 </Avatar>
 
+                {/* Feedback Carousel */}
+                <Box sx={{ width: '100%', mt: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <Typography variant="h6" sx={{ fontWeight: 500, color: '#1e293b', mb: 1 }}>
+                        What others say
+                    </Typography>
+                    <FeedbackCard coachId={coach.id} />
+                </Box>
             </Box>
 
             {/* Coach Info (Right) */}
