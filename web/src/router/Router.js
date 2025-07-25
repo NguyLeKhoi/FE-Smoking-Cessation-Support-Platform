@@ -27,6 +27,7 @@ import ProfilePage from '../pages/profile/ProfilePage';
 import MyBlogPage from '../pages/profile/MyBlogPage';
 import LeaderBoardPage from '../pages/profile/LeaderBoardPage';
 import SmokingHabitPage from '../pages/profile/SmokingHabitPage';
+import SubscriptionPage from '../pages/main/SubscriptionPage';
 
 //achievements
 import AchievementsPage from '../pages/achievements/AchivementsPage';
@@ -157,6 +158,16 @@ export const routes = createBrowserRouter([
       <ProtectedRoute>
         <MainLayout showHeader={false} showFooter={false}>
           <ProfilePage />
+        </MainLayout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/subscription',
+    element: (
+      <ProtectedRoute>
+        <MainLayout showHeader={false} showFooter={true}>
+          <SubscriptionPage />
         </MainLayout>
       </ProtectedRoute>
     ),
