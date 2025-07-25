@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { Provider as PaperProvider } from 'react-native-paper';
 import Navigator from './navigation/Navigator';
 import { startAutoRefresh, stopAutoRefresh, debugTokenStatus, testRefreshToken } from './service/api';
 import MotivationalPopup from './components/MotivationalPopup';
@@ -71,12 +72,18 @@ export default function App() {
   }, []);
 
   return (
-    <>
+    <PaperProvider>
       <MotivationalPopup />
       <Navigator />
-      <Toast config={{ info: (props) => <CustomToast {...props} /> }} />
-    </>
+      <Toast 
+        config={{
+          success: (props) => <CustomToast {...props} />,
+          error: (props) => <CustomToast {...props} />,
+          info: (props) => <CustomToast {...props} />,
+        }} 
+        position="top" 
+        topOffset={50}
+      />
+    </PaperProvider>
   );
 }
-
-

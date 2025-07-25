@@ -14,7 +14,7 @@ import {
   StatusBar,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { login } from '../../service/authService';
+import { login, isAuthenticated as isUserAuthenticated } from '../../service/authService';
 import { startAsync } from 'expo-auth-session';
 import { getGoogleLoginUrl } from '../../service/authService';
 
@@ -38,11 +38,41 @@ const LoginScreen = () => {
     setError('');
     setLoading(true);
 
+    // Basic validation
+    if (!formData.email || !formData.password) {
+      setError('Please enter both email and password');
+      setLoading(false);
+      return;
+    }
+
     try {
+      console.log('Attempting login...');
       const response = await login(formData);
-      navigation.navigate('MainApp');
+      console.log('Login response received');
+      
+      // Verify authentication status after login
+      const isAuthenticated = await isUserAuthenticated();
+      console.log('Authentication status after login:', isAuthenticated);
+      
+      if (isAuthenticated) {
+        console.log('Navigation to MainApp');
+        // Reset navigation stack to prevent going back to login
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'MainApp' }],
+        });
+      } else {
+        throw new Error('Authentication failed after login');
+      }
     } catch (error) {
-      setError('Login failed: Invalid credentials or server response.');
+      console.error('Login error:', error);
+      setError(error.message || 'Login failed. Please check your credentials and try again.');
+      
+      // Clear form on error
+      setFormData({
+        email: formData.email, // Keep email for convenience
+        password: '', // Clear password
+      });
     } finally {
       setLoading(false);
     }
