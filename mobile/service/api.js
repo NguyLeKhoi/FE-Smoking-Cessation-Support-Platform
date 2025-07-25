@@ -1,9 +1,16 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+const API_URL = process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:8000/api/v1';
+
+// Create axios instance with default config
 const api = axios.create({
-  baseURL: process.env.EXPO_PUBLIC_API_BASE_URL,
-  withCredentials: true,
+  baseURL: API_URL,
+  withCredentials: true, // Required for HTTP-only cookies
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+  },
 });
 
 // Auto refresh token functionality
@@ -51,20 +58,19 @@ const refreshAccessToken = async () => {
   isRefreshing = true;
   
   try {
-    const refreshToken = await AsyncStorage.getItem('refreshToken');
-    if (!refreshToken) {
-      throw new Error('No refresh token available');
-    }
-
-    // Mobile uses refresh token in request body
-    const response = await axios.post(`${api.defaults.baseURL}/auth/refresh`, { refreshToken });
-    const { accessToken, expiresIn } = response.data.data;
+    const response = await axios.post(`${API_URL}/auth/refresh`, {}, {
+      withCredentials: true // Include cookies
+    });
+    
+    const { accessToken } = response.data.data;
     
     if (accessToken) {
       await AsyncStorage.setItem('accessToken', accessToken);
       
-      // Set up next auto refresh
-      if (expiresIn) {
+      // Set up next auto refresh (5 minutes before expiry)
+      const payload = JSON.parse(atob(accessToken.split('.')[1]));
+      const expiresIn = payload.exp - Math.floor(Date.now() / 1000);
+      if (expiresIn > 300) {
         setRefreshTokenTimer(expiresIn);
       }
       
@@ -80,6 +86,43 @@ const refreshAccessToken = async () => {
     isRefreshing = false;
   }
 };
+
+// Response interceptor
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+    
+    // Handle 401 Unauthorized errors
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      
+      try {
+        const newToken = await refreshAccessToken();
+        if (newToken) {
+          originalRequest.headers.Authorization = `Bearer ${newToken}`;
+          return api(originalRequest);
+        } else {
+          // If no new token, clear auth data
+          await Promise.all([
+            AsyncStorage.removeItem('accessToken'),
+            AsyncStorage.removeItem('user')
+          ]);
+          return Promise.reject(new Error('Session expired. Please log in again.'));
+        }
+      } catch (refreshError) {
+        // If refresh fails, clear auth data
+        await Promise.all([
+          AsyncStorage.removeItem('accessToken'),
+          AsyncStorage.removeItem('user')
+        ]);
+        return Promise.reject(refreshError);
+      }
+    }
+    
+    return Promise.reject(error);
+  }
+);
 
 const handleRefreshFailure = async () => {
   // Clear tokens
@@ -121,8 +164,14 @@ const initializeAutoRefresh = async () => {
 
 // Request interceptor
 api.interceptors.request.use(async (config) => {
+  // Get the access token from storage
   const accessToken = await AsyncStorage.getItem('accessToken');
+  
+  // If we have an access token, add it to the request
   if (accessToken) {
+    // For mobile, we'll send the access token in the Authorization header
+    // The refresh token will be sent automatically via cookies (withCredentials: true)
+    config.headers.Authorization = `Bearer ${accessToken}`;
     config.headers['Authorization'] = `Bearer ${accessToken}`;
   }
   return config;

@@ -16,6 +16,7 @@ const menuItems = [
     { label: 'PROFILE', icon: <PersonIcon fontSize="medium" />, path: '/profile' },
     { label: 'LEADERBOARDS', icon: <EmojiEventsIcon fontSize="medium" />, path: '/leaderboard' },
     { label: 'SMOKING HABIT', icon: <SmokingRoomsIcon fontSize="medium" />, path: '/my-smoking-habit' },
+    { label: 'MY SUBSCRIPTION', icon: <EmojiEventsIcon fontSize="medium" />, path: '/subscription' },
     { label: 'MY POSTS', icon: <ArticleIcon fontSize="medium" />, path: '/my-blog' },
     { label: 'QUESTS', icon: <ExploreIcon fontSize="medium" />, hasNotification: true, path: '/quests' },
     { label: 'MORE', icon: <MoreHorizIcon fontSize="medium" />, path: '/more' },
