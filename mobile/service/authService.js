@@ -15,33 +15,85 @@ export const signup = async (userData) => {
 
 export const login = async (credentials) => {
   try {
+    console.log('Attempting login with:', credentials.email);
+    
+    // Configure the request to include credentials (cookies)
     const response = await api.post('/auth/login', {
       email: credentials.email,
       password: credentials.password,
+    }, {
+      withCredentials: true // This is important for sending/receiving cookies
     });
-    const { accessToken } = response.data.data;
     
-    // Save access token
-    await AsyncStorage.setItem('accessToken', accessToken);
+    console.log('Login response:', response.status, response.data);
     
-    // Note: Backend doesn't return refresh token, so mobile will use access token only
-    // Auto refresh will be disabled until backend supports refresh token for mobile
-    
-    return response.data.data;
-  } catch (error) {
-    if (error.response) {
-      throw new Error(error.response.data.message || 'Login failed');
+    if (!response.data || !response.data.data) {
+      throw new Error('Invalid response format from server');
     }
-    throw new Error('Network error');
+    
+    const { user, accessToken } = response.data.data;
+    
+    // Store the access token if it's in the response
+    if (accessToken) {
+      await AsyncStorage.setItem('accessToken', accessToken);
+      console.log('Access token stored');
+    }
+    
+    // The refresh token should be in an HTTP-only cookie
+    // Fetch complete user profile including permissions
+    let userProfile = user;
+    try {
+      const profileResponse = await api.get('/users/me', { withCredentials: true });
+      if (profileResponse.data && profileResponse.data.data) {
+        userProfile = { ...user, ...profileResponse.data.data };
+        console.log('User profile with permissions:', userProfile);
+      }
+    } catch (profileError) {
+      console.warn('Could not fetch complete user profile, using basic info:', profileError);
+    }
+    
+    // Save user data (without tokens)
+    await AsyncStorage.setItem('user', JSON.stringify(userProfile));
+    
+    console.log('Login successful, user data saved');
+    return { user: userProfile };
+  } catch (error) {
+    console.error('Login error:', {
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status
+    });
+    
+    // Clear any partial data on login failure
+    await AsyncStorage.removeItem('user');
+    
+    if (error.response) {
+      throw new Error(error.response.data?.message || 'Login failed');
+    }
+    throw new Error(error.message || 'Network error');
   }
 };
 
 export const refreshToken = async () => {
     try {
-        const refreshToken = await AsyncStorage.getItem('refreshToken');
-        if (!refreshToken) throw new Error('No refresh token available');
-        const response = await api.post('/auth/refresh', { refreshToken });
-        const { accessToken, expiresIn } = response.data.data;
+        // Since we're using HTTP-only cookies, we don't need to handle the refresh token manually
+        // The cookie will be sent automatically with withCredentials: true
+        const response = await api.post('/auth/refresh', {}, { 
+            withCredentials: true 
+        });
+        
+        // The new access token should be in the response
+        if (!response.data || !response.data.data) {
+            throw new Error('Invalid response format from server');
+        }
+        
+        const { accessToken } = response.data.data;
+        
+        if (!accessToken) {
+            throw new Error('No access token received');
+        }
+        
+        // Store the new access token
         await AsyncStorage.setItem('accessToken', accessToken);
         
         // Restart auto refresh with new token
@@ -49,7 +101,10 @@ export const refreshToken = async () => {
         
         return accessToken;
     } catch (error) {
-        throw new Error('Failed to refresh token');
+        console.error('Token refresh failed:', error);
+        // Clear user data on refresh failure
+        await AsyncStorage.removeItem('user');
+        throw new Error('Session expired. Please log in again.');
     }
 };
 
@@ -93,16 +148,136 @@ export const resetPassword = async (resetData) => {
   }
 };
 
-export const isAuthenticated = async () => {
-  const token = await AsyncStorage.getItem('accessToken');
-  return !!token;
+// Simple JWT decode function (client-side only, doesn't verify signature)
+export const parseJwt = (token) => {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    return JSON.parse(jsonPayload);
+  } catch (e) {
+    return null;
+  }
 };
 
+// Configure axios to send credentials with all requests
+api.defaults.withCredentials = true;
+
+export const isAuthenticated = async () => {
+  try {
+    // First check if we have a user in AsyncStorage
+    const userString = await AsyncStorage.getItem('user');
+    if (!userString) {
+      console.log('No user data found in storage');
+      return false;
+    }
+
+    // Check if we have an access token
+    let token = await AsyncStorage.getItem('accessToken');
+    if (!token) {
+      console.log('No access token found');
+      return false;
+    }
+    
+    // Parse the JWT to check expiration
+    const decoded = parseJwt(token);
+    if (!decoded) {
+      console.log('Invalid token format');
+      await Promise.all([
+        AsyncStorage.removeItem('accessToken'),
+        AsyncStorage.removeItem('user')
+      ]);
+      return false;
+    }
+    
+    // Check if token is expired or about to expire (within 5 minutes)
+    const currentTime = Date.now() / 1000;
+    const bufferTime = 300; // 5 minutes buffer
+    
+    if (decoded.exp < (currentTime + bufferTime)) {
+      console.log('Token expired or about to expire, attempting refresh...');
+      try {
+        // Try to refresh the token using the HTTP-only cookie
+        const response = await api.post('/auth/refresh', {}, { withCredentials: true });
+        
+        if (response.data && response.data.data && response.data.data.accessToken) {
+          // Save new token
+          const newToken = response.data.data.accessToken;
+          await AsyncStorage.setItem('accessToken', newToken);
+          console.log('Token refreshed successfully');
+          return true;
+        } else {
+          throw new Error('No access token in refresh response');
+        }
+      } catch (refreshError) {
+        console.error('Token refresh failed:', refreshError);
+        await Promise.all([
+          AsyncStorage.removeItem('accessToken'),
+          AsyncStorage.removeItem('user')
+        ]);
+        return false;
+      }
+    }
+    
+    // If we get here, the token is valid and not expired
+    try {
+      // Verify user data is valid
+      const userData = JSON.parse(userString);
+      if (!userData || !userData.id) {
+        throw new Error('Invalid user data');
+      }
+      
+      return true;
+    } catch (e) {
+      console.error('Invalid user data in storage:', e);
+      await AsyncStorage.removeItem('user');
+      return false;
+    }
+    
+  } catch (error) {
+    console.error('Authentication check failed:', error);
+    await Promise.all([
+      AsyncStorage.removeItem('accessToken'),
+      AsyncStorage.removeItem('user')
+    ]);
+    return false;
+  }
+};
+
+/**
+ * Get the current user's complete profile including permissions
+ * Fetches fresh data from the server to ensure we have the latest permissions
+ * @returns {Promise<Object>} The complete user profile
+ */
 export const getCurrentUser = async () => {
   try {
-    const response = await api.get('/auth/me');
-    return response.data;
+    // First try to get the latest user data from the server
+    try {
+      const response = await api.get('/users/me');
+      if (response.data && response.data.data) {
+        // Update stored user data with fresh data from server
+        await AsyncStorage.setItem('user', JSON.stringify(response.data.data));
+        console.log('Fetched fresh user profile:', response.data.data);
+        return response.data.data;
+      }
+    } catch (serverError) {
+      console.warn('Could not fetch fresh user profile, using cached data:', serverError);
+    }
+    
+    // Fall back to cached user data if server fetch fails
+    const userString = await AsyncStorage.getItem('user');
+    if (userString) {
+      return JSON.parse(userString);
+    }
+    
+    throw new Error('No user data available');
   } catch (error) {
-    throw new Error('Failed to get user data');
+    console.error('Error getting current user:', error);
+    throw new Error('Failed to get user data: ' + error.message);
   }
 };
