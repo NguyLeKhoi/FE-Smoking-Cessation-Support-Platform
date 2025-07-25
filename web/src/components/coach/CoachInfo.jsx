@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import CoachFeedback from './CoachFeedback';
 import BlackButton from '../buttons/BlackButton';
 import WriteFeedbackBox from './WriteFeedbackBox';
+import feedbackService from '../../services/feedbackService';
 
 const CoachInfo = ({ coach }) => {
     const navigate = useNavigate();
@@ -15,6 +16,7 @@ const CoachInfo = ({ coach }) => {
     const [newFeedback, setNewFeedback] = useState('');
     const [submittingFeedback, setSubmittingFeedback] = useState(false);
     const [currentUser, setCurrentUser] = useState(null);
+    const [ratingStar, setRatingStar] = useState(0);
 
     useEffect(() => {
         const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
@@ -64,6 +66,23 @@ const CoachInfo = ({ coach }) => {
             navigate('/chat-page');
         } catch (error) {
             toast.error('Failed to create chat room: ' + (error.response?.data?.message || error.message));
+        }
+    };
+
+    const handleSubmitFeedback = async () => {
+        if (!newFeedback.trim()) return;
+        setSubmittingFeedback(true);
+        try {
+            await feedbackService.createFeedback({
+                coach_id: coach.id,
+                rating_star: ratingStar,
+                comment: newFeedback
+            });
+            setNewFeedback('');
+        } catch (e) {
+            // Optionally show error
+        } finally {
+            setSubmittingFeedback(false);
         }
     };
 
@@ -226,6 +245,9 @@ const CoachInfo = ({ coach }) => {
                         setNewFeedback={setNewFeedback}
                         submitting={submittingFeedback}
                         setSubmitting={setSubmittingFeedback}
+                        ratingStar={ratingStar}
+                        setRatingStar={setRatingStar}
+                        onSubmit={handleSubmitFeedback}
                     />
                 </Box>
             </Box>

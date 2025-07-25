@@ -19,8 +19,8 @@ const MEDIA_MESSAGES = {
 const UserInfoSection = ({ onUserUpdated, onLoaded = () => { } }) => {
     console.log('[UserInfoSection] Rendered');
     const fileInputRef = useRef();
-    const [selectedFile, setSelectedFile] = useState(null);
-    const [previewUrl, setPreviewUrl] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState("");
     const [userData, setUserData] = useState(null);
     const [formData, setFormData] = useState({
         email: '',
@@ -49,7 +49,7 @@ const UserInfoSection = ({ onUserUpdated, onLoaded = () => { } }) => {
                     phone_number: response.data.phone_number || '',
                     avatar: response.data.avatar || '',
                 });
-                setPreviewUrl(response.data.avatar);
+        setPreviewUrl(response.data.avatar);
             } catch (err) {
                 setError('Failed to load user profile. Please try again later.');
                 console.error('Error loading profile:', err);
@@ -85,85 +85,85 @@ const UserInfoSection = ({ onUserUpdated, onLoaded = () => { } }) => {
 
     const handleSave = async () => {
         try {
-            setLoading(true);
+      setLoading(true);
 
-            let newAvatarUrl = formData.avatar;
-            if (selectedFile) {
-                const formDataData = new FormData();
-                formDataData.append("images", selectedFile);
+      let newAvatarUrl = formData.avatar;
+      if (selectedFile) {
+        const formDataData = new FormData();
+        formDataData.append("images", selectedFile);
 
-                try {
-                    const res = await mediaService.uploadImages(formDataData);
-                    if (
-                        res &&
-                        Array.isArray(res.data) &&
-                        res.data.length > 0 &&
-                        res.data[0].url
-                    ) {
-                        newAvatarUrl = res.data[0].url;
-                        console.log("new avatar: ", newAvatarUrl);
-                        toast.success(MEDIA_MESSAGES.UPLOAD_IMAGES_SUCCESSFULLY);
-                    }
-                } catch (error) {
-                    let errorMsg = "Avatar upload failed. Please try again.";
-                    if (
-                        error.response &&
-                        error.response.data &&
-                        error.response.data.message
-                    ) {
-                        if (
-                            error.response.data.message.includes(
-                                "Inappropriate image content detected"
-                            )
-                        ) {
-                            errorMsg =
-                                "Inappropriate image content detected. Please choose another image.";
-                        } else {
-                            errorMsg = error.response.data.message;
-                        }
-                    }
-                    toast.error(errorMsg);
-                    console.error("Avatar upload failed:", error);
-                    return;
-                }
+        try {
+          const res = await mediaService.uploadImages(formDataData);
+          if (
+            res &&
+            Array.isArray(res.data) &&
+            res.data.length > 0 &&
+            res.data[0].url
+          ) {
+            newAvatarUrl = res.data[0].url;
+            console.log("new avatar: ", newAvatarUrl);
+            toast.success(MEDIA_MESSAGES.UPLOAD_IMAGES_SUCCESSFULLY);
+          }
+        } catch (error) {
+          let errorMsg = "Avatar upload failed. Please try again.";
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.message
+          ) {
+            if (
+              error.response.data.message.includes(
+                "Inappropriate image content detected"
+              )
+            ) {
+              errorMsg =
+                "Inappropriate image content detected. Please choose another image.";
+            } else {
+              errorMsg = error.response.data.message;
             }
+          }
+          toast.error(errorMsg);
+          console.error("Avatar upload failed:", error);
+          return;
+        }
+      }
 
             const updatedUserData = {
                 first_name: formData.first_name,
                 last_name: formData.last_name,
                 phone_number: formData.phone_number,
-                avatar: newAvatarUrl,
-                ...(formData.dob ? { dob: formData.dob } : {}),
+        avatar: newAvatarUrl,
+        ...(formData.dob ? { dob: formData.dob } : {}),
             };
 
             const response = await updateCurrentUser(updatedUserData);
-            setUserData((prevData) => ({
+      setUserData((prevData) => ({
                 ...prevData,
                 ...response.data,
             }));
 
-            setFormData((prevFormData) => ({
+      setFormData((prevFormData) => ({
                 ...prevFormData,
-                ...response.data,
+        ...response.data,
                 email: prevFormData.email,
             }));
 
-            setSelectedFile(null);
+      setSelectedFile(null);
             setIsEditing(false);
             setError(null);
 
             if (onUserUpdated) onUserUpdated(response.data);
         } catch (err) {
-            let errorMsg = "Failed to update profile. Please try again.";
+      let errorMsg = "Failed to update profile. Please try again.";
             if (err.response && err.response.data) {
                 if (Array.isArray(err.response.data.message)) {
-                    errorMsg = err.response.data.message.join(" ");
-                } else if (typeof err.response.data.message === "string") {
+          errorMsg = err.response.data.message.join(" ");
+        } else if (typeof err.response.data.message === "string") {
                     errorMsg = err.response.data.message;
                 }
             }
             setError(errorMsg);
-            console.error("Error updating profile:", err);
+      console.error("Error updating profile:", err);
         } finally {
             setLoading(false);
         }
@@ -185,8 +185,8 @@ const UserInfoSection = ({ onUserUpdated, onLoaded = () => { } }) => {
     }, [userData?.dob]);
 
     const isEmailEditable = !userData?.email;
-    const avatarPreview =
-        previewUrl || (isEditing ? formData.avatar : userData?.avatar);
+  const avatarPreview =
+    previewUrl || (isEditing ? formData.avatar : userData?.avatar);
 
     const handleDateChange = (newValue) => {
         if (newValue) {
@@ -211,18 +211,18 @@ const UserInfoSection = ({ onUserUpdated, onLoaded = () => { } }) => {
     };
 
     // Avatar upload handler
-    const handleAvatarChange = async (event) => {
+  const handleAvatarChange = async (event) => {
         const file = event.target.files && event.target.files[0];
         if (!file) {
             toast.error(MEDIA_MESSAGES.IMAGES_NOT_EMPTY);
             return;
         }
-        if (!file.type.startsWith("image/")) {
+    if (!file.type.startsWith("image/")) {
             toast.error(MEDIA_MESSAGES.INVALID_FILE_TYPE);
             return;
         }
-        setPreviewUrl(URL.createObjectURL(file));
-        setSelectedFile(file);
+    setPreviewUrl(URL.createObjectURL(file));
+    setSelectedFile(file);
     };
 
     if (loading) {
@@ -258,7 +258,7 @@ const UserInfoSection = ({ onUserUpdated, onLoaded = () => { } }) => {
                 }}>
                     {avatarPreview ? (
                         <Avatar
-                            src={previewUrl}
+              src={previewUrl}
                             alt={userData.username || 'User'}
                             sx={{
                                 width: 160,
@@ -299,7 +299,7 @@ const UserInfoSection = ({ onUserUpdated, onLoaded = () => { } }) => {
                                 type="file"
                                 accept="image/*"
                                 style={{ display: 'none' }}
-                                onChange={handleAvatarChange}
+                onChange={handleAvatarChange}
                             />
                             <IconButton
                                 onClick={() => fileInputRef.current && fileInputRef.current.click()}

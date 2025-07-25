@@ -1,13 +1,21 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Box, Typography, LinearProgress, Card } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
 import WriteFeedbackBox from './WriteFeedbackBox';
 
-const CoachFeedback = ({ averageStars = {}, averageRating = 0 }) => {
+const CoachFeedback = ({
+    averageStars = {},
+    averageRating = 0,
+    newFeedback,
+    setNewFeedback,
+    submitting,
+    setSubmitting, // not used in this component, but passed for completeness
+    ratingStar,
+    setRatingStar,
+    onSubmit
+}) => {
     // Calculate total ratings
     const totalRatings = Object.values(averageStars).reduce((sum, n) => sum + n, 0);
-    const [newFeedback, setNewFeedback] = useState('');
-    const [submitting, setSubmitting] = useState(false);
 
     return (
         <Card sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 3, p: 3, mt: 3, mb: 1 }}>
@@ -47,14 +55,9 @@ const CoachFeedback = ({ averageStars = {}, averageRating = 0 }) => {
                 submitting={submitting}
                 newFeedback={newFeedback}
                 setNewFeedback={setNewFeedback}
-                onSubmit={() => {
-                    setSubmitting(true);
-                    // TODO: Implement feedback submission logic
-                    setTimeout(() => {
-                        setSubmitting(false);
-                        setNewFeedback('');
-                    }, 1000);
-                }}
+                onSubmit={onSubmit}
+                ratingStar={ratingStar}
+                setRatingStar={setRatingStar}
             />
         </Card>
     );
