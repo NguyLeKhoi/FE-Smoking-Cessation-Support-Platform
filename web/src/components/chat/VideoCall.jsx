@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Box, IconButton, Typography, Paper, Avatar, Fade, Tooltip } from '@mui/material';
 import { 
   Videocam, 
@@ -395,10 +395,13 @@ const VideoCallControls = ({ onDisconnect, isExpanded, onToggleExpand }) => {
   );
 };
 
+const CALL_TIMEOUT_MS = 1 * 60 * 1000; // 1 minute for testing
+
 const VideoCall = ({ token, roomName, onDisconnect }) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [identity, setIdentity] = useState(null);
+  const timeoutRef = useRef(null);
 
   const serverUrl = process.env.REACT_APP_LIVEKIT_URL || 'ws://localhost:7880';
 
@@ -415,6 +418,20 @@ const VideoCall = ({ token, roomName, onDisconnect }) => {
       }
     }
   }, [token]);
+
+  // Video call timeout logic
+  useEffect(() => {
+    // Start timeout when call starts
+    timeoutRef.current = setTimeout(() => {
+      alert('This video call has reached the maximum allowed duration and will now end.');
+      if (onDisconnect) onDisconnect();
+    }, CALL_TIMEOUT_MS);
+    
+    // Cleanup on unmount or call end
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, [onDisconnect]);
 
   const handleDisconnect = () => {
     if (onDisconnect) {
@@ -560,26 +577,34 @@ const VideoCall = ({ token, roomName, onDisconnect }) => {
           <LiveKitRoom
             video={true}
             audio={true}
+            key={token} // Force re-mount when token changes
             token={token}
             serverUrl={serverUrl}
+            options={{
+              adaptiveStream: true,
+              dynacast: true,
+            }}
+            connectOptions={{
+              autoSubscribe: true,
+            }}
             style={{ 
               height: '100%',
               borderRadius: '0px',
             }}
             onDisconnected={(reason) => {
+              console.log('🔌 LiveKit disconnected, reason:', reason);
               handleDisconnect();
             }}
             onConnected={() => {
-              console.log('Connected to LiveKit room');
+              console.log('✅ LiveKit connected successfully!');
+              console.log('✅ Connected with identity:', identity);
             }}
             onError={(error) => {
-              // Suppress device not found errors in console
-              if (!error.message.includes('Requested device not found')) {
-                console.error('LiveKit error:', error);
-              }
-            }}
-            connectOptions={{
-              autoSubscribe: true,
+              console.error('❌ LiveKit connection error:', error);
+              console.error('❌ Error details:', error.message);
+              console.error('❌ Token:', token);
+              console.error('❌ Identity:', identity);
+              console.error('❌ Server URL:', serverUrl);
             }}
           >
             <VideoConference 
