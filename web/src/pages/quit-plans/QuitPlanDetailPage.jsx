@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useLocation, useParams, Link } from 'react-router-dom';
+import { useLocation, useParams, Link, useNavigate } from 'react-router-dom';
 import { Box, Typography, Paper, Button, Grid, IconButton, Tabs, Tab } from '@mui/material';
 import EventIcon from '@mui/icons-material/Event';
 import FlagIcon from '@mui/icons-material/Flag';
@@ -100,23 +100,46 @@ const QuitPlanResultPage = () => {
     setRecordPhase(null);
   };
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate();
+
   const handleAddDailyRecord = async (data) => {
     if (!planObj?.id || !recordPhase?.id) return;
+    
+    setIsSubmitting(true);
     console.log('Submitting daily record:', { ...data, phase_id: recordPhase.id });
+    
     try {
       const res = await quitPlanService.createPlanRecord({
         ...data,
         phase_id: recordPhase.id,
       });
+      
       console.log('Create record response:', res);
-      setOpenRecordModal(false);
-      setRecordPhase(null);
-      toast.success('Add daily record successfully!', {
+      
+      // Show success message
+      toast.success('Daily record added successfully!', {
         position: 'top-center',
         style: { marginTop: '70px' }
       });
+      
+      // Close the modal and reset state
+      setOpenRecordModal(false);
+      setRecordPhase(null);
+      
+      // Redirect to the phase records page
+      navigate(`/quit-plan/${planObj.id}/phase/${recordPhase.id}`);
+      
     } catch (err) {
       console.error('Error adding record:', err, err?.response);
+      
+      // Show error message
+      toast.error(err.response?.data?.message || 'Failed to add daily record. Please try again.', {
+        position: 'top-center',
+        style: { marginTop: '70px' }
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -400,58 +423,126 @@ const QuitPlanResultPage = () => {
                           </Box>
                         )}
                         {tabValues[idx] === 1 && phase.statistics && (
-                          <Box mt={2} textAlign="center" sx={{ maxHeight: 72, overflowY: 'auto' }}>
-                            {(() => {
-                              const total = phase.duration || 1;
-                              const recorded = phase.statistics.recordedDays || 0;
-                              const passed = phase.statistics.passedDays || 0;
-                              const missed = phase.statistics.missedDays || 0;
-                              const failed = phase.statistics.failedDays || 0;
-                              return (
-                                <Box display="flex" flexDirection="column" gap={1}>
-                                  <Box>
-                                    <Box display="flex" alignItems="center" justifyContent="space-between" mb={0.1}>
-                                      <Box display="flex" alignItems="center" gap={0.3}>
-                                        <CheckCircleIcon sx={{ color: '#43a047', fontSize: 15 }} />
-                                        <Typography fontWeight={900} fontSize={12}>Recorded</Typography>
-                                      </Box>
-                                      <Typography fontWeight={700} color="#43a047" fontSize={11}>{recorded} days ({Math.round((recorded/total)*100)}%)</Typography>
+                          <Box sx={{ width: '100%', mt: 2, px: 0, mx: 0, overflow: 'hidden' }}>
+                            <Grid container spacing={1} sx={{ width: '100%', m: 0, '& .MuiGrid-item': { p: '0 4px !important' } }}>
+                              {/* Left Column */}
+                              <Grid item xs={12} sm={6} sx={{ p: '0 !important', width: 'calc(50% - 4px)' }}>
+                                {/* Recorded */}
+                                <Box sx={{ width: '100%', mb: 1.5 }}>
+                                  <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
+                                    <Box display="flex" alignItems="center" gap={0.2}>
+                                      <CheckCircleIcon sx={{ color: '#43a047', fontSize: 12, mt: 0.1 }} />
+                                      <Typography fontWeight={900} fontSize={10}>Recorded</Typography>
                                     </Box>
-                                    <LinearProgress variant="determinate" value={Math.round((recorded/total)*100)} sx={{ height: 8, borderRadius: 4, background: '#e0f2f1', '& .MuiLinearProgress-bar': { backgroundColor: '#43a047' } }} />
+                                    <Typography fontWeight={700} color="#43a047" fontSize={10}>
+                                      {phase.statistics.recordedDays || 0} days
+                                    </Typography>
                                   </Box>
-                                  <Box>
-                                    <Box display="flex" alignItems="center" justifyContent="space-between" mb={0.1}>
-                                      <Box display="flex" alignItems="center" gap={0.3}>
-                                        <FavoriteIcon sx={{ color: '#1976d2', fontSize: 15 }} />
-                                        <Typography fontWeight={900} fontSize={12}>Passed</Typography>
-                                      </Box>
-                                      <Typography fontWeight={700} color="#1976d2" fontSize={11}>{passed} days ({Math.round((passed/total)*100)}%)</Typography>
-                                    </Box>
-                                    <LinearProgress variant="determinate" value={Math.round((passed/total)*100)} sx={{ height: 8, borderRadius: 4, background: '#e3f2fd', '& .MuiLinearProgress-bar': { backgroundColor: '#1976d2' } }} />
-                                  </Box>
-                                  <Box>
-                                    <Box display="flex" alignItems="center" justifyContent="space-between" mb={0.1}>
-                                      <Box display="flex" alignItems="center" gap={0.3}>
-                                        <BlockIcon sx={{ color: '#e53935', fontSize: 15 }} />
-                                        <Typography fontWeight={900} fontSize={12}>Missed</Typography>
-                                      </Box>
-                                      <Typography fontWeight={700} color="#e53935" fontSize={11}>{missed} days ({Math.round((missed/total)*100)}%)</Typography>
-                                    </Box>
-                                    <LinearProgress variant="determinate" value={Math.round((missed/total)*100)} sx={{ height: 8, borderRadius: 4, background: '#ffebee', '& .MuiLinearProgress-bar': { backgroundColor: '#e53935' } }} />
-                                  </Box>
-                                  <Box>
-                                    <Box display="flex" alignItems="center" justifyContent="space-between" mb={0.1}>
-                                      <Box display="flex" alignItems="center" gap={0.3}>
-                                        <ErrorIcon sx={{ color: '#ff9800', fontSize: 15 }} />
-                                        <Typography fontWeight={900} fontSize={12}>Failed</Typography>
-                                      </Box>
-                                      <Typography fontWeight={700} color="#ff9800" fontSize={11}>{failed} days ({Math.round((failed/total)*100)}%)</Typography>
-                                    </Box>
-                                    <LinearProgress variant="determinate" value={Math.round((failed/total)*100)} sx={{ height: 8, borderRadius: 4, background: '#fff3e0', '& .MuiLinearProgress-bar': { backgroundColor: '#ff9800' } }} />
-                                  </Box>
+                                  <LinearProgress 
+                                    variant="determinate" 
+                                    value={Math.round(((phase.statistics.recordedDays || 0) / (phase.duration || 1)) * 100)} 
+                                    sx={{ 
+                                      height: 6, 
+                                      borderRadius: 3, 
+                                      minWidth: 0, 
+                                      background: '#e0f2f1',
+                                      width: '100%',
+                                      '& .MuiLinearProgress-bar': { 
+                                        backgroundColor: '#43a047',
+                                        borderRadius: 7
+                                      } 
+                                    }} 
+                                  />
                                 </Box>
-                              );
-                            })()}
+
+                                {/* Passed */}
+                                <Box sx={{ width: '100%', mb: 1 }}>
+                                  <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
+                                    <Box display="flex" alignItems="center" gap={0.2}>
+                                      <FavoriteIcon sx={{ color: '#1976d2', fontSize: 12, mt: 0.1 }} />
+                                      <Typography fontWeight={900} fontSize={10}>Passed</Typography>
+                                    </Box>
+                                    <Typography fontWeight={700} color="#1976d2" fontSize={10}>
+                                      {phase.statistics.passedDays || 0} days
+                                    </Typography>
+                                  </Box>
+                                  <LinearProgress 
+                                    variant="determinate" 
+                                    value={Math.round(((phase.statistics.passedDays || 0) / (phase.duration || 1)) * 100)} 
+                                    sx={{ 
+                                      height: 6, 
+                                      borderRadius: 3, 
+                                      minWidth: 0, 
+                                      background: '#e3f2fd',
+                                      width: '100%',
+                                      '& .MuiLinearProgress-bar': { 
+                                        backgroundColor: '#1976d2',
+                                        borderRadius: 7
+                                      } 
+                                    }} 
+                                  />
+                                </Box>
+                              </Grid>
+                              
+                              {/* Right Column */}
+                              <Grid item xs={12} sm={6} sx={{ p: '0 !important', width: 'calc(50% - 4px)' }}>
+                                {/* Missed */}
+                                <Box sx={{ width: '100%', mb: 1.5 }}>
+                                  <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
+                                    <Box display="flex" alignItems="center" gap={0.2}>
+                                      <BlockIcon sx={{ color: '#e53935', fontSize: 12, mt: 0.1 }} />
+                                      <Typography fontWeight={900} fontSize={10}>Missed</Typography>
+                                    </Box>
+                                    <Typography fontWeight={700} color="#e53935" fontSize={10}>
+                                      {phase.statistics.missedDays || 0} days
+                                    </Typography>
+                                  </Box>
+                                  <LinearProgress 
+                                    variant="determinate" 
+                                    value={Math.round(((phase.statistics.missedDays || 0) / (phase.duration || 1)) * 100)} 
+                                    sx={{ 
+                                      height: 6, 
+                                      borderRadius: 3, 
+                                      minWidth: 0, 
+                                      background: '#ffebee',
+                                      width: '100%',
+                                      '& .MuiLinearProgress-bar': { 
+                                        backgroundColor: '#e53935',
+                                        borderRadius: 7
+                                      } 
+                                    }} 
+                                  />
+                                </Box>
+
+                                {/* Failed */}
+                                <Box sx={{ width: '100%', mb: 1 }}>
+                                  <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
+                                    <Box display="flex" alignItems="center" gap={0.2}>
+                                      <ErrorIcon sx={{ color: '#ff9800', fontSize: 12, mt: 0.1 }} />
+                                      <Typography fontWeight={900} fontSize={10}>Failed</Typography>
+                                    </Box>
+                                    <Typography fontWeight={700} color="#ff9800" fontSize={10}>
+                                      {phase.statistics.failedDays || 0} days
+                                    </Typography>
+                                  </Box>
+                                  <LinearProgress 
+                                    variant="determinate" 
+                                    value={Math.round(((phase.statistics.failedDays || 0) / (phase.duration || 1)) * 100)} 
+                                    sx={{ 
+                                      height: 6, 
+                                      borderRadius: 3, 
+                                      minWidth: 0, 
+                                      background: '#fff3e0',
+                                      width: '100%',
+                                      '& .MuiLinearProgress-bar': { 
+                                        backgroundColor: '#ff9800',
+                                        borderRadius: 7
+                                      } 
+                                    }} 
+                                  />
+                                </Box>
+                              </Grid>
+                            </Grid>
                           </Box>
                         )}
                         {/* Buttons: View records & Add daily record side by side */}
@@ -494,6 +585,7 @@ const QuitPlanResultPage = () => {
         onClose={handleCloseRecordModal}
         onSubmit={handleAddDailyRecord}
         limitCigarettesPerDay={recordPhase?.limit_cigarettes_per_day}
+        loading={isSubmitting}
       />
     </Box>
   );
