@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { toast } from 'react-toastify';
 import Lottie from 'lottie-react';
 import bouncingCatAnimation from '../../assets/animations/bouncing-black-cat.json';
@@ -6,13 +6,17 @@ import motivationService from '../../services/motivationService';
 
 const MotivationService = ({ setNotifications }) => {
   const [loadingMotivation, setLoadingMotivation] = useState(false);
+  const intervalId = useRef(null);
 
   useEffect(() => {
-    // Check if user is logged in
+    // Initial check - don't show anything on first load
     const isLoggedIn = !!localStorage.getItem('accessToken');
     if (!isLoggedIn) {
-      // Clear any existing interval if user logs out
-      return () => clearInterval(intervalId);
+      return () => {
+        if (intervalId.current) {
+          clearInterval(intervalId.current);
+        }
+      };
     }
 
     const fetchMotivationMessage = async () => {
@@ -83,16 +87,21 @@ const MotivationService = ({ setNotifications }) => {
         );
       }
     };
-    // Initial fetch
-    fetchMotivationMessage();
-    
-    // Set up interval for subsequent fetches
-    const intervalId = setInterval(fetchMotivationMessage, 7200000); // 2 hours
-    
+    // Initial fetch after a short delay to ensure auth state is set
+    const initialDelay = 2000; // 2 seconds delay
+    const initialTimer = setTimeout(() => {
+      if (!!localStorage.getItem('accessToken')) {
+        fetchMotivationMessage();
+        // Set up interval for subsequent fetches
+        intervalId.current = setInterval(fetchMotivationMessage, 7200000); // 2 hours
+      }
+    }, initialDelay);
+
     // Cleanup function
     return () => {
-      if (intervalId) {
-        clearInterval(intervalId);
+      clearTimeout(initialTimer);
+      if (intervalId.current) {
+        clearInterval(intervalId.current);
       }
     };
   }, [setNotifications]);
