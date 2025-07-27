@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Box, Button, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Chip, CircularProgress, Snackbar, Alert
+ Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Box, Button, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Chip, CircularProgress, Snackbar, Alert
 } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
-import EmailIcon from '@mui/icons-material/Email';
 import DateRangeIcon from '@mui/icons-material/DateRange';
 import CardMembershipIcon from '@mui/icons-material/CardMembership';
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
@@ -12,12 +11,6 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DescriptionIcon from '@mui/icons-material/Description';
 import membershipService from '../../services/membershipService';
-
-const statusColor = (status) => {
-  if (status === 'Active') return 'success.main';
-  if (status === 'Expired') return 'error.main';
-  return 'text.secondary';
-};
 
 const defaultForm = {
   name: '',

@@ -1,24 +1,62 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Box, TextField, IconButton, Typography, Avatar, Paper } from '@mui/material';
+import { Box, TextField, IconButton, Typography, Avatar, Paper, Button, CircularProgress } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import CloseIcon from '@mui/icons-material/Close';
 import FaceRetouchingNaturalOutlinedIcon from '@mui/icons-material/FaceRetouchingNaturalOutlined';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+import LockIcon from '@mui/icons-material/Lock';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import motivationService from '../services/motivationService';
+import { fetchCurrentUser } from '../services/userService';
 
 const Chatbox = ({ onClose }) => {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]); // State to store messages
   const [loading, setLoading] = useState(false);
+  const [isMember, setIsMember] = useState(false);
+  const [checkingMembership, setCheckingMembership] = useState(true);
   const messagesEndRef = useRef(null); // Ref for scrolling to bottom
+  const navigate = useNavigate();
+
+  // Check membership status on component mount
+  useEffect(() => {
+    const checkMembership = async () => {
+      try {
+        const response = await fetchCurrentUser();
+        // Handle both response structures: response.data.data or response.data
+        const userData = response?.data?.data || response?.data || {};
+        setIsMember(userData.isMember === true);
+      } catch (error) {
+        console.error('Error checking membership:', error);
+        toast.error('Error checking membership status');
+        setIsMember(false);
+      } finally {
+        setCheckingMembership(false);
+      }
+    };
+    
+    checkMembership();
+  }, []);
 
   // Scroll to bottom whenever messages update
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  const handleUpgradeMembership = () => {
+    onClose?.();
+    navigate('/subscription');
+    toast.info('Please subscribe to a membership plan to access AI chat');
+  };
+
   const handleSendMessage = async () => {
     if (!message.trim()) return; // Prevent sending empty messages
+
+    if (!isMember) {
+      toast.error('Please subscribe to a membership plan to access AI chat');
+      return;
+    }
 
     const userMessage = { text: message, sender: 'user' };
     setMessages((prevMessages) => [...prevMessages, userMessage]); // Add user message
@@ -91,9 +129,49 @@ const Chatbox = ({ onClose }) => {
           flexDirection: 'column',
           gap: 1.5,
           bgcolor: 'background.default',
+          position: 'relative',
         }}
       >
-        {messages.length === 0 && (
+        {checkingMembership ? (
+          <Box sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            bgcolor: 'rgba(255, 255, 255, 0.8)',
+            zIndex: 1
+          }}>
+            <CircularProgress size={30} />
+          </Box>
+        ) : !isMember ? (
+          <Box sx={{
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            textAlign: 'center',
+            p: 3
+          }}>
+            <LockIcon sx={{ fontSize: 50, color: 'text.disabled', mb: 2 }} />
+            <Typography variant="h6" sx={{ mb: 1 }}>Premium Feature</Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 3, maxWidth: '80%' }}>
+              Unlock access to our AI coach by subscribing to a membership plan.
+            </Typography>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleUpgradeMembership}
+              sx={{ borderRadius: 2, textTransform: 'none', px: 4 }}
+            >
+              Upgrade to Premium
+            </Button>
+          </Box>
+        ) : messages.length === 0 ? (
           <Box sx={{
             height: '100%',
             display: 'flex',
@@ -107,7 +185,7 @@ const Chatbox = ({ onClose }) => {
               Hello! I'm your AI coach. How can I help with your smoking cessation journey today?
             </Typography>
           </Box>
-        )}
+        ) : null}
 
         {messages.map((msg, index) => (
           <Box
@@ -235,74 +313,95 @@ const Chatbox = ({ onClose }) => {
       {/* Input Area */}
       <Box
         sx={{
-          display: 'flex',
-          alignItems: 'center',
           p: 2,
           borderTop: '1px solid',
           borderColor: 'divider',
-          bgcolor: 'section.light',
+          bgcolor: 'background.paper',
+          position: 'relative',
         }}
       >
-        <TextField
-          placeholder="Type a message..."
-          variant="outlined"
-          fullWidth
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          onKeyPress={(e) => {
-            if (e.key === 'Enter' && !loading) {
-              handleSendMessage();
-            }
-          }}
-          disabled={loading}
-          sx={{
-            '& .MuiOutlinedInput-root': {
-              borderRadius: 3,
-              paddingRight: 0,
-              bgcolor: 'background.default',
-              color: 'text.primary',
-              borderColor: 'divider',
-            },
-            '& .MuiOutlinedInput-notchedOutline': {
-              borderColor: 'divider',
-            },
-            '&:hover .MuiOutlinedInput-notchedOutline': {
-              borderColor: 'primary.main',
-            },
-            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-              borderColor: 'primary.main',
-            },
-            '& input': {
-              padding: '12px 14px',
-              fontSize: '0.875rem',
-            }
-          }}
-        />
-        <IconButton
-          onClick={handleSendMessage}
-          disabled={!message.trim() || loading}
-          sx={{
-            bgcolor: 'primary.main',
-            ml: 1,
-            borderRadius: 2,
-            p: '8px',
-            '&:hover': {
-              bgcolor: 'primary.dark',
-              transform: 'translateY(-2px)',
-              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-            },
-            '&:active': {
-              transform: 'translateY(0)',
-              boxShadow: 'none',
-            },
-            '&.Mui-disabled': {
-              bgcolor: 'action.disabledBackground',
-            },
-            transition: 'all 0.2s',
-          }}
-        >
-          <SendIcon sx={{ color: 'white', fontSize: 20 }} />
-        </IconButton>
+        {!isMember && !checkingMembership && (
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              bgcolor: 'rgba(255, 255, 255, 0.8)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 1,
+              backdropFilter: 'blur(2px)',
+            }}
+          >
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleUpgradeMembership}
+              startIcon={<LockIcon />}
+              sx={{ borderRadius: 2, textTransform: 'none' }}
+            >
+              Subscribe to Chat
+            </Button>
+          </Box>
+        )}
+        <Box sx={{ display: 'flex', gap: 1, opacity: isMember ? 1 : 0.5 }}>
+          <TextField
+            fullWidth
+            variant="outlined"
+            placeholder={isMember ? "Type your message..." : "Subscribe to chat with AI coach"}
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSendMessage();
+              }
+            }}
+            multiline
+            maxRows={4}
+            disabled={loading || !isMember}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 2,
+                bgcolor: 'background.default',
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: isMember ? 'primary.main' : 'divider',
+                },
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderColor: isMember ? 'primary.main' : 'divider',
+                  borderWidth: 1,
+                },
+              },
+              '& .Mui-disabled': {
+                cursor: 'not-allowed',
+                '&::placeholder': {
+                  color: 'text.disabled',
+                },
+              },
+            }}
+          />
+          <IconButton
+            color="primary"
+            onClick={handleSendMessage}
+            disabled={!message.trim() || loading || !isMember}
+            sx={{
+              bgcolor: isMember ? 'primary.main' : 'action.disabled',
+              color: 'white',
+              '&:hover': {
+                bgcolor: isMember ? 'primary.dark' : 'action.disabled',
+              },
+              '&.Mui-disabled': {
+                bgcolor: 'action.disabled',
+                color: 'action.disabled',
+              },
+            }}
+          >
+            <SendIcon sx={{ color: 'white', fontSize: 20 }} />
+          </IconButton>
+        </Box>
       </Box>
     </Paper>
   );

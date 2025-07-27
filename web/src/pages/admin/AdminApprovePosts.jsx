@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Typography, Box, IconButton, Divider, Tabs, Tab, Pagination, Badge } from '@mui/material';
-import TitleIcon from '@mui/icons-material/Title';
+import {Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Typography, Box, Divider, Tabs, Tab, Pagination} from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 import DateRangeIcon from '@mui/icons-material/DateRange';
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import SettingsIcon from '@mui/icons-material/Settings';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import CancelIcon from '@mui/icons-material/Cancel';
 import postService from '../../services/postService';
 import { Dialog, DialogTitle, DialogContent, DialogActions, TextField } from '@mui/material';
 
@@ -38,18 +35,6 @@ export default function AdminApprovePosts() {
 
   // Reset page về 1 khi đổi tab
   useEffect(() => { setPage(1); }, [tab]);
-
-  const handleApprove = async (id, approved) => {
-    setActionLoading(id);
-    try {
-      await postService.approvePost(id, { approved });
-      fetchPosts();
-    } catch (err) {
-      // error toast đã có trong service
-    } finally {
-      setActionLoading(null);
-    }
-  };
 
   const handleView = async (id) => {
     try {

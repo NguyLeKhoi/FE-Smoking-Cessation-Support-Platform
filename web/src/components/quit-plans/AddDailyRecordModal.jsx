@@ -1,165 +1,259 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
+  Box,
   Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   TextField,
-  MenuItem,
+  Typography,
+  CircularProgress,
+  Slider,
+  Stack,
+  Alert,
+  LinearProgress,
 } from '@mui/material';
-import Lottie from 'lottie-react';
-import typingCatAnimation from '../../assets/animations/typing-cat-animation.json';
 
-const healthStatusOptions = [
-  { value: 'GOOD', label: 'Good' },
-  { value: 'NORMAL', label: 'Normal' },
-  { value: 'BAD', label: 'Bad' },
-];
-
-export default function AddDailyRecordModal({ open, onClose, onSubmit, limitCigarettesPerDay }) {
+export default function AddDailyRecordModal({ 
+  open, 
+  onClose, 
+  onSubmit, 
+  limitCigarettesPerDay,
+  loading = false,
+}) {
   const [cigaretteSmoke, setCigaretteSmoke] = useState('');
-  const [cravingLevel, setCravingLevel] = useState('');
-  const [healthStatus, setHealthStatus] = useState('GOOD');
+  const [cravingLevel, setCravingLevel] = useState(5);
+  const [error, setError] = useState('');
 
-  // Format date to YYYY-MM-DD in Vietnam timezone (UTC+7)
-  const formatVietnamDate = (date) => {
-    // Get current time in Vietnam timezone (UTC+7)
-    const now = new Date();
-    // Get timezone offset in minutes, then convert to hours
-    const timezoneOffset = now.getTimezoneOffset() / 60;
-    // Calculate Vietnam time (UTC+7)
-    const vietnamOffset = 7;
-    const offsetDiff = timezoneOffset + vietnamOffset;
-    // Create new date with Vietnam timezone adjustment
-    const vietnamDate = new Date(date.getTime() + (offsetDiff * 60 * 60 * 1000));
-    // Format as YYYY-MM-DD
-    return vietnamDate.toISOString().split('T')[0];
+  // Reset form when modal opens/closes
+  useEffect(() => {
+    if (open) {
+      setCigaretteSmoke('');
+      setCravingLevel(5);
+      setError('');
+    }
+  }, [open]);
+
+  const validate = () => {
+    if (!cigaretteSmoke || isNaN(cigaretteSmoke) || cigaretteSmoke < 0) {
+      setError('Please enter a valid number of cigarettes');
+      return false;
+    }
+    setError('');
+    return true;
   };
-
-  const [recordDate, setRecordDate] = useState(() => {
-    return formatVietnamDate(new Date());
-  });
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Create date object in local timezone
-    const localDate = new Date(recordDate);
-    // Get timezone offset in minutes, then convert to hours
-    const timezoneOffset = localDate.getTimezoneOffset() / 60;
-    // Calculate Vietnam time (UTC+7)
-    const vietnamOffset = 7;
-    const offsetDiff = timezoneOffset + vietnamOffset;
-    // Create date with Vietnam timezone
-    const vietnamDate = new Date(localDate.getTime() + (offsetDiff * 60 * 60 * 1000));
+    if (!validate() || loading) return;
     
+    const now = new Date();
     const payload = {
       cigarette_smoke: Number(cigaretteSmoke),
       craving_level: Number(cravingLevel),
-      health_status: healthStatus,
-      // Format as ISO string with timezone offset for Vietnam (UTC+7)
-      record_date: vietnamDate.toISOString(),
+      health_status: 'NORMAL', // Default to normal
+      record_date: now.toISOString(),
     };
-    console.log('Add Daily Record payload:', payload);
+    
     onSubmit(payload);
   };
 
   const handleClose = () => {
+    if (loading) return; // Prevent closing while loading
     setCigaretteSmoke('');
-    setCravingLevel('');
-    setHealthStatus('GOOD');
-    setRecordDate(formatVietnamDate(new Date()));
+    setCravingLevel(5);
+    setError('');
     onClose();
   };
 
+  // Calculate progress for the limit indicator
+  const progress = limitCigarettesPerDay > 0 && cigaretteSmoke 
+    ? Math.min(100, (Number(cigaretteSmoke) / limitCigarettesPerDay) * 100) 
+    : 0;
+
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="xs" fullWidth>
-      {typeof limitCigarettesPerDay !== 'undefined' && (
-        <div style={{
-          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-          margin: '32px 0 0 0',
-        }}>
-          <div style={{
-            background: '#fff3e0',
-            border: '2px solid #ff9800',
-            borderRadius: 16,
-            padding: '16px 24px',
-            display: 'flex', flexDirection: 'column', alignItems: 'center',
-            boxShadow: '0 2px 12px rgba(255,152,0,0.08)',
-            marginBottom: 12,
-            width: '100%',
-            maxWidth: 320,
-          }}>
-            <Lottie
-              animationData={typingCatAnimation}
-              loop
-              autoplay
-              style={{ width: 90, height: 90, marginBottom: 0 }}
-            />
-            <span style={{
-              color: '#d84315', fontWeight: 900, fontSize: 22, textAlign: 'center', marginTop: 4, letterSpacing: 0.5
-            }}>
-              Limit per day: <span style={{ fontSize: 26 }}>{limitCigarettesPerDay}</span>
-            </span>
-          </div>
-        </div>
-      )}
+    <Dialog 
+      open={open} 
+      onClose={handleClose} 
+      maxWidth="sm" 
+      fullWidth
+      disableEscapeKeyDown={loading}
+    >
+      <DialogTitle sx={{ 
+        textAlign: 'center', 
+        fontSize: '1.5rem', 
+        fontWeight: 'bold',
+        pb: 1,
+        position: 'relative',
+      }}>
+        {loading ? (
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
+            <CircularProgress size={24} />
+            <span>Saving your record...</span>
+          </Box>
+        ) : 'Add Today\'s Record'}
+      </DialogTitle>
+      
+      {loading && <LinearProgress />}
+      
       <form onSubmit={handleSubmit}>
-        <DialogContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', px: 3, pt: 1, pb: 0 }}>
-          <TextField
-            label="Cigarettes Smoked"
-            type="number"
-            value={cigaretteSmoke}
-            onChange={(e) => setCigaretteSmoke(e.target.value)}
-            fullWidth
-            margin="normal"
-            required
-            inputProps={{ min: 0 }}
-            sx={{ mb: 2, bgcolor: '#fff', borderRadius: 2 }}
-          />
-          <TextField
-            label="Craving Level (1-10)"
-            type="number"
-            value={cravingLevel}
-            onChange={(e) => setCravingLevel(e.target.value)}
-            fullWidth
-            margin="normal"
-            required
-            inputProps={{ min: 1, max: 10 }}
-            sx={{ mb: 2, bgcolor: '#fff', borderRadius: 2 }}
-          />
-          <TextField
-            label="Health Status"
-            select
-            value={healthStatus}
-            onChange={(e) => setHealthStatus(e.target.value)}
-            fullWidth
-            margin="normal"
-            required
-            sx={{ mb: 2, bgcolor: '#fff', borderRadius: 2 }}
-          >
-            {healthStatusOptions.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
-              </MenuItem>
-            ))}
-          </TextField>
-          <TextField
-            label="Record Date"
-            type="date"
-            value={recordDate}
-            onChange={(e) => setRecordDate(e.target.value)}
-            fullWidth
-            margin="normal"
-            InputLabelProps={{ shrink: true }}
-            required
-            disabled
-            sx={{ mb: 2, bgcolor: '#fff', borderRadius: 2 }}
-          />
+        <DialogContent>
+          <Stack spacing={3} sx={{ mt: 1 }}>
+            {limitCigarettesPerDay !== undefined && (
+              <Box sx={{ textAlign: 'center', mb: 2 }}>
+                <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 'bold' }}>
+                  Daily Limit: {limitCigarettesPerDay} cigarettes
+                </Typography>
+              </Box>
+            )}
+
+            <Box>
+              <Typography gutterBottom sx={{ fontWeight: 'medium', mb: 1 }}>
+                How many cigarettes did you smoke today?
+              </Typography>
+              <TextField
+                fullWidth
+                type="number"
+                variant="outlined"
+                value={cigaretteSmoke}
+                onChange={(e) => setCigaretteSmoke(e.target.value)}
+                error={!!error}
+                helperText={error}
+                InputProps={{ 
+                  inputProps: { 
+                    min: 0, 
+                    step: 1,
+                    style: { textAlign: 'center', fontSize: '1.2rem' }
+                  },
+                  disabled: loading,
+                }}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 2,
+                    bgcolor: 'background.paper',
+                  },
+                }}
+              />
+              
+              {limitCigarettesPerDay > 0 && (
+                <Box sx={{ mt: 2 }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                    <Typography variant="caption" color="text.secondary">
+                      Progress: {cigaretteSmoke || 0} / {limitCigarettesPerDay}
+                    </Typography>
+                    <Typography 
+                      variant="caption" 
+                      color={progress >= 100 ? 'error' : 'text.secondary'}
+                      fontWeight={progress >= 100 ? 'bold' : 'normal'}
+                    >
+                      {Math.round(progress)}% of daily limit
+                    </Typography>
+                  </Box>
+                  <LinearProgress 
+                    variant="determinate" 
+                    value={progress} 
+                    color={progress >= 100 ? 'error' : 'primary'}
+                    sx={{ 
+                      height: 8, 
+                      borderRadius: 4,
+                      '& .MuiLinearProgress-bar': {
+                        borderRadius: 4,
+                      }
+                    }} 
+                  />
+                  {progress >= 100 && (
+                    <Alert severity="warning" sx={{ mt: 1, borderRadius: 1 }}>
+                      You've reached your daily limit!
+                    </Alert>
+                  )}
+                </Box>
+              )}
+            </Box>
+
+            <Box>
+              <Typography gutterBottom sx={{ fontWeight: 'medium', mb: 1 }}>
+                How strong is your craving? (1-10)
+              </Typography>
+              <Box sx={{ px: 2 }}>
+                <Slider
+                  value={cravingLevel}
+                  onChange={(e, newValue) => setCravingLevel(newValue)}
+                  min={1}
+                  max={10}
+                  step={1}
+                  marks={[
+                    { value: 1, label: '1' },
+                    { value: 5, label: '5' },
+                    { value: 10, label: '10' },
+                  ]}
+                  valueLabelDisplay="auto"
+                  disabled={loading}
+                  sx={{
+                    '& .MuiSlider-markLabel': {
+                      transform: 'translateY(20px)',
+                    },
+                  }}
+                />
+                <Box sx={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between',
+                  mt: -1,
+                  px: 0.5,
+                }}>
+                  <Typography variant="caption" color="text.secondary">Not at all</Typography>
+                  <Typography variant="caption" color="text.secondary">Extremely</Typography>
+                </Box>
+              </Box>
+            </Box>
+          </Stack>
         </DialogContent>
-        <DialogActions sx={{ justifyContent: 'center', pb: 3, pt: 1 }}>
-          <Button onClick={handleClose} sx={{ fontWeight: 700, px: 3, py: 1, borderRadius: 2 }}>Cancel</Button>
-          <Button type="submit" variant="contained" sx={{ fontWeight: 900, px: 4, py: 1.2, borderRadius: 2, ml: 2 }}>Add</Button>
+        
+        <DialogActions sx={{ p: 3, pt: 0 }}>
+          <Button 
+            onClick={handleClose}
+            disabled={loading}
+            variant="outlined"
+            sx={{
+              borderRadius: 2,
+              px: 3,
+              py: 1,
+              fontWeight: 'medium',
+              textTransform: 'none',
+              borderWidth: 2,
+              '&:hover': {
+                borderWidth: 2,
+              },
+            }}
+          >
+            Cancel
+          </Button>
+          <Button 
+            type="submit" 
+            variant="contained" 
+            color="primary" 
+            disabled={loading || !!error}
+            sx={{
+              borderRadius: 2,
+              px: 4,
+              py: 1,
+              fontWeight: 'bold',
+              textTransform: 'none',
+              boxShadow: '0 4px 12px rgba(25, 118, 210, 0.2)',
+              '&:hover': {
+                boxShadow: '0 6px 16px rgba(25, 118, 210, 0.3)',
+              },
+              '&:disabled': {
+                bgcolor: 'action.disabledBackground',
+              },
+            }}
+          >
+            {loading ? (
+              <CircularProgress size={24} color="inherit" />
+            ) : (
+              'Save Record'
+            )}
+          </Button>
         </DialogActions>
       </form>
     </Dialog>

@@ -52,7 +52,11 @@ export const endChatRoom = async (chatRoomId) => {
 
 export const getVideoToken = async (chatRoomId) => {
     try {
-        const response = await api.post(`/chat/rooms/${chatRoomId}/video-token`);
+        // Add timestamp to ensure fresh token generation
+        const timestamp = Date.now();
+        const response = await api.post(`/chat/rooms/${chatRoomId}/video-token`, {
+            timestamp: timestamp
+        });
         return response.data;
     } catch (error) {
         console.error('Error getting video token:', error);

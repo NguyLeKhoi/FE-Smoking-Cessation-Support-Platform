@@ -1,4 +1,4 @@
-// d:/FPTU/SU25/WDP301/FE/web/src/pages/main/SubscriptionPage.jsx
+
 import React, { useState, useEffect } from 'react';
 import { 
   Box, 
@@ -21,6 +21,7 @@ import { styled } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 import subscriptionService from '../../services/subscriptionService';
 import ProfileSidebar from '../../components/profilePage/ProfileSidebar';
+import LoadingPage from '../LoadingPage';
 import { EmojiEvents, CheckCircle, EventAvailable, EventBusy, Update } from '@mui/icons-material';
 
 // Styled Components
@@ -385,7 +386,7 @@ const SubscriptionPage = () => {
       <PageContainer>
         <ProfileSidebar userData={userData} />
         <ContentContainer sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <CircularProgress />
+          <LoadingPage/>
         </ContentContainer>
       </PageContainer>
     );
