@@ -7,20 +7,16 @@ import {
     Divider,
     Button,
     Paper,
-    TextField,
-    InputAdornment,
     CircularProgress,
     Alert,
     Pagination,
     Stack
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import EmailIcon from '@mui/icons-material/Email';
 import AddIcon from '@mui/icons-material/Add';
 
 import CustomCard from '../../components/blog/CustomCard';
 import BlogBanner from '../../components/blog/BlogBanner';
-import MarkdownRenderer from '../../components/blog/MarkdownRenderer';
 import postService from '../../services/postService';
 import LoadingPage from '../LoadingPage';
 import { generateSlug } from '../../utils/slugUtils';

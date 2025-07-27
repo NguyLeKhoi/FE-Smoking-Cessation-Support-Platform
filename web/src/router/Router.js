@@ -165,7 +165,7 @@ export const routes = createBrowserRouter([
   {
     path: '/subscription',
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute requireMembership={false}>
         <MainLayout showHeader={false} showFooter={true}>
           <SubscriptionPage />
         </MainLayout>
@@ -283,11 +283,10 @@ export const routes = createBrowserRouter([
   },
 
   //coach
-
   {
     path: '/coaches-list',
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute requireMembership={true}>
         <MainLayout>
           <CoachListPage />
         </MainLayout>
@@ -298,7 +297,7 @@ export const routes = createBrowserRouter([
   {
     path: '/chat-page',
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute requireMembership={true}>
         <MainLayout showHeader={false} showFooter={false}>
           <ChatPage />
         </MainLayout>
