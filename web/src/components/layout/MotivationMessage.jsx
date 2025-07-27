@@ -10,7 +10,10 @@ const MotivationService = ({ setNotifications }) => {
   useEffect(() => {
     // Check if user is logged in
     const isLoggedIn = !!localStorage.getItem('accessToken');
-    if (!isLoggedIn) return; // Don't show notifications if not logged in
+    if (!isLoggedIn) {
+      // Clear any existing interval if user logs out
+      return () => clearInterval(intervalId);
+    }
 
     const fetchMotivationMessage = async () => {
       const lastMotivationToastTimestamp = sessionStorage.getItem('lastMotivationToastTimestamp');
@@ -80,9 +83,18 @@ const MotivationService = ({ setNotifications }) => {
         );
       }
     };
+    // Initial fetch
     fetchMotivationMessage();
+    
+    // Set up interval for subsequent fetches
     const intervalId = setInterval(fetchMotivationMessage, 7200000); // 2 hours
-    return () => clearInterval(intervalId);
+    
+    // Cleanup function
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
   }, [setNotifications]);
 
   return { loadingMotivation };
