@@ -11,7 +11,6 @@ import {
   CircularProgress,
   Slider,
   Stack,
-  Divider,
   Alert,
   LinearProgress,
 } from '@mui/material';

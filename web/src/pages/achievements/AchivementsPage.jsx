@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Paper, Avatar, CircularProgress, LinearProgress, Chip } from '@mui/material';
+import { Box, Typography, Paper, CircularProgress} from '@mui/material';
 import achievementsService from '../../services/achievementsService';
-import { useNavigate } from 'react-router-dom';
 import ProfileSidebar from '../../components/profilePage/ProfileSidebar';
 import { jwtDecode } from 'jwt-decode';
 import AchievementStyle from '../../components/profilePage/AchievementStyle';
@@ -10,7 +9,6 @@ const AchievementsPage = () => {
     const [progressList, setProgressList] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchAchievementsProgress = async () => {
