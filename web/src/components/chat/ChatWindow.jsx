@@ -319,7 +319,7 @@ const ChatWindow = ({ room, onClose }) => {
             // Use the fresh token sent with the call-accepted event
             if (data.token) {
                 setVideoToken(data.token);
-                setIsInVideoCall(true); 
+                setIsInVideoCall(true);
             } else {
                 console.error('No token received with call-accepted event');
             }
@@ -378,7 +378,7 @@ const ChatWindow = ({ room, onClose }) => {
                 throw new Error('Failed to get video token');
             }
 
-            socket.emit('start-call', { 
+            socket.emit('start-call', {
                 chatRoomId: room.id,
                 callerToken: tokenResponse.data.token // Send the fresh token to backend
             }, (response) => {
@@ -406,27 +406,27 @@ const ChatWindow = ({ room, onClose }) => {
             console.log('❌ Cannot accept call - missing socket or incomingCall:', { socket: !!socket, incomingCall });
             return;
         }
-        
+
         console.log('📞 Accepting call with data:', incomingCall);
-        
+
         try {
             // Always get a fresh token for the accepter
             const tokenResponse = await getVideoToken(room.id);
             console.log('🎬 Got fresh video token for accepting call:', tokenResponse);
-            
+
             if (tokenResponse?.data?.token) {
                 setVideoToken(tokenResponse.data.token);
                 setIsInVideoCall(true);
                 setIncomingCall(null);
-                
+
                 // Notify caller that call was accepted with fresh token
-                socket.emit('accept-call', { 
+                socket.emit('accept-call', {
                     chatRoomId: incomingCall.roomId || incomingCall.chatRoomId || room.id,
                     callerId: incomingCall.caller?.id || incomingCall.callerId,
                     caller: incomingCall.caller,
                     accepterToken: tokenResponse.data.token // Send fresh token to backend
                 });
-                
+
                 console.log('✅ Call accepted successfully with fresh token');
             } else {
                 throw new Error('Failed to get video token');
@@ -442,15 +442,15 @@ const ChatWindow = ({ room, onClose }) => {
             console.log('❌ Cannot reject call - missing socket or incomingCall:', { socket: !!socket, incomingCall });
             return;
         }
-        
+
         console.log('❌ Rejecting call with data:', incomingCall);
-        
-        socket.emit('reject-call', { 
+
+        socket.emit('reject-call', {
             chatRoomId: incomingCall.roomId || incomingCall.chatRoomId || room.id,
             callerId: incomingCall.caller?.id || incomingCall.callerId,
-            caller: incomingCall.caller 
+            caller: incomingCall.caller
         });
-        
+
         setIncomingCall(null);
         console.log('📞 Call rejected');
     };

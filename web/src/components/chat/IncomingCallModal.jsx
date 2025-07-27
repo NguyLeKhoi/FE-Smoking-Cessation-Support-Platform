@@ -75,10 +75,10 @@ const IncomingCallModal = ({ open, caller, onAccept, onReject }) => {
             >
               {caller?.username ? caller.username.charAt(0).toUpperCase() : '?'}
             </Avatar>
-            
-    
+
+
           </Box>
-          
+
           <Typography variant="h5" fontWeight={700} gutterBottom sx={{ mb: 0.5 }}>
             {caller?.username || 'Unknown User'}
           </Typography>
