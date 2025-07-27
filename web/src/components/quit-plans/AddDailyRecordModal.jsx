@@ -101,10 +101,51 @@ export default function AddDailyRecordModal({
         <DialogContent>
           <Stack spacing={3} sx={{ mt: 1 }}>
             {limitCigarettesPerDay !== undefined && (
-              <Box sx={{ textAlign: 'center', mb: 2 }}>
-                <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 'bold' }}>
-                  Daily Limit: {limitCigarettesPerDay} cigarettes
-                </Typography>
+              <Box sx={{ mb: 3 }}>
+                <Box 
+                  sx={{ 
+                    p: 2, 
+                    borderRadius: 2, 
+                    bgcolor: limitCigarettesPerDay === 0 
+                      ? 'warning.light' 
+                      : !cigaretteSmoke 
+                        ? 'grey.100' 
+                        : progress < 100 
+                          ? 'success.light' 
+                          : progress === 100 && Number(cigaretteSmoke) === limitCigarettesPerDay
+                            ? 'warning.light'
+                            : 'error.light',
+                    color: limitCigarettesPerDay === 0 ? 'common.black' : 
+                          (!cigaretteSmoke ? 'text.primary' : 'common.white'),
+                    textAlign: 'center',
+                    boxShadow: 1,
+                    transition: 'all 0.3s ease',
+                    border: limitCigarettesPerDay === 0 ? '1px solid #ff9800' : 'none',
+                    mb: 2
+                  }}
+                >
+                  <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                    {limitCigarettesPerDay === 0 
+                      ? 'No Cigarettes Allowed Today' 
+                      : `Daily Limit: ${limitCigarettesPerDay} cigarettes`}
+                  </Typography>
+                  <Typography variant="body2" sx={{ 
+                    mt: 0.5, 
+                    opacity: 0.9,
+                    color: limitCigarettesPerDay === 0 ? 'warning.dark' : 
+                          (!cigaretteSmoke ? 'text.secondary' : 'common.white')
+                  }}>
+                    {limitCigarettesPerDay === 0
+                      ? 'Your plan does not allow any cigarettes for today.'
+                      : progress > 100 
+                        ? '⚠️ You have exceeded your daily limit! Consider reducing your intake.'
+                        : progress === 100 && Number(cigaretteSmoke) === limitCigarettesPerDay
+                          ? '⚠️ You have reached your daily limit. Try not to smoke more today.'
+                          : progress >= 80 
+                            ? 'You are close to your daily limit. Be mindful of your consumption.'
+                            : 'Track your progress below'}
+                  </Typography>
+                </Box>
               </Box>
             )}
 
@@ -136,38 +177,21 @@ export default function AddDailyRecordModal({
                 }}
               />
               
-              {limitCigarettesPerDay > 0 && (
-                <Box sx={{ mt: 2 }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-                    <Typography variant="caption" color="text.secondary">
-                      Progress: {cigaretteSmoke || 0} / {limitCigarettesPerDay}
-                    </Typography>
-                    <Typography 
-                      variant="caption" 
-                      color={progress >= 100 ? 'error' : 'text.secondary'}
-                      fontWeight={progress >= 100 ? 'bold' : 'normal'}
-                    >
-                      {Math.round(progress)}% of daily limit
-                    </Typography>
-                  </Box>
-                  <LinearProgress 
-                    variant="determinate" 
-                    value={progress} 
-                    color={progress >= 100 ? 'error' : 'primary'}
-                    sx={{ 
-                      height: 8, 
-                      borderRadius: 4,
-                      '& .MuiLinearProgress-bar': {
-                        borderRadius: 4,
-                      }
-                    }} 
-                  />
-                  {progress >= 100 && (
-                    <Alert severity="warning" sx={{ mt: 1, borderRadius: 1 }}>
-                      You've reached your daily limit!
-                    </Alert>
-                  )}
-                </Box>
+              {limitCigarettesPerDay > 0 && progress >= 100 && (
+                <Alert 
+                  severity={progress > 100 ? 'error' : 'warning'} 
+                  sx={{ 
+                    mt: 2, 
+                    borderRadius: 1,
+                    '& .MuiAlert-message': {
+                      fontWeight: 'medium'
+                    }
+                  }}
+                >
+                  {progress > 100 
+                    ? `You've exceeded your daily limit by ${cigaretteSmoke - limitCigarettesPerDay} cigarettes. Try to reduce your intake.`
+                    : 'You have reached your daily limit. Please try not to smoke more today.'}
+                </Alert>
               )}
             </Box>
 
