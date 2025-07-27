@@ -40,7 +40,7 @@ const Header = ({ authStatus }) => {
   useEffect(() => {
     fetchNotifications();
     if (sub) {
-      const socket = io("http://localhost:8000/notification", {
+      const socket = io(process.env.REACT_APP_NOTIFICATION_SOCKET_URL , {
         query: { userId: sub },
       });
 
