@@ -33,7 +33,6 @@ const PageContainer = styled(Box)({
 const ContentContainer = styled(Box)({
   flexGrow: 1,
   padding: '16px 24px',
-  marginLeft: '240px',
   maxWidth: 'calc(100% - 240px)',
   '@media (max-width: 900px)': {
     marginLeft: 0,
