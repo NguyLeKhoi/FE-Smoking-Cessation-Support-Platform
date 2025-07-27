@@ -104,19 +104,30 @@ const NotificationsDropdown = ({ notifications, onClose, onMarkAllAsRead }) => {
                       variant="body2"
                       color="text.primary"
                       fontWeight={notification.is_read ? "normal" : "bold"}
+                      sx={{ mb: 0.5 }}
                     >
-                      {notification.content}
+                      {notification.title || 'Notification'}
                     </Typography>
                   }
                   secondary={
-                    <Typography
-                      sx={{ display: "inline" }}
-                      component="span"
-                      variant="caption"
-                      color="text.secondary"
-                    >
-                      {notification.timestamp}
-                    </Typography>
+                    <Box>
+                      <Typography
+                        component="span"
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ display: 'block', mb: 0.5 }}
+                      >
+                        {notification.content || ''}
+                      </Typography>
+                      <Typography
+                        component="span"
+                        variant="caption"
+                        color="text.secondary"
+                        sx={{ display: 'block' }}
+                      >
+                        {notification.timestamp || ''}
+                      </Typography>
+                    </Box>
                   }
                 />
               </ListItem>

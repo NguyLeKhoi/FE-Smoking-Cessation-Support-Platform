@@ -6,7 +6,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import PersonIcon from '@mui/icons-material/Person';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
-import ExploreIcon from '@mui/icons-material/Explore';
+import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import ArticleIcon from '@mui/icons-material/Article';
 import SmokingRoomsIcon from '@mui/icons-material/SmokingRooms';
 
@@ -18,8 +18,7 @@ const menuItems = [
     { label: 'SMOKING HABIT', icon: <SmokingRoomsIcon fontSize="medium" />, path: '/my-smoking-habit' },
     { label: 'MY SUBSCRIPTION', icon: <EmojiEventsIcon fontSize="medium" />, path: '/subscription' },
     { label: 'MY POSTS', icon: <ArticleIcon fontSize="medium" />, path: '/my-blog' },
-    { label: 'QUESTS', icon: <ExploreIcon fontSize="medium" />, hasNotification: true, path: '/quests' },
-    { label: 'MORE', icon: <MoreHorizIcon fontSize="medium" />, path: '/more' },
+    { label: 'NOTIFICATIONS', icon: <NotificationsActiveIcon fontSize="medium" />, path: '/notifications' },
 ];
 
 const SidebarContainer = styled(Paper)(({ theme }) => ({

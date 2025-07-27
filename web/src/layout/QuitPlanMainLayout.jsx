@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
-import { Box, IconButton, Modal, Paper, Typography, TextField, Button } from '@mui/material';
+import { Box, IconButton} from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { isAuthenticated, logout } from '../services/authService';
 import { Toaster } from 'react-hot-toast';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate} from 'react-router-dom';
 import quitPlanService from '../services/quitPlanService';
 import Tooltip from '@mui/material/Tooltip';
 import CreateQuitPlanModal from '../components/quit-plans/CreateQuitPlanModal';

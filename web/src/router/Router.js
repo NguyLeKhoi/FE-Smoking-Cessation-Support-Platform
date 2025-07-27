@@ -28,6 +28,7 @@ import MyBlogPage from '../pages/profile/MyBlogPage';
 import LeaderBoardPage from '../pages/profile/LeaderBoardPage';
 import SmokingHabitPage from '../pages/profile/SmokingHabitPage';
 import SubscriptionPage from '../pages/main/SubscriptionPage';
+import NotificationsPage from '../components/profilePage/NotificationsPage';
 
 //achievements
 import AchievementsPage from '../pages/achievements/AchivementsPage';
@@ -165,7 +166,7 @@ export const routes = createBrowserRouter([
   {
     path: '/subscription',
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute requireMembership={false}>
         <MainLayout showHeader={false} showFooter={true}>
           <SubscriptionPage />
         </MainLayout>
@@ -210,6 +211,17 @@ export const routes = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
+  {
+    path: '/notifications',
+    element: (
+      <ProtectedRoute>
+        <MainLayout showHeader={false} showFooter={false}>
+          <NotificationsPage />
+        </MainLayout>
+      </ProtectedRoute>
+    ),
+  },
+
 
 
   //quiz & quit plan
@@ -283,11 +295,10 @@ export const routes = createBrowserRouter([
   },
 
   //coach
-
   {
     path: '/coaches-list',
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute requireMembership={true}>
         <MainLayout>
           <CoachListPage />
         </MainLayout>
@@ -298,7 +309,7 @@ export const routes = createBrowserRouter([
   {
     path: '/chat-page',
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute requireMembership={true}>
         <MainLayout showHeader={false} showFooter={false}>
           <ChatPage />
         </MainLayout>

@@ -6,15 +6,16 @@ import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
   TouchableOpacity,
-  ActivityIndicator,
-  Alert,
-  SafeAreaView,
-  Modal,
   TextInput,
+  Modal,
+  Alert,
+  ScrollView,
+  ActivityIndicator,
+  SafeAreaView,
   StatusBar
 } from 'react-native';
+import Slider from '@react-native-community/slider';
 import quitPlanService from '../../service/quitPlanService';
 import { Ionicons, MaterialCommunityIcons, MaterialIcons, FontAwesome } from '@expo/vector-icons';
 import * as Progress from 'react-native-progress';
@@ -507,26 +508,88 @@ const QuitPlanDetailScreen = ({ route, navigation }) => {
 };
 
 // Add Daily Record Modal Component
-const AddDailyRecordModal = ({ visible, onClose, onSubmit, limitCigarettesPerDay }) => {
+const AddDailyRecordModal = ({ visible, onClose, onSubmit, limitCigarettesPerDay, loading = false }) => {
   const [cigaretteSmoke, setCigaretteSmoke] = useState('');
-  const [cravingLevel, setCravingLevel] = useState('');
-  const [healthStatus, setHealthStatus] = useState('GOOD');
+  const [cravingLevel, setCravingLevel] = useState(5);
+  const [error, setError] = useState('');
+  const [submitted, setSubmitted] = useState(false);
+
+  // Reset form when modal opens/closes
+  useEffect(() => {
+    if (visible) {
+      setCigaretteSmoke('');
+      setCravingLevel(5);
+      setError('');
+      setSubmitted(false);
+    }
+  }, [visible]);
+
+  const validate = () => {
+    if (!cigaretteSmoke || isNaN(cigaretteSmoke) || cigaretteSmoke < 0) {
+      setError('Please enter a valid number of cigarettes');
+      return false;
+    }
+    setError('');
+    return true;
+  };
 
   const handleSubmit = () => {
-    if (!cigaretteSmoke || !cravingLevel) {
-      Alert.alert('Error', 'Please fill in all required fields');
-      return;
-    }
-    // KHÔNG truyền record_date từ UI, để logic ngoài handleAddDailyRecord tự thêm
+    setSubmitted(true);
+    if (!validate() || loading) return;
+    
+    const now = new Date();
     const payload = {
       cigarette_smoke: Number(cigaretteSmoke),
       craving_level: Number(cravingLevel),
-      health_status: healthStatus,
+      health_status: 'NORMAL', // Default to normal as per web version
+      record_date: now.toISOString(),
     };
+    
     onSubmit(payload);
-    setCigaretteSmoke('');
-    setCravingLevel('');
-    setHealthStatus('GOOD');
+  };
+
+  const handleClose = () => {
+    if (loading) return; // Prevent closing while loading
+    onClose();
+  };
+
+  // Calculate progress for the limit indicator
+  const progress = limitCigarettesPerDay > 0 && cigaretteSmoke 
+    ? Math.min(100, (Number(cigaretteSmoke) / limitCigarettesPerDay) * 100) 
+    : 0;
+
+  // Determine status color based on progress
+  const getStatusColor = () => {
+    if (limitCigarettesPerDay === 0) return '#fff3e0'; // Warning color for no cigarettes allowed
+    if (!cigaretteSmoke) return '#f5f5f5'; // Default color
+    if (progress > 100) return '#ffebee'; // Light red for exceeded limit
+    if (progress === 100) return '#fff3e0'; // Light orange for exact limit
+    if (progress >= 80) return '#fff8e1'; // Light yellow for approaching limit
+    return '#e8f5e9'; // Light green for within limit
+  };
+
+  const getTextColor = () => {
+    if (limitCigarettesPerDay === 0) return '#5d4037';
+    if (!cigaretteSmoke) return '#333';
+    if (progress >= 100) return '#c62828';
+    if (progress >= 80) return '#e65100';
+    return '#2e7d32';
+  };
+
+  const getStatusMessage = () => {
+    if (limitCigarettesPerDay === 0) {
+      return 'Your plan does not allow any cigarettes for today.';
+    }
+    if (progress > 100) {
+      return `⚠️ You have exceeded your daily limit by ${cigaretteSmoke - limitCigarettesPerDay} cigarettes.`;
+    }
+    if (progress === 100) {
+      return '⚠️ You have reached your daily limit. Try not to smoke more today.';
+    }
+    if (progress >= 80) {
+      return 'You are close to your daily limit. Be mindful of your consumption.';
+    }
+    return 'Track your progress below';
   };
 
   return (
@@ -534,63 +597,162 @@ const AddDailyRecordModal = ({ visible, onClose, onSubmit, limitCigarettesPerDay
       visible={visible}
       animationType="slide"
       transparent={true}
-      onRequestClose={onClose}
+      onRequestClose={handleClose}
     >
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>Add Daily Record</Text>
-
-          {typeof limitCigarettesPerDay !== 'undefined' && (
-            <View style={styles.limitContainer}>
-              <Text style={styles.limitText}>
-                Limit per day: {limitCigarettesPerDay}
-              </Text>
-            </View>
-          )}
-
-          <TextInput
-            style={styles.input}
-            placeholder="Cigarettes Smoked"
-            value={cigaretteSmoke}
-            onChangeText={setCigaretteSmoke}
-            keyboardType="numeric"
-          />
-
-          <TextInput
-            style={styles.input}
-            placeholder="Craving Level (1-10)"
-            value={cravingLevel}
-            onChangeText={setCravingLevel}
-            keyboardType="numeric"
-          />
-
-          <View style={styles.pickerContainer}>
-            <Text style={styles.pickerLabel}>Health Status:</Text>
-            <View style={styles.pickerOptions}>
-              {['GOOD', 'NORMAL', 'BAD'].map((status) => (
-                <TouchableOpacity
-                  key={status}
-                  style={[styles.pickerOption, healthStatus === status ? styles.pickerOptionSelected : styles.pickerOptionUnselected]}
-                  onPress={() => setHealthStatus(status)}
-                >
-                  <Text style={[styles.pickerOptionText, healthStatus === status ? styles.pickerOptionTextSelected : styles.pickerOptionTextUnselected]}>
-                    {status}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
+          <View style={styles.modalHeader}>
+            {loading ? (
+              <View style={styles.loadingHeader}>
+                <ActivityIndicator size="small" color="#4caf50" />
+                <Text style={[styles.modalTitle, { marginLeft: 10 }]}>
+                  Saving your record...
+                </Text>
+              </View>
+            ) : (
+              <Text style={styles.modalTitle}>Add Today's Record</Text>
+            )}
           </View>
+          
+          {loading && <View style={styles.progressBar}><View style={[styles.progressFill, { width: '100%' }]} /></View>}
+          
+          <ScrollView style={styles.modalScrollContent}>
+            {typeof limitCigarettesPerDay !== 'undefined' && (
+              <View style={[
+                styles.limitContainer,
+                { 
+                  backgroundColor: getStatusColor(),
+                  borderColor: limitCigarettesPerDay === 0 ? '#ff9800' : 'transparent',
+                  borderWidth: limitCigarettesPerDay === 0 ? 1 : 0,
+                }
+              ]}>
+                <Text style={[
+                  styles.limitText,
+                  { 
+                    color: getTextColor(),
+                    fontWeight: 'bold',
+                    fontSize: 16,
+                  }
+                ]}>
+                  {limitCigarettesPerDay === 0 
+                    ? 'No Cigarettes Allowed Today' 
+                    : `Daily Limit: ${limitCigarettesPerDay} cigarettes`}
+                </Text>
+                <Text style={[
+                  styles.limitSubtext,
+                  { 
+                    color: getTextColor(),
+                    marginTop: 4,
+                    opacity: 0.9,
+                  }
+                ]}>
+                  {getStatusMessage()}
+                </Text>
+                
+                {limitCigarettesPerDay > 0 && (
+                  <View style={styles.progressContainer}>
+                    <View style={styles.progressBackground}>
+                      <View 
+                        style={[
+                          styles.progressFill, 
+                          { 
+                            width: `${progress > 100 ? 100 : progress}%`,
+                            backgroundColor: progress > 100 ? '#f44336' : 
+                                           progress === 100 ? '#ff9800' :
+                                           progress >= 80 ? '#ffc107' : '#4caf50'
+                          }
+                        ]} 
+                      />
+                    </View>
+                    <Text style={[styles.progressText, { color: getTextColor() }]}>
+                      {cigaretteSmoke || 0} / {limitCigarettesPerDay} cigarettes
+                    </Text>
+                  </View>
+                )}
+              </View>
+            )}
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>How many cigarettes did you smoke today?</Text>
+              <TextInput
+                style={[
+                  styles.input,
+                  error ? styles.inputError : {},
+                  { textAlign: 'center', fontSize: 18, fontWeight: '500' }
+                ]}
+                placeholder="0"
+                value={cigaretteSmoke}
+                onChangeText={(text) => {
+                  setCigaretteSmoke(text);
+                  if (submitted) validate();
+                }}
+                keyboardType="numeric"
+                editable={!loading}
+              />
+              {error ? <Text style={styles.errorText}>{error}</Text> : null}
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>How strong is your craving? (1-10)</Text>
+              <View style={styles.sliderContainer}>
+                <Text style={styles.sliderValue}>{cravingLevel}</Text>
+                <Slider
+                  style={styles.slider}
+                  minimumValue={1}
+                  maximumValue={10}
+                  step={1}
+                  value={cravingLevel}
+                  onValueChange={setCravingLevel}
+                  minimumTrackTintColor="#4caf50"
+                  maximumTrackTintColor="#e0e0e0"
+                  thumbTintColor="#4caf50"
+                  disabled={loading}
+                />
+                <View style={styles.sliderLabels}>
+                  <Text style={styles.sliderLabel}>1</Text>
+                  <Text style={styles.sliderLabel}>10</Text>
+                </View>
+              </View>
+            </View>
+
+            {limitCigarettesPerDay > 0 && progress >= 100 && (
+              <View style={[
+                styles.warningContainer,
+                { 
+                  backgroundColor: progress > 100 ? '#ffebee' : '#fff3e0',
+                  borderLeftColor: progress > 100 ? '#f44336' : '#ff9800'
+                }
+              ]}>
+                <Text style={[styles.warningText, { color: progress > 100 ? '#c62828' : '#e65100' }]}>
+                  {progress > 100 
+                    ? `You've exceeded your daily limit by ${cigaretteSmoke - limitCigarettesPerDay} cigarettes. Try to reduce your intake.`
+                    : 'You have reached your daily limit. Please try not to smoke more today.'}
+                </Text>
+              </View>
+            )}
+          </ScrollView>
 
           <View style={styles.modalButtons}>
-            <TouchableOpacity style={[styles.modalButton, styles.modalButtonPrimary]} onPress={onClose}>
-              <Text style={[styles.modalButtonText, styles.modalButtonTextPrimary]}>Cancel</Text>
+            <TouchableOpacity 
+              style={[styles.modalButton, styles.modalButtonSecondary, loading ? styles.buttonDisabled : null]} 
+              onPress={handleClose}
+              disabled={loading}
+            >
+              <Text style={[styles.modalButtonText, styles.modalButtonTextSecondary]}>
+                Cancel
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.modalButton, styles.modalButtonPrimary]}
+              style={[
+                styles.modalButton, 
+                styles.modalButtonPrimary,
+                loading ? styles.buttonDisabled : null
+              ]}
               onPress={handleSubmit}
+              disabled={loading}
             >
               <Text style={[styles.modalButtonText, styles.modalButtonTextPrimary]}>
-                Add
+                {loading ? 'Saving...' : 'Save Record'}
               </Text>
             </TouchableOpacity>
           </View>
@@ -601,6 +763,186 @@ const AddDailyRecordModal = ({ visible, onClose, onSubmit, limitCigarettesPerDay
 };
 
 const styles = StyleSheet.create({
+  // Existing styles...
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 20,
+    maxHeight: '90%',
+  },
+  modalHeader: {
+    paddingBottom: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+    marginBottom: 15,
+  },
+  loadingHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: '#333',
+  },
+  modalScrollContent: {
+    maxHeight: '70%',
+    marginBottom: 15,
+  },
+  limitContainer: {
+    borderRadius: 12,
+    padding: 15,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  limitText: {
+    fontSize: 16,
+    textAlign: 'center',
+    marginBottom: 5,
+  },
+  limitSubtext: {
+    fontSize: 14,
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  progressContainer: {
+    marginTop: 15,
+  },
+  progressBackground: {
+    height: 8,
+    backgroundColor: '#e0e0e0',
+    borderRadius: 4,
+    marginBottom: 5,
+    overflow: 'hidden',
+  },
+  progressFill: {
+    height: '100%',
+    borderRadius: 4,
+  },
+  progressText: {
+    textAlign: 'center',
+    fontSize: 14,
+    color: '#666',
+    marginTop: 5,
+  },
+  inputGroup: {
+    marginBottom: 20,
+  },
+  inputLabel: {
+    fontSize: 16,
+    fontWeight: '500',
+    marginBottom: 8,
+    color: '#333',
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+    backgroundColor: '#fff',
+  },
+  inputError: {
+    borderColor: '#f44336',
+  },
+  errorText: {
+    color: '#f44336',
+    fontSize: 14,
+    marginTop: 5,
+  },
+  sliderContainer: {
+    marginTop: 10,
+  },
+  slider: {
+    width: '100%',
+    height: 40,
+  },
+  sliderValue: {
+    textAlign: 'center',
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#4caf50',
+    marginBottom: 5,
+  },
+  sliderLabels: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 10,
+    marginTop: -10,
+  },
+  sliderLabel: {
+    color: '#666',
+    fontSize: 14,
+  },
+  warningContainer: {
+    backgroundColor: '#fff3e0',
+    borderLeftWidth: 4,
+    borderLeftColor: '#ffa000',
+    padding: 12,
+    borderRadius: 4,
+    marginBottom: 15,
+  },
+  warningText: {
+    color: '#e65100',
+    fontSize: 14,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10,
+  },
+  modalButton: {
+    flex: 1,
+    padding: 15,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 5,
+  },
+  modalButtonPrimary: {
+    backgroundColor: '#4caf50',
+  },
+  modalButtonSecondary: {
+    backgroundColor: '#f5f5f5',
+    borderWidth: 1,
+    borderColor: '#ddd',
+  },
+  buttonDisabled: {
+    opacity: 0.6,
+  },
+  modalButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  modalButtonTextPrimary: {
+    color: '#fff',
+  },
+  modalButtonTextSecondary: {
+    color: '#333',
+  },
+  progressBar: {
+    height: 2,
+    backgroundColor: '#e0e0e0',
+    width: '100%',
+    marginBottom: 15,
+    overflow: 'hidden',
+  },
+  progressFill: {
+    height: '100%',
+    backgroundColor: '#4caf50',
+  },
   container: {
     flex: 1,
     backgroundColor: '#fff',

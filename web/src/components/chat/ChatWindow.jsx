@@ -8,9 +8,11 @@ import { getAllCoaches } from '../../services/coachService';
 import { jwtDecode } from 'jwt-decode';
 import VideoCall from './VideoCall';
 import OutgoingCallModal from './OutgoingCallModal';
+import IncomingCallModal from './IncomingCallModal';
 import ChatInput from './ChatInput';
 import CloseIcon from '@mui/icons-material/Close';
 import VideocamIcon from '@mui/icons-material/Videocam';
+import { getVideoToken } from '../../services/chatService';
 
 const ChatWindow = ({ room, onClose }) => {
     const [messages, setMessages] = useState([]);
@@ -34,6 +36,7 @@ const ChatWindow = ({ room, onClose }) => {
     const [videoToken, setVideoToken] = useState(null);
     const [isCallStarting, setIsCallStarting] = useState(false);
     const [showOutgoingCallModal, setShowOutgoingCallModal] = useState(false);
+    const [incomingCall, setIncomingCall] = useState(null);
 
     // Get current user info
     let currentUserId = null;
@@ -297,15 +300,23 @@ const ChatWindow = ({ room, onClose }) => {
         };
     }, [socket, displayUser?.id]);
 
-    // Video call socket events for caller side
+    // Video call socket events for both caller and callee
     useEffect(() => {
-        if (!socket) return;
+        if (!socket) {
+            alert('Socket not connected');
+            return;
+        }
+
+        const handleIncomingCall = (data) => {
+            console.log('🔔 Incoming call received:', data);
+            setIncomingCall(data);
+        };
 
         const handleCallAccepted = (data) => {
             setIsCallStarting(false);
             setShowOutgoingCallModal(false);
 
-            // Use the token sent with the call-accepted event
+            // Use the fresh token sent with the call-accepted event
             if (data.token) {
                 setVideoToken(data.token);
                 setIsInVideoCall(true);
@@ -325,13 +336,16 @@ const ChatWindow = ({ room, onClose }) => {
             setVideoToken(null);
             setIsCallStarting(false);
             setShowOutgoingCallModal(false);
+            setIncomingCall(null);
         };
 
+        socket.on('incoming-call', handleIncomingCall);
         socket.on('call-accepted', handleCallAccepted);
         socket.on('call-rejected', handleCallRejected);
         socket.on('call-ended', handleCallEnded);
 
         return () => {
+            socket.off('incoming-call', handleIncomingCall);
             socket.off('call-accepted', handleCallAccepted);
             socket.off('call-rejected', handleCallRejected);
             socket.off('call-ended', handleCallEnded);
@@ -358,7 +372,16 @@ const ChatWindow = ({ room, onClose }) => {
         setShowOutgoingCallModal(true);
 
         try {
-            socket.emit('start-call', { chatRoomId: room.id }, (response) => {
+            // Always get a fresh token for the caller
+            const tokenResponse = await getVideoToken(room.id);
+            if (!tokenResponse?.data?.token) {
+                throw new Error('Failed to get video token');
+            }
+
+            socket.emit('start-call', {
+                chatRoomId: room.id,
+                callerToken: tokenResponse.data.token // Send the fresh token to backend
+            }, (response) => {
                 setIsCallStarting(false);
 
                 if (response?.event === 'error') {
@@ -376,6 +399,60 @@ const ChatWindow = ({ room, onClose }) => {
             setIsCallStarting(false);
             setShowOutgoingCallModal(false);
         }
+    };
+
+    const acceptCall = async () => {
+        if (!socket || !incomingCall) {
+            console.log('❌ Cannot accept call - missing socket or incomingCall:', { socket: !!socket, incomingCall });
+            return;
+        }
+
+        console.log('📞 Accepting call with data:', incomingCall);
+
+        try {
+            // Always get a fresh token for the accepter
+            const tokenResponse = await getVideoToken(room.id);
+            console.log('🎬 Got fresh video token for accepting call:', tokenResponse);
+
+            if (tokenResponse?.data?.token) {
+                setVideoToken(tokenResponse.data.token);
+                setIsInVideoCall(true);
+                setIncomingCall(null);
+
+                // Notify caller that call was accepted with fresh token
+                socket.emit('accept-call', {
+                    chatRoomId: incomingCall.roomId || incomingCall.chatRoomId || room.id,
+                    callerId: incomingCall.caller?.id || incomingCall.callerId,
+                    caller: incomingCall.caller,
+                    accepterToken: tokenResponse.data.token // Send fresh token to backend
+                });
+
+                console.log('✅ Call accepted successfully with fresh token');
+            } else {
+                throw new Error('Failed to get video token');
+            }
+        } catch (error) {
+            console.error('❌ Error accepting call:', error);
+            alert('Error accepting call: ' + error.message);
+        }
+    };
+
+    const rejectCall = () => {
+        if (!socket || !incomingCall) {
+            console.log('❌ Cannot reject call - missing socket or incomingCall:', { socket: !!socket, incomingCall });
+            return;
+        }
+
+        console.log('❌ Rejecting call with data:', incomingCall);
+
+        socket.emit('reject-call', {
+            chatRoomId: incomingCall.roomId || incomingCall.chatRoomId || room.id,
+            callerId: incomingCall.caller?.id || incomingCall.callerId,
+            caller: incomingCall.caller
+        });
+
+        setIncomingCall(null);
+        console.log('📞 Call rejected');
     };
 
     const endCall = () => {
@@ -752,6 +829,14 @@ const ChatWindow = ({ room, onClose }) => {
                 open={showOutgoingCallModal}
                 callee={displayUser}
                 onCancel={cancelOutgoingCall}
+            />
+
+            {/* Incoming Call Modal */}
+            <IncomingCallModal
+                open={!!incomingCall}
+                caller={incomingCall?.caller}
+                onAccept={acceptCall}
+                onReject={rejectCall}
             />
 
             {isInVideoCall && videoToken && (

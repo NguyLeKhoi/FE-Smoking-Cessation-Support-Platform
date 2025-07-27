@@ -81,15 +81,23 @@ const CustomDrawerContent = (props) => {
         <Text style={styles.drawerItemText}>Smoking Assessment</Text>
       </TouchableOpacity>
       
+      {/* Divider */}
+      <View style={styles.divider} />
+      
+      {/* Community Section Title */}
+      <View style={styles.sectionTitleContainer}>
+        <Text style={styles.sectionTitle}>Community</Text>
+      </View>
+      
       <TouchableOpacity
         style={styles.drawerItem}
         onPress={() => {
-          props.navigation.navigate('QuitPlanList');
+          props.navigation.navigate('Leaderboard');
           props.navigation.closeDrawer();
         }}
       >
-        <Ionicons name="flag" size={24} color="#3f332b" style={styles.drawerIcon} />
-        <Text style={styles.drawerItemText}>Quit Plans</Text>
+        <Ionicons name="trophy" size={24} color="#3f332b" style={styles.drawerIcon} />
+        <Text style={styles.drawerItemText}>Leaderboard</Text>
       </TouchableOpacity>
     </View>
   </DrawerContentScrollView>
@@ -152,21 +160,64 @@ const TabNavigator = () => {
             iconName = focused ? 'chatbubble' : 'chatbubble-outline';
           } else if (route.name === 'LeaderboardTab') {
             iconName = focused ? 'trophy' : 'trophy-outline';
+          } else if (route.name === 'QuitPlanTab') {
+            iconName = focused ? 'flag' : 'flag-outline';
+          } else if (route.name === 'LeaderboardTab') {
+            iconName = focused ? 'trophy' : 'trophy-outline';
           }
 
           return <Ionicons name={iconName} size={size} color={color} />;
         },
         tabBarActiveTintColor: '#000000',
         tabBarInactiveTintColor: 'rgba(0, 0, 0, 0.6)',
-        tabBarStyle: { backgroundColor: '#ffffff', borderTopWidth: 0, elevation: 0 },
-        tabBarLabelStyle: { textAlign: 'center' },
+        tabBarStyle: { 
+          backgroundColor: '#ffffff', 
+          borderTopWidth: 0, 
+          elevation: 0,
+          height: 60,
+          paddingBottom: 8,
+          paddingTop: 4,
+        },
+        tabBarLabelStyle: { 
+          fontSize: 12,
+          marginBottom: 4,
+        },
         headerShown: false,
       })}
     >
-      <Tab.Screen name="BlogTab" component={BlogScreen} options={{ title: 'Blog' }} />
-      <Tab.Screen name="AiChatboxTab" component={AiChatbox} options={{ title: 'AI Coach' }} />
-      <Tab.Screen name="LeaderboardTab" component={LeaderboardScreen} options={{ title: 'Leaderboard' }} />
-      <Tab.Screen name="ProfileTab" component={ProfileDrawerNavigator} options={{ title: 'Profile' }} />
+      <Tab.Screen 
+        name="BlogTab" 
+        component={BlogScreen} 
+        options={{ 
+          title: 'Blog',
+          tabBarLabel: 'Home'
+        }} 
+      />
+      <Tab.Screen 
+        name="AiChatboxTab" 
+        component={AiChatbox} 
+        options={{ 
+          title: 'AI Coach',
+          tabBarLabel: 'AI Coach'
+        }} 
+      />
+      <Tab.Screen 
+        name="QuitPlanTab" 
+        component={QuitPlanListScreen} 
+        options={{ 
+          title: 'Quit Plan',
+          tabBarLabel: 'Quit Plan'
+        }} 
+      />
+
+      <Tab.Screen 
+        name="ProfileTab" 
+        component={ProfileDrawerNavigator} 
+        options={{ 
+          title: 'Profile',
+          tabBarLabel: 'Profile'
+        }} 
+      />
     </Tab.Navigator>
   );
 };
@@ -425,10 +476,26 @@ const Navigator = () => {
 
 const styles = StyleSheet.create({
   drawerSection: {
-    marginTop: 20,
-    paddingTop: 20,
-    borderTopWidth: 1,
-    borderTopColor: '#eee',
+    marginTop: 10,
+    paddingTop: 10,
+  },
+  sectionTitleContainer: {
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    paddingBottom: 8,
+  },
+  sectionTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#666',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: '#f0f0f0',
+    marginVertical: 8,
+    marginHorizontal: 16,
   },
   drawerSectionTitle: {
     fontSize: 16,
@@ -440,8 +507,15 @@ const styles = StyleSheet.create({
   drawerItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: 14,
     paddingHorizontal: 16,
+    borderRadius: 8,
+    marginHorizontal: 8,
+    marginVertical: 4,
+  },
+  tabBarLabel: {
+    fontSize: 12,
+    marginBottom: 4,
   },
   drawerItemActive: {
     backgroundColor: '#f5f5f5',

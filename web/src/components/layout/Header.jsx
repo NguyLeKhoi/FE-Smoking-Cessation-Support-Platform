@@ -30,9 +30,17 @@ const Header = ({ authStatus }) => {
     if (token) {
       try {
         const res = await notificationService.getNotifications();
-        setNotifications(res.data);
+        // Handle the notification data structure with title, content, type, is_read fields
+        if (res.data && Array.isArray(res.data)) {
+          setNotifications(res.data);
+        } else if (res && Array.isArray(res)) {
+          setNotifications(res);
+        } else {
+          setNotifications([]);
+        }
       } catch (err) {
-        console.error("Lỗi khi lấy thông báo:", err);
+        console.error("Error fetching notifications:", err);
+        setNotifications([]);
       }
     }
   };
@@ -40,7 +48,7 @@ const Header = ({ authStatus }) => {
   useEffect(() => {
     fetchNotifications();
     if (sub) {
-      const socket = io("http://localhost:8000/notification", {
+      const socket = io(process.env.REACT_APP_NOTIFICATION_SOCKET_URL, {
         query: { userId: sub },
       });
 
