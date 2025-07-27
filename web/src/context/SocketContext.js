@@ -53,7 +53,7 @@ export const SocketProvider = ({ children }) => {
 
         // Only create new socket if token exists
         if (token) {
-            const socketInstance = io('http://localhost:8000/chat', {
+            const socketInstance = io(process.env.REACT_APP_SOCKET_URL , {
                 transports: ['websocket'],
                 auth: {
                     token: token
