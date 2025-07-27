@@ -8,7 +8,6 @@ import { toast } from 'react-toastify';
 export const fetchCurrentUser = async () => {
     try {
         const response = await api.get('/users/me');
-        console.log('User data received:', response.data);
         return response.data;
     } catch (error) {
         toast(`Error fetching your profile: ${error.response?.data?.message || error.message}`);
