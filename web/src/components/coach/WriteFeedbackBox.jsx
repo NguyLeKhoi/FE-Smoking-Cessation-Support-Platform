@@ -13,13 +13,12 @@ const WriteFeedbackBox = ({
 }) => {
     const [hoverStar, setHoverStar] = useState(null);
     console.log('ratingStar prop:', ratingStar);
-    // Ensure ratingStar is always controlled by parent
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch', mb: 3 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch', mb: 0 }}>
             {/* Star Rating Selector */}
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1, mt: 2 }}>
                 {[1, 2, 3, 4, 5].map((star) => {
-                    // Use hoverStar if hovering, otherwise use ratingStar
+
                     const filled = hoverStar !== null ? star <= hoverStar : star <= ratingStar;
                     return (
                         <IconButton
@@ -46,17 +45,28 @@ const WriteFeedbackBox = ({
             <TextField
                 multiline
                 minRows={2}
-                placeholder={'Write your feedback...'}
+                placeholder={'Share your experience with this coach!'}
                 value={newFeedback}
-                onChange={e => setNewFeedback(e.target.value)}
-                sx={{ flex: 1, mb: 2, width: 600 }}
+                onChange={e => {
+                    const value = e.target.value;
+                    if (value.length <= 150) {
+                        setNewFeedback(value);
+                    }
+                }}
+                inputProps={{
+                    minLength: 10,
+                    maxLength: 150
+                }}
+                helperText={`${newFeedback.length}/150 characters (minimum 10 required)`}
+                error={newFeedback.length > 0 && newFeedback.length < 10}
+                sx={{ flex: 1, mb: 2, width: 650 }}
                 size="small"
             />
             <Box sx={{ display: 'flex', justifyContent: 'right' }}>
                 <BlackButton
                     onClick={onSubmit}
                     sx={{ borderRadius: 2, width: 200, fontSize: '1rem' }}
-                    disabled={submitting || !newFeedback.trim()}
+                    disabled={submitting || !newFeedback.trim() || newFeedback.length < 10}
                 >
                     {submitting ? <CircularProgress size={20} color="inherit" /> : 'Submit Feedback'}
                 </BlackButton>
