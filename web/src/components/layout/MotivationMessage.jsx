@@ -8,6 +8,10 @@ const MotivationService = ({ setNotifications }) => {
   const [loadingMotivation, setLoadingMotivation] = useState(false);
 
   useEffect(() => {
+    // Check if user is logged in
+    const isLoggedIn = !!localStorage.getItem('accessToken');
+    if (!isLoggedIn) return; // Don't show notifications if not logged in
+
     const fetchMotivationMessage = async () => {
       const lastMotivationToastTimestamp = sessionStorage.getItem('lastMotivationToastTimestamp');
       const cachedMotivation = sessionStorage.getItem('motivationMessage');
