@@ -1,12 +1,12 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Box, IconButton, Typography, Paper, Avatar, Fade, Tooltip } from '@mui/material';
-import { 
-  Videocam, 
-  VideocamOff, 
-  Mic, 
-  MicOff, 
-  CallEnd, 
-  Fullscreen, 
+import {
+  Videocam,
+  VideocamOff,
+  Mic,
+  MicOff,
+  CallEnd,
+  Fullscreen,
   FullscreenExit,
   MoreVert,
   PresentToAll,
@@ -14,9 +14,9 @@ import {
   OpenInFull,
   CloseFullscreen
 } from '@mui/icons-material';
-import { 
-  LiveKitRoom, 
-  VideoConference, 
+import {
+  LiveKitRoom,
+  VideoConference,
   RoomAudioRenderer,
   useLocalAudioTrack,
   useLocalVideoTrack,
@@ -82,11 +82,11 @@ const ExpandedParticipantView = ({ participant, onClose }) => {
       </Box>
 
       {/* Full screen participant video */}
-      <Box 
-        sx={{ 
-          flex: 1, 
-          display: 'flex', 
-          alignItems: 'center', 
+      <Box
+        sx={{
+          flex: 1,
+          display: 'flex',
+          alignItems: 'center',
           justifyContent: 'center',
           position: 'relative',
           overflow: 'hidden',
@@ -156,7 +156,7 @@ const VideoCallControls = ({ onDisconnect, isExpanded, onToggleExpand }) => {
   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
   const [isScreenSharing, setIsScreenSharing] = useState(false);
   const [expandedParticipant, setExpandedParticipant] = useState(null);
-  
+
   const participants = useParticipants();
   const remoteParticipants = participants.filter(p => !p.isLocal);
 
@@ -412,7 +412,7 @@ const VideoCall = ({ token, roomName, onDisconnect }) => {
         const [header, payload, signature] = token.split('.');
         const decodedPayload = JSON.parse(atob(payload));
         const extractedIdentity = decodedPayload.sub;
-          setIdentity(extractedIdentity);
+        setIdentity(extractedIdentity);
       } catch (e) {
         setIdentity('user'); // fallback
       }
@@ -426,7 +426,7 @@ const VideoCall = ({ token, roomName, onDisconnect }) => {
       alert('This video call has reached the maximum allowed duration and will now end.');
       if (onDisconnect) onDisconnect();
     }, CALL_TIMEOUT_MS);
-    
+
     // Cleanup on unmount or call end
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -525,8 +525,8 @@ const VideoCall = ({ token, roomName, onDisconnect }) => {
           {/* Top Controls */}
           <Box sx={{ display: 'flex', gap: 1 }}>
             <Tooltip title="Settings">
-              <IconButton 
-                sx={{ 
+              <IconButton
+                sx={{
                   color: 'white',
                   bgcolor: 'rgba(255,255,255,0.1)',
                   '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' },
@@ -537,9 +537,9 @@ const VideoCall = ({ token, roomName, onDisconnect }) => {
               </IconButton>
             </Tooltip>
             <Tooltip title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}>
-              <IconButton 
+              <IconButton
                 onClick={toggleFullscreen}
-                sx={{ 
+                sx={{
                   color: 'white',
                   bgcolor: 'rgba(255,255,255,0.1)',
                   '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' },
@@ -550,8 +550,8 @@ const VideoCall = ({ token, roomName, onDisconnect }) => {
               </IconButton>
             </Tooltip>
             <Tooltip title="More">
-              <IconButton 
-                sx={{ 
+              <IconButton
+                sx={{
                   color: 'white',
                   bgcolor: 'rgba(255,255,255,0.1)',
                   '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' },
@@ -566,9 +566,9 @@ const VideoCall = ({ token, roomName, onDisconnect }) => {
       </Fade>
 
       {/* Main Video Area */}
-      <Box 
-        sx={{ 
-          flexGrow: 1, 
+      <Box
+        sx={{
+          flexGrow: 1,
           position: 'relative',
           background: 'radial-gradient(circle at center, #1a1a2e 0%, #16213e 50%, #0D1117 100%)',
         }}
@@ -587,7 +587,7 @@ const VideoCall = ({ token, roomName, onDisconnect }) => {
             connectOptions={{
               autoSubscribe: true,
             }}
-            style={{ 
+            style={{
               height: '100%',
               borderRadius: '0px',
             }}
@@ -607,7 +607,7 @@ const VideoCall = ({ token, roomName, onDisconnect }) => {
               console.error('❌ Server URL:', serverUrl);
             }}
           >
-            <VideoConference 
+            <VideoConference
               chatMessageFormatter={undefined}
               SettingsComponent={undefined}
               options={{
@@ -620,18 +620,18 @@ const VideoCall = ({ token, roomName, onDisconnect }) => {
               }}
             />
             <RoomAudioRenderer />
-            <VideoCallControls 
-              onDisconnect={handleDisconnect} 
+            <VideoCallControls
+              onDisconnect={handleDisconnect}
               isExpanded={isExpanded}
               onToggleExpand={toggleExpand}
             />
           </LiveKitRoom>
         ) : (
-          <Box sx={{ 
-            display: 'flex', 
+          <Box sx={{
+            display: 'flex',
             flexDirection: 'column',
-            alignItems: 'center', 
-            justifyContent: 'center', 
+            alignItems: 'center',
+            justifyContent: 'center',
             height: '100%',
             color: 'white',
             gap: 3,
