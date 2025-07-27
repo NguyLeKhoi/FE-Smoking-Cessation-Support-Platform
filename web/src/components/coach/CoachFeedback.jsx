@@ -40,7 +40,14 @@ const CoachFeedback = ({
                                 <LinearProgress
                                     variant="determinate"
                                     value={totalRatings ? (averageStars[star] || 0) / totalRatings * 100 : 0}
-                                    sx={{ height: 6, borderRadius: 3, bgcolor: '#f0f0f0' }}
+                                    sx={{
+                                        height: 6,
+                                        borderRadius: 3,
+                                        bgcolor: '#f0f0f0',
+                                        '& .MuiLinearProgress-bar': {
+                                            bgcolor: '#ffd602'
+                                        }
+                                    }}
                                 />
                             </Box>
                             <Typography variant="body2" sx={{ minWidth: 20, textAlign: 'right', fontSize: '0.95rem' }}>

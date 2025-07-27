@@ -18,6 +18,16 @@ const CoachInfo = ({ coach }) => {
     const [submittingFeedback, setSubmittingFeedback] = useState(false);
     const [currentUser, setCurrentUser] = useState(null);
     const [ratingStar, setRatingStar] = useState(0);
+    const [addFeedbackToCard, setAddFeedbackToCard] = useState(null);
+
+    // Store the callback function in a ref to ensure it persists
+    const feedbackCallbackRef = React.useRef(null);
+
+    // Function to set the feedback callback
+    const setFeedbackCallback = (callback) => {
+        feedbackCallbackRef.current = callback;
+        setAddFeedbackToCard(callback);
+    };
 
     useEffect(() => {
         const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
@@ -74,12 +84,37 @@ const CoachInfo = ({ coach }) => {
         if (!newFeedback.trim()) return;
         setSubmittingFeedback(true);
         try {
-            await feedbackService.createFeedback({
+            const response = await feedbackService.createFeedback({
                 coach_id: coach.id,
                 rating_star: ratingStar,
                 comment: newFeedback
             });
+
+            // Add the new feedback to the card immediately
+            const callback = feedbackCallbackRef.current || addFeedbackToCard;
+            if (callback) {
+                const newFeedbackData = {
+                    rating_star: ratingStar,
+                    comment: newFeedback,
+                    // Add current user information
+                    users: currentUser ? {
+                        username: currentUser.username || 'Anonymous',
+                        avatar: currentUser.avatar || 'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg'
+                    } : {
+                        username: 'Anonymous',
+                        avatar: ''
+                    },
+                    // Add any other fields that might be returned from the API
+                    ...(response.data || {})
+                };
+                console.log('Calling feedback callback with:', newFeedbackData);
+                callback(newFeedbackData);
+            } else {
+                console.log('Feedback callback is null');
+            }
+
             setNewFeedback('');
+            setRatingStar(0);
         } catch (e) {
             // Optionally show error
         } finally {
@@ -148,13 +183,16 @@ const CoachInfo = ({ coach }) => {
                     <Typography variant="h6" sx={{ fontWeight: 500, color: '#1e293b', mb: 1 }}>
                         What others say
                     </Typography>
-                    <FeedbackCard coachId={coach.id} />
+                    <FeedbackCard
+                        coachId={coach.id}
+                        onFeedbackAdded={setFeedbackCallback}
+                    />
                 </Box>
             </Box>
 
             {/* Coach Info (Right) */}
             <Box sx={{ flexBasis: { xs: '100%', md: '64%' }, flexGrow: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                <Box sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 3, p: 3 }}>
+                <Box >
                     {/* Name, Specialization, and Button (row, 50/50) */}
                     <Box sx={{ mb: 2, display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                         <Box sx={{ flex: 1 }}>
