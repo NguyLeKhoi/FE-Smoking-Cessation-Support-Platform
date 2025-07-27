@@ -41,10 +41,26 @@ const postService = {
      */
     getPostById: async (id) => {
         try {
+            // Get current user from localStorage
+            const user = JSON.parse(localStorage.getItem('user') || 'null');
+            const currentUserId = user?.id;
+            
             const response = await api.get(`/posts/${id}`);
-            return response.data;
+            const postData = response.data?.data || response.data;
+            
+            if (!postData) {
+                throw new Error('Post not found');
+            }
+            
+            // Check if the post is pending and not owned by the current user
+            if (postData.status === 'PENDING' && postData.user_id !== currentUserId) {
+                throw new Error('This post is pending approval and not visible to you.');
+            }
+            
+            return postData;
         } catch (error) {
-            toast(` Error fetching post details: ${error.response?.data?.message || error.message}`);
+            console.error('Error fetching post:', error);
+            toast(`Error: ${error.response?.data?.message || error.message || 'Failed to load post'}`);
             throw error;
         }
     },

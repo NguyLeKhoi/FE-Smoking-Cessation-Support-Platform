@@ -31,17 +31,25 @@ const blogService = {
   getPostById: async (id) => {
     try {
       // First check if user is authenticated
-      const authenticated = await isAuthenticated();
+      const user = await isAuthenticated();
+      const currentUserId = user?.id;
       
       const response = await api.get(`/posts/${id}`, {
         withCredentials: true // Ensure cookies are sent
       });
       
-      // Handle different response formats
-      if (response.data && response.data.data) {
-        return response.data.data; // Standard API response format
+      let postData = response.data?.data || response.data;
+      
+      if (!postData) {
+        throw new Error('Post not found');
       }
-      return response.data; // Direct data format
+      
+      // Check if the post is pending and not owned by the current user
+      if (postData.status === 'PENDING' && postData.user_id !== currentUserId) {
+        throw new Error('This post is pending approval and not visible to you.');
+      }
+      
+      return postData;
     } catch (error) {
       console.error('Error fetching post:', error);
       // Return a consistent structure even on error
@@ -51,7 +59,7 @@ const blogService = {
         }
         throw new Error(error.response.data?.message || 'Failed to load post');
       }
-      throw new Error('Network error. Please check your connection.');
+      throw error; // Re-throw the error to be handled by the component
     }
   },
 

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api/v1';
+const API_URL = process.env.REACT_APP_API_URL;
 
 // Create axios instance with default config
 const api = axios.create({
@@ -48,7 +48,10 @@ const setRefreshTokenTimer = (expiresIn) => {
 };
 
 const refreshAccessToken = async () => {
+  console.log('[Refresh Token] Starting refresh token flow...');
+  
   if (isRefreshing) {
+    console.log('[Refresh Token] Refresh already in progress, adding to queue');
     return new Promise((resolve, reject) => {
       failedQueue.push({ resolve, reject });
     });
@@ -57,18 +60,33 @@ const refreshAccessToken = async () => {
   isRefreshing = true;
   
   try {
+    console.log('[Refresh Token] Sending refresh token request to:', `${API_URL}/auth/refresh`);
+    console.log('[Refresh Token] Current cookies:', document.cookie);
+    
     const response = await axios.post(`${API_URL}/auth/refresh`, {}, {
-      withCredentials: true // Include cookies
+      withCredentials: true, // Include cookies
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    console.log('[Refresh Token] Refresh token response:', {
+      status: response.status,
+      data: response.data,
+      headers: response.headers
     });
     
     const { accessToken } = response.data.data;
     
     if (accessToken) {
+      console.log('[Refresh Token] New access token received');
       localStorage.setItem('accessToken', accessToken);
       
       // Set up next auto refresh (5 minutes before expiry)
       const payload = JSON.parse(atob(accessToken.split('.')[1]));
       const expiresIn = payload.exp - Math.floor(Date.now() / 1000);
+      console.log(`[Refresh Token] Token expires in ${expiresIn} seconds`);
+      
       if (expiresIn > 300) {
         setRefreshTokenTimer(expiresIn);
       }
@@ -76,9 +94,21 @@ const refreshAccessToken = async () => {
       processQueue(null, accessToken);
       return accessToken;
     } else {
-      throw new Error('No access token in response');
+      const error = new Error('No access token in response');
+      console.error('[Refresh Token] Error:', error);
+      throw error;
     }
   } catch (error) {
+    console.error('[Refresh Token] Refresh token error:', {
+      message: error.message,
+      response: error.response ? {
+        status: error.response.status,
+        data: error.response.data,
+        headers: error.response.headers
+      } : 'No response',
+      config: error.config
+    });
+    
     processQueue(error, null);
     throw error;
   } finally {
