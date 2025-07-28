@@ -16,20 +16,11 @@ import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 import SmokingHabitsQuestions from './SmokingHabitsQuestions';
 
 const SmokingHabitsResult = ({ data }) => {
-    // ensures hooks are called in the same order every render
     const [expanded, setExpanded] = useState(true);
-
-    // Get questions to reference fields and labels
     const { questions } = SmokingHabitsQuestions();
     if (!data) return null;
-
-    // Ensure correct data structure
     console.log("Raw result data:", data);
-
-    // Get data from the right location in the response
     const smokingData = data.data || data;
-
-    // Access fields with proper error handling
     const cigarettesPerDay = Number(smokingData.cigarettes_per_day) || 0;
     const smokingYears = Number(smokingData.smoking_years) || 0;
     const pricePerPack = Number(smokingData.price_per_pack) || 0;
