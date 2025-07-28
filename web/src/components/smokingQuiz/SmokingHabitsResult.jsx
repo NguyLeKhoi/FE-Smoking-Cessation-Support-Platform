@@ -20,7 +20,8 @@ const SmokingHabitsResult = ({ data }) => {
     const { questions } = SmokingHabitsQuestions();
     if (!data) return null;
     console.log("Raw result data:", data);
-    const smokingData = data.data || data;
+    // Since the API returns data directly, we don't need to check for nested structure
+    const smokingData = data;
     const cigarettesPerDay = Number(smokingData.cigarettes_per_day) || 0;
     const smokingYears = Number(smokingData.smoking_years) || 0;
     const pricePerPack = Number(smokingData.price_per_pack) || 0;
@@ -35,6 +36,9 @@ const SmokingHabitsResult = ({ data }) => {
         : 'No health issues reported';
 
     const aiFeedback = smokingData.ai_feedback || "";
+    console.log("AI Feedback in SmokingHabitsResult:", aiFeedback);
+    console.log("AI Feedback length:", aiFeedback.length);
+    console.log("Full smokingData:", smokingData);
 
     // Calculate lifetime cigarettes
     const lifetimeCigarettes = cigarettesPerDay * 365 * smokingYears;
@@ -81,7 +85,7 @@ const SmokingHabitsResult = ({ data }) => {
                 Your Smoking Impact Assessment
             </Typography>
 
-            {aiFeedback && (
+            {aiFeedback && aiFeedback.trim() && aiFeedback.length > 0 ? (
                 <Box sx={{ mb: 5, width: '100%' }}>
                     <Accordion
                         expanded={expanded}
@@ -149,6 +153,12 @@ const SmokingHabitsResult = ({ data }) => {
                             </Box>
                         </AccordionDetails>
                     </Accordion>
+                </Box>
+            ) : (
+                <Box sx={{ mb: 5, width: '100%' }}>
+                    <Typography variant="body1" color="text.secondary" sx={{ fontStyle: 'italic' }}>
+                        No personalized feedback available at this time.
+                    </Typography>
                 </Box>
             )}
 

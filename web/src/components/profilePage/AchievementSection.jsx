@@ -5,8 +5,8 @@ import { Link } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import AchievementStyle from './AchievementStyle';
 
-const AchievementSection = ({ onLoaded = () => { } }) => {
-  console.log('[AchievementSection] Rendered');
+const AchievementSection = ({ onLoaded = () => { }, userData = null }) => {
+  console.log('[AchievementSection] Rendered', { hasUserData: !!userData });
   const [progressList, setProgressList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -14,6 +14,16 @@ const AchievementSection = ({ onLoaded = () => { } }) => {
   useEffect(() => {
     console.log('[AchievementSection] useEffect running');
     const fetchAchievementsProgress = async () => {
+      // If userData is provided (for visiting other users), use their achievements
+      if (userData && userData.user_achievements) {
+        console.log('[AchievementSection] Using provided user achievements:', userData.user_achievements);
+        setProgressList(userData.user_achievements);
+        setLoading(false);
+        onLoaded();
+        return;
+      }
+
+      // Otherwise, fetch current user's achievements
       const accessToken = localStorage.getItem('accessToken');
       let decoded = null;
       if (typeof accessToken === 'string' && accessToken) {
@@ -44,7 +54,7 @@ const AchievementSection = ({ onLoaded = () => { } }) => {
       }
     };
     fetchAchievementsProgress();
-  }, []);
+  }, [userData]);
 
   return (
     <Box sx={{ mt: 5 }}>
@@ -74,7 +84,7 @@ const AchievementSection = ({ onLoaded = () => { } }) => {
           <Box sx={{ p: 4, textAlign: 'center', color: 'error.main' }}>{error}</Box>
         ) : progressList.length === 0 ? (
           <Box sx={{ p: 4, textAlign: 'center', color: 'text.secondary', }}>
-            You have not obtained any achievements yet! {" "}
+            {userData ? `${userData.username || 'This user'} has not obtained any achievements yet!` : 'You have not obtained any achievements yet! '}
             <Typography
               component={Link}
               to="/achievements"
@@ -85,21 +95,27 @@ const AchievementSection = ({ onLoaded = () => { } }) => {
           </Box>
         ) : (
           (() => {
-            const obtained = progressList.filter(ach => ach.isMet);
+            // For user achievements from API, filter by isMet
+            // For user_achievements from user data, all are earned
+            const obtained = userData ? progressList : progressList.filter(ach => ach.isMet);
             if (obtained.length === 0) {
               return (
                 <Box sx={{ p: 4, textAlign: 'center', color: 'text.secondary' }}>
-                  You have not obtained any achievements yet!
+                  {userData ? `${userData.username || 'This user'} has not obtained any achievements yet!` : 'You have not obtained any achievements yet!'}
                 </Box>
               );
             }
             return obtained.map((ach, idx, arr) => {
-              const progress = Math.min((Number(ach.progressValue) / Number(ach.threshold_value)) * 100, 100);
+              // For user_achievements, all are earned (isMet = true)
+              // For progress data, use the isMet property
+              const isMet = userData ? true : ach.isMet;
+              const progress = isMet ? 100 : Math.min((Number(ach.progressValue) / Number(ach.threshold_value)) * 100, 100);
+
               return (
                 <AchievementStyle
                   key={ach.id || idx}
                   ach={ach}
-                  isMet={true}
+                  isMet={isMet}
                   progress={progress}
                   idx={idx}
                   arr={arr}

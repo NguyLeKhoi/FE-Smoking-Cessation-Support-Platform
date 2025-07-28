@@ -337,6 +337,8 @@ const SmokingQuiz = () => {
                             }
                         });
 
+                        console.log("Setting result with latest record:", latestRecord);
+                        console.log("AI feedback in latest record:", latestRecord?.ai_feedback);
                         setResult(latestRecord);
                         setShowForm(false);
                     } else {
@@ -487,6 +489,7 @@ const SmokingQuiz = () => {
                         flexDirection: 'column',
                         overflow: 'visible',
                     }}>
+                        {console.log("Result data being passed to SmokingHabitsResult:", result)}
                         <SmokingHabitsResult data={result} />
 
                         {/* Action buttons */}
