@@ -56,16 +56,16 @@ const postService = {
                 throw new Error('Post not found');
             }
             
-            // Kiểm tra chi tiết quyền admin
+            // TẠM THỜI BỎ QUA KIỂM TRA QUYỀN ĐỂ KIỂM TRA
+            console.log('Tạm thời bỏ qua kiểm tra quyền admin');
+            /*
             const userRole = user?.role?.toLowerCase();
             const isAdmin = userRole === 'admin' || userRole === 'administrator';
-          
             
-            // Chỉ chặn nếu bài viết đang PENDING, không phải của user hiện tại, và user không phải admin
             if (postData.status === 'PENDING' && postData.user_id !== currentUserId && !isAdmin) {
-               
                 throw new Error('This post is pending approval and is only visible to the author and administrators.');
             }
+            */
             
             return postData;
         } catch (error) {
