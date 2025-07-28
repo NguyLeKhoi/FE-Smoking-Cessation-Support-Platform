@@ -134,6 +134,16 @@ function NotificationsPage() {
 
     useEffect(() => {
         // No need to fetch notification settings on component mount
+        const getNotiScheduleSetting = async () => {
+            const response = await notificationService.getNotificationSchedules();
+            if (response.data) {
+                setSettings((prev) => ({
+                    ...prev,
+                    ...response.data,
+                }));
+            }
+        };
+        getNotiScheduleSetting();
     }, []);
 
     const handleSettingChange = (field) => (event) => {

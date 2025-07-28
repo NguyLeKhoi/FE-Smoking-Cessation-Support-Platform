@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import {Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Typography, Box, Divider, Tabs, Tab, Pagination} from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Typography, Box, Divider, Tabs, Tab, Pagination } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 import DateRangeIcon from '@mui/icons-material/DateRange';
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import SettingsIcon from '@mui/icons-material/Settings';
 import postService from '../../services/postService';
 import { Dialog, DialogTitle, DialogContent, DialogActions, TextField } from '@mui/material';
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 export default function AdminApprovePosts() {
   const [posts, setPosts] = useState([]);
@@ -39,7 +41,7 @@ export default function AdminApprovePosts() {
   const handleView = async (id) => {
     try {
       const res = await postService.getPostById(id);
-      setDetailModal({ open: true, post: res.data });
+      setDetailModal({ open: true, post: res });
       setReason('');
     } catch (err) {
       // error toast đã có trong service
@@ -203,7 +205,9 @@ export default function AdminApprovePosts() {
                   <Typography variant="body2" color="text.secondary">Created: {detailModal.post.created || detailModal.post.created_at || ''}</Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>Status: {detailModal.post.status}</Typography>
                   <Divider sx={{ my: 2 }} />
-                  <Typography variant="body1" sx={{ whiteSpace: 'pre-line' }}>{detailModal.post.content}</Typography>
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {detailModal.post.content}
+                  </ReactMarkdown>
                   {(detailModal.post.status === 'PENDING' || detailModal.post.status === 'UPDATING') && (
                     <Box mt={3}>
                       <TextField
