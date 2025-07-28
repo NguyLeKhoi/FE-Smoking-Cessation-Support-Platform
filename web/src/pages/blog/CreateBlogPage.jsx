@@ -33,7 +33,7 @@ const CreateBlogPage = () => {
     title: "",
     content: "",
     thumbnail: "",
-    type: "", 
+    type: "",
   });
   const [formErrors, setFormErrors] = useState({});
   const [content, setContent] = useState("");
@@ -310,9 +310,8 @@ const CreateBlogPage = () => {
                 </Box>
 
                 <Box>
-                  <FormControl error={!!formErrors.content}>
+                  <FormControl error={!!formErrors.content} fullWidth>
                     <BlogEditor content={content} setContent={setContent} />
-                    {/* <FormHelperText error={!!formErrors.content}> */}
                     <FormHelperText>
                       {formErrors.content || "Type your post content here."}
                     </FormHelperText>
