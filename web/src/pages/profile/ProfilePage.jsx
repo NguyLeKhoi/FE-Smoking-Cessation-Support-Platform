@@ -1,30 +1,33 @@
 import React, { useState, useEffect } from "react";
 import { Button, Box } from "@mui/material";
-import { useNavigate, Route, Routes } from "react-router-dom";
-import {
-  fetchCurrentUser,
-  updateCurrentUser,
-} from "../../services/userService";
+import { useNavigate } from "react-router-dom";
+import { fetchCurrentUser } from "../../services/userService";
+import { logout } from "../../services/authService";
 import ProfileSidebar from "../../components/profilePage/ProfileSidebar";
 import UserInfoSection from "../../components/profilePage/UserInfoSection";
-import StatisticsSection, { mapUserToStatisticsData } from "../../components/profilePage/StatisticsSection";
+import StatisticsSection from "../../components/profilePage/StatisticsSection";
 import AchievementSection from "../../components/profilePage/AchievementSection";
 import LoadingPage from "../LoadingPage";
 import { HttpStatusCode } from "axios";
 
-export default function ProfilePage({ handleLogout }) {
+export default function ProfilePage() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [loadingUserInfo, setLoadingUserInfo] = useState(true);
   const [loadingAchievements, setLoadingAchievements] = useState(true);
+
   useEffect(() => {
     window.scrollTo({ top: 0 });
   }, []);
 
-  const onLogoutClick = () => {
-    handleLogout();
-    navigate("/login");
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
 
   useEffect(() => {
@@ -74,7 +77,7 @@ export default function ProfilePage({ handleLogout }) {
           </Box>
           <Button
             variant="contained"
-            onClick={onLogoutClick}
+            onClick={handleLogout}
             sx={{
               mt: 5,
               py: 1.5,

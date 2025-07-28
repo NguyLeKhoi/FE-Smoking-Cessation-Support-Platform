@@ -52,8 +52,9 @@ const postService = {
                 throw new Error('Post not found');
             }
             
-            // Check if the post is pending and not owned by the current user
-            if (postData.status === 'PENDING' && postData.user_id !== currentUserId) {
+            // Check if the post is pending, not owned by the current user, and current user is not admin
+            const isAdmin = user?.role === 'admin';
+            if (postData.status === 'PENDING' && postData.user_id !== currentUserId && !isAdmin) {
                 throw new Error('This post is pending approval and not visible to you.');
             }
             
