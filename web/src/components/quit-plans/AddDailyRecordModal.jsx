@@ -49,11 +49,13 @@ export default function AddDailyRecordModal({
     if (!validate() || loading) return;
     
     const now = new Date();
+    // Convert to Vietnam timezone (UTC+7)
+    const vietnamTime = new Date(now.getTime() + (7 * 60 * 60 * 1000));
     const payload = {
       cigarette_smoke: Number(cigaretteSmoke),
       craving_level: Number(cravingLevel),
-      health_status: 'NORMAL', // Default to normal
-      record_date: now.toISOString(),
+      health_status: 'NORMAL', 
+      record_date: vietnamTime.toISOString(),
     };
     
     onSubmit(payload);
