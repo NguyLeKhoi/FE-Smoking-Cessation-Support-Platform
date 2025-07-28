@@ -37,43 +37,46 @@ const postService = {
         }
     },
 
-    /**
-     * Get post by ID
-     * @param {string} id - Post ID
-     * @returns {Promise} - Post details
-     */
-    getPostById: async (id) => {
-        try {
-            if (!id) {
-                throw new Error('Post ID is required');
-            }
-            
-            const response = await api.get(`/posts/${id}`);
-            const postData = response.data?.data || response.data;
-            
-            if (!postData) {
-                throw new Error('Post not found');
-            }
-            
-            // Cho phép tất cả người dùng xem bài viết
-            return postData;
-            /*
-            const userRole = user?.role?.toLowerCase();
-            const isAdmin = userRole === 'admin' || userRole === 'administrator';
-            
-            if (postData.status === 'PENDING' && postData.user_id !== currentUserId && !isAdmin) {
-                throw new Error('This post is pending approval and is only visible to the author and administrators.');
-            }
-            */
-            
-            return postData;
-        } catch (error) {
-            console.error('Error fetching post:', error);
-            toast(`Error: ${error.response?.data?.message || error.message || 'Failed to load post'}`);
-            throw error;
+     /**
+   * Get post by ID
+   * @param {string} id - Post ID
+   * @returns {Promise<Object>} Post data
+   */
+  getPostById: async (id) => {
+    try {
+      // First check if user is authenticated
+      const user = await isAuthenticated();
+      const currentUserId = user?.id;
+      
+      const response = await api.get(`/posts/${id}`, {
+        withCredentials: true // Ensure cookies are sent
+      });
+      
+      let postData = response.data?.data || response.data;
+      
+      if (!postData) {
+        throw new Error('Post not found');
+      }
+      
+      // Check if the post is pending and not owned by the current user
+      if (postData.status === 'PENDING' && postData.user_id !== currentUserId) {
+        throw new Error('This post is pending approval and not visible to you.');
+      }
+      
+      return postData;
+    } catch (error) {
+      console.error('Error fetching post:', error);
+      // Return a consistent structure even on error
+      if (error.response) {
+        if (error.response.status === 401) {
+          throw new Error('You need to log in to view this content');
         }
-    },
-
+        throw new Error(error.response.data?.message || 'Failed to load post');
+      }
+      throw error; // Re-throw the error to be handled by the component
+    }
+  },
+  
     /**
      * Update an existing post
      * @param {string} id - Post ID
