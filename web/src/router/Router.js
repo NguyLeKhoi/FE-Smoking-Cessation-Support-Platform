@@ -29,6 +29,7 @@ import LeaderBoardPage from '../pages/profile/LeaderBoardPage';
 import SmokingHabitPage from '../pages/profile/SmokingHabitPage';
 import SubscriptionPage from '../pages/main/SubscriptionPage';
 import NotificationsPage from '../components/profilePage/NotificationsPage';
+import VisitUserProfile from '../pages/profile/VisitUserProfile';
 
 //achievements
 import AchievementsPage from '../pages/achievements/AchivementsPage';

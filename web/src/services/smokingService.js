@@ -88,6 +88,9 @@ const smokingService = {
     getMySmokingHabits: async () => {
         try {
             const response = await api.get('/smoking-habits/me');
+            console.log("Raw API response in smokingService:", response);
+            console.log("Response data:", response.data);
+            console.log("AI feedback in response:", response.data?.ai_feedback);
             return response.data;
         } catch (error) {
             showSmokingHabitError(error);

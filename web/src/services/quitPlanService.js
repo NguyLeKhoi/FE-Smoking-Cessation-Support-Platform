@@ -34,6 +34,16 @@ const quitPlanService = {
   },
 
   /**
+   * Get a quit plan by userId and planId
+   * @param {string} userId - The user ID
+   * @param {string} planId - The plan ID
+   * @returns {Promise}
+   */
+  getQuitPlanByUserIdAndPlanId: async (userId, planId) => {
+    return api.get(`/quit-plans/${userId}/${planId}`);
+  },
+
+  /**
    * Delete a quit plan by ID
    * @param {string} id
    * @returns {Promise}
