@@ -1,6 +1,7 @@
 import api from './api';
 import { toast } from 'react-toastify';
 import { POSTS_MESSAGES } from '../constants/serviceMessages';
+import { jwtDecode } from 'jwt-decode';
 
 // Helper function to handle post-related toast messages
 const showPostToast = (message, isError = false) => {
@@ -16,7 +17,6 @@ const extractErrorMessage = (error) => {
     if (Array.isArray(errorData?.message)) {
         const validationErrors = errorData.message;
         if (validationErrors.length > 0) {
-
             return validationErrors[0].message;
         }
     }
@@ -75,52 +75,44 @@ const postService = {
      */
     getPostById: async (id) => {
         try {
+            const token = localStorage.getItem("accessToken");
+
+            let currentUserId = null;
+            let currentUserRole = null;
+
+            if (token) {
+                try {
+                    const decoded = jwtDecode(token);
+                    currentUserId = decoded.userId || decoded.id || decoded.sub;
+                    currentUserRole = decoded.role;
+                } catch (decodeErr) {
+                    console.warn("Invalid token:", decodeErr);
+                }
+            }
+
             const response = await api.get(`/posts/${id}`);
-            return response.data;
+            const postData = response.data?.data || response.data;
+
+            if (!postData) {
+                throw new Error("Post not found.");
+            }
+
+            const isPending = postData.status === "PENDING" || postData.status === "UPDATING";
+            const isOwner = currentUserId && postData.user_id === currentUserId;
+            const isAdmin = currentUserRole === "admin";
+
+            if (isPending && !isOwner && !isAdmin) {
+                throw new Error("This post is pending approval and not visible to you.");
+            }
+
+            return postData;
         } catch (error) {
             const errorMessage = extractErrorMessage(error);
-            showPostToast(`Error fetching post details: ${errorMessage}`, true);
+            showPostToast(`Error fetching post: ${errorMessage}`, true);
             throw error;
-     /**
-   * Get post by ID
-   * @param {string} id - Post ID
-   * @returns {Promise<Object>} Post data
-   */
-  getPostById: async (id) => {
-    try {
-      // First check if user is authenticated
-      const user = await isAuthenticated();
-      const currentUserId = user?.id;
-      
-      const response = await api.get(`/posts/${id}`, {
-        withCredentials: true // Ensure cookies are sent
-      });
-      
-      let postData = response.data?.data || response.data;
-      
-      if (!postData) {
-        throw new Error('Post not found');
-      }
-      
-      // Check if the post is pending and not owned by the current user
-      if (postData.status === 'PENDING' && postData.user_id !== currentUserId) {
-        throw new Error('This post is pending approval and not visible to you.');
-      }
-      
-      return postData;
-    } catch (error) {
-      console.error('Error fetching post:', error);
-      // Return a consistent structure even on error
-      if (error.response) {
-        if (error.response.status === 401) {
-          throw new Error('You need to log in to view this content');
         }
-        throw new Error(error.response.data?.message || 'Failed to load post');
-      }
-      throw error; // Re-throw the error to be handled by the component
-    }
-  },
-  
+    },
+
     /**
      * Update an existing post
      * @param {string} id - Post ID

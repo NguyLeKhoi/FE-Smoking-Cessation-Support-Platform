@@ -34,8 +34,8 @@ const BlogDetails = () => {
         const response = await postService.getPostById(id);
         console.log("Post details:", response);
 
-        if (response && response.data) {
-          setPost(response.data);
+        if (response) {
+          setPost(response);
         } else {
           throw new Error("Post not found");
         }
