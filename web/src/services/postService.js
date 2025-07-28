@@ -55,11 +55,15 @@ const postService = {
      */
     getAllPosts: async (params = {}) => {
         try {
+            console.log('Fetching all posts with params:', params);
             const response = await api.get('/posts', { params });
+            console.log('Posts API response:', response);
             return response.data;
         } catch (error) {
             const errorMessage = extractErrorMessage(error);
             showPostToast(`Error fetching posts: ${errorMessage}`, true);
+            console.error('Error in getAllPosts:', error);
+            toast(` Error fetching posts: ${error.response?.data?.message || error.message}`);
             throw error;
         }
     },
@@ -77,9 +81,46 @@ const postService = {
             const errorMessage = extractErrorMessage(error);
             showPostToast(`Error fetching post details: ${errorMessage}`, true);
             throw error;
+     /**
+   * Get post by ID
+   * @param {string} id - Post ID
+   * @returns {Promise<Object>} Post data
+   */
+  getPostById: async (id) => {
+    try {
+      // First check if user is authenticated
+      const user = await isAuthenticated();
+      const currentUserId = user?.id;
+      
+      const response = await api.get(`/posts/${id}`, {
+        withCredentials: true // Ensure cookies are sent
+      });
+      
+      let postData = response.data?.data || response.data;
+      
+      if (!postData) {
+        throw new Error('Post not found');
+      }
+      
+      // Check if the post is pending and not owned by the current user
+      if (postData.status === 'PENDING' && postData.user_id !== currentUserId) {
+        throw new Error('This post is pending approval and not visible to you.');
+      }
+      
+      return postData;
+    } catch (error) {
+      console.error('Error fetching post:', error);
+      // Return a consistent structure even on error
+      if (error.response) {
+        if (error.response.status === 401) {
+          throw new Error('You need to log in to view this content');
         }
-    },
-
+        throw new Error(error.response.data?.message || 'Failed to load post');
+      }
+      throw error; // Re-throw the error to be handled by the component
+    }
+  },
+  
     /**
      * Update an existing post
      * @param {string} id - Post ID

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { toast } from 'react-toastify';
 import Lottie from 'lottie-react';
 import bouncingCatAnimation from '../../assets/animations/bouncing-black-cat.json';
@@ -6,9 +6,29 @@ import motivationService from '../../services/motivationService';
 
 const MotivationService = ({ setNotifications }) => {
   const [loadingMotivation, setLoadingMotivation] = useState(false);
+  const intervalId = useRef(null);
 
   useEffect(() => {
+    // Check if user is logged in - if not, don't do anything
+    const checkAuthAndSetup = () => {
+      const isLoggedIn = !!localStorage.getItem('accessToken');
+      if (!isLoggedIn) {
+        // Clear any existing intervals and return early
+        if (intervalId.current) {
+          clearInterval(intervalId.current);
+          intervalId.current = null;
+        }
+        return false;
+      }
+      return true;
+    };
+
+    // Initial check
+    if (!checkAuthAndSetup()) return;
+
     const fetchMotivationMessage = async () => {
+      // Check auth again before showing any toasts
+      if (!checkAuthAndSetup()) return;
       const lastMotivationToastTimestamp = sessionStorage.getItem('lastMotivationToastTimestamp');
       const cachedMotivation = sessionStorage.getItem('motivationMessage');
       const twoHoursInMs = 7200000; // 2 hours
@@ -76,9 +96,23 @@ const MotivationService = ({ setNotifications }) => {
         );
       }
     };
-    fetchMotivationMessage();
-    const intervalId = setInterval(fetchMotivationMessage, 7200000); // 2 hours
-    return () => clearInterval(intervalId);
+    // Initial fetch after a short delay to ensure auth state is set
+    const initialDelay = 2000; // 2 seconds delay
+    const initialTimer = setTimeout(() => {
+      if (checkAuthAndSetup()) {
+        fetchMotivationMessage();
+        // Set up interval for subsequent fetches
+        intervalId.current = setInterval(fetchMotivationMessage, 7200000); // 2 hours
+      }
+    }, initialDelay);
+
+    // Cleanup function
+    return () => {
+      clearTimeout(initialTimer);
+      if (intervalId.current) {
+        clearInterval(intervalId.current);
+      }
+    };
   }, [setNotifications]);
 
   return { loadingMotivation };
