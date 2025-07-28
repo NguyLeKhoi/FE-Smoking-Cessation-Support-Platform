@@ -26,9 +26,12 @@ const postService = {
      */
     getAllPosts: async (params = {}) => {
         try {
+            console.log('Fetching all posts with params:', params);
             const response = await api.get('/posts', { params });
+            console.log('Posts API response:', response);
             return response.data;
         } catch (error) {
+            console.error('Error in getAllPosts:', error);
             toast(` Error fetching posts: ${error.response?.data?.message || error.message}`);
             throw error;
         }
@@ -41,23 +44,28 @@ const postService = {
      */
     getPostById: async (id) => {
         try {
-            // Get current user from localStorage
-            const user = JSON.parse(localStorage.getItem('user') || 'null');
-            const currentUserId = user?.id;
-            
-         
+            if (!id) {
+                throw new Error('Post ID is required');
+            }
             
             const response = await api.get(`/posts/${id}`);
             const postData = response.data?.data || response.data;
-            
-           
             
             if (!postData) {
                 throw new Error('Post not found');
             }
             
-            // TẠM THỜI BỎ QUA KIỂM TRA QUYỀN ĐỂ KIỂM TRA
-            console.log('Tạm thời bỏ qua kiểm tra quyền admin');
+            // Lấy thông tin user từ localStorage
+            const user = JSON.parse(localStorage.getItem('user') || 'null');
+            const currentUserId = user?.id;
+            const isAdmin = user?.role?.toLowerCase() === 'admin';
+            
+            // Nếu bài viết đang PENDING và không phải của user hiện tại và không phải admin
+            if (postData.status === 'PENDING' && postData.user_id !== currentUserId && !isAdmin) {
+                throw new Error('This post is pending approval and is only visible to the author and administrators.');
+            }
+            
+            return postData;
             /*
             const userRole = user?.role?.toLowerCase();
             const isAdmin = userRole === 'admin' || userRole === 'administrator';
