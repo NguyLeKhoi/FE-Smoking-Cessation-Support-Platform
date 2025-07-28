@@ -55,16 +55,7 @@ const postService = {
                 throw new Error('Post not found');
             }
             
-            // Lấy thông tin user từ localStorage
-            const user = JSON.parse(localStorage.getItem('user') || 'null');
-            const currentUserId = user?.id;
-            const isAdmin = user?.role?.toLowerCase() === 'admin';
-            
-            // Nếu bài viết đang PENDING và không phải của user hiện tại và không phải admin
-            if (postData.status === 'PENDING' && postData.user_id !== currentUserId && !isAdmin) {
-                throw new Error('This post is pending approval and is only visible to the author and administrators.');
-            }
-            
+            // Cho phép tất cả người dùng xem bài viết
             return postData;
             /*
             const userRole = user?.role?.toLowerCase();
