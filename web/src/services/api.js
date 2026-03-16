@@ -192,8 +192,7 @@ export const debugTokenStatus = () => {
   
   if (accessToken) {
     try {
-      const payload = JSON.parse(atob(accessToken.split('.')[1]));
-      const expiresIn = payload.exp - Math.floor(Date.now() / 1000);
+      JSON.parse(atob(accessToken.split('.')[1]));
       
     } catch (error) {
       

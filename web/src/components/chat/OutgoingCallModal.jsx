@@ -5,11 +5,9 @@ import {
   Box,
   Typography,
   Avatar,
-  Button,
   IconButton,
-  CircularProgress,
 } from '@mui/material';
-import { CallEnd, Phone } from '@mui/icons-material';
+import { CallEnd } from '@mui/icons-material';
 
 const OutgoingCallModal = ({ open, callee, onCancel }) => {
   const handleCancel = () => {

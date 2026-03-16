@@ -152,12 +152,6 @@ const MyBlogCard = ({
     const updatedDate = formatDate(post.updated_at);
     const wasUpdated = post.created_at !== post.updated_at;
 
-    const authorName = post.first_name || post.last_name
-        ? `${post.first_name || ''} ${post.last_name || ''}`
-        : userData
-            ? `${userData.first_name || ''} ${userData.last_name || ''}`.trim() || "Me"
-            : "Zerotine Author";
-
     return (
         <>
             <Card

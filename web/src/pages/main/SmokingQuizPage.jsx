@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import HomeIcon from '@mui/icons-material/Home';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import CloseIcon from '@mui/icons-material/Close';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import smokingService from '../../services/smokingService';
 import SmokingHabitsResult from '../../components/smokingQuiz/SmokingHabitsResult';
@@ -95,7 +95,7 @@ const SmokingQuiz = () => {
     const [result, setResult] = useState(null);
     const [showForm, setShowForm] = useState(true);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const [, setError] = useState(null);
     const [quizCompleted, setQuizCompleted] = useState(false);
     const [submitting, setSubmitting] = useState(false);
 
@@ -115,11 +115,6 @@ const SmokingQuiz = () => {
     const handleCheckboxChange = useCallback((e) => {
         const { value, checked } = e.target;
         dispatch({ type: 'UPDATE_TRIGGERS', value, checked });
-    }, []);
-
-    const handleHealthIssuesChange = useCallback((e) => {
-        const { value, checked } = e.target;
-        dispatch({ type: 'UPDATE_HEALTH_ISSUES', value, checked });
     }, []);
 
     /**
@@ -257,7 +252,7 @@ const SmokingQuiz = () => {
             setSubmitting(false);
             setLoading(false);
         }
-    }, [formData, prepareDataForSubmission, showToast, quizCompleted]);
+    }, [formData, prepareDataForSubmission, showToast]);
 
     const handleNext = useCallback(() => {
         if (!validateCurrentField()) {

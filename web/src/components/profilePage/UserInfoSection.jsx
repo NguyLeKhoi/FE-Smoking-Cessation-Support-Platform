@@ -14,8 +14,6 @@ import EditIcon from "@mui/icons-material/Edit";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import { format } from "date-fns";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import mediaService from "../../services/mediaService";
 import {
   fetchCurrentUser,
@@ -73,7 +71,7 @@ const UserInfoSection = ({ onUserUpdated, onLoaded = () => {} }) => {
       }
     };
     loadUserProfile();
-  }, []);
+  }, [onLoaded]);
 
   const handleEditToggle = () => {
     setIsEditing((prev) => {

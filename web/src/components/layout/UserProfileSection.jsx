@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from "react";
 import {
-  Typography,
   Button,
   IconButton,
   Badge,
   Avatar,
   CircularProgress,
   Box,
-  TextField,
-  InputAdornment,
 } from "@mui/material";
-import { Link as RouterLink, useLocation } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import NotificationsDropdown from "./NotificationsDropdown";
 import { fetchCurrentUser } from "../../services/userService";
@@ -24,9 +21,6 @@ const UserProfileSection = ({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
-  const location = useLocation();
-  const currentPath = location.pathname;
 
   useEffect(() => {
     if (authStatus) {

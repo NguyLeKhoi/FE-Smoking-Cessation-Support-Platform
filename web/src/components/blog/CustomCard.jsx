@@ -1,12 +1,10 @@
 import React from 'react';
 import {
     Card,
-    CardContent,
     CardMedia,
     Typography,
     Box,
     Avatar,
-    Chip,
     Tooltip
 } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
@@ -33,7 +31,6 @@ const CustomCard = ({
                 flexDirection: 'column',
                 height: '100%',
                 bgcolor: 'background.paper',
-                transition: 'all 0.2s ease-in-out',
                 maxWidth: 300,
                 minWidth: 330,
                 minHeight: 350,

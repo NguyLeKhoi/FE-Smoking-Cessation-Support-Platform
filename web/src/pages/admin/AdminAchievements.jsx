@@ -19,7 +19,6 @@ export default function AdminAchievements() {
     const [actionAnchorEl, setActionAnchorEl] = useState(null);
     const [selectedAchievement, setSelectedAchievement] = useState(null);
     const [modalOpen, setModalOpen] = useState(false);
-    const [actionLoading, setActionLoading] = useState(false);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
     useEffect(() => {
@@ -207,10 +206,10 @@ export default function AdminAchievements() {
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                 transformOrigin={{ vertical: 'top', horizontal: 'right' }}
             >
-                <MenuItem onClick={handleEdit} disabled={actionLoading}>
+                <MenuItem onClick={handleEdit}>
                     <EditIcon fontSize="small" sx={{ mr: 1 }} /> Edit
                 </MenuItem>
-                <MenuItem onClick={handleDelete} disabled={actionLoading} sx={{ color: 'error.main' }}>
+                <MenuItem onClick={handleDelete} sx={{ color: 'error.main' }}>
                     <DeleteIcon fontSize="small" sx={{ mr: 1 }} /> Delete
                 </MenuItem>
             </Menu>

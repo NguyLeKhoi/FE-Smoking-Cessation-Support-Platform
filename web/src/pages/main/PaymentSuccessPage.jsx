@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Box, Typography, Button, Container, Paper, CircularProgress } from '@mui/material';
+import { Typography, Button, Container, Paper, CircularProgress } from '@mui/material';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import CancelIcon from '@mui/icons-material/Cancel';
 import HomeIcon from '@mui/icons-material/Home';

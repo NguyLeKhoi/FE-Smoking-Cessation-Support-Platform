@@ -8,12 +8,12 @@ const ChatSidebar = ({ chatRooms, loading, selectedRoom, onSelectRoom, getRoomDi
     const navigate = useNavigate();
     let role = null;
     const accessToken = localStorage.getItem('accessToken');
-    let decoded = null;
     if (typeof accessToken === 'string' && accessToken) {
         try {
-            decoded = jwtDecode(accessToken);
+            const decoded = jwtDecode(accessToken);
+            role = decoded.role || null;
         } catch (e) {
-            decoded = null;
+            role = null;
         }
     }
     return (

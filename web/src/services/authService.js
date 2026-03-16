@@ -1,5 +1,4 @@
 import api, { startAutoRefresh, stopAutoRefresh } from './api';
-import { getUserById } from './userService';
 
 export const login = async (credentials) => {
   try {

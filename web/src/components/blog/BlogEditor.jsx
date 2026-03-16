@@ -1,5 +1,5 @@
 import "@mdxeditor/editor/style.css";
-import React, { useState } from "react";
+import React from "react";
 import {
   MDXEditor,
   UndoRedo,

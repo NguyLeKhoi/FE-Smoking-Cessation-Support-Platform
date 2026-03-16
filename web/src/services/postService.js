@@ -1,6 +1,5 @@
 import api from './api';
 import { toast } from 'react-toastify';
-import { POSTS_MESSAGES } from '../constants/serviceMessages';
 import { jwtDecode } from 'jwt-decode';
 
 // Helper function to handle post-related toast messages
