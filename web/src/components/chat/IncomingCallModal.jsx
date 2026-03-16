@@ -5,11 +5,10 @@ import {
   Box,
   Typography,
   Avatar,
-  Button,
   IconButton,
   Chip,
 } from '@mui/material';
-import { VideoCall, CallEnd, Phone, Videocam } from '@mui/icons-material';
+import { CallEnd, Phone, Videocam } from '@mui/icons-material';
 
 const IncomingCallModal = ({ open, caller, onAccept, onReject }) => {
   const handleAccept = () => {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 import NavLinks from "./NavLinks";
@@ -26,7 +26,7 @@ const Header = ({ authStatus }) => {
   // Use the motivation service component
   const { loadingMotivation } = MotivationService({ setNotifications });
 
-  const fetchNotifications = async () => {
+  const fetchNotifications = useCallback(async () => {
     if (token) {
       try {
         const res = await notificationService.getNotifications();
@@ -43,7 +43,7 @@ const Header = ({ authStatus }) => {
         setNotifications([]);
       }
     }
-  };
+  }, [token]);
 
   useEffect(() => {
     fetchNotifications();

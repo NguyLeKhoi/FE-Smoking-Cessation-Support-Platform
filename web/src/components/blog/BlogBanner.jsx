@@ -6,7 +6,6 @@ import {
     Container
 } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
-import MarkdownRenderer from './MarkdownRenderer';
 
 const BlogBanner = ({
     title,

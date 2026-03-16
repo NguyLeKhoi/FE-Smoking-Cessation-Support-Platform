@@ -6,7 +6,6 @@ export default function AdminCoach() {
   // State cho gửi mã xác thực
   const [email, setEmail] = useState('');
   const [callbackUrl, setCallbackUrl] = useState('');
-  const [codeSent, setCodeSent] = useState(false);
   const [sendLoading, setSendLoading] = useState(false);
   const [sendError, setSendError] = useState('');
   const [sendSuccess, setSendSuccess] = useState('');
@@ -20,7 +19,6 @@ export default function AdminCoach() {
     try {
       await sendCoachCode({ email, callbackUrl });
       setSendSuccess('Verification code sent successfully!');
-      setCodeSent(true);
     } catch (err) {
       setSendError(typeof err === 'string' ? err : (err?.message || 'Failed to send code'));
     } finally {

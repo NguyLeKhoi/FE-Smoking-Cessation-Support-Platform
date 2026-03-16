@@ -1,16 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { getAllCoaches } from '../../services/coachService';
-import { createChatRoom, getAllChatRooms, getAllCoachChatRooms } from '../../services/chatService';
+import { getAllChatRooms, getAllCoachChatRooms } from '../../services/chatService';
 import {
-    Grid, Typography, Box, CircularProgress
+    Grid, Typography, Box
 } from '@mui/material';
 import CoachInfo from '../../components/coach/CoachInfo';
-import ChatRoom from '../../components/chat/ChatRoom';
 import LoadingPage from '../LoadingPage';
 import { useSocket } from '../../context/SocketContext';
 import ChatWindow from '../../components/chat/ChatWindow';
 import { jwtDecode } from 'jwt-decode';
-import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 
 const CoachListPage = () => {
@@ -18,7 +16,6 @@ const CoachListPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [chatRooms, setChatRooms] = useState([]);
-    const [chatRoomsLoading, setChatRoomsLoading] = useState(false);
     const { socket } = useSocket();
     const [openChatRooms, setOpenChatRooms] = useState([]);
     const [role, setRole] = useState(null);
@@ -60,8 +57,7 @@ const CoachListPage = () => {
         fetchCoaches();
     }, []);
 
-    const fetchChatRooms = async () => {
-        setChatRoomsLoading(true);
+    const fetchChatRooms = useCallback(async () => {
         try {
             let response;
             if (role === 'coach') {
@@ -87,54 +83,14 @@ const CoachListPage = () => {
         } catch (e) {
             console.error('Error fetching chat rooms:', e);
             setChatRooms([]);
-        } finally {
-            setChatRoomsLoading(false);
         }
-    };
+    }, [role]);
 
     useEffect(() => {
         if (role) {
             fetchChatRooms();
         }
-    }, [role]);
-
-    const handleStartChat = async (coachId) => {
-        try {
-            console.log('Creating chat room for coach:', coachId);
-            const response = await createChatRoom(coachId);
-            console.log('Create chat room raw response:', response);
-            const newRoom = response.data ? response.data : response;
-            console.log('Processed newRoom:', newRoom);
-
-            if (!newRoom || !newRoom.id) {
-                toast.error('Failed to create chat room: No room ID returned.');
-                return;
-            }
-
-            toast.success('Chat room created successfully!');
-
-            setOpenChatRooms((prev) => {
-                if (prev.find(r => r.id === newRoom.id)) return prev;
-                if (prev.length >= 2) return [prev[1], newRoom];
-                return [...prev, newRoom];
-            });
-
-            setTimeout(() => {
-                fetchChatRooms();
-            }, 500);
-        } catch (error) {
-            console.error('Error creating chat room:', error);
-            toast.error('Failed to create chat room: ' + (error.response?.data?.message || error.message));
-        }
-    };
-
-    const handleOpenChat = (room) => {
-        setOpenChatRooms((prev) => {
-            if (prev.find(r => r.id === room.id)) return prev;
-            if (prev.length >= 2) return [prev[1], room];
-            return [...prev, room];
-        });
-    };
+    }, [role, fetchChatRooms]);
 
     const handleCloseChat = (roomId) => {
         setOpenChatRooms((prev) => prev.filter(r => r.id !== roomId));
@@ -151,9 +107,6 @@ const CoachListPage = () => {
             socket.off('newMessage', handleNewMessage);
         };
     }, [socket]);
-
-
-    const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
 
     if (loading) {
         return (

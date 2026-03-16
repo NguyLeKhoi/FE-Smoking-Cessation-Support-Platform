@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Typography, CircularProgress } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom";
 import { getUserById } from "../../services/userService";
 import ProfileSidebar from "../../components/profilePage/ProfileSidebar";

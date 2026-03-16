@@ -11,25 +11,6 @@ import quitPlanService from '../../services/quitPlanService';
 import { useNavigate, useLocation } from 'react-router-dom';
 import LoadingPage from '../LoadingPage';
 
-const getPhaseStatus = (phases) => {
-  if (!Array.isArray(phases)) return {};
-  let foundActive = false;
-  return phases.map((phase, idx) => {
-    if (phase.status === 'active') {
-      foundActive = true;
-      return { ...phase, _display: 'active' };
-    }
-    if (!foundActive && phase.status !== 'completed') {
-      foundActive = true;
-      return { ...phase, _display: 'next' };
-    }
-    if (foundActive && phase.status !== 'completed' && phase.status !== 'active') {
-      return { ...phase, _display: 'future' };
-    }
-    return { ...phase, _display: phase.status === 'completed' ? 'completed' : 'other' };
-  });
-};
-
 const slogans = [
   'Start your quit journey today and track your progress here!',
   'Your determination today is your freedom tomorrow.',

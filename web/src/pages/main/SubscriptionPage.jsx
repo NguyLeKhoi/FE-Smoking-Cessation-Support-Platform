@@ -6,15 +6,12 @@ import {
   Button, 
   Card, 
   Grid,
-  Divider,
   Chip,
-  useTheme,
   CircularProgress,
   Alert,
   Paper,
   CardHeader,
   CardContent,
-  CardActions,
   Avatar
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -22,7 +19,7 @@ import { useNavigate } from 'react-router-dom';
 import subscriptionService from '../../services/subscriptionService';
 import ProfileSidebar from '../../components/profilePage/ProfileSidebar';
 import LoadingPage from '../LoadingPage';
-import { EmojiEvents, CheckCircle, EventAvailable, EventBusy, Update } from '@mui/icons-material';
+import { EmojiEvents, EventAvailable, EventBusy, Update } from '@mui/icons-material';
 
 // Styled Components
 const PageContainer = styled(Box)({
@@ -42,27 +39,7 @@ const ContentContainer = styled(Box)({
   },
 });
 
-const StyledCard = styled(Card)(({ theme }) => ({
-  borderRadius: '8px',
-  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
-  transition: 'transform 0.2s, box-shadow 0.2s',
-  '&:hover': {
-    transform: 'translateY(-2px)',
-    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
-  },
-}));
-
-const FeatureItem = ({ text }) => (
-  <Box display="flex" alignItems="center" mb={2}>
-    <CheckCircle color="primary" sx={{ mr: 1.5, fontSize: '20px' }} />
-    <Typography variant="body2" color="text.secondary">
-      {text}
-    </Typography>
-  </Box>
-);
-
 const SubscriptionPage = () => {
-  const theme = useTheme();
   const navigate = useNavigate();
   
   // State

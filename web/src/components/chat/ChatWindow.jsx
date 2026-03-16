@@ -1,10 +1,8 @@
 import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
-import { Box, Typography, TextField, Button, Avatar, IconButton, Chip } from '@mui/material';
+import { Box, Typography, Avatar, IconButton, Chip } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
-import { VideoCall as VideoCallIcon } from '@mui/icons-material';
 import { useSocket } from '../../context/SocketContext';
 import { getChatRoomMessages } from '../../services/chatService';
-import { getAllCoaches } from '../../services/coachService';
 import { jwtDecode } from 'jwt-decode';
 import VideoCall from './VideoCall';
 import OutgoingCallModal from './OutgoingCallModal';
@@ -17,7 +15,6 @@ import { getVideoToken } from '../../services/chatService';
 const ChatWindow = ({ room, onClose }) => {
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
-    const [coachUser, setCoachUser] = useState(null);
     const [isOtherUserOnline, setIsOtherUserOnline] = useState(false);
     const [isTyping, setIsTyping] = useState(false);
     const [otherUserTyping, setOtherUserTyping] = useState(false);
@@ -56,49 +53,6 @@ const ChatWindow = ({ room, onClose }) => {
     const displayUser = role === 'coach'
         ? room.user
         : room.coach?.user;
-
-    useEffect(() => {
-        const fetchCoach = async () => {
-            try {
-                // Use the coach info directly from room if available
-                if (room.coach?.user) {
-                    setCoachUser({
-                        username: room.coach.user.username,
-                        avatar: room.coach.user.avatar,
-                        email: room.coach.user.email
-                    });
-                    return;
-                }
-
-                // Fallback to API lookup if needed
-                const response = await getAllCoaches();
-                const coaches = response.data || [];
-                const coachId = room.coach_id || room.coach?.id || room.coach?.user?.id;
-                let foundCoach = coaches.find(c => c.user_id === coachId || c.id === coachId);
-                if (foundCoach && foundCoach.users) {
-                    setCoachUser({
-                        username: foundCoach.users.username,
-                        avatar: foundCoach.users.avatar,
-                        email: foundCoach.users.email
-                    });
-                } else {
-                    setCoachUser(null);
-                }
-            } catch (e) {
-                // Final fallback to room.coach.user if available
-                if (room.coach?.user) {
-                    setCoachUser({
-                        username: room.coach.user.username,
-                        avatar: room.coach.user.avatar,
-                        email: room.coach.user.email
-                    });
-                } else {
-                    setCoachUser(null);
-                }
-            }
-        };
-        fetchCoach();
-    }, [room.coach_id, room.coach?.user]);
 
     // Fetch latest messages on mount
     useEffect(() => {

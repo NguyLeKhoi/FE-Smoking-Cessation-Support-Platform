@@ -45,12 +45,6 @@ export const SocketProvider = ({ children }) => {
     }, [token]);
 
     useEffect(() => {
-        // Disconnect existing socket if it exists
-        if (socket) {
-            socket.disconnect();
-            window.socketInstance = null;
-        }
-
         // Only create new socket if token exists
         if (token) {
             const socketInstance = io(process.env.REACT_APP_SOCKET_URL , {
