@@ -1,70 +1,94 @@
-# Getting Started with Create React App
+# Quit Smoking Web (React)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Web client for the Smoking Cessation Support Platform.
 
-## Available Scripts
+## Tech Stack
 
-In the project directory, you can run:
+- React 19 + Create React App
+- React Router
+- Material UI (MUI)
+- Axios
+- Socket.IO client
+- LiveKit (video call)
 
-### `npm start`
+## Features
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- Authentication: login, signup, forgot/reset password, Google OAuth redirect
+- Quit plan flow: assessment, habit check, plan details, phase records
+- Blog: list, detail, create, edit, user posts, reactions, comments
+- Membership and payment pages
+- Coach list and member chat page
+- Profile, notifications, leaderboard, achievements
+- Admin dashboard routes (`/admin/*`)
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Project Structure
 
-### `npm test`
+```text
+web/
+|-- public/
+|-- src/
+|   |-- components/
+|   |-- context/
+|   |-- layout/
+|   |-- pages/
+|   |-- router/
+|   |-- services/
+|   |-- styles/
+|   |-- theme/
+|   `-- utils/
+|-- package.json
+`-- .env
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Key files:
 
-### `npm run build`
+- `src/App.js`: app bootstrap, providers, token auto-refresh start/stop
+- `src/router/Router.js`: all route definitions and guarded routes
+- `src/services/api.js`: Axios instance and token refresh interceptor
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Environment Variables
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Create `web/.env` with:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```env
+REACT_APP_API_URL=http://localhost:8000/api/v1
+REACT_APP_BACKEND_GOOGLE_AUTH_URL=http://localhost:8000/api/v1/auth/google
+REACT_APP_LIVEKIT_URL=ws://localhost:7880
+REACT_APP_SOCKET_URL=http://localhost:8000/chat
+REACT_APP_NOTIFICATION_SOCKET_URL=http://localhost:8000/notification
+```
 
-### `npm run eject`
+## Installation
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+```bash
+npm install
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Run
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+```bash
+npm start
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+App runs at `http://localhost:3000` by default.
 
-## Learn More
+## Scripts
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+- `npm start`: start development server
+- `npm run build`: production build
+- `npm test`: run tests
+- `npm run eject`: eject CRA config
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Authentication Notes
 
-### Code Splitting
+- Access token is stored in `localStorage`.
+- API interceptor attaches `Authorization: Bearer <token>`.
+- On `401`, app attempts refresh via `/auth/refresh` and retries failed request.
+- If refresh fails, auth state is cleared and user is redirected to `/login`.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## Main Route Groups
 
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- Public: `/`, `/blog`, `/blog/:id`, auth pages
+- Protected user: `/profile`, `/quit-plan`, `/my-blog`, `/leaderboard`, `/notifications`
+- Membership-protected: `/coaches-list`, `/chat-page`
+- Admin-protected: `/admin/*`
