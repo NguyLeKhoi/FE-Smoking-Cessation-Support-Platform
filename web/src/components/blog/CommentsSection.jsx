@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import postService from '../../services/postService';
 import commentsService from '../../services/commentsService';
 import { fetchCurrentUser } from '../../services/userService';
@@ -15,7 +15,7 @@ function CommentsSection({ postId }) {
     const [replyTo, setReplyTo] = useState(null);
     const navigate = useNavigate();
 
-    const fetchComments = () => {
+    const fetchComments = useCallback(() => {
         setLoading(true);
         postService.getCommentsByPostId(postId)
             .then(data => {
@@ -30,14 +30,14 @@ function CommentsSection({ postId }) {
                 setComments(commentsArray);
                 console.log('Fetched comments:', commentsArray);
             })
-            .catch(() => setComments([]))
-            .finally(() => setLoading(false));
-    };
+                .catch(() => setComments([]))
+                .finally(() => setLoading(false));
+            }, [postId]);
 
     useEffect(() => {
         if (!postId) return;
         fetchComments();
-    }, [postId]);
+    }, [postId, fetchComments]);
 
     useEffect(() => {
         fetchCurrentUser()

@@ -3,7 +3,6 @@ import { Box, Typography, List, ListItem, ListItemIcon, ListItemText, Badge, Pap
 import { styled } from '@mui/system';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Link as RouterLink } from 'react-router-dom';
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import PersonIcon from '@mui/icons-material/Person';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';

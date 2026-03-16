@@ -1,7 +1,6 @@
 import React from 'react';
 import { Box } from '@mui/material';
 import { Toaster } from 'react-hot-toast';
-import { useLocation } from 'react-router-dom';
 
 export default function AuthLayout({ children }) {
   return (

@@ -3,7 +3,6 @@ import {
   Box,
   IconButton,
   Typography,
-  Paper,
   Avatar,
   Fade,
   Tooltip,
@@ -24,15 +23,9 @@ import {
 } from "@mui/icons-material";
 import {
   LiveKitRoom,
-  VideoConference,
   RoomAudioRenderer,
-  useLocalAudioTrack,
-  useLocalVideoTrack,
   useMaybeRoomContext,
-  useRoomContext,
   useParticipants,
-  ParticipantTile,
-  useTracks,
   VideoTrack,
   AudioTrack,
 } from "@livekit/components-react";
@@ -548,7 +541,7 @@ const VideoCall = ({ token, roomName, onDisconnect }) => {
   useEffect(() => {
     if (token) {
       try {
-        const [header, payload, signature] = token.split(".");
+        const [, payload] = token.split(".");
         const decodedPayload = JSON.parse(atob(payload));
         const extractedIdentity = decodedPayload.sub;
         setIdentity(extractedIdentity);

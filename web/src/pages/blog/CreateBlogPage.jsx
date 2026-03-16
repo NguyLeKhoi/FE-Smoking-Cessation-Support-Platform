@@ -16,7 +16,6 @@ import {
   Select,
   MenuItem,
   FormHelperText,
-  Input,
 } from "@mui/material";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 import SaveIcon from "@mui/icons-material/Save";
@@ -41,7 +40,6 @@ const CreateBlogPage = () => {
   });
   const [formErrors, setFormErrors] = useState({});
   const [content, setContent] = useState("");
-  const [thumbnailFile, setThumbnailFile] = useState(null);
   const [thumbnailPreview, setThumbnailPreview] = useState("");
 
   const postTypes = [
@@ -79,7 +77,6 @@ const CreateBlogPage = () => {
     // Clear uploaded file when user enters URL
     if (field === 'thumbnail' && value && thumbnailPreview) {
       setThumbnailPreview('');
-      setThumbnailFile(null);
     }
   };
 
@@ -152,7 +149,6 @@ const CreateBlogPage = () => {
           thumbnail: uploadedUrl
         }));
         setThumbnailPreview(uploadedUrl);
-        setThumbnailFile(null);
         toast.success('Thumbnail uploaded successfully!');
       } else {
         toast.error('Failed to upload thumbnail. No image URL received.');
@@ -168,7 +164,6 @@ const CreateBlogPage = () => {
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
-      setThumbnailFile(file);
       // Clear URL input when uploading file
       setFormData(prev => ({ ...prev, thumbnail: '' }));
       handleThumbnailUpload(file);
@@ -178,8 +173,9 @@ const CreateBlogPage = () => {
   const handleCreate = async () => {
     const finalData = {
       ...formData,
-      content: content,
+      content,
     };
+
     if (!validateForm()) {
       toast.error("Please fix the form errors before creating");
       return;
@@ -199,79 +195,6 @@ const CreateBlogPage = () => {
 
   const handleCancel = () => {
     navigate("/my-blog");
-  };
-
-  // Markdown styles
-  const markdownStyles = {
-    "& h1, & h2, & h3, & h4, & h5, & h6": {
-      marginTop: 2,
-      marginBottom: 1,
-      fontWeight: 600,
-    },
-    "& h1": { fontSize: "2rem" },
-    "& h2": { fontSize: "1.5rem" },
-    "& h3": { fontSize: "1.25rem" },
-    "& p": {
-      marginBottom: 1,
-      lineHeight: 1.6,
-    },
-    "& ul, & ol": {
-      marginLeft: 2,
-      marginBottom: 1,
-    },
-    "& li": {
-      marginBottom: 0.5,
-    },
-    "& blockquote": {
-      borderLeft: "4px solid #ddd",
-      paddingLeft: 2,
-      margin: "1rem 0",
-      fontStyle: "italic",
-      color: "text.secondary",
-    },
-    "& code": {
-      backgroundColor: "grey.100",
-      padding: "2px 4px",
-      borderRadius: 1,
-      fontFamily: "monospace",
-      fontSize: "0.875rem",
-    },
-    "& pre": {
-      backgroundColor: "grey.100",
-      padding: 2,
-      borderRadius: 1,
-      overflow: "auto",
-      "& code": {
-        backgroundColor: "transparent",
-        padding: 0,
-      },
-    },
-    "& a": {
-      color: "primary.main",
-      textDecoration: "none",
-      "&:hover": {
-        textDecoration: "underline",
-      },
-    },
-    "& img": {
-      maxWidth: "100%",
-      height: "auto",
-      borderRadius: 1,
-    },
-    "& table": {
-      width: "100%",
-      borderCollapse: "collapse",
-      marginBottom: 2,
-    },
-    "& th, & td": {
-      border: "1px solid #ddd",
-      padding: 1,
-      textAlign: "left",
-    },
-    "& th": {
-      backgroundColor: "grey.100",
-      fontWeight: 600,
-    },
   };
 
   useEffect(() => {

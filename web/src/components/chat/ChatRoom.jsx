@@ -5,20 +5,16 @@ import { useSocket } from '../../context/SocketContext';
 import { getChatRoomMessages } from '../../services/chatService';
 
 const ChatRoom = ({ room, onOpenChat }) => {
-    const [messages, setMessages] = useState([]);
-    const [loading, setLoading] = useState(true);
     const [lastMessage, setLastMessage] = useState(null);
     const [unauthorized, setUnauthorized] = useState(false);
     const { socket } = useSocket();
 
     useEffect(() => {
         const fetchMessages = async () => {
-            setLoading(true);
             setUnauthorized(false);
             try {
                 const data = await getChatRoomMessages(room.id);
                 const messagesArray = Array.isArray(data.data?.data) ? data.data.data : [];
-                setMessages(messagesArray);
                 if (messagesArray.length > 0) {
                     setLastMessage(messagesArray[messagesArray.length - 1]);
                 }
@@ -26,9 +22,7 @@ const ChatRoom = ({ room, onOpenChat }) => {
                 if (e.response?.status === 400 && e.response?.data?.message?.includes('not authorized')) {
                     setUnauthorized(true);
                 }
-                setMessages([]);
-            } finally {
-                setLoading(false);
+                setLastMessage(null);
             }
         };
         fetchMessages();
@@ -39,7 +33,6 @@ const ChatRoom = ({ room, onOpenChat }) => {
         const handleNewMessage = (msg) => {
             if (msg.chat_room_id === room.id) {
                 setLastMessage(msg);
-                setMessages((prev) => [...prev, msg]);
             }
         };
         socket.on('newMessage', handleNewMessage);

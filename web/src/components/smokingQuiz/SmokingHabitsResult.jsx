@@ -54,13 +54,6 @@ const SmokingHabitsResult = ({ data }) => {
     const daysSpentSmoking = (minutesPerDay * 365 * smokingYears) / (60 * 24);
 
     // Format AI feedback into paragraphs
-    const formattedAiFeedback = aiFeedback ?
-        aiFeedback.split('\n\n').map((paragraph, index) => (
-            <Typography key={index} variant="body1" paragraph>
-                {paragraph}
-            </Typography>
-        )) : null;
-
     return (
         <Box sx={{
             backgroundColor: '#ffffff',

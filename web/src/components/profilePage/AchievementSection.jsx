@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Paper, Avatar, CircularProgress, LinearProgress } from '@mui/material';
+import { Box, Typography, Paper, CircularProgress } from '@mui/material';
 import achievementsService from '../../services/achievementsService';
 import { Link } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
@@ -54,7 +54,7 @@ const AchievementSection = ({ onLoaded = () => { }, userData = null }) => {
       }
     };
     fetchAchievementsProgress();
-  }, [userData]);
+  }, [onLoaded, userData]);
 
   return (
     <Box sx={{ mt: 5 }}>

@@ -6,8 +6,7 @@ import {
     FormControlLabel,
     Checkbox,
     Box,
-    Typography,
-    Grid
+    Typography
 } from '@mui/material';
 
 // Extract common styles to reuse across components
@@ -96,17 +95,6 @@ const SmokingHabitsQuestions = () => {
         'Social situations',
         'Boredom',
         'Alcohol consumption'
-    ];
-
-    const healthIssuesList = [
-        'Persistent cough',
-        'Shortness of breath',
-        'Chest pain',
-        'Frequent respiratory infections',
-        'Gum disease or tooth loss',
-        'Reduced sense of taste or smell',
-        'Fatigue or low energy',
-        'No health issues'
     ];
 
     const questions = [

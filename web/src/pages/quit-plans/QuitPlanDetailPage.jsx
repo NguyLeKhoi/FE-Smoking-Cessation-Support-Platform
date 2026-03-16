@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useLocation, useParams, Link, useNavigate } from 'react-router-dom';
-import { Box, Typography, Paper, Button, Grid, IconButton, Tabs, Tab } from '@mui/material';
+import { Box, Typography, Paper, Button, Grid, Tabs, Tab } from '@mui/material';
 import EventIcon from '@mui/icons-material/Event';
 import FlagIcon from '@mui/icons-material/Flag';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -47,14 +47,15 @@ const QuitPlanResultPage = () => {
   const result = location.state?.result;
   const [openRecordModal, setOpenRecordModal] = useState(false);
   const [recordPhase, setRecordPhase] = useState(null);
-  const [expandedPhases, setExpandedPhases] = useState([]);
   const [tabValues, setTabValues] = useState([]);
 
   const displayData = id
     ? plan
     : result?.data?.data || result?.data || null;
   const planObj = displayData?.data || displayData;
-  const phases = planObj?.phases ? getPhaseStatus(planObj.phases) : [];
+  const phases = useMemo(() => (
+    planObj?.phases ? getPhaseStatus(planObj.phases) : []
+  ), [planObj?.phases]);
 
   useEffect(() => {
     if (id) {
@@ -65,7 +66,7 @@ const QuitPlanResultPage = () => {
 
   useEffect(() => {
     setTabValues(phases.map(() => 0));
-  }, [phases.length]);
+  }, [phases]);
 
   const handleTabChange = (idx, newValue) => {
     setTabValues(prev => {
@@ -152,12 +153,6 @@ const QuitPlanResultPage = () => {
   
   // Always calculate percentage based on actual completed phases
   const percent = totalPhases > 0 ? Math.round((completedPhases / totalPhases) * 100) : 0;
-
-  const handleTogglePhase = (index) => {
-    const newExpandedPhases = [...expandedPhases];
-    newExpandedPhases[index] = !newExpandedPhases[index];
-    setExpandedPhases(newExpandedPhases);
-  };
 
   if (loading) {
     return <LoadingPage />;

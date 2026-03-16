@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Container, TextField, Button, Typography, Box, Alert, Grid, IconButton } from '@mui/material';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { Container, TextField, Button, Typography, Box, Alert, Grid } from '@mui/material';
+import { useLocation } from 'react-router-dom';
 import { registerCoach } from '../../services/authService';
 import GlowingDotsGrid from '../../components/animated/GlowingDotsGrid';
 import LoadingPage from '../LoadingPage';
-import HomeIcon from '@mui/icons-material/Home';
 
 export default function RegisterCoachPage() {
-  const navigate = useNavigate();
   const location = useLocation();
   const [formData, setFormData] = useState({
     email: '',

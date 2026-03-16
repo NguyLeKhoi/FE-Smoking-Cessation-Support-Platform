@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Container, Box, Typography, Grid, Button } from '@mui/material';
+import { Container, Box, Typography, Grid } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import Lottie from 'lottie-react';
 import quitSign from '../../assets/animations/quit-sign.json';

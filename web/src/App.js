@@ -9,7 +9,7 @@ import { routes } from './router/Router';
 import { SocketProvider, useSocket } from './context/SocketContext';
 import IncomingCallModal from './components/chat/IncomingCallModal';
 import VideoCall from './components/chat/VideoCall';
-import { startAutoRefresh, stopAutoRefresh, debugTokenStatus, testRefreshToken } from './services/api';
+import { startAutoRefresh, stopAutoRefresh, testRefreshToken } from './services/api';
 
 const GlobalCallManager = () => {
   const { socket } = useSocket();
@@ -21,12 +21,12 @@ const GlobalCallManager = () => {
   // Get current user info
   let currentUserId = null;
   const accessToken = localStorage.getItem('accessToken');
-  let decoded = null;
   if (typeof accessToken === 'string' && accessToken) {
     try {
-      decoded = jwtDecode(accessToken);
+      const decoded = jwtDecode(accessToken);
+      currentUserId = decoded.userId || decoded.id || decoded.sub;
     } catch (e) {
-      decoded = null;
+      currentUserId = null;
     }
   }
 

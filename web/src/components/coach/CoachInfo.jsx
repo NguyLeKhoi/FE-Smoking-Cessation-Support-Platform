@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Avatar, Typography, Chip, Button, Box, Divider } from '@mui/material';
-import { Link, useNavigate } from 'react-router-dom';
+import { Card, Avatar, Typography, Box, Divider } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import { Email, Phone, AccessTime } from '@mui/icons-material';
 import { createChatRoom, getAllChatRooms } from '../../services/chatService';
 import { toast } from 'react-toastify';
 import CoachFeedback from './CoachFeedback';
 import BlackButton from '../buttons/BlackButton';
-import WriteFeedbackBox from './WriteFeedbackBox';
 import feedbackService from '../../services/feedbackService';
 import FeedbackCard from './FeedbackCard';
 

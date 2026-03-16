@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import LoadingPage from '../LoadingPage';
 import quitPlanService from '../../services/quitPlanService';
@@ -12,17 +12,18 @@ import ErrorIcon from '@mui/icons-material/Error';
 
 function PhaseRecordPage() {
   const { planId, phaseId } = useParams();
-  const navigate = useNavigate();
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const slogans = [
-    'Every record is a step closer to a healthier you!',
-    'Consistency is the key to quitting successfully.',
-    'Small steps every day make a big difference.',
-  ];
-  const randomSlogan = useMemo(() => slogans[Math.floor(Math.random() * slogans.length)], []);
+  const randomSlogan = useMemo(() => {
+    const slogans = [
+      'Every record is a step closer to a healthier you!',
+      'Consistency is the key to quitting successfully.',
+      'Small steps every day make a big difference.',
+    ];
+    return slogans[Math.floor(Math.random() * slogans.length)];
+  }, []);
 
   useEffect(() => {
     fetchRecords();

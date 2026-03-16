@@ -20,7 +20,6 @@ import {
     Chip,
     Stack,
     Avatar,
-    IconButton,
     Tooltip
 } from '@mui/material';
 import { styled } from '@mui/material/styles';

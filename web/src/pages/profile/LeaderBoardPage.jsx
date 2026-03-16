@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useMemo } from 'react';
-import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Avatar, Button } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableRow, Avatar, Button } from '@mui/material';
 import LoadingPage from '../LoadingPage';
 import { styled } from '@mui/material/styles';
 import leaderBoardService from '../../services/leaderBoardService';
